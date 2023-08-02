@@ -26,12 +26,16 @@
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single", { "avoidEscape": true }],
     "semi": ["error", "always"],
-    "@typescript-eslint/no-unused-vars": [
-      1,
-      { "vars": "local", "args": "none" }
-    ],
+    "@typescript-eslint/no-unused-vars": [1, { "vars": "local", "args": "none" }],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
+    "eol-last": ["error", "always"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "max-len": ["error", { "code": 120, "ignoreComments": true }],
+    "comma-dangle": ["error", "only-multiline"],
+    "no-dupe-keys": "error",
+    "no-empty": "error",
     "prettier/prettier": [
       "error",
       {

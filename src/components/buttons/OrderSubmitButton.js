@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 
-const OrderSubmitButton = () => {
+const OrderSubmitButton = ({ onClick }) => {
   return (
     <Button
       variant="contained"
@@ -14,10 +14,7 @@ const OrderSubmitButton = () => {
         },
         boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
       }}
-      onClick={(event) => {
-        event.preventDefault();
-        alert('Thank you for your purchase!');
-      }}
+      onClick={onClick}
     >
       Submit Order
     </Button>
