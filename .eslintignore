@@ -1,0 +1,14 @@
+**/*.test.js
+**/*.spec.js
+**/*.scss
+**/*.css
+**/*.html
+**/*.json
+**/*.md
+**/*.yml
+**/node_modules/*
+**/*.min.js
+**/vendor/*
+**/coverage/*
+**/build/*
+**/docs/*
