@@ -1,13 +1,10 @@
-// Modified CartContent component
-
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ProductCard from '../cards/ProductCard';
-import { useCardStore } from '../../context/CardContext/CardStore';
-import { CartContext } from '../../context/CartContext/CartContext';
+import { useCartStore } from '../../context/CartContext/CartContext';
 
 const CartContent = () => {
-  const { cartData, getTotalCost } = useContext(CartContext);
+  const { cartData, getTotalCost } = useCartStore();
 
   const page = 'cart';
 

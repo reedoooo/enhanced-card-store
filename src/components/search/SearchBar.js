@@ -4,8 +4,6 @@ import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 import CustomSelector from '../other/CustomSelector';
-// import CardNameInput from '../input/CardNameInput';
-// import CustomSelector from '../selector/CustomSelector';
 
 const initialState = {
   name: '',
@@ -51,8 +49,6 @@ const SearchBar = () => {
     <Box
       sx={{
         padding: 2,
-        overflowY: 'scroll',
-        height: '20vh',
         borderRadius: 2,
       }}
     >

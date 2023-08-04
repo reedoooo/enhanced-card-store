@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Grid } from '@mui/material';
-import { DeckContext } from '../../context/DeckContext/DeckContext'; // Assuming you have a similar context for decks
+import { useDeckStore } from '../../context/DeckContext/DeckContext'; // Assuming you have a similar context for decks
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
@@ -10,8 +10,7 @@ const useStyles = makeStyles({
 const DeckActionButtons = ({ card, deckCardQuantity }) => {
   // Renamed productQuantity to deckQuantity
   const classes = useStyles();
-  const { addOneToDeck, deleteFromDeck, removeOneFromDeck } =
-    useContext(DeckContext); // Changed from CartContext to DeckContext
+  const { addOneToDeck, deleteFromDeck, removeOneFromDeck } = useDeckStore; // Changed from CartContext to DeckContext
 
   return (
     <div className={classes.root}>

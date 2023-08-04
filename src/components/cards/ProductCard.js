@@ -1,12 +1,12 @@
-import { Card, Button, Grid, CardContent, CardActions } from '@mui/material';
+import { Card, Button, CardContent, CardActions } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useContext, useState } from 'react';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import placeholderImage from '../../assets/placholder.jpeg';
 import CardModal from '../modals/CardModal';
-import { CartContext } from '../../context/CartContext/CartContext';
 import CartActionButtons from '../buttons/CartActionButtons';
+import { useCartStore } from '../../context/CartContext/CartContext';
 
 const useStyles = makeStyles({
   card: {
@@ -41,8 +41,7 @@ const useStyles = makeStyles({
 });
 
 const ProductCard = ({ card, page }) => {
-  const { cartData, getCardQuantity } = useContext(CartContext);
-  console.log('card', card);
+  const { cartData, getCardQuantity } = useCartStore();
   const classes = useStyles();
 
   const { id, name } = card;
@@ -50,7 +49,6 @@ const ProductCard = ({ card, page }) => {
   const openCardModal = () => setCardModalOpen(true);
   const closeCardModal = () => setCardModalOpen(false);
   const productQuantity = getCardQuantity(card?.id);
-  console.log('productQuantity', productQuantity);
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
 
   return (

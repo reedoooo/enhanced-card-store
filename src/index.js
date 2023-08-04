@@ -3,18 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import GlobalStyles from './GlobalStyles';
-import { Provider } from 'react-redux';
-import AuthProvider, { AuthContext } from './context/Auth/authContext';
-import CartProvider from './context/CartContext/CartContext';
-import { CardStoreProvider } from './context/CardContext/CardStore';
-import { Deck } from '@mui/icons-material';
+import AuthProvider from './context/Auth/authContext';
+import { CartProvider } from './context/CartContext/CartContext';
 import { DeckProvider } from './context/DeckContext/DeckContext';
+import { CardProvider } from './context/CardContext/CardStore';
 
 const root = document.getElementById('root');
 
 function Main() {
   return (
-    <CardStoreProvider>
+    <CardProvider>
       <DeckProvider>
         <CartProvider>
           <AuthProvider>
@@ -23,7 +21,7 @@ function Main() {
           </AuthProvider>
         </CartProvider>
       </DeckProvider>
-    </CardStoreProvider>
+    </CardProvider>
   );
 }
 

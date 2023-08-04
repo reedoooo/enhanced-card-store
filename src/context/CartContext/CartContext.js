@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import { useCookies } from 'react-cookie';
 import { useCardStore } from '../CardContext/CardStore';
 
@@ -7,13 +13,14 @@ export const CartContext = createContext({
   cartData: {
     _id: '',
     cart: [],
+    quantity: 0, // Total quantity of items
+    totalPrice: 0, // Total price of items
   },
   getCardQuantity: () => {},
   addOneToCart: () => {},
   removeOneFromCart: () => {},
   deleteFromCart: () => {},
   getTotalCost: () => {},
-  setCart: () => {},
   fetchUserCart: () => {},
   createUserCart: () => {},
 });
@@ -54,15 +61,22 @@ export const CartProvider = ({ children }) => {
     setCartDataAndCookie(data);
   };
 
-  //Context functions
   const createUserCart = useCallback(
     async (userId) => {
       const newCartData = await fetchFromServer(
         `/api/carts/newCart/${userId}`,
         { method: 'POST' }
       );
-      setCookie('cart', newCartData.cart || [], { path: '/' });
-      return newCartData.cart || [];
+      const newCartItems = Array.isArray(newCartData.cart)
+        ? newCartData.cart
+        : [];
+      setCookie('cart', newCartItems, {
+        // Changed this line
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+      });
+      return newCartItems;
     },
     [setCookie]
   );
@@ -71,7 +85,11 @@ export const CartProvider = ({ children }) => {
     async (userId) => {
       try {
         const data = await fetchFromServer(`/api/carts/userCart/${userId}`);
-        setCookie('cart', data.cart || [], { path: '/' });
+        setCookie('cart', data.cart || [], {
+          path: '/',
+          secure: true,
+          sameSite: 'none',
+        });
         return data;
       } catch (error) {
         if (error.message === 'HTTP error! status: 404') {
@@ -86,17 +104,25 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && typeof userId === 'string') {
-      fetchUserCart(userId).then((data) => {
-        if (data && data.cart) {
-          setCartDataAndCookie(data);
-        }
-      });
+      console.log('Fetching user cart');
+      fetchUserCart(userId)
+        .then((data) => {
+          if (data && data.cart) {
+            setCartDataAndCookie(data);
+          }
+        })
+        .catch((error) => console.log('Error fetching user cart:', error));
     }
   }, [userId, fetchUserCart]);
 
   const setCartDataAndCookie = (newCartData) => {
     setCartData(newCartData);
-    setCookie('cart', newCartData, { path: '/' });
+    setCookie('cart', newCartData.cart, {
+      // Changed this line
+      path: '/',
+      secure: true,
+      sameSite: 'none',
+    });
   };
 
   const getCardQuantity = (cardId) => {
@@ -119,9 +145,10 @@ export const CartProvider = ({ children }) => {
       item.id === cardInfo.id ? { ...item, quantity: item.quantity + 1 } : item
     );
     if (!cartData.cart.some((item) => item.id === cardInfo.id)) {
-      updatedCart.push({ ...cardInfo, quantity: 1 });
+      updatedCart = [...updatedCart, { ...cardInfo, quantity: 1 }];
     }
-    updateCart(cartData._id, updatedCart);
+    const updatedCartData = await updateCart(cartData._id, updatedCart);
+    if (updatedCartData) setCartData(updatedCartData);
   };
 
   const removeOneFromCart = async (cardInfo) => {
@@ -133,13 +160,15 @@ export const CartProvider = ({ children }) => {
             : item
         )
         .filter((item) => item.quantity > 0);
-      updateCart(cartData._id, updatedCart);
+      const updatedCartData = await updateCart(cartData._id, updatedCart);
+      if (updatedCartData) setCartData(updatedCartData);
     }
   };
 
   const deleteFromCart = async (cardInfo) => {
     const updatedCart = cartData.cart.filter((item) => item.id !== cardInfo.id);
-    updateCart(cartData._id, updatedCart);
+    const updatedCartData = await updateCart(cartData._id, updatedCart);
+    if (updatedCartData) setCartData(updatedCartData);
   };
 
   const getTotalCost = () =>
@@ -154,14 +183,35 @@ export const CartProvider = ({ children }) => {
       (total, item) => total + item.quantity,
       0
     );
-    setCartDataAndCookie((prevState) => ({
-      ...prevState,
-      quantity: totalQuantity,
-      totalPrice: getTotalCost(),
-    }));
-  }, [cartData.cart]);
 
-  console.log('CART CONTEXT: ', {
+    if (
+      cartData.quantity !== totalQuantity ||
+      cartData.totalPrice !== getTotalCost()
+    ) {
+      setCartDataAndCookie((prevState) => ({
+        ...prevState,
+        quantity: totalQuantity,
+        totalPrice: getTotalCost(),
+      }));
+    }
+  }, [cartData.cart, cartData.quantity, cartData.totalPrice, getTotalCost]);
+
+  const logUpdate = (funcName, newState) => {
+    console.log(`Update from ${funcName}:`, newState);
+  };
+
+  useEffect(() => {
+    console.log('CART CONTEXT: ', {
+      cartData,
+      getCardQuantity,
+      addOneToCart,
+      removeOneFromCart,
+      deleteFromCart,
+      getTotalCost,
+      fetchUserCart,
+      createUserCart,
+    });
+  }, [
     cartData,
     getCardQuantity,
     addOneToCart,
@@ -170,7 +220,7 @@ export const CartProvider = ({ children }) => {
     getTotalCost,
     fetchUserCart,
     createUserCart,
-  });
+  ]);
 
   return (
     <CartContext.Provider
@@ -190,4 +240,38 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-export default CartProvider;
+export const useCartStore = () => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
+
+// export const useCartStore = () => {
+//   const context = useContext(CartContext);
+//   if (!context) {
+//     throw new Error('useCart must be used within a CartProvider');
+//   }
+//   const {
+//     cartData,
+//     getCardQuantity,
+//     addOneToCart,
+//     removeOneFromCart,
+//     deleteFromCart,
+//     getTotalCost,
+//     fetchUserCart,
+//     createUserCart,
+//   } = context;
+
+//   return {
+//     cartData,
+//     getCardQuantity,
+//     addOneToCart,
+//     removeOneFromCart,
+//     deleteFromCart,
+//     getTotalCost,
+//     fetchUserCart,
+//     createUserCart,
+//   };
+// };

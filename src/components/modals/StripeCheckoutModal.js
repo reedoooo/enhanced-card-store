@@ -1,10 +1,15 @@
 import React from 'react';
 import { Modal, Backdrop, Fade, Box, Typography } from '@mui/material';
-import StripeCheckout from 'react-stripe-checkout';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripeForm from '../forms/StripeForm';
+
+// Make sure to call `loadStripe` outside of a component’s render to avoid recreating the `Stripe` object on every render.
+console.log('Stripe key: ', process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const StripeCheckoutModal = ({ open, onClose, onToken, purchases, total }) => {
-  console.log(purchases);
-  console.log(total);
+  // Rest of your component code...
   return (
     <Modal
       open={open}
@@ -23,6 +28,7 @@ const StripeCheckoutModal = ({ open, onClose, onToken, purchases, total }) => {
       <Fade in={open}>
         <Box
           sx={{
+            zIndex: 2000, // add this line
             width: 400,
             backgroundColor: '#fff',
             boxShadow: 24,
@@ -56,10 +62,9 @@ const StripeCheckoutModal = ({ open, onClose, onToken, purchases, total }) => {
             <Typography variant="subtitle1">Total:</Typography>
             <Typography variant="subtitle1">${total}</Typography>
           </Box>
-          <StripeCheckout
-            token={onToken}
-            stripeKey={process.env.STRIPE_SECRET_KEY}
-          />
+          <Elements stripe={stripePromise}>
+            <StripeForm total={total} onToken={onToken} />
+          </Elements>
         </Box>
       </Fade>
     </Modal>

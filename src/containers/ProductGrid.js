@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import ProductCard from '../components/cards/ProductCard';

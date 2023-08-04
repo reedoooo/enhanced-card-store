@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import { useCookies } from 'react-cookie';
 import { useCardStore } from '../CardContext/CardStore';
 
@@ -292,17 +298,19 @@ export const DeckProvider = ({ children }) => {
     setCookie('deck', newDeckData, { path: '/' });
   };
 
-  console.log('DECK CONTEXT: ', {
-    deckData,
-    getCardQuantity,
-    addOneToDeck,
-    removeOneFromDeck,
-    deleteFromDeck,
-    getTotalCost,
-    setDeck,
-    fetchUserDeck,
-    createUserDeck,
-  });
+  useEffect(() => {
+    console.log('DECK CONTEXT (DeckProvider): ', {
+      deckData,
+      getCardQuantity,
+      addOneToDeck,
+      removeOneFromDeck,
+      deleteFromDeck,
+      getTotalCost,
+      setDeck,
+      fetchUserDeck,
+      createUserDeck,
+    });
+  }, []); // An empty dependency array will make this useEffect run only once after the initial render
 
   return (
     <DeckContext.Provider
@@ -321,4 +329,34 @@ export const DeckProvider = ({ children }) => {
       {children}
     </DeckContext.Provider>
   );
+};
+
+export const useDeckStore = () => {
+  const context = useContext(DeckContext);
+  if (!context) {
+    throw new Error('useDeck must be used within a DeckProvider');
+  }
+  const {
+    deckData,
+    getCardQuantity,
+    addOneToDeck,
+    removeOneFromDeck,
+    deleteFromDeck,
+    getTotalCost,
+    setDeck,
+    fetchUserDeck,
+    createUserDeck,
+  } = context;
+
+  return {
+    deckData,
+    getCardQuantity,
+    addOneToDeck,
+    removeOneFromDeck,
+    deleteFromDeck,
+    getTotalCost,
+    setDeck,
+    fetchUserDeck,
+    createUserDeck,
+  };
 };
