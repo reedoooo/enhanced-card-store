@@ -79,8 +79,6 @@ const WelcomeMessage = () => {
   );
 };
 
-// ... rest of the code
-
 const CarouselImage = ({ image, caption }) => {
   const classes = useStyles();
 

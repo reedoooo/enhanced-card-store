@@ -20,7 +20,6 @@ export default function AuthProvider(props) {
   // const dispatch = useDispatch();
   const setLoginState = (loggedIn, token, user, error) => {
     setCookie('auth', token);
-    // when setting the userCookie:
     setCookie('userCookie', user);
     setIsLoggedIn(loggedIn);
     setToken(token);

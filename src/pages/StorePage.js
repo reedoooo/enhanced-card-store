@@ -4,9 +4,9 @@ import { Grid } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import SearchBar from '../components/search/SearchBar';
 import ProductGrid from '../containers/ProductGrid';
-import { CartContext } from '../context/CartContext/CartContext';
 import { useCardStore } from '../context/CardContext/CardStore';
 import { BeatLoader } from 'react-spinners';
+import { useCartStore } from '../context/CartContext/CartContext';
 
 const StoreBanner = styled.div`
   display: flex;
@@ -60,7 +60,7 @@ const ProductContainer = () => {
 
 const Store = () => {
   const [cookies] = useCookies(['userCookie']);
-  const { fetchUserCart, loading, error } = useContext(CartContext);
+  const { fetchUserCart, loading, error } = useCartStore();
   const { searchData } = useCardStore();
 
   const userId = cookies.userCookie?.id;

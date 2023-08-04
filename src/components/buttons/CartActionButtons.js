@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Button, Grid } from '@mui/material';
-import { CartContext } from '../../context/CartContext/CartContext';
 import { makeStyles } from '@mui/styles';
+import { useCartStore } from '../../context/CartContext/CartContext';
 
 const useStyles = makeStyles({
   root: {}, // Default styles go here
@@ -9,8 +9,7 @@ const useStyles = makeStyles({
 
 const CartActionButtons = ({ card, productQuantity }) => {
   const classes = useStyles();
-  const { addOneToCart, deleteFromCart, removeOneFromCart } =
-    useContext(CartContext);
+  const { addOneToCart, deleteFromCart, removeOneFromCart } = useCartStore();
 
   return (
     <div className={classes.root}>

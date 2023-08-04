@@ -1,31 +1,33 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, Container, Typography } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { CartContext } from '../../context/CartContext/CartContext';
+// import { DatePicker } from '@mui/x-date-pickers';
+// import { LocalizationProvider } from '@mui/x-date-pickers';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import OrderSubmitButton from '../buttons/OrderSubmitButton';
 import CartSummary from '../CartSummary';
 import StripeCheckoutModal from '../modals/StripeCheckoutModal';
 import FormTextField from './FormTextField';
+import { useCartStore } from '../../context/CartContext/CartContext';
 
 const CustomerForm = () => {
-  const { getTotalCost, cartData } = useContext(CartContext);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to track modal visibility
+  const { getTotalCost, cartData } = useCartStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleModalOpen = () => {
+  const handleModalOpen = useCallback(() => {
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
-  const onToken = (token) => {
-    console.log(token);
-    handleModalClose(); // Close the modal after successful token creation
-  };
+  const onToken = useCallback(
+    (token) => {
+      console.log(token);
+      handleModalClose();
+    },
+    [handleModalClose]
+  );
 
   return (
     <Container maxWidth={false}>
@@ -55,16 +57,6 @@ const CustomerForm = () => {
               </Box>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                <FormTextField type="number" label="Card Number" />
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    sx={{ margin: '0.8rem 0' }}
-                    label="Expiration Date"
-                  />
-                </LocalizationProvider>
-                <FormTextField type="number" label="CVV" />
-              </Box>
               {/* Shows summary or items and total */}
               <CartSummary
                 quantity={cartData.quantity}

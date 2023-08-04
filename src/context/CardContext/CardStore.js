@@ -1,32 +1,29 @@
 import axios from 'axios';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 
 // Create a context for the cardStore
-const CardStoreContext = createContext();
+const CardContext = createContext();
 
-export const CardStoreProvider = ({ children }) => {
+export const CardProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['cart'], ['deck']);
   const initialStore = cookies.store || [];
-  const initialCart = cookies.cart || [];
-  console.log('Initial cart:', initialCart);
+  // const initialCart = cookies.cart || [];
+  // console.log('Initial cart:', initialCart);
   const [cardsArray, setCardsArray] = useState(initialStore);
-  console.log('Initial store:', initialStore);
+  // console.log('Initial store:', initialStore);
   const currentCart = cookies.cart || [];
   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
   const [searchData, setSearchData] = useState([]);
   const currentDeckData = cookies.deck || [];
   const [savedDeckData, setSavedDeckData] = useState(currentDeckData);
   const [deckSearchData, setDeckSearchData] = useState([]);
-  // const [filtered, setFiltered] = useState([]); // add this
 
-  console.log('Current cart:', currentCart);
+  // console.log('Current cart:', currentCart);
   if (!currenCartArray || !savedDeckData) {
     return <div>Loading...</div>;
   }
 
-  // Your new function
-  // Your new function
   const handleRequest = async (searchParams) => {
     try {
       const response = await axios.post(
@@ -77,88 +74,88 @@ export const CardStoreProvider = ({ children }) => {
 
   const randomCardData = getRandomCard();
 
-  // In CardStoreProvider component
+  // In CardProvider component
+  useEffect(() => {
+    console.log('CARD CONTEXT: ', {
+      cardsArray,
+      searchData,
+      deckSearchData,
+      savedDeckData,
 
-  console.log('CARD CONTEXT: ', {
-    cardsArray,
-    searchData,
-    setSearchData,
-    // filtered,
-    // setFiltered,
-    deckSearchData,
-    setDeckSearchData,
-    savedDeckData,
-    setSavedDeckData,
-    getCardData,
-    getRandomCard,
-    setCardsArray,
-    handleRequest, // Add your new function to the context
-  });
-
+      setSearchData,
+      setDeckSearchData,
+      setSavedDeckData,
+      getCardData,
+      getRandomCard,
+      setCardsArray,
+      handleRequest, // Add your new function to the context
+    });
+  }, []);
   return (
-    <CardStoreContext.Provider
+    <CardContext.Provider
       value={{
         cardsArray,
         searchData,
-        setSearchData,
-        // filtered,
-        // setFiltered,
         deckSearchData,
-        setDeckSearchData,
         savedDeckData,
-        setSavedDeckData,
-        getCardData,
         randomCardData,
-        setCardsArray,
-        getRandomCard,
-        setCookie,
-        setCurrentCartArray,
         currenCartArray,
         initialStore,
         cookies,
         currentCart,
+        setSearchData,
+        setDeckSearchData,
+        setSavedDeckData,
+        getCardData,
+        setCardsArray,
+        getRandomCard,
+        setCookie,
+        setCurrentCartArray,
         handleRequest, // Add your new function to the context
       }}
     >
       {children}
-    </CardStoreContext.Provider>
+    </CardContext.Provider>
   );
 };
 
 export const useCardStore = () => {
-  const context = useContext(CardStoreContext);
-  if (!context) {
-    throw new Error('useCardStore must be used within a CardStoreProvider');
+  const context = useContext(CardContext);
+  if (context === undefined) {
+    throw new Error('useCardStore must be used within a CardProvider');
   }
-  const {
-    cardsArray,
-    getCardData,
-    getRandomCard,
-    setCardsArray,
-    searchData,
-    setSearchData,
-    handleRequest,
-    deckSearchData,
-    setDeckSearchData,
-    savedDeckData,
-    setSavedDeckData,
-    // filtered,
-    // setFiltered,
-  } = context;
-  return {
-    cardsArray,
-    getCardData,
-    getRandomCard,
-    setCardsArray,
-    searchData,
-    setSearchData,
-    handleRequest,
-    deckSearchData,
-    setDeckSearchData,
-    savedDeckData,
-    setSavedDeckData,
-
-    // filtered,
-    // setFiltered,
-  };
+  return context;
 };
+
+// export const useCardStore = () => {
+//   const context = useContext(CardContext);
+//   if (!context) {
+//     throw new Error('useCardStore must be used within a CardStoreProvider');
+//   }
+//   const {
+//     cardsArray,
+//     getCardData,
+//     getRandomCard,
+//     setCardsArray,
+//     searchData,
+//     setSearchData,
+//     handleRequest,
+//     deckSearchData,
+//     setDeckSearchData,
+//     savedDeckData,
+//     setSavedDeckData,
+//   } = context;
+//   return {
+//     cardsArray,
+//     getCardData,
+//     getRandomCard,
+//     setCardsArray,
+//     searchData,
+//     setSearchData,
+//     handleRequest,
+//     deckSearchData,
+//     setDeckSearchData,
+//     savedDeckData,
+//     setSavedDeckData,
+//   };
+// };

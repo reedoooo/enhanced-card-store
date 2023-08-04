@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import {
   Box,
@@ -6,57 +6,11 @@ import {
   CardContent,
   Container,
 } from '@mui/material';
-import CartContent from '../components/content/CartContent';
-import CustomerForm from '../components/forms/CustomerForm';
-import { CartContext } from '../context/CartContext/CartContext';
-import { BeatLoader } from 'react-spinners';
-
-const LoadingIndicator = () => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <BeatLoader color={'#123abc'} loading={true} size={24} />
-    </div>
-  );
-};
-
-const ErrorIndicator = ({ error }) => {
-  return <div>Error: {error}</div>;
-};
-
-const CartContentContainer = ({
-  cartData,
-  calculateTotalPrice,
-  onQuantityChange,
-}) => {
-  return (
-    <Box sx={{ flex: 1, marginRight: '2rem', flexGrow: '1' }}>
-      {cartData.length > 0 ? (
-        <CartContent
-          cartData={cartData}
-          calculateTotalPrice={calculateTotalPrice}
-          onQuantityChange={onQuantityChange}
-        />
-      ) : (
-        <LoadingIndicator />
-      )}
-    </Box>
-  );
-};
-
-const CustomerFormContainer = ({ calculateTotalPrice }) => {
-  return (
-    <Box sx={{ flex: 1 }}>
-      <CustomerForm calculateTotalPrice={calculateTotalPrice} />
-    </Box>
-  );
-};
+import { useCartStore } from '../context/CartContext/CartContext';
+import LoadingIndicator from '../components/indicators/LoadingIndicator';
+import ErrorIndicator from '../components/indicators/ErrorIndicator';
+import CartContentContainer from '../components/CartContentContainer';
+import CustomerFormContainer from '../components/CustomerFormContainer';
 
 const CartPage = () => {
   const [cookies] = useCookies(['userCookie']);
@@ -70,7 +24,7 @@ const CartPage = () => {
     getTotalCost,
     loading,
     error,
-  } = useContext(CartContext);
+  } = useCartStore();
 
   const [pageLoading, setPageLoading] = useState(true);
 
