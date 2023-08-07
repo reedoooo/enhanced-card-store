@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+# TCG Enhanced Cardstore
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Netlify Status](https://api.netlify.com/api/v1/badges/5e0666a4-ef7e-42a3-babb-6b2c5f86c400/deploy-status)](https://app.netlify.com/sites/tcg-store/deploys)
 
-## Available Scripts
+## About
 
-In the project directory, you can run:
+TCG eCommerce-frontEnd is a comprehensive online platform built with React, enabling users to search for, collect, and purchase popular trading cards. Users can compile their unique collections, create decks, and shop for cards. The seamless integration with Stripe facilitates secure transactions. The responsive design of the application also lays a foundation for its potential expansion to mobile platforms in the future.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Author
 
-### `npm test`
+Reed Vogt
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features
 
-### `npm run build`
+1. **Search Functionality**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   Users can search for their favorite cards by name. The search functionality returns all the cards matching the search query, helping users quickly find the desired cards to add to their decks.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Collection Management**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   Avid collectors can view their comprehensive collection of cards, providing them an overview and helping identify any missing pieces.
 
-### `npm run eject`
+3. **Online Shop**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   Business owners can leverage the platform to sell their cards and generate revenue. A wide range of cards available for purchase are displayed to the users.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. **Shopping Cart**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   Shoppers can add their favorite cards to the cart and proceed with the purchase.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+5. **Cost Exploration**
 
-## Learn More
+   Newcomers to card collection can explore the vast inventory of cards along with their associated costs, providing them an understanding of the financial implications of building a deck.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Acceptance Tests
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+To ensure the best user experience and seamless functionality, the following acceptance tests are in place:
 
-### Code Splitting
+1. **Search Functionality**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   - Given that a user enters a card name into the search bar and clicks the search button, the cards matching the search term will be displayed.
 
-### Analyzing the Bundle Size
+2. **Collection Management**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+   - Given that a user is logged in and clicks the "My Collection" button, they will be taken to a page that displays all of the cards they have collected.
 
-### Making a Progressive Web App
+3. **Online Shop**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+   - Given that a user is logged in and clicks the "Shop" button, they will be taken to a page that displays all of the cards available for purchase.
 
-### Advanced Configuration
+4. **Shopping Cart**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   - Given that a user is logged in and clicks the "Add to Cart" button, the card will be added to their cart.
 
-### Deployment
+5. **Cost Exploration**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+   - Given that a user is logged in and searches through the card APIs, they should be provided all necessary information to understand cost associated with an individual card.
 
-### `npm run build` fails to minify
+## Installation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To get started with TCG eCommerce-frontEnd, follow these steps:
+
+1. Clone the repository with `git clone https://github.com/your_username_/Project-Name.git`.
+2. Navigate to the project directory with `cd Project-Name`.
+3. Install the dependencies with `npm install`.
+4. Start the application with `npm start`.
+
+The application will be available at `http://localhost:3000`.
+
+## Contributing
+
+We welcome contributions to the TCG eCommerce-frontEnd project. Please follow these steps to contribute:
+
+1. Fork the Project.
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the Branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Contact
+
+Reed Vogt - your_email@example.com
+
+Project Link: https://github.com/reedoooo/enhanced-card-store#readme
+
+## Acknowledgements
+
+- [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+- [React](https://reactjs.org/)
+- [Stripe](https://stripe.com/)
