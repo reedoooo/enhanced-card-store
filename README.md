@@ -6,7 +6,7 @@
 
 TCG eCommerce-frontEnd is a comprehensive online platform built with React, enabling users to search for, collect, and purchase popular trading cards. Users can compile their unique collections, create decks, and shop for cards. The seamless integration with Stripe facilitates secure transactions. The responsive design of the application also lays a foundation for its potential expansion to mobile platforms in the future.
 
-
+![Image of Front](https://github.com/reedoooo/enhanced-card-store/raw/c24679dcb33207a7868f3395a681dfcfee7b77c9/public/screenshot.png)
 
 ## Author
 
@@ -85,12 +85,16 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Reed Vogt - your_email@example.com
+Reed Vogt -
+<a href="https://www.linkedin.com/in/reed-vogt-student/">
+<img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flinkedin_174857&psig=AOvVaw1F9U7jlNJPTJpYUU2wdKLW&ust=1691527142102000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCPjpk-Wzy4ADFQAAAAAdAAAAABAJ" alt="LinkedIn" style="width:24px;height:24px;">
+</a>
 
-Project Link: https://github.com/reedoooo/enhanced-card-store#readme
+Project Site: tcg-store.netlify.app/
+
+Project Repo: https://github.com/reedoooo/enhanced-card-store#readme
 
 ## Acknowledgements
 
-- [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 - [React](https://reactjs.org/)
 - [Stripe](https://stripe.com/)
