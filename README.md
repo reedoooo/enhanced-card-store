@@ -4,7 +4,7 @@
 
 ## About
 
-TCG eCommerce-frontEnd is a comprehensive online platform built with React, enabling users to search for, collect, and purchase popular trading cards. Users can compile their unique collections, create decks, and shop for cards. The seamless integration with Stripe facilitates secure transactions. The responsive design of the application also lays a foundation for its potential expansion to mobile platforms in the future.
+TCG Enhanced Retailer is a comprehensive online platform built with React, enabling users to search for, collect, and purchase popular trading cards. Users can compile their unique collections, create decks, and shop for cards. The seamless integration with Stripe facilitates secure transactions. The responsive design of the application also lays a foundation for its potential expansion to mobile platforms in the future.
 
 ![Image of Front](https://github.com/reedoooo/enhanced-card-store/raw/c24679dcb33207a7868f3395a681dfcfee7b77c9/public/screenshot.png)
 

@@ -18,6 +18,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import DeckOfCardsIcon from './DeckOfCardsIcon';
+import TestingIcon from './TestingIcon';
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiTypography-root': {
@@ -45,6 +46,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
 function MenuItems({
   isLoggedIn,
   handleCartIconClick,
+  handleTestingIconClick,
   isCartModalOpen,
   logout,
   handleDrawerClose,
@@ -82,6 +84,17 @@ function MenuItems({
           style={{ color: '#000', textDecoration: 'none' }}
         >
           <CartIcon /> Cart
+        </StyledLink>
+        {/* <CartModal isOpen={isCartModalOpen} onClose={handleCartIconClick}> */}
+        {/* <Stripe /> */}
+        {/* </CartModal> */}
+      </StyledMenuItem>
+      <StyledMenuItem onClick={handleTestingIconClick} key="test">
+        <StyledLink
+          to="/scrapertester"
+          style={{ color: '#000', textDecoration: 'none' }}
+        >
+          <TestingIcon /> Cart
         </StyledLink>
         {/* <CartModal isOpen={isCartModalOpen} onClose={handleCartIconClick}> */}
         {/* <Stripe /> */}

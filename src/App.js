@@ -13,6 +13,7 @@ import Store from './pages/StorePage';
 import theme from './assets/styles/themes';
 import CartPage from './pages/CartPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
+import PracticeScraperPage from './pages/PracticeScraperPage';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
@@ -47,6 +48,16 @@ const App = () => {
             path="/cart"
             element={
               <CartPage
+                activeUserCartId={activeUserCartId}
+                setActiveUserCart={setActiveUserCartId}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/scrapertester"
+            element={
+              <PracticeScraperPage
                 activeUserCartId={activeUserCartId}
                 setActiveUserCart={setActiveUserCartId}
               />

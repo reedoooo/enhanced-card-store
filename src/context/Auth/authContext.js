@@ -1,118 +1,131 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
-// import { useDispatch } from 'react-redux';
-// import { loadSavedCards } from '../../store/reducers/cart';
 import { useCookies } from 'react-cookie';
 
 export const AuthContext = React.createContext();
 
 export default function AuthProvider(props) {
   const [cookies, setCookie, removeCookie] = useCookies(['auth', 'userCookie']);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ capabilities: [] });
+  const [error, setError] = useState(null);
+  const [token, setToken] = useState(undefined);
 
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [user, setUser] = React.useState({ capabilities: [] });
-  const [error, setError] = React.useState(null);
-  const [token, setToken] = React.useState(undefined);
   const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
-  // Use dispatch in the top level of your component
-  // const dispatch = useDispatch();
-  const setLoginState = (loggedIn, token, user, error) => {
-    setCookie('auth', token);
-    setCookie('userCookie', user);
+  const setLoginState = (loggedIn, token, user, error = null) => {
+    setCookie('auth', token, { secure: true, sameSite: 'strict' });
+    setCookie('userCookie', user, { secure: true, sameSite: 'strict' });
     setIsLoggedIn(loggedIn);
     setToken(token);
     setUser(user);
-    setError(error || null);
+    setError(error);
   };
 
-  const validateToken = useCallback(async (token) => {
-    try {
-      let validUser = jwt_decode(token);
-      setLoginState(true, token, validUser);
+  const validateToken = useCallback(
+    async (token) => {
+      setIsLoading(true);
+      try {
+        // const options = {
+        //   method: 'GET',
+        //   url: `${REACT_APP_SERVER}/api/users/profile`,
+        //   headers: { Authorization: `Bearer ${token}` },
+        // };
+        const decodedUser = jwt_decode(token);
+        setLoginState(true, token, decodedUser);
 
-      const options = {
-        method: 'GET',
-        url: `${REACT_APP_SERVER}/api/users/profile`,
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
-      const response = await axios(options);
-      console.log('Validate token response: ', response.data);
-      if (response.status === 200) {
-        setUser((prevUser) => ({ ...prevUser, ...response.data }));
+        const response = await axios.get(
+          `${REACT_APP_SERVER}/api/users/profile`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setUser((prevUser) => ({ ...prevUser, ...response.data }));
+        }
+      } catch (e) {
+        setError('Token validation failed');
+        setLoginState(false, null, {}, 'Token validation failed');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e) {
-      console.error('Token validation error: ', e);
-      setLoginState(false, null, {}, e);
-    }
-  }, []);
+    },
+    [REACT_APP_SERVER]
+  );
 
   const can = (capability) =>
     user?.login_data?.role_data?.capabilities?.includes(capability);
 
   const login = async (username, password) => {
-    const login_data = { username, password };
-
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/signin`,
-        login_data
+        { username, password },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      console.log('Login response: ', response.data);
       validateToken(response.data.token);
-      console.log('response', response.data);
-      // Dispatch the loadSavedCards action after successfully logging in
-      // dispatch(loadSavedCards(response.data._id)); // replace `id` with your user id field
-
       return response.data.token;
     } catch (error) {
-      console.error('Login error: ', error);
-      setLoginState(false, null, {}, error);
+      setError('Login failed');
+      setLoginState(false, null, {}, 'Login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signup = async (username, password, email, basic_info, role_data) => {
-    const data = {
-      login_data: {
-        username,
-        password,
-        email, // get email directly
-        role_data, // Add this default value or pass role_data when calling this function
-      },
-      basic_info,
-    };
-    console.log('Signup data: ', data);
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/signup`,
-        data
+        {
+          login_data: {
+            username,
+            password,
+            email,
+            role_data,
+          },
+          basic_info,
+        }
       );
-      console.log('Signup response: ', response.data);
       validateToken(response.data.token);
       return response.data.token;
     } catch (error) {
-      console.error('Signup error: ', error);
-      setLoginState(false, null, {}, error);
+      setError('Signup failed');
+      setLoginState(false, null, {}, 'Signup failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = () => {
     removeCookie('auth');
     removeCookie('userCookie');
+    localStorage.removeItem('isLoggedIn');
     setLoginState(false, null, {});
   };
 
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search);
     const tokenCheck = qs.get('token') || cookies.auth || null;
-    validateToken(tokenCheck);
-  }, [validateToken]);
+    if (tokenCheck) validateToken(tokenCheck);
+  }, [validateToken, cookies.auth]);
 
   return (
     <AuthContext.Provider
       value={{
+        isLoading,
         isLoggedIn,
         can,
         login,
@@ -128,6 +141,3 @@ export default function AuthProvider(props) {
     </AuthContext.Provider>
   );
 }
-
-// module.exports = AuthContext;
-// module.exports = { AuthProvider, AuthContext };

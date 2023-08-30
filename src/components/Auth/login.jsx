@@ -141,6 +141,8 @@ function Login() {
           </FormControl>
         </form>
       </When>
+      {authContext.error && <p>{authContext.error}</p>}
+      {authContext.isLoading && <p>Loading...</p>}
     </>
   );
 }

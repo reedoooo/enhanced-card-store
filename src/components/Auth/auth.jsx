@@ -8,11 +8,13 @@ function Auth({ children, capability }) {
   const isLoggedIn = authContext.isLoggedIn;
   const canDo = capability ? authContext.can(capability) : true;
 
-  // Always call useRoutes, regardless of whether conditions are met
   const routes = useRoutes(children);
 
-  // Only render routes if conditions are met
-  return isLoggedIn && canDo ? routes : null;
+  return isLoggedIn && canDo ? (
+    routes
+  ) : (
+    <p>You do not have permission to view this page.</p>
+  );
 }
 
 export default memo(Auth);
