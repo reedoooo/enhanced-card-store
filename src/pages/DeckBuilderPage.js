@@ -1,5 +1,5 @@
 // src/pages/DeckBuilder.js
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import DeckBuilderContainer from '../containers/DeckBuilderContainer';
 import { BeatLoader } from 'react-spinners';
 import { useCookies } from 'react-cookie';
@@ -27,19 +27,31 @@ const ErrorIndicator = ({ error }) => {
 
 const DeckBuilderPage = () => {
   const [cookies] = useCookies(['userCookie']);
-  const { fetchUserDeck, loading, error } = useContext(DeckContext);
+  const { fetchAllDecksForUser, allDecks, loading, error } =
+    useContext(DeckContext);
   const { searchData } = useCardStore();
+
+  const [userDecks, setUserDecks] = useState([]); // Added useState to manage userDecks
 
   const userId = cookies.userCookie?.id;
 
+  // Added useEffect hook
   useEffect(() => {
-    if (userId) {
-      fetchUserDeck(userId).catch((err) =>
-        console.error('Failed to get user cart', err)
-      );
-    }
-  }, [userId, fetchUserDeck]);
+    fetchAllDecksForUser().catch((err) => {
+      console.error('Failed to get all decks', err);
+    });
+  }, [fetchAllDecksForUser]);
 
+  // Moved the log statement inside useEffect
+  useEffect(() => {
+    console.log('All decks:', allDecks);
+    // Filter decks based on userId
+    if (allDecks) {
+      const filteredDecks = allDecks.filter((deck) => deck.userId === userId);
+      setUserDecks(filteredDecks); // Set the state
+      console.log('User decks:', filteredDecks);
+    }
+  }, [allDecks, userId]);
   if (loading) {
     return <LoadingIndicator loading={loading} />;
   }
@@ -49,8 +61,8 @@ const DeckBuilderPage = () => {
   }
   return (
     <div>
-      <h1>Yu-Gi-Oh! Deck Builder</h1>
-      <DeckBuilderContainer />
+      {/* <h1>Yu-Gi-Oh! Deck Builder</h1> */}
+      <DeckBuilderContainer userDecks={userDecks} />
     </div>
   );
 };

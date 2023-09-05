@@ -1,93 +1,175 @@
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   Card,
-  Button,
   CardContent,
   CardActions,
-  Typography,
   CardMedia,
+  Button,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useContext, useState } from 'react';
-
-import placeholderImage from '../../assets/placholder.jpeg';
 import DeckCardModal from '../modals/DeckCardModal';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import DeckActionButtons from '../buttons/DeckActionButtons';
+import { makeStyles } from '@mui/styles';
+import placeholderImage from '../../assets/placholder.jpeg';
+import CardModal from '../../components/modals/CardModal'; // Importing CardModal
+// import { GridItem } from '@chakra-ui/react'; // Assuming you might want to use this
+import './deckcard.css'; // Assuming you have styles here
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   card: {
+    position: 'relative', // Add this
     display: 'flex',
     flexDirection: 'column',
+    height: '100%',
     width: '100%',
-    height: '80%',
-    margin: '2px 0', // Further reduced top and bottom margin
+    flexGrow: 1,
   },
   media: {
-    // height: '100%',
     width: '100%',
     objectFit: 'contain',
   },
   content: {
     flex: '1 1 auto',
-    overflow: 'auto',
-    fontSize: '0.7rem', // Further reduced the font size
+    overflow: 'hidden',
+    // padding: theme.spacing(1),
+  },
+  text: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
   },
   actionButtons: {
     backgroundColor: '#f5f5f5',
-    padding: '10px',
-    margin: '10px 0',
+    // padding: theme.spacing(1),
+    margin: theme.spacing(1, 0),
     borderRadius: '4px',
+    overflow: 'auto',
   },
-});
+  dialog: {
+    position: 'absolute', // Add this
+    top: 0,
+    right: 0,
+    zIndex: 1000, // High z-index value
+  },
+}));
 
-const DeckCard = ({ card }) => {
-  const { deckData, getCardQuantity } = useContext(DeckContext);
+const DeckCard = ({
+  card,
+  cardInfo,
+  loadedCardInfo,
+  cardAddedToDeck,
+  setCardAddedToDeck,
+  setDeckCards,
+  safeDeck,
+  deckCards,
+  setCurrentlyEditingDeck,
+  currentlyEditingDeck,
+  cards,
+  loadDeck,
+  setLoadDeck,
+  loadedCards,
+  deck,
+  setDeck,
+}) => {
   const classes = useStyles();
-  const { id, name } = card;
-  const [isCardModalOpen, setCardModalOpen] = useState(false);
-  const openCardModal = () => setCardModalOpen(true);
-  const closeCardModal = () => setCardModalOpen(false);
-  const deckCardQuantity = getCardQuantity(card?.id);
+  // const { deckData, getCardQuantity } = useContext(DeckContext); // Commented out as unused
+  const [isDeckModalOpen, setDeckModalOpen] = useState(false);
+  const [isHovering, setHovering] = useState(false);
+  const tooltipRef = useRef(null);
+  const cardRef = useRef(null);
+  const openDeckModal = () => setDeckModalOpen(true);
+  const closeDeckModal = () => setDeckModalOpen(false);
+
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
+  useEffect(() => {
+    if (isHovering && tooltipRef.current && cardRef.current) {
+      const cardRect = cardRef.current.getBoundingClientRect();
+      tooltipRef.current.style.top = `${cardRect.top}px`;
+      tooltipRef.current.style.left = `${cardRect.right}px`;
+    }
+  }, [isHovering]);
+
+  const tooltipDisplay = (cardInfo) => (
+    <>
+      {cardInfo?.name && <h4 className="tooltip-title">{cardInfo.name}</h4>}
+      {cardInfo?.level && (
+        <span>
+          <strong>LV:</strong> {cardInfo.level}
+        </span>
+      )}
+      {cardInfo?.type && (
+        <span>
+          <strong>Type:</strong> {cardInfo.type}
+        </span>
+      )}
+      {cardInfo?.race && (
+        <span>
+          <strong>Race:</strong> {cardInfo.race}
+        </span>
+      )}
+      {cardInfo?.attribute && (
+        <span>
+          <strong>Attribute:</strong> {cardInfo.attribute}
+        </span>
+      )}
+      {cardInfo?.atk && (
+        <span>
+          <strong>ATK:</strong> {cardInfo.atk}
+        </span>
+      )}
+      {cardInfo?.def && (
+        <span>
+          <strong>DEF:</strong> {cardInfo.def}
+        </span>
+      )}
+      {cardInfo?.desc && (
+        <span>
+          <strong>Description:</strong> {cardInfo.desc}
+        </span>
+      )}
+    </>
+  );
+  const dialogDisplay = () => (
+    <DeckCardModal
+      isOpen={isDeckModalOpen}
+      onClose={closeDeckModal}
+      card={card}
+      cardInfo={cardInfo}
+      cardAddedToDeck={cardAddedToDeck}
+      setCardAddedToDeck={setCardAddedToDeck}
+      setDeckCards={setDeckCards}
+      safeDeck={safeDeck}
+      deckCards={deckCards}
+      setCurrentlyEditingDeck={setCurrentlyEditingDeck}
+      currentlyEditingDeck={currentlyEditingDeck}
+      cards={cards}
+      loadDeck={loadDeck}
+      setLoadDeck={setLoadDeck}
+      loadedCards={loadedCards}
+      deck={deck}
+      setDeck={setDeck}
+    />
+  );
 
   return (
-    <Card key={id} className={classes.card}>
-      <CardMedia
-        className={classes.media}
-        component="img"
-        alt={name}
-        image={imgUrl}
-      />
-      <CardContent className={classes.content}>
-        <Typography gutterBottom variant="h5" component="div">
-          {name}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Cost: {card.cost}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Quantity in Deck:{' '}
-          {deckCardQuantity.quantityOfSameId > 0
-            ? deckCardQuantity.quantityOfSameId
-            : 'Not in deck'}
-        </Typography>
-        <CardActions>
-          <Button size="small" color="primary" onClick={openCardModal}>
-            View Details
-          </Button>
-          <DeckCardModal
-            isOpen={isCardModalOpen}
-            onClose={closeCardModal}
-            card={card}
-          />
-          <DeckActionButtons
-            card={card}
-            deckCardQuantity={deckCardQuantity}
-            className={classes.actionButtons}
-          />
-        </CardActions>
-      </CardContent>
-    </Card>
+    <>
+      <div ref={cardRef}>
+        <CardMedia
+          component="img"
+          alt={card?.name}
+          image={imgUrl}
+          onClick={openDeckModal}
+          onMouseOver={() => setHovering(true)}
+          onMouseOut={() => setHovering(false)}
+        />
+      </div>
+      <div
+        ref={tooltipRef}
+        className={`tooltip ${isHovering && !isDeckModalOpen ? 'show' : ''}`}
+      >
+        {tooltipDisplay(card)}
+      </div>
+      {dialogDisplay()}
+    </>
   );
 };
 

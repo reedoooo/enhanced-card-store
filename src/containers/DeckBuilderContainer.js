@@ -1,25 +1,43 @@
 import React from 'react';
 import { makeStyles } from '@mui/styles';
-import { Grid } from '@mui/material';
+import { Grid, useMediaQuery } from '@mui/material';
 import DeckDisplay from '../components/other/DeckDisplay';
 import DeckSearch from '../components/search/DeckSearch';
+import { useTheme } from '@emotion/react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-    padding: theme.spacing(2),
+    // padding: theme.spacing(2),
+    overflow: 'auto',
+  },
+  searchGrid: {
+    [theme.breakpoints.up('lg')]: {
+      flexBasis: '30%',
+    },
+    [theme.breakpoints.between('md', 'lg')]: {
+      flexBasis: '45%',
+    },
+    [theme.breakpoints.down('sm')]: {
+      flexBasis: '35%',
+    },
+  },
+  displayGrid: {
+    flex: 1,
   },
 }));
 
 const DeckBuilderContainer = () => {
   const classes = useStyles();
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Grid container spacing={3} className={classes.root}>
-      <Grid item xs={12} sm={6} md={4}>
+    <Grid container spacing={2} className={classes.root}>
+      <Grid item xs={isSmallScreen ? 4 : isMediumScreen ? 4 : 3}>
         <DeckSearch />
       </Grid>
-      <Grid item xs={12} sm={6} md={8}>
+      <Grid item xs={isSmallScreen ? 8 : isMediumScreen ? 8 : 9}>
         <DeckDisplay />
       </Grid>
     </Grid>

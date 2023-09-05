@@ -20,6 +20,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import placeholderImage from '../../assets/placholder.jpeg';
 import { useCardStore } from '../../context/CardContext/CardStore';
+import DeckActionButtons from '../buttons/DeckActionButtons';
 
 const useStyles = makeStyles({
   actionButtons: {
@@ -42,9 +43,9 @@ const useStyles = makeStyles({
 
 const DeckCardModal = ({ isOpen, onClose, card }) => {
   const classes = useStyles();
-  const { deckSearchData, savedDeckData, setSavedDeckData } = useCardStore();
+  if (!card) return null; // or some other placeholder
+  const { savedDeckData, setSavedDeckData } = useCardStore();
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
-
   let filteredData;
   if (Array.isArray(savedDeckData)) {
     filteredData = savedDeckData.filter((c) => c.id === card.id);
@@ -53,23 +54,78 @@ const DeckCardModal = ({ isOpen, onClose, card }) => {
   }
 
   const productQuantity = filteredData.length;
-
-  const handleAddToDeck = () => {
-    setSavedDeckData([...savedDeckData, card]);
+  const handleClose = (event, reason) => {
+    if (reason === 'backdropClick') {
+      onClose();
+    }
   };
-
-  const handleRemoveFromDeck = () => {
-    const updatedDeck = savedDeckData.filter((c) => c.id !== card.id);
-    setSavedDeckData(updatedDeck);
-  };
-
+  // const handleRemoveFromDeck = () => {
+  //   const updatedDeck = savedDeckData.filter((c) => c.id !== card.id);
+  //   setSavedDeckData(updatedDeck);
+  // };
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>{card?.name}</DialogTitle>
+    <Dialog
+      open={isOpen} // use isOpen instead of open
+      onClose={handleClose} // this is now used
+      fullWidth
+      maxWidth="md"
+    >
+      <DialogTitle style={{ backgroundColor: 'blue', color: 'white' }}>
+        {card?.name}
+      </DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
-          {/* ...rest of your code */}
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            container
+            direction="column"
+            justifyContent="space-between"
+          >
+            <CardMedia
+              component="img"
+              alt={card?.name}
+              className={classes.media}
+              image={imgUrl}
+            />
+            <DeckActionButtons
+              card={card}
+              deckCardQuantity={productQuantity}
+              className={classes.actionButtons}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} container direction="column">
+            {/* Use classes.details for the styling of CardDetail */}
+            <CardDetail
+              icon={<FaLevelUpAlt />}
+              title="Level"
+              value={card?.level}
+              className={classes.details}
+            />
+            <CardDetail
+              icon={<FaVenusMars />}
+              title="Type"
+              value={card?.type}
+            />
+            <CardDetail icon={<FaDragon />} title="Race" value={card?.race} />
+            <CardDetail
+              icon={<FaRegLightbulb />}
+              title="Attribute"
+              value={card?.attribute}
+            />
+            <CardDetail title="ATK" value={card?.atk} />
+            <CardDetail icon={<FaShieldAlt />} title="DEF" value={card?.def} />
+            <CardDetail
+              icon={<FaRegCopy />}
+              title="Description"
+              value={card?.desc}
+            />{' '}
+          </Grid>
         </Grid>
+        {/* <Button variant="contained" color="primary"                 onClick={() => addOneToDeck(card)}>
+          Add To Deck
+        </Button> */}
       </DialogContent>
     </Dialog>
   );
