@@ -14,6 +14,8 @@ import theme from './assets/styles/themes';
 import CartPage from './pages/CartPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
 import PracticeScraperPage from './pages/PracticeScraperPage';
+import HomePage from './pages/HomePage';
+import StorePage from './pages/StorePage';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
@@ -31,13 +33,13 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <Header />
         <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/home" element={<Home />} />
+          <Route exact path="/" element={<HomePage />} />
+          <Route exact path="/home" element={<HomePage />} />
           <Route
             exact
             path="/store"
             element={
-              <Store
+              <StorePage
                 activeUserCartId={activeUserCartId}
                 setActiveUserCart={setActiveUserCartId}
               />
@@ -63,7 +65,16 @@ const App = () => {
               />
             }
           />
-          <Route exact path="/deckbuilder" element={<DeckBuilderPage />} />
+          <Route
+            exact
+            path="/deckbuilder"
+            element={
+              <DeckBuilderPage
+                activeUserCartId={activeUserCartId}
+                setActiveUserCart={setActiveUserCartId}
+              />
+            }
+          />
         </Routes>
         <Footer />
       </ThemeProvider>

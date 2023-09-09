@@ -26,19 +26,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DeckBuilderContainer = () => {
+const DeckBuilderContainer = ({ userDecks }) => {
   const classes = useStyles();
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+  console.log('DECK BUILDER CONTAINER (USERDECKS):', userDecks);
   return (
     <Grid container spacing={2} className={classes.root}>
       <Grid item xs={isSmallScreen ? 4 : isMediumScreen ? 4 : 3}>
-        <DeckSearch />
+        <DeckSearch userDecks={userDecks} />
       </Grid>
       <Grid item xs={isSmallScreen ? 8 : isMediumScreen ? 8 : 9}>
-        <DeckDisplay />
+        <DeckDisplay userDecks={userDecks} />
       </Grid>
     </Grid>
   );

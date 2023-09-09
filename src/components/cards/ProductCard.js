@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { useContext, useState } from 'react';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import placeholderImage from '../../assets/placholder.jpeg';
+import placeholderImage from '../../assets/placeholder.jpeg';
 import CardModal from '../modals/CardModal';
 import CartActionButtons from '../buttons/CartActionButtons';
 import { useCartStore } from '../../context/CartContext/CartContext';

@@ -9,7 +9,7 @@ import {
 import DeckCardModal from '../modals/DeckCardModal';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
 import { makeStyles } from '@mui/styles';
-import placeholderImage from '../../assets/placholder.jpeg';
+import placeholderImage from '../../assets/placeholder.jpeg';
 import CardModal from '../../components/modals/CardModal'; // Importing CardModal
 // import { GridItem } from '@chakra-ui/react'; // Assuming you might want to use this
 import './deckcard.css'; // Assuming you have styles here
@@ -57,6 +57,7 @@ const DeckCard = ({
   cardInfo,
   loadedCardInfo,
   cardAddedToDeck,
+  userDecks,
   setCardAddedToDeck,
   setDeckCards,
   safeDeck,
@@ -87,7 +88,9 @@ const DeckCard = ({
       tooltipRef.current.style.left = `${cardRect.right}px`;
     }
   }, [isHovering]);
-
+  console.log('CARD INFO:', cardInfo);
+  console.log('LOADED CARD INFO:', loadedCardInfo);
+  console.log('CARD:', card);
   const tooltipDisplay = (cardInfo) => (
     <>
       {cardInfo?.name && <h4 className="tooltip-title">{cardInfo.name}</h4>}
@@ -139,6 +142,7 @@ const DeckCard = ({
       setDeckCards={setDeckCards}
       safeDeck={safeDeck}
       deckCards={deckCards}
+      userDecks={userDecks}
       setCurrentlyEditingDeck={setCurrentlyEditingDeck}
       currentlyEditingDeck={currentlyEditingDeck}
       cards={cards}
@@ -151,7 +155,9 @@ const DeckCard = ({
   );
 
   return (
-    <>
+    <React.Fragment>
+      {' '}
+      {/* Explicitly using React.Fragment */}
       <div ref={cardRef}>
         <CardMedia
           component="img"
@@ -169,7 +175,7 @@ const DeckCard = ({
         {tooltipDisplay(card)}
       </div>
       {dialogDisplay()}
-    </>
+    </React.Fragment>
   );
 };
 

@@ -16,7 +16,7 @@ const FooterWrapper = styled.footer`
 const Footer = () => {
   return (
     <FooterWrapper>
-      <p>&copy; {new Date().getFullYear()} Team Awesome-Pending-Change</p>
+      <p>&copy; {new Date().getFullYear()} Reed Vogt</p>
     </FooterWrapper>
   );
 };

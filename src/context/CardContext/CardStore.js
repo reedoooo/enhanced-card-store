@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 const CardContext = createContext();
 
 export const CardProvider = ({ children }) => {
-  const [cookies, setCookie] = useCookies(['cart'], ['deck']);
+  const [cookies, setCookie] = useCookies(['cart'], ['deckData']);
   const initialStore = cookies.store || [];
   // const initialCart = cookies.cart || [];
   // console.log('Initial cart:', initialCart);

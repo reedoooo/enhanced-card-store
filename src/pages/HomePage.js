@@ -2,65 +2,53 @@ import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Container, Typography, Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles, useTheme } from '@mui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   arrowStyles: {
-    height: 'auto',
-    width: '100%',
-    backgroundColor: '#ccc', // change as needed
+    backgroundColor: theme.palette.grey[300],
     borderRadius: '50%',
   },
   imageStyles: {
     height: '600px',
-    width: '100%', // use 100% for responsive design
-    objectFit: 'cover', // to maintain aspect ratio
+    width: '100%',
+    objectFit: 'cover',
   },
   captionBox: {
-    position: 'absolute', // to position it at the bottom of the image
+    position: 'absolute',
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     width: '100%',
-    color: 'white',
-    padding: '1rem',
-    boxSizing: 'border-box',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    color: theme.palette.common.white,
+    padding: theme.spacing(2),
+    textAlign: 'center',
   },
   bannerBox: {
-    backgroundImage: 'linear-gradient(to right, #add8e6, #87ceeb)',
+    backgroundImage: `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
     minHeight: '100vh',
+    padding: theme.spacing(4),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '2rem', // spacing around the banner
   },
   carouselContainer: {
-    padding: '2rem', // spacing around the carousel container
-    backgroundColor: '#fff', // background color for the container
-    borderRadius: '2rem', // rounded corners
+    padding: theme.spacing(4),
+    backgroundColor: theme.palette.common.white,
+    borderRadius: theme.spacing(2),
   },
   welcomeMessage: {
-    marginBottom: '2rem', // spacing after the welcome message
-    textAlign: 'center', // center aligned text
-    color: '#333', // text color
-    fontWeight: 'bold', // bold text
+    marginBottom: theme.spacing(4),
+    textAlign: 'center',
+    color: theme.palette.text.primary,
+    fontWeight: 'bold',
   },
-});
+}));
 
-// Carousel image data
 const carouselImages = [
+  { image: '/images/yugioh.jpeg', caption: 'Yu-Gi-Oh!' },
+  { image: '/images/pokemon.jpeg', caption: 'Pokemon' },
   {
-    image: '/yugiohCards.jpg',
-    caption: 'Yu-Gi-Oh!',
-  },
-  {
-    image: '/pokemonCard.jpg',
-    caption: 'Pokemon',
-  },
-  {
-    image: '/magicCard.jpg',
+    image: '/images/magic-the-gathering.jpeg',
     caption: 'Magic: The Gathering',
   },
 ];
@@ -81,17 +69,13 @@ const WelcomeMessage = () => {
 
 const CarouselImage = ({ image, caption }) => {
   const classes = useStyles();
-
   return (
     <div>
       <img src={image} alt={caption} className={classes.imageStyles} />
       <Box className={classes.captionBox}>
-        <Typography>
-          Here we host a platform to buy your favorite trading cards. Have a
-          collection that&apos;s missing a particular card? Check out our
-          listings to see if you can find it! If you&apos;re looking to sell,
-          soon we also have a platform for you to sell your cards to other
-          collectors.
+        <Typography variant="body1">
+          Browse and shop for your favorite trading cards. Whether buying or
+          selling, we&apos;ve got something for every collector!
         </Typography>
       </Box>
     </div>
@@ -108,37 +92,26 @@ const CarouselContainer = () => {
       infiniteLoop
       useKeyboardArrows
       autoPlay
-      renderArrowPrev={(onClickHandler, hasPrev) =>
-        hasPrev && (
-          <div onClick={onClickHandler} className={classes.arrowStyles}>
-            {'<'} {/* replace with suitable arrow design or icon */}
-          </div>
-        )
-      }
-      renderArrowNext={(onClickHandler, hasNext) =>
-        hasNext && (
-          <div onClick={onClickHandler} className={classes.arrowStyles}>
-            {'>'} {/* replace with suitable arrow design or icon */}
-          </div>
-        )
-      }
+      className={classes.carouselContainer}
     >
-      {carouselImages.map((item, i) => (
-        <CarouselImage key={i} image={item.image} caption={item.caption} />
+      {carouselImages.map(({ image, caption }, index) => (
+        <CarouselImage key={index} image={image} caption={caption} />
       ))}
     </Carousel>
   );
 };
 
-const Home = () => {
+const HomePage = () => {
+  const theme = useTheme();
+
   return (
     <HomeBanner>
       <Container
         sx={{
-          padding: 3,
-          borderRadius: 2,
-          backgroundColor: 'background.paper',
-          boxShadow: 10,
+          padding: theme.spacing(3),
+          borderRadius: theme.spacing(2),
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[10],
         }}
         maxWidth="md"
       >
@@ -149,4 +122,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

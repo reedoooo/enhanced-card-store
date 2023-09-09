@@ -18,7 +18,7 @@ import {
   FaVenusMars,
 } from 'react-icons/fa';
 import { makeStyles } from '@mui/styles';
-import placeholderImage from '../../assets/placholder.jpeg';
+import placeholderImage from '../../assets/placeholder.jpeg';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import DeckActionButtons from '../buttons/DeckActionButtons';
 
@@ -41,7 +41,7 @@ const useStyles = makeStyles({
   },
 });
 
-const DeckCardModal = ({ isOpen, onClose, card }) => {
+const DeckCardModal = ({ isOpen, onClose, card, userDecks }) => {
   const classes = useStyles();
   if (!card) return null; // or some other placeholder
   const { savedDeckData, setSavedDeckData } = useCardStore();

@@ -14,13 +14,13 @@ import Pagination from '@mui/material/Pagination';
 import DeckCard from '../cards/DeckCard';
 import { useTheme } from '@emotion/react';
 
-const DeckSearch = () => {
+const DeckSearch = ({ userDecks }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const {
     deckSearchData,
     handleRequest,
-    openCardModal: openCardModalFromStore,
+    // openCardModal: openCardModalFromStore,
   } = useCardStore();
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
@@ -62,7 +62,7 @@ const DeckSearch = () => {
         <Grid container spacing={1}>
           {currentDeckSearchData.map((card, i) => (
             <Grid key={i} item xs={isSmallScreen ? 6 : 4} marginTop={1}>
-              <DeckCard card={card} />
+              <DeckCard card={card} userDecks={userDecks} />
             </Grid>
           ))}
         </Grid>

@@ -58,7 +58,7 @@ const ProductContainer = () => {
   );
 };
 
-const Store = () => {
+const StorePage = () => {
   const [cookies] = useCookies(['userCookie']);
   const { fetchUserCart, loading, error } = useCartStore();
   const { searchData } = useCardStore();
@@ -92,4 +92,4 @@ const Store = () => {
   );
 };
 
-export default Store;
+export default StorePage;

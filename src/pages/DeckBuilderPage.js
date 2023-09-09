@@ -1,33 +1,15 @@
 // src/pages/DeckBuilder.js
 import React, { useContext, useEffect, useState } from 'react';
 import DeckBuilderContainer from '../containers/DeckBuilderContainer';
-import { BeatLoader } from 'react-spinners';
 import { useCookies } from 'react-cookie';
 import { DeckContext } from '../context/DeckContext/DeckContext';
 import { useCardStore } from '../context/CardContext/CardStore';
-
-const LoadingIndicator = ({ loading }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <BeatLoader color={'#123abc'} loading={loading} size={24} />
-    </div>
-  );
-};
-
-const ErrorIndicator = ({ error }) => {
-  return <div>Error: {error}</div>;
-};
+import LoadingIndicator from '../components/indicators/LoadingIndicator';
+import ErrorIndicator from '../components/indicators/ErrorIndicator';
 
 const DeckBuilderPage = () => {
   const [cookies] = useCookies(['userCookie']);
-  const { fetchAllDecksForUser, allDecks, loading, error } =
+  const { fetchAllDecksForUser, allDecks, deckData, loading, error } =
     useContext(DeckContext);
   const { searchData } = useCardStore();
 
@@ -45,6 +27,7 @@ const DeckBuilderPage = () => {
   // Moved the log statement inside useEffect
   useEffect(() => {
     console.log('All decks:', allDecks);
+    console.log('DECK BUILDER PAGE (DECKDATA):', deckData);
     // Filter decks based on userId
     if (allDecks) {
       const filteredDecks = allDecks.filter((deck) => deck.userId === userId);
