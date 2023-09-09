@@ -1,56 +1,41 @@
-// src/components/DeckDisplay.js
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useCardStore } from '../../context/CardContext/CardStore';
-import { makeStyles } from '@mui/styles';
-import { Paper } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Paper, Button } from '@mui/material';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import DeckButtonList from './DeckButtonList';
-import CardsGrid from './CardsGrid';
+import DeckButtonList from '../grids/DeckButtonList';
+import CardsGrid from '../grids/CardsGrid';
+import DeckEditPanel from './DeckEditPanel';
+import { makeStyles } from '@mui/styles';
+
 const useStyles = makeStyles((theme) => ({
-  gridItem: {
+  root: { backgroundColor: '#f4f6f8' },
+  paper: {
+    padding: theme.spacing(3),
+    borderRadius: '10px',
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+  },
+  deckEditPanel: {
     padding: theme.spacing(2),
-    width: '100%',
-    height: '100%', // Set the height to 100%
-    position: 'relative', // Required for the aspect-ratio trick
-    animation: 'fadeIn 0.5s ease-in-out', // Add animation
+    backgroundColor: '#ffffff',
+    border: '1px solid #ddd',
+    borderRadius: theme.spacing(1),
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    transition: 'opacity 0.5s ease-in-out',
   },
-  deckCard: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    aspectRatio: '2 / 3', // Adjusted the aspect ratio
-  },
-  '@global': {
-    '.card-enter': {
-      opacity: 0,
-    },
-    '.card-enter-active': {
-      opacity: 1,
-      transition: 'opacity 500ms',
-    },
-    '.card-exit': {
-      opacity: 1,
-    },
-    '.card-exit-active': {
-      opacity: 0,
-      transition: 'opacity 500ms',
-    },
+  noCardsText: {
+    color: '#666',
+    fontStyle: 'italic',
   },
 }));
 
 const DeckDisplay = ({ userDecks = [] }) => {
   const classes = useStyles();
-  const { setSelectedDeck, selectedDeck } = useContext(DeckContext);
+  const { setSelectedDeck, selectedDeck, updateAndSyncDeck } =
+    useContext(DeckContext);
   const [selectedCards, setSelectedCards] = useState([]);
+  const [showAllDecks, setShowAllDecks] = useState(false);
 
   useEffect(() => {
-    if (selectedDeck?.cards) {
-      setSelectedCards(selectedDeck.cards.slice(0, 30));
-    } else {
-      setSelectedCards([]);
-    }
+    setSelectedCards(selectedDeck?.cards?.slice(0, 30) || []);
   }, [selectedDeck]);
 
   const handleSelectDeck = (deckId) => {
@@ -63,14 +48,26 @@ const DeckDisplay = ({ userDecks = [] }) => {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <DeckButtonList
-          userDecks={userDecks}
-          handleSelectDeck={handleSelectDeck}
-        />
-        {selectedCards?.length > 0 ? (
-          <CardsGrid selectedCards={selectedCards} classes={classes} />
+        <Button onClick={() => setShowAllDecks(!showAllDecks)}>
+          {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
+        </Button>
+        {showAllDecks && (
+          <DeckButtonList
+            userDecks={userDecks}
+            handleSelectDeck={handleSelectDeck}
+          />
+        )}
+        {selectedDeck && (
+          <DeckEditPanel
+            selectedDeck={selectedDeck}
+            onSave={updateAndSyncDeck}
+            className={classes.deckEditPanel}
+          />
+        )}
+        {selectedCards.length > 0 ? (
+          <CardsGrid selectedCards={selectedCards} />
         ) : (
-          <div>No cards to display</div>
+          <div className={classes.noCardsText}>No cards to display</div>
         )}
       </Paper>
     </div>

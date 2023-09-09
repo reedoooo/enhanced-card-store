@@ -29,6 +29,7 @@ const CartPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
+    console.log('CART PAGE (CARTDATA):', cartData);
     setPageLoading(!(userId && cartData.cart && cartData.cart.length > 0));
   }, [cartData, userId]);
 

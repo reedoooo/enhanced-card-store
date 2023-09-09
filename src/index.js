@@ -8,6 +8,7 @@ import { CartProvider } from './context/CartContext/CartContext';
 import { DeckProvider } from './context/DeckContext/DeckContext';
 import { CardProvider } from './context/CardContext/CardStore';
 import { ScrapeDataProvider } from './context/ScraperContext/ScraperContext';
+import { CollectionProvider } from './context/CollectionContext/CollectionContext';
 
 const root = document.getElementById('root');
 
@@ -16,12 +17,14 @@ function Main() {
     <CardProvider>
       <DeckProvider>
         <ScrapeDataProvider>
-          <CartProvider>
-            <AuthProvider>
-              <GlobalStyles />
-              <App />
-            </AuthProvider>
-          </CartProvider>
+          <CollectionProvider>
+            <CartProvider>
+              <AuthProvider>
+                <GlobalStyles />
+                <App />
+              </AuthProvider>
+            </CartProvider>
+          </CollectionProvider>
         </ScrapeDataProvider>
       </DeckProvider>
     </CardProvider>

@@ -17,8 +17,8 @@ import {
   DialogTitle,
   DialogActions,
 } from '@mui/material';
-import DeckOfCardsIcon from './DeckOfCardsIcon';
-import TestingIcon from './TestingIcon';
+import DeckOfCardsIcon from '../../icons/DeckOfCardsIcon';
+import TestingIcon from '../../icons/TestingIcon';
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiTypography-root': {
@@ -90,11 +90,17 @@ function MenuItems({
         {/* </CartModal> */}
       </StyledMenuItem>
       <StyledMenuItem onClick={handleTestingIconClick} key="test">
-        <StyledLink
+        {/* <StyledLink
           to="/scrapertester"
           style={{ color: '#000', textDecoration: 'none' }}
         >
           <TestingIcon /> Cart
+        </StyledLink> */}
+        <StyledLink
+          to="/collection"
+          style={{ color: '#000', textDecoration: 'none' }}
+        >
+          <TestingIcon /> Collection
         </StyledLink>
         {/* <CartModal isOpen={isCartModalOpen} onClose={handleCartIconClick}> */}
         {/* <Stripe /> */}

@@ -8,14 +8,13 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import Header from './components/headings/header/Header';
 import Footer from './components/headings/footer/Footer';
-import Home from './pages/HomePage';
-import Store from './pages/StorePage';
 import theme from './assets/styles/themes';
 import CartPage from './pages/CartPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
 import PracticeScraperPage from './pages/PracticeScraperPage';
 import HomePage from './pages/HomePage';
 import StorePage from './pages/StorePage';
+import CollectionPage from './pages/CollectionPage';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
@@ -55,11 +54,21 @@ const App = () => {
               />
             }
           />
-          <Route
+          {/* <Route
             exact
             path="/scrapertester"
             element={
               <PracticeScraperPage
+                activeUserCartId={activeUserCartId}
+                setActiveUserCart={setActiveUserCartId}
+              />
+            }
+          /> */}
+          <Route
+            exact
+            path="/collection"
+            element={
+              <CollectionPage
                 activeUserCartId={activeUserCartId}
                 setActiveUserCart={setActiveUserCartId}
               />

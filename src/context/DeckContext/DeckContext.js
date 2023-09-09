@@ -105,7 +105,11 @@ export const DeckProvider = ({ children }) => {
   });
 
   const updateAndSyncDeck = async (newDeckData) => {
+    console.log('Updated Deck Name:', newDeckData.name);
+    console.log('Updated Deck Description:', newDeckData.description);
+
     setDeckData(newDeckData);
+    setSelectedDeck(newDeckData); // <-- This line ensures that the selected deck is updated
     setAllDecks((prevDecks) => {
       const newAllDecks = prevDecks.map((deck) =>
         deck._id === newDeckData._id ? newDeckData : deck
@@ -144,18 +148,47 @@ export const DeckProvider = ({ children }) => {
     }
   };
 
-  const addOrRemoveCard = async (card, isAdding) => {
-    setDeckData((prevState) => {
-      const cardIndex = prevState.cards.findIndex(
+  const addOrRemoveCard = async (card, isAdding, isRemoving) => {
+    if (isAdding === isRemoving) {
+      console.error(
+        'Invalid operation: either isAdding or isRemoving should be true, not both or none.'
+      );
+      return;
+    }
+    setSelectedDeck((prevState) => {
+      const cardIndex = prevState?.cards?.findIndex(
         (item) => item.id === card.id
       );
-      let newCards = [...prevState.cards];
+      let newCards = [...(prevState?.cards || [])];
 
-      if (cardIndex !== -1) {
-        newCards[cardIndex].quantity += isAdding ? 1 : -1;
-        if (newCards[cardIndex].quantity <= 0) newCards.splice(cardIndex, 1);
-      } else if (isAdding) {
-        newCards.push({ ...card, quantity: 1 });
+      if (isAdding && !isRemoving) {
+        console.log('ADDING CARD:', card);
+
+        if (cardIndex !== -1) {
+          if (newCards[cardIndex].quantity < 3) {
+            // Check if there are less than 3 cards with the same id
+            newCards[cardIndex].quantity += 1;
+          } else {
+            console.error("You can't have more than 3 cards with the same id");
+            return prevState;
+          }
+        } else {
+          newCards.push({ ...card, quantity: 1 });
+        }
+      } else if (isRemoving && !isAdding) {
+        console.log('REMOVING CARD:', card);
+        if (cardIndex !== -1) {
+          newCards[cardIndex].quantity -= 1;
+          if (newCards[cardIndex].quantity <= 0) {
+            newCards.splice(cardIndex, 1);
+          }
+        }
+      } else {
+        // Handle the case where both isAdding and isRemoving are true, or both are false
+        console.error(
+          'Invalid operation: either isAdding or isRemoving should be true, not both or none.'
+        );
+        return prevState;
       }
 
       const updatedDeckData = { ...prevState, cards: newCards };
@@ -164,29 +197,18 @@ export const DeckProvider = ({ children }) => {
     });
   };
 
-  // To get the quantity of a specific card in the deck
-  // const getCardQuantity = (cardId) => {
-  //   // if (Array.isArray(deckData)) {
-  //   const card = deckData.cards?.find((item) => item.id === cardId);
-  //   // }
-
-  //   return card?.quantity || 0;
-  // };
-
-  // const getTotalCost = () =>
-  //   deckData.cards.reduce((acc, card) => acc + (card.cost || 0), 0);
-
   const contextValue = {
     deckData,
     allDecks,
     selectedDeck,
     setSelectedDeck,
-    addOneToDeck: (card) => addOrRemoveCard(card, true),
-    removeOneFromDeck: (cardId) => addOrRemoveCard({ id: cardId }, false),
+    addOneToDeck: (card) => addOrRemoveCard(card, true, false),
+    removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),
     getTotalCost: () =>
-      deckData.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) || 0,
+      selectedDeck?.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) ||
+      0,
     getCardQuantity: (cardId) =>
-      deckData.cards?.find((item) => item.id === cardId)?.quantity || 0,
+      selectedDeck?.cards?.find((item) => item.id === cardId)?.quantity || 0,
     updateAndSyncDeck,
     fetchAllDecksForUser: fetchAndSetDecks,
   };

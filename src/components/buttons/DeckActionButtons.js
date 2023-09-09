@@ -1,151 +1,59 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  Grid,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-} from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useDeckStore } from '../../context/DeckContext/DeckContext';
-import { makeStyles, useTheme } from '@mui/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import CardActionButtons from './CardActionButtons';
+import DeckDialog from './DeckDialog';
+import DeckCountDisplay from './DeckCountDisplay';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
   button: {
+    flex: 1,
     height: '100%',
-    flexGrow: 1,
-    flexShrink: 1, // allow shrinking
-    padding: '4px', // reduce padding
+    padding: '4px',
   },
-}));
+  fullWidthButton: {
+    width: '100%',
+    padding: '4px',
+  },
+});
 
-const DeckActionButtons = ({ card, deckCardQuantity }) => {
+const DeckActionButtons = ({ card }) => {
   const classes = useStyles();
   const {
     addOneToDeck,
-    deleteFromDeck,
     removeOneFromDeck,
+    removeAllFromDeck,
     createUserDeck,
-    decks,
+    deckCardQuantity,
   } = useDeckStore();
   const [openDialog, setOpenDialog] = useState(false);
-  const [newDeckInfo, setNewDeckInfo] = useState({ name: '', description: '' });
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const [isCreatingDeck, setIsCreatingDeck] = useState(false);
 
-  // const isCustomScreenSize = useMediaQuery('(max-width:900px)');
-  console.log('card', card);
-
-  const handleAddToDeck = async () => {
-    try {
-      setIsCreatingDeck(true);
-      await addOneToDeck(card);
-      setIsCreatingDeck(false);
-    } catch (error) {
-      console.error('Failed to add card to deck:', error);
-      setIsCreatingDeck(false);
-    }
-  };
-
-  const handleClose = (createDeck) => {
-    if (createDeck) {
-      createUserDeck(newDeckInfo);
-      addOneToDeck(card);
-    }
+  const handleDialogClose = (newDeckInfo) => {
+    createUserDeck(newDeckInfo);
+    addOneToDeck(card);
     setOpenDialog(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewDeckInfo((prev) => ({ ...prev, [name]: value }));
-  };
   return (
     <div className={classes.root}>
-      {deckCardQuantity > 0 ? (
-        <>
-          <Grid container className={classes.gridContainer}>
-            <Grid item xs={isSmallScreen ? 12 : 4}>
-              In Deck: {deckCardQuantity}
-            </Grid>
-            <Grid item xs={isSmallScreen ? 12 : 4}>
-              <Button
-                className={classes.button}
-                onClick={() => addOneToDeck(card)}
-                // variant="contained"
-                // color="primary"
-              >
-                +
-              </Button>
-              <Button
-                className={classes.button}
-                onClick={() => removeOneFromDeck(card)}
-                // variant="contained"
-                // color="primary"
-              >
-                -
-              </Button>
-            </Grid>
-          </Grid>
-          <Button
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-            onClick={() => deleteFromDeck(card)}
-          >
-            Remove from deck
-          </Button>
-        </>
-      ) : (
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={handleAddToDeck}
-          disabled={isCreatingDeck}
-        >
-          Add To Deck
-        </Button>
-      )}
-      <Dialog open={openDialog} onClose={() => handleClose(false)}>
-        <DialogTitle>Create a New Deck</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You don&apos;t have an existing deck. Would you like to create one?
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="name"
-            label="Deck Name"
-            type="text"
-            fullWidth
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="description"
-            label="Deck Description"
-            type="text"
-            fullWidth
-            onChange={handleInputChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleClose(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => handleClose(true)} color="primary">
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeckCountDisplay quantity={deckCardQuantity} />
+
+      <CardActionButtons
+        card={card}
+        quantity={deckCardQuantity}
+        addOne={addOneToDeck}
+        removeOne={removeOneFromDeck}
+        removeAll={removeAllFromDeck}
+        context="Deck"
+        buttonClassName={classes.button}
+        fullWidthButtonClassName={classes.fullWidthButton}
+      />
+      <DeckDialog open={openDialog} onClose={handleDialogClose} />
     </div>
   );
 };

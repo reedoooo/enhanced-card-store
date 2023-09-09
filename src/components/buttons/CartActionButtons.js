@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
-import { Button, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+// src/components/CartActionButtons.js
+import React from 'react';
 import { useCartStore } from '../../context/CartContext/CartContext';
+import { makeStyles } from '@mui/styles';
+import CardActionButtons from './CardActionButtons'; // Import the reusable component
 
 const useStyles = makeStyles({
-  root: {}, // Default styles go here
+  root: {},
 });
 
 const CartActionButtons = ({ card, productQuantity }) => {
@@ -13,34 +14,14 @@ const CartActionButtons = ({ card, productQuantity }) => {
 
   return (
     <div className={classes.root}>
-      {productQuantity > 0 ? (
-        <>
-          <Grid container>
-            <Grid item xs={6}>
-              In Cart: {productQuantity}
-            </Grid>
-            <Grid item xs={6}>
-              <Button onClick={() => addOneToCart(card)}>+</Button>
-              <Button onClick={() => removeOneFromCart(card)}>-</Button>
-            </Grid>
-          </Grid>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => deleteFromCart(card)}
-          >
-            Remove from cart
-          </Button>
-        </>
-      ) : (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => addOneToCart(card)}
-        >
-          Add To Cart
-        </Button>
-      )}
+      <CardActionButtons
+        card={card}
+        quantity={productQuantity}
+        addOne={addOneToCart}
+        removeOne={removeOneFromCart}
+        removeAll={deleteFromCart}
+        context="Cart"
+      />
     </div>
   );
 };
