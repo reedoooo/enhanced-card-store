@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/system';
-import CustomerForm from './forms/CustomerForm';
+import CustomerForm from '../components/forms/CustomerForm';
 
 const CustomerFormContainer = ({ calculateTotalPrice }) => {
   return (

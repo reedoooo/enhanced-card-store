@@ -3,6 +3,7 @@ import React from 'react';
 import { useCartStore } from '../../context/CartContext/CartContext';
 import { makeStyles } from '@mui/styles';
 import CardActionButtons from './CardActionButtons'; // Import the reusable component
+import CardCountDisplay from './CardCountDisplay';
 
 const useStyles = makeStyles({
   root: {},
@@ -14,6 +15,12 @@ const CartActionButtons = ({ card, productQuantity }) => {
 
   return (
     <div className={classes.root}>
+      <CardCountDisplay
+        label="In Cart"
+        quantity={productQuantity}
+        className="some-cart-class"
+      />
+
       <CardActionButtons
         card={card}
         quantity={productQuantity}

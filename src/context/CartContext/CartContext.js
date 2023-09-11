@@ -227,6 +227,16 @@ export const CartProvider = ({ children }) => {
       value={{
         cartData,
         getCardQuantity,
+        cartCardQuantity: cartData.cart?.reduce(
+          (acc, card) => acc + card.quantity,
+          0
+        ),
+        cartCardCount: cartData.cart?.length,
+        cartValue: cartData.cart?.reduce(
+          (acc, card) =>
+            acc + card.card_prices[0].tcgplayer_price * card.quantity,
+          0
+        ),
         addOneToCart,
         removeOneFromCart,
         deleteFromCart,

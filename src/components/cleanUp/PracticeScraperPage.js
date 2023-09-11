@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-import ScraperContainer from '../containers/ScraperContainer';
+import ScraperContainer from './ScraperContainer';
 import { BeatLoader } from 'react-spinners';
 import { useCookies } from 'react-cookie';
-import { ScraperContext } from '../context/ScraperContext/ScraperContext';
+import { ScraperContext } from '../../context/ScraperContext/ScraperContext';
 
 const LoadingIndicator = ({ loading }) => {
   return (

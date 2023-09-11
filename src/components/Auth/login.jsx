@@ -1,15 +1,11 @@
+// Login.js
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { When } from 'react-if';
-import {
-  TextField,
-  Button,
-  Switch,
-  FormControl,
-  FormControlLabel,
-  Typography,
-} from '@mui/material';
+import { Button } from '@mui/material';
 import { AuthContext } from '../../context/Auth/authContext.js';
+import LoginForm from './LoginForm';
+import SignupSwitch from './SignupSwitch';
 
 function Login() {
   let authContext = useContext(AuthContext);
@@ -57,89 +53,27 @@ function Login() {
   return (
     <>
       <When condition={authContext.isLoggedIn}>
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={authContext.logout}
-          style={{ maxWidth: '100px' }}
-        >
+        <Button color="primary" variant="outlined" onClick={authContext.logout}>
           Log Out
         </Button>
       </When>
 
       <When condition={!authContext.isLoggedIn}>
-        <form onSubmit={handleSubmit}>
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
-          >
-            <TextField
-              placeholder="Username"
-              name="username"
-              size="medium"
-              variant="outlined"
-              onChange={(event) => setUsername(event.target.value)}
-            />
-
-            <TextField
-              placeholder="Email"
-              name="email"
-              size="medium"
-              type="email"
-              variant="outlined"
-              onChange={(event) => setEmail(event.target.value)} // Update setEmail to match new state
-            />
-
-            <TextField
-              placeholder="Password"
-              name="password"
-              size="medium"
-              type="password"
-              variant="outlined"
-              onChange={(event) => setPassword(event.target.value)}
-            />
-
-            {signupMode && (
-              <>
-                <TextField
-                  placeholder="Full Name"
-                  name="name"
-                  size="medium"
-                  variant="outlined"
-                  onChange={(event) => setName(event.target.value)}
-                />
-
-                <TextField
-                  placeholder="Role Data"
-                  name="roleData"
-                  size="medium"
-                  variant="outlined"
-                  onChange={(event) => setRoleData(event.target.value)}
-                />
-              </>
-            )}
-
-            <Button
-              color="primary"
-              type="submit"
-              size="medium"
-              variant="contained"
-              style={{ backgroundColor: '#2d2d2d', color: '#f5f5f5' }} // Added styles
-            >
-              {signupMode ? 'Sign Up' : 'Login'}
-            </Button>
-          </div>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={signupMode}
-                  onChange={(e) => setSignupMode(e.target.checked)}
-                />
-              }
-              label={<Typography variant="body1">Sign up mode</Typography>}
-            />
-          </FormControl>
-        </form>
+        <LoginForm
+          username={username}
+          password={password}
+          email={email}
+          signupMode={signupMode}
+          name={name}
+          roleData={roleData}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          setEmail={setEmail}
+          setName={setName}
+          setRoleData={setRoleData}
+          handleSubmit={handleSubmit}
+        />
+        <SignupSwitch signupMode={signupMode} setSignupMode={setSignupMode} />
       </When>
       {authContext.error && <p>{authContext.error}</p>}
       {authContext.isLoading && <p>Loading...</p>}

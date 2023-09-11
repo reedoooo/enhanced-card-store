@@ -9,25 +9,30 @@ import { DeckProvider } from './context/DeckContext/DeckContext';
 import { CardProvider } from './context/CardContext/CardStore';
 import { ScrapeDataProvider } from './context/ScraperContext/ScraperContext';
 import { CollectionProvider } from './context/CollectionContext/CollectionContext';
+import { UtilityProvider } from './context/UtilityContext/UtilityContext';
 
 const root = document.getElementById('root');
 
 function Main() {
   return (
-    <CardProvider>
-      <DeckProvider>
-        <ScrapeDataProvider>
-          <CollectionProvider>
-            <CartProvider>
-              <AuthProvider>
-                <GlobalStyles />
-                <App />
-              </AuthProvider>
-            </CartProvider>
-          </CollectionProvider>
-        </ScrapeDataProvider>
-      </DeckProvider>
-    </CardProvider>
+    <AuthProvider>
+      <UtilityProvider>
+        <CardProvider>
+          <DeckProvider>
+            <ScrapeDataProvider>
+              <CollectionProvider>
+                <CartProvider>
+                  {/* <AuthProvider> */}
+                  <GlobalStyles />
+                  <App />
+                  {/* </AuthProvider> */}
+                </CartProvider>
+              </CollectionProvider>
+            </ScrapeDataProvider>
+          </DeckProvider>
+        </CardProvider>
+      </UtilityProvider>
+    </AuthProvider>
   );
 }
 

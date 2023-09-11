@@ -11,7 +11,7 @@ import Footer from './components/headings/footer/Footer';
 import theme from './assets/styles/themes';
 import CartPage from './pages/CartPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
-import PracticeScraperPage from './pages/PracticeScraperPage';
+import PracticeScraperPage from './components/cleanUp/PracticeScraperPage';
 import HomePage from './pages/HomePage';
 import StorePage from './pages/StorePage';
 import CollectionPage from './pages/CollectionPage';

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, useMediaQuery } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import DeckDisplay from '../components/other/DeckDisplay';
-import DeckSearch from '../components/search/DeckSearch';
+import DeckDisplay from '../../components/other/DeckDisplay';
+import DeckSearch from '../../components/search/DeckSearch';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,15 +12,16 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     borderRadius: '10px',
     boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    width: '100%', // Add this to make sure the container takes full width
   },
   searchGrid: {
-    [theme.breakpoints.up('lg')]: { flexBasis: '28%' },
-    [theme.breakpoints.between('md', 'lg')]: { flexBasis: '42%' },
-    [theme.breakpoints.down('sm')]: { flexBasis: '35%' },
+    [theme.breakpoints.up('lg')]: { flexBasis: '30%' }, // Changed from 28%
+    [theme.breakpoints.between('md', 'lg')]: { flexBasis: '45%' }, // Changed from 42%
+    [theme.breakpoints.down('sm')]: { flexBasis: '40%' }, // Changed from 35%
   },
   displayGrid: {
     flex: 1,
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
   },
 }));
 

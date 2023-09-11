@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Backdrop, Fade, Box, Typography } from '@mui/material';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import StripeForm from '../forms/StripeForm';
+import StripeForm from '../../forms/StripeForm';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid recreating the `Stripe` object on every render.
 console.log('Stripe key: ', process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);

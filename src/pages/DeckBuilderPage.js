@@ -1,9 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DeckBuilderContainer from '../containers/DeckBuilderContainer';
+import DeckBuilderContainer from '../containers/deckBuilderPageContainers/DeckBuilderContainer';
 import { useCookies } from 'react-cookie';
 import { DeckContext } from '../context/DeckContext/DeckContext';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
+import { Grid } from '@mui/material';
+import styled from 'styled-components';
+
+const DeckBuilderBanner = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  ${'' /* padding: 20px; */}
+  background-color: #f9f9f9;
+  width: 100%; // Full width
+  max-width: 1600px; // Or whatever max-width you want
+  margin: auto; // Centers the block horizontally if its max-width is less than the parent's width
+`;
+
+const DeckBuilderTitle = styled.h2`
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 20px;
+`;
 
 const DeckBuilderPage = () => {
   const [cookies] = useCookies(['userCookie']);
@@ -38,9 +58,14 @@ const DeckBuilderPage = () => {
   if (error) return <ErrorIndicator error={error} />;
 
   return (
-    <div>
-      <DeckBuilderContainer userDecks={userDecks} />
-    </div>
+    <DeckBuilderBanner>
+      <DeckBuilderTitle>Deck Builder</DeckBuilderTitle>
+      <Grid container>
+        <Grid item xs={12}>
+          <DeckBuilderContainer userDecks={userDecks} />
+        </Grid>
+      </Grid>
+    </DeckBuilderBanner>
   );
 };
 

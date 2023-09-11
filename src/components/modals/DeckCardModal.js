@@ -1,19 +1,20 @@
 import React, { useContext } from 'react';
 import { Dialog, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import CardMediaSection from './CardMediaSection';
-import CardDetailsContainer from './CardDetailsContainer';
-import DeckActionButtons from '../buttons/DeckActionButtons';
+import CardMediaSection from '../media/CardMediaSection';
+import CardDetailsContainer from './cardModal/CardDetailsContainer';
+import DeckActionButtons from '../cleanUp/DeckActionButtons';
 import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles({
-  dialogTitle: {
-    backgroundColor: '#0066cc',
-    color: 'white',
-    padding: '16px',
-    fontWeight: 'bold',
-  },
-});
+const useStyles = (context) =>
+  makeStyles({
+    dialogTitle: {
+      backgroundColor: '#0066cc',
+      color: 'white',
+      padding: '16px',
+      fontWeight: 'bold',
+    },
+  });
 
 const DeckCardModal = ({ isOpen, onClose, card, userDecks }) => {
   const classes = useStyles();
@@ -37,7 +38,10 @@ const DeckCardModal = ({ isOpen, onClose, card, userDecks }) => {
             <CardMediaSection card={card} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <CardDetailsContainer card={card} />
+            <CardDetailsContainer
+              card={card}
+              className={classes.someClassForDeckCardDetail}
+            />
           </Grid>
         </Grid>
         <DeckActionButtons card={card} deckCardQuantity={productQuantity} />

@@ -1,31 +1,83 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Alert, Grid, Box } from '@mui/material';
-import { Line } from 'react-chartjs-2';
+import SelectCollection from './SelectCollection';
+import PortfolioContent from './PortfolioContent';
+import { Box, Typography } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import AddCardForm from './AddCardForm';
-import CardList from './CardList';
 
-const CardPortfolio = () => {
-  const {
-    collectionData,
-    addCardToCollection,
-    removeCardFromCollection,
-    fetchAllCardsForUser,
-  } = useCollectionStore();
+const updateChartData = (selectedCollection) => {
+  const labels = [];
+  let portfolioValue = 0;
+  const portfolioValues = [];
 
+  selectedCollection?.cards?.forEach((card) => {
+    portfolioValue += card.price;
+    portfolioValues.push(portfolioValue);
+    labels.push(card.name);
+  });
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Portfolio Value',
+        data: portfolioValues,
+        fill: false,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+      },
+    ],
+  };
+};
+
+// Your main CardPortfolio component
+const CardPortfolio = ({ userCollection = [] }) => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [showCollections, setShowCollections] = useState(true);
   const [newCard, setNewCard] = useState('');
   const [newCardPrice, setNewCardPrice] = useState('');
   const [newCardCondition, setNewCardCondition] = useState('');
+  console.log('(3) -- CARDPORTFOLIO (USERCOLLECTION):', userCollection);
+
+  const {
+    allCollections,
+    selectedCollection,
+    setSelectedCollection,
+    fetchAllCollectionsForUser,
+    addOneToCollection,
+    removeOneFromCollection,
+  } = useCollectionStore();
+  // console.log('(3) -- CARDPORTFOLIO (USERCOLLECTION):', userCollection);
 
   useEffect(() => {
-    fetchAllCardsForUser();
+    fetchAllCollectionsForUser();
   }, []);
 
   useEffect(() => {
-    updateChartData();
-  }, [collectionData]);
+    setSelectedCards(selectedCollection?.cards?.slice(0, 30) || []);
+  }, [selectedCollection]);
+
+  useEffect(() => {
+    setChartData(updateChartData(selectedCollection));
+  }, [selectedCollection]);
+
+  const handleSelectCollection = (collectionId) => {
+    console.log(`Collection with id, ${collectionId}, is selected`);
+    const foundCollection = userCollection.find(
+      (collection) => collection?._id === collectionId
+    );
+    console.log(`Collection Found: ${foundCollection}`);
+
+    if (foundCollection) {
+      setSelectedCollection(foundCollection);
+      setShowCollections(false);
+    }
+  };
+  console.log(
+    '(3) -- CARDPORTFOLIO (SELECTED COLLECTION):',
+    selectedCollection
+  );
 
   const addCard = () => {
     if (
@@ -38,7 +90,7 @@ const CardPortfolio = () => {
       return;
     }
 
-    addCardToCollection({
+    addOneToCollection({
       name: newCard,
       price: parseFloat(newCardPrice),
       condition: newCardCondition,
@@ -50,84 +102,42 @@ const CardPortfolio = () => {
     setError(null);
   };
 
-  const removeCard = (cardId) => {
-    removeCardFromCollection(cardId);
+  const removeCard = (card) => {
+    removeOneFromCollection(card);
   };
 
-  const updateChartData = () => {
-    const labels = [];
-    let portfolioValue = 0;
-    const portfolioValues = [];
+  if (showCollections) {
+    return (
+      <SelectCollection
+        userCollection={userCollection}
+        handleSelectCollection={handleSelectCollection}
+      />
+    );
+  }
 
-    collectionData.forEach((card) => {
-      portfolioValue += card.price;
-      portfolioValues.push(portfolioValue);
-      labels.push(card.name);
-    });
-
-    const data = {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Portfolio Value',
-          data: portfolioValues,
-          fill: false,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(75,192,192,1)',
-        },
-      ],
-    };
-    setChartData(data);
-  };
-
-  return (
-    <Box height="100vh" display="flex" flexDirection="column">
-      <Box flexGrow={0}>
-        <Typography variant="h5">This is the Portfolio tab.</Typography>
-        {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {error}
-          </Alert>
-        )}
-        <AddCardForm
-          newCard={newCard}
-          setNewCard={setNewCard}
-          newCardPrice={newCardPrice}
-          setNewCardPrice={setNewCardPrice}
-          newCardCondition={newCardCondition}
-          setNewCardCondition={setNewCardCondition}
-          addCard={addCard}
-        />
+  if (selectedCollection) {
+    return (
+      <PortfolioContent
+        error={error}
+        newCard={newCard}
+        setNewCard={setNewCard}
+        newCardPrice={newCardPrice}
+        setNewCardPrice={setNewCardPrice}
+        newCardCondition={newCardCondition}
+        setNewCardCondition={setNewCardCondition}
+        addCard={addCard}
+        chartData={chartData}
+        selectedCards={selectedCards}
+        removeCard={removeCard}
+      />
+    );
+  } else {
+    return (
+      <Box>
+        <Typography variant="h6">No Collection Selected</Typography>
       </Box>
-
-      <Grid container direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid item xs={12} sx={{ height: '70%' }}>
-          <Paper elevation={3} sx={{ height: '100%', padding: 2 }}>
-            {chartData && (
-              <Line
-                data={chartData}
-                options={{
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                    },
-                  },
-                }}
-              />
-            )}
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sx={{ height: '30%' }}>
-          <Paper
-            elevation={3}
-            sx={{ width: '100%', height: '100%', padding: 2 }}
-          >
-            <CardList cards={collectionData} removeCard={removeCard} />
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
-  );
+    );
+  }
 };
 
 export default CardPortfolio;

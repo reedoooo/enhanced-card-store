@@ -10,10 +10,9 @@ import {
 } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import { useTheme } from '@emotion/react';
-import DeckCard from '../cards/DeckCard';
 import SearchForm from './SearchForm';
-import DeckSearchCardGrid from './DeckSearchCardGrid';
-import CustomPagination from './CustomPagination';
+import DeckSearchCardGrid from '../grids/DeckSearchCardGrid';
+import CustomPagination from '../other/CustomPagination';
 
 const DeckSearch = ({ userDecks }) => {
   const [searchTerm, setSearchTerm] = useState('');

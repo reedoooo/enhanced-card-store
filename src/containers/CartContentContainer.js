@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/system';
-import LoadingIndicator from './indicators/LoadingIndicator';
-import CartContent from './content/CartContent';
+import LoadingIndicator from '../components/indicators/LoadingIndicator';
+import CartContent from '../components/content/CartContent';
 
 const CartContentContainer = ({
   cartData,

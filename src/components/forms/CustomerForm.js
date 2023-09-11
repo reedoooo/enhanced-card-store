@@ -5,7 +5,7 @@ import { Box, Container, Typography } from '@mui/material';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import OrderSubmitButton from '../buttons/OrderSubmitButton';
 import CartSummary from '../CartSummary';
-import StripeCheckoutModal from '../modals/StripeCheckoutModal';
+import StripeCheckoutModal from '../modals/stripeModal/StripeCheckoutModal';
 import FormTextField from './FormTextField';
 import { useCartStore } from '../../context/CartContext/CartContext';
 

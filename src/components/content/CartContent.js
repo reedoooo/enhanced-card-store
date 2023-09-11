@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import ProductCard from '../cards/ProductCard';
+import ProductCard from '../cleanUp/ProductCard';
 import { useCartStore } from '../../context/CartContext/CartContext';
+import GenericCard from '../cards/GenericCard';
 
 const CartContent = () => {
   const { cartData, getTotalCost } = useCartStore();
@@ -31,7 +32,7 @@ const CartContent = () => {
               key={card.id + index}
               sx={{ marginBottom: '1rem', flexGrow: '1' }}
             >
-              <ProductCard card={card} page={page} />
+              <GenericCard card={card} page={page} />
             </Box>
           ) : null
         )

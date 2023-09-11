@@ -3,38 +3,38 @@ import { useCookies } from 'react-cookie';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
-import CollectionContainer from '../containers/CollectionContainer';
+import CollectionContainer from '../containers/collectionPageContainers/CollectionContainer';
 
 const CollectionPage = () => {
   const [cookies] = useCookies(['userCookie']);
-  const { fetchAllCardsForUser, collectionData, loading, error } =
+  const { fetchAllCollectionsForUser, allCollections, loading, error } =
     useCollectionStore();
-
-  const [userCards, setUserCards] = useState([]);
+  const [userCollection, setUserCollection] = useState([]);
   const userId = cookies.userCookie?.id;
 
   useEffect(() => {
-    console.log('COLLECTION PAGE (COLLECTIONDATA):', collectionData);
-    fetchAllCardsForUser().catch((err) =>
+    // Fetch all collections for the user
+    fetchAllCollectionsForUser().catch((err) =>
       console.error('Failed to get all cards:', err)
     );
-  }, [fetchAllCardsForUser]);
+  }, [fetchAllCollectionsForUser]);
 
   useEffect(() => {
-    if (collectionData) {
-      const filteredCards = collectionData.filter(
-        (card) => card.userId === userId
+    // Filter collections based on userId
+    if (allCollections) {
+      const filteredCollections = allCollections.filter(
+        (collection) => collection.userId === userId
       );
-      setUserCards(filteredCards);
+      setUserCollection(filteredCollections);
     }
-  }, [collectionData, userId]);
+  }, [allCollections, userId]);
 
   if (loading) return <LoadingIndicator loading={loading} />;
   if (error) return <ErrorIndicator error={error} />;
 
   return (
     <div>
-      <CollectionContainer userCards={userCards} />
+      <CollectionContainer userCollection={userCollection} />
     </div>
   );
 };

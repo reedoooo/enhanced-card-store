@@ -9,8 +9,8 @@ import {
 import { useCartStore } from '../context/CartContext/CartContext';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
-import CartContentContainer from '../components/CartContentContainer';
-import CustomerFormContainer from '../components/CustomerFormContainer';
+import CartContentContainer from '../containers/CartContentContainer';
+import CustomerFormContainer from '../containers/CustomerFormContainer';
 
 const CartPage = () => {
   const [cookies] = useCookies(['userCookie']);

@@ -3,13 +3,16 @@ import styled from 'styled-components';
 import { Grid } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import SearchBar from '../components/search/SearchBar';
-import ProductGrid from '../containers/ProductGrid';
+import ProductGrid from '../components/grids/ProductGrid';
 import { useCardStore } from '../context/CardContext/CardStore';
 import { BeatLoader } from 'react-spinners';
 import { useCartStore } from '../context/CartContext/CartContext';
 
 const StoreBanner = styled.div`
   display: flex;
+  max-width: 100%;
+  justify-content: center;
+  margin: 0 auto;
   flex-direction: column;
   align-items: center;
   padding: 20px;
