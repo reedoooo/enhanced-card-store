@@ -36,6 +36,16 @@ export const DeckProvider = ({ children }) => {
   const [selectedDeck, setSelectedDeck] = useState({});
   const userId = cookies.userCookie?.id;
 
+  const calculateAndUpdateTotalPrice = (deck) => {
+    let totalPrice = 0;
+    if (deck && deck.cards) {
+      totalPrice = deck.cards.reduce((total, card) => {
+        return total + card.price * card.quantity;
+      }, 0);
+    }
+    return totalPrice;
+  };
+
   const fetchDecksForUser = useCallback(async () => {
     try {
       const url = `${apiBase}/users/${userId}/decks`;
@@ -149,52 +159,65 @@ export const DeckProvider = ({ children }) => {
   };
 
   const addOrRemoveCard = async (card, isAdding, isRemoving) => {
-    if (isAdding === isRemoving) {
-      console.error(
-        'Invalid operation: either isAdding or isRemoving should be true, not both or none.'
-      );
+    if (!selectedDeck || !selectedDeck._id) {
+      console.error('No valid deck to add or remove a card.');
       return;
     }
-    setSelectedDeck((prevState) => {
-      const cardIndex = prevState?.cards?.findIndex(
-        (item) => item.id === card.id
-      );
-      let newCards = [...(prevState?.cards || [])];
 
-      if (isAdding && !isRemoving) {
-        console.log('ADDING CARD:', card);
+    let cardPrice = 0;
+    if (
+      card.card_prices &&
+      card.card_prices.length > 0 &&
+      card.card_prices[0].tcgplayer_price
+    ) {
+      cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
+    }
 
-        if (cardIndex !== -1) {
-          if (newCards[cardIndex].quantity < 3) {
-            // Check if there are less than 3 cards with the same id
-            newCards[cardIndex].quantity += 1;
-          } else {
-            console.error("You can't have more than 3 cards with the same id");
-            return prevState;
-          }
-        } else {
-          newCards.push({ ...card, quantity: 1 });
-        }
-      } else if (isRemoving && !isAdding) {
-        console.log('REMOVING CARD:', card);
-        if (cardIndex !== -1) {
-          newCards[cardIndex].quantity -= 1;
-          if (newCards[cardIndex].quantity <= 0) {
-            newCards.splice(cardIndex, 1);
-          }
-        }
+    // Create a copy of the current state
+    const currentCards = [...(selectedDeck?.cards || [])];
+    let currentTotalPrice = selectedDeck.totalPrice || 0;
+
+    // Find the card index in the current state
+    const cardIndex = currentCards.findIndex((item) => item.id === card.id);
+
+    if (isAdding) {
+      if (cardIndex !== -1) {
+        currentCards[cardIndex].quantity += 1;
       } else {
-        // Handle the case where both isAdding and isRemoving are true, or both are false
-        console.error(
-          'Invalid operation: either isAdding or isRemoving should be true, not both or none.'
-        );
-        return prevState;
+        currentCards.push({ ...card, quantity: 1, price: cardPrice });
       }
+      currentTotalPrice += cardPrice;
+    } else {
+      if (cardIndex !== -1) {
+        currentCards[cardIndex].quantity -= 1;
+        if (currentCards[cardIndex].quantity <= 0) {
+          currentCards.splice(cardIndex, 1);
+        }
+        currentTotalPrice -= cardPrice;
+      }
+    }
 
-      const updatedDeckData = { ...prevState, cards: newCards };
-      updateAndSyncDeck(updatedDeckData);
-      return updatedDeckData;
+    // Assuming you have a function to update the total price like in the example
+    currentTotalPrice = calculateAndUpdateTotalPrice({
+      ...selectedDeck,
+      cards: currentCards,
     });
+
+    try {
+      const url = `${apiBase}/users/${userId}/decks/${selectedDeck._id}`;
+      const updatedDeck = await fetchWrapper(url, 'PUT', {
+        cards: currentCards,
+        totalPrice: currentTotalPrice,
+      });
+
+      setSelectedDeck({
+        ...updatedDeck,
+        totalPrice: currentTotalPrice,
+      });
+      updateAndSyncDeck({ ...updatedDeck, totalPrice: currentTotalPrice });
+    } catch (error) {
+      console.error(`Failed to update the deck: ${error.message}`);
+    }
   };
 
   const contextValue = {

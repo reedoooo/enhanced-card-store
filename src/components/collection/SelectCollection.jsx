@@ -1,28 +1,19 @@
+// SelectCollection.js
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ButtonBase,
-  ListItemText,
-  Divider,
-  Dialog,
-  DialogContent,
-  Button,
-} from '@mui/material';
-import CollectionEditPanel from './CollectionEditPanel'; // Import the CollectionEditPanel
+import { Box, Typography, Button } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { SelectCollectionList } from '../grids/collectionGrids/SelectCollectionList';
+import { SelectCollectionDialog } from '../dialogs/SelectCollectionDialog';
 
 export const SelectCollection = ({
-  userCollection,
   handleSelectCollection,
-  handleSaveCollection, // You can pass this as a prop to save the edited or new collection
+  handleSaveCollection,
+  userCollection = [],
 }) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
-  const { createUserCollection } = useCollectionStore();
-
+  const { createUserCollection, collectionData } = useCollectionStore();
+  console.log('(1) -- SELECT COLLECTION (USERCOLLECTION):', collectionData);
   const openDialog = (collection = null) => {
     setEditingCollection(collection);
     setDialogOpen(true);
@@ -53,31 +44,18 @@ export const SelectCollection = ({
       >
         Add New Collection
       </Button>
-      <List>
-        {userCollection.map((collection) => (
-          <React.Fragment key={collection._id}>
-            <ListItem>
-              <ButtonBase
-                sx={{ width: '100%' }}
-                onClick={() => handleSelectCollection(collection._id)}
-              >
-                <ListItemText primary={collection.name} />
-              </ButtonBase>
-              <Button onClick={() => openDialog(collection)}>Edit</Button>
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        ))}
-      </List>
-
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
-        <DialogContent>
-          <CollectionEditPanel
-            selectedCollection={editingCollection}
-            onSave={handleSave}
-          />
-        </DialogContent>
-      </Dialog>
+      <SelectCollectionList
+        userCollection={userCollection}
+        handleSelectCollection={handleSelectCollection}
+        handleSaveCollection={handleSaveCollection}
+        openDialog={openDialog}
+      />
+      <SelectCollectionDialog
+        isDialogOpen={isDialogOpen}
+        closeDialog={closeDialog}
+        selectedCollection={editingCollection}
+        onSave={handleSave}
+      />
     </Box>
   );
 };

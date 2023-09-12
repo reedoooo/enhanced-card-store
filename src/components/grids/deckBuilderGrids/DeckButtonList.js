@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Grid, Button, Typography } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { makeStyles } from '@mui/styles';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
+import { DeckContext } from '../../../context/DeckContext/DeckContext';
 
 const useDeckButtonListStyles = makeStyles((theme) => ({
   grid: {

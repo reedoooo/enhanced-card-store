@@ -1,6 +1,7 @@
 import { makeStyles } from '@mui/styles';
 
 export const commonStyles = makeStyles({
+  // Existing styles
   card: {
     display: 'flex',
     flexDirection: 'column',
@@ -20,6 +21,42 @@ export const commonStyles = makeStyles({
     padding: '12px',
     margin: '8px 0',
     borderRadius: '8px',
+  },
+  // New tooltip styles
+  tooltip: {
+    display: 'none',
+    position: 'absolute',
+    top: 0,
+    left: '100%',
+    zIndex: 999,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    color: 'white',
+    padding: '10px',
+    borderRadius: '5px',
+    width: '40vw',
+    height: 'auto',
+    maxHeight: '40vh',
+    overflowY: 'auto',
+    '&.show': {
+      display: 'block',
+    },
+    span: {
+      display: 'block',
+      marginBottom: '4px',
+      lineHeight: 1.2,
+      '&:last-child': {
+        marginBottom: 0,
+      },
+    },
+    strong: {
+      fontWeight: 'bold',
+    },
+    tooltipTitle: {
+      fontWeight: 'bold',
+      fontSize: '14px',
+      marginBottom: '8px',
+      textAlign: 'center',
+    },
   },
 });
 

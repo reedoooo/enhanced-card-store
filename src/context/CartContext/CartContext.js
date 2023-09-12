@@ -53,7 +53,7 @@ export const CartProvider = ({ children }) => {
       ...item,
       quantity: item.quantity,
     }));
-    const data = await fetchFromServer(`/api/carts/${cartId}`, {
+    const data = await fetchFromServer(`/api/carts/${cartId}/update`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formattedCartData),
@@ -177,6 +177,24 @@ export const CartProvider = ({ children }) => {
         total + item.quantity * item.card_prices[0].tcgplayer_price,
       0
     );
+
+  useEffect(() => {
+    let isMounted = true; // For cleanup
+
+    if (userId && typeof userId === 'string') {
+      fetchUserCart(userId)
+        .then((data) => {
+          if (isMounted && data && data.cart) {
+            setCartDataAndCookie(data);
+          }
+        })
+        .catch((error) => console.log('Error fetching user cart:', error));
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId, fetchUserCart]);
 
   useEffect(() => {
     const totalQuantity = cartData.cart.reduce(

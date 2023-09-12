@@ -1,60 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react';
-import DeckBuilderContainer from '../containers/deckBuilderPageContainers/DeckBuilderContainer';
+import React, { useEffect, useState, useContext } from 'react';
+import DeckBuilderBanner from './pageStyles/DeckBuilderBanner';
+import DeckBuilderTitle from './pageStyles/DeckBuilderTitle';
 import { useCookies } from 'react-cookie';
 import { DeckContext } from '../context/DeckContext/DeckContext';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
+import DeckBuilderContainer from '../containers/deckBuilderPageContainers/DeckBuilderContainer';
 import { Grid } from '@mui/material';
-import styled from 'styled-components';
-
-const DeckBuilderBanner = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  ${'' /* padding: 20px; */}
-  background-color: #f9f9f9;
-  width: 100%; // Full width
-  max-width: 1600px; // Or whatever max-width you want
-  margin: auto; // Centers the block horizontally if its max-width is less than the parent's width
-`;
-
-const DeckBuilderTitle = styled.h2`
-  color: #333;
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 20px;
-`;
 
 const DeckBuilderPage = () => {
-  const [cookies] = useCookies(['userCookie']);
-  const { fetchAllDecksForUser, allDecks, deckData, loading, error } =
-    useContext(DeckContext);
-
   const [userDecks, setUserDecks] = useState([]);
-  const [hasLoggedFilteredDecks, setHasLoggedFilteredDecks] = useState(false); // New state to track logging
-
-  const userId = cookies.userCookie?.id;
+  const { userCookie } = useCookies(['userCookie'])[0];
+  const { fetchAllDecksForUser, allDecks, loading, error } =
+    useContext(DeckContext);
+  const userId = userCookie?.id;
 
   useEffect(() => {
-    console.log('DECK BUILDER PAGE (ALLDECKS):', allDecks);
     fetchAllDecksForUser().catch((err) =>
       console.error('Failed to get all decks:', err)
     );
   }, [fetchAllDecksForUser]);
 
   useEffect(() => {
-    if (allDecks) {
+    if (allDecks && userId) {
       const filteredDecks = allDecks.filter((deck) => deck.userId === userId);
       setUserDecks(filteredDecks);
-
-      if (!hasLoggedFilteredDecks) {
-        console.log('DECK BUILDER PAGE (FILTERED DECKS):', filteredDecks);
-        setHasLoggedFilteredDecks(true); // Update the state to true after logging
-      }
+      console.log('(DECK PAGE) -- (USERDECKS):', userDecks);
     }
-  }, [allDecks, userId, hasLoggedFilteredDecks]); // Added hasLoggedFilteredDecks as a dependency
+  }, [allDecks, userId]);
 
-  if (loading) return <LoadingIndicator loading={loading} />;
+  if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
 
   return (

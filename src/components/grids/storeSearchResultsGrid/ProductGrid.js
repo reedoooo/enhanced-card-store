@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import ProductCard from '../cleanUp/ProductCard';
-import { useCardStore } from '../../context/CardContext/CardStore';
-import GenericCard from '../cards/GenericCard';
+import ProductCard from '../../cleanUp/ProductCard';
+import { useCardStore } from '../../../context/CardContext/CardStore';
+import GenericCard from '../../cards/GenericCard';
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -43,7 +43,7 @@ const ProductGrid = () => {
             key={`${card.id}-${index}`}
             className={classes.gridItem}
           >
-            <GenericCard card={card} context="Product" page="somePage" />
+            <GenericCard card={card} context="Store" page="storepage" />
           </Grid>
         ))}
     </Grid>

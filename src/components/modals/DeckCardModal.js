@@ -5,6 +5,7 @@ import CardMediaSection from '../media/CardMediaSection';
 import CardDetailsContainer from './cardModal/CardDetailsContainer';
 import DeckActionButtons from '../cleanUp/DeckActionButtons';
 import { makeStyles } from '@mui/styles';
+import GenericActionButtons from '../buttons/GenericActionButtons';
 
 const useStyles = (context) =>
   makeStyles({
@@ -44,7 +45,8 @@ const DeckCardModal = ({ isOpen, onClose, card, userDecks }) => {
             />
           </Grid>
         </Grid>
-        <DeckActionButtons card={card} deckCardQuantity={productQuantity} />
+        {/* <DeckActionButtons card={card} deckCardQuantity={productQuantity} /> */}
+        <GenericActionButtons card={card} deckCardQuantity={productQuantity} />
       </DialogContent>
     </Dialog>
   );

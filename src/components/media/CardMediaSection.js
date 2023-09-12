@@ -36,8 +36,8 @@ const CardMediaSection = ({
     <div ref={cardRef} className={classes.mediaContainer}>
       <div
         onClick={openModal}
-        onMouseOver={() => setHovering(true)}
-        onMouseOut={() => setHovering(false)}
+        // onMouseOver={() => setHovering(true)}
+        // onMouseOut={() => setHovering(false)}
       >
         <ReusableCardMedia imgUrl={imgUrl} />
       </div>

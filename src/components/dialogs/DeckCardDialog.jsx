@@ -7,6 +7,7 @@ const DeckCardDialog = ({ isOpen, onClose, card, cardInfo }) => {
     <GenericCardModal
       isOpen={isOpen}
       onClose={onClose}
+      context={'Deck'}
       card={card}
       cardInfo={cardInfo}
     />

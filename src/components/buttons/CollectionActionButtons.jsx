@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext'; // Assuming you have a separate context for Collections
 import CardActionButtons from './CardActionButtons';
-import CollectionDialog from './CollectionDialog'; // Assuming you have a separate dialog for Collections
-import CardCountDisplay from './CardCountDisplay';
+import CollectionDialog from '../dialogs/CollectionDialog'; // Assuming you have a separate dialog for Collections
+import CardCountDisplay from '../other/CardCountDisplay';
 import { useCartStore } from '../../context/CartContext/CartContext';
 
 const useStyles = makeStyles({

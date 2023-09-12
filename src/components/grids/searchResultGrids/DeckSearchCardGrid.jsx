@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, useMediaQuery } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import DeckCard from '../cleanUp/DeckCard';
-import GenericCard from '../cards/GenericCard';
+import DeckCard from '../../cleanUp/DeckCard';
+import GenericCard from '../../cards/GenericCard';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -57,7 +57,7 @@ const DeckSearchCardGrid = ({ cards, userDecks }) => {
             cardInfo={card}
             userDecks={userDecks}
             context={'Deck'}
-            className={classes.card} // Passing down common className
+            // className={classes.card} // Passing down common className
           />
         </Grid>
       ))}

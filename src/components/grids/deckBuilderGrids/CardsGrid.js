@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import DeckCard from '../cleanUp/DeckCard';
-import GenericCard from '../cards/GenericCard';
+import DeckCard from '../../cleanUp/DeckCard';
+import GenericCard from '../../cards/GenericCard';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -74,9 +74,8 @@ const CardsGrid = ({ selectedCards }) => {
               <GenericCard
                 card={card}
                 cardInfo={card}
-                // className={classes?.deckCard}
                 context={'Deck'}
-                className={classes.card} // Passing down common className
+                // className={classes.card} // Passing down common className
               />
             </Grid>
           </CSSTransition>
