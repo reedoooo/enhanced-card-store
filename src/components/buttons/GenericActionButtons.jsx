@@ -1,24 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { makeStyles } from '@mui/styles';
 import CardActionButtons from './CardActionButtons';
-import CardCountDisplay from './CardCountDisplay';
 import DeckCardDialog from '../dialogs/DeckCardDialog';
+import { DeckContext } from '../../context/DeckContext/DeckContext';
+import { CartContext } from '../../context/CartContext/CartContext';
+import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-evenly', // Add this for even distribution of items
-    height: '100%', // This will ensure that the buttons take the available space
-  },
-  button: {
-    flex: 1,
-    height: 'auto', // Changed from '100%' to 'auto' for better flexibility
-    padding: '8px', // Increased padding slightly
-  },
-  fullWidthButton: {
-    width: '100%',
-    padding: '8px', // Increased padding slightly
+    justifyContent: 'space-evenly',
+    height: '100%',
   },
   actionContainer: {
     display: 'flex',
@@ -30,53 +23,46 @@ const useStyles = makeStyles({
   },
 });
 
-const GenericActionButtons = ({
-  card,
-  context,
-  addOne,
-  removeOne,
-  removeAll,
-  deckCardQuantity,
-}) => {
+const GenericActionButtons = ({ card, context, ...contextSpecificProps }) => {
   const classes = useStyles();
+  const deckContext = useContext(DeckContext);
+  const cartContext = useContext(CartContext);
+  const collectionContext = useContext(CollectionContext);
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleDialogClose = (newResourceInfo) => {
-    console.log('newResourceInfo', newResourceInfo);
-    addOne(card);
+  const handleDialogClose = () => {
     setOpenDialog(false);
   };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
+  const getContextSpecificProps = () => {
+    switch (context) {
+      case 'Deck':
+        return { ...deckContext, ...contextSpecificProps };
+      case 'Cart':
+        return { ...cartContext, ...contextSpecificProps };
+      case 'Collection':
+        return { ...collectionContext, ...contextSpecificProps };
+      default:
+        return {};
+    }
+  };
+
+  const contextProps = getContextSpecificProps();
+  const { addOne, removeOne, removeAll } = contextProps; // Now, these should be properly initialized.
 
   return (
     <div className={classes.root}>
-      {/* <CardCountDisplay
-        label={context}
-        quantity={deckCardQuantity}
-        className={classes.className}
-      /> */}
-      {/* <div className={classes.actionContainer}> */}
-      <CardCountDisplay
-        label={context}
-        quantity={deckCardQuantity}
-        className={classes.className}
-      />
       <CardActionButtons
         card={card}
-        quantity={deckCardQuantity}
-        addOne={addOne}
-        removeOne={removeOne}
-        removeAll={removeAll}
+        quantity={contextProps.deckCardQuantity} // Make sure deckCardQuantity exists on contextProps
         context={context}
-        buttonClassName={classes.button}
-        // fullWidthButtonClassName={classes.fullWidthButton}
         handleOpenDialog={handleOpenDialog}
       />
-      {/* </div> */}
+
       {context === 'Deck' && (
         <DeckCardDialog
           isOpen={openDialog}

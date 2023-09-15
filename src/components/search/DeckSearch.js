@@ -11,7 +11,7 @@ import {
 import { useCardStore } from '../../context/CardContext/CardStore';
 import { useTheme } from '@emotion/react';
 import SearchForm from './SearchForm';
-import DeckSearchCardGrid from '../grids/DeckSearchCardGrid';
+import DeckSearchCardGrid from '../grids/searchResultGrids/DeckSearchCardGrid';
 import CustomPagination from '../other/CustomPagination';
 
 const DeckSearch = ({ userDecks }) => {

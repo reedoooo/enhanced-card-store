@@ -1,20 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { ThemeProvider } from '@mui/material/styles';
-// import { useDispatch } from 'react-redux';
-// import axios from 'axios';
-// import { useCookies } from 'react-cookie';
-
 import Header from './components/headings/header/Header';
 import Footer from './components/headings/footer/Footer';
 import theme from './assets/styles/themes';
 import CartPage from './pages/CartPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
-import PracticeScraperPage from './components/cleanUp/PracticeScraperPage';
 import HomePage from './pages/HomePage';
 import StorePage from './pages/StorePage';
 import CollectionPage from './pages/CollectionPage';
+import ThreeJsCube from './ThreeJsCube'; // Import your Three.js component
+import CardDeckAnimation from './CardDeckAnimation';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
@@ -54,16 +51,6 @@ const App = () => {
               />
             }
           />
-          {/* <Route
-            exact
-            path="/scrapertester"
-            element={
-              <PracticeScraperPage
-                activeUserCartId={activeUserCartId}
-                setActiveUserCart={setActiveUserCartId}
-              />
-            }
-          /> */}
           <Route
             exact
             path="/collection"
@@ -84,6 +71,9 @@ const App = () => {
               />
             }
           />
+          {/* Add your Three.js cube component */}
+          <Route exact path="/threejs" element={<ThreeJsCube />} />
+          <Route exact path="/cardDeck" element={<CardDeckAnimation />} />
         </Routes>
         <Footer />
       </ThemeProvider>

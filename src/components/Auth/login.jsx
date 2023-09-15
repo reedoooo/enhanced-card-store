@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { When } from 'react-if';
 import { Button } from '@mui/material';
 import { AuthContext } from '../../context/Auth/authContext.js';
-import LoginForm from './LoginForm';
+import LoginForm from '../forms/LoginForm.jsx';
 import SignupSwitch from './SignupSwitch';
 
 function Login() {

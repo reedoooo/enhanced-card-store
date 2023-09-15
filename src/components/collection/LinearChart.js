@@ -1,41 +1,47 @@
-import React, { useRef, useEffect } from 'react';
-import { Chart, LinearScale } from 'chart.js';
+import React from 'react';
+import { ResponsiveLine } from '@nivo/line';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
-const LinearChart = ({ data, options }) => {
-  const chartRef = useRef(null);
-
-  useEffect(() => {
-    if (chartRef && chartRef.current) {
-      const ctx = chartRef.current.getContext('2d');
-      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-      gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)');
-      gradient.addColorStop(1, 'rgba(0, 255, 0, 0.5)');
-
-      const updatedData = {
-        ...data,
-        datasets: data.datasets.map((dataset) => ({
-          ...dataset,
-          borderColor: gradient,
-          pointBorderColor: gradient,
-          pointHoverBorderColor: gradient,
-        })),
-      };
-
-      const chartInstance = new Chart(chartRef.current, {
-        type: 'line',
-        data: updatedData,
-        options,
-      });
-
-      return () => {
-        chartInstance.destroy();
-      };
-    }
-  }, [data, options]);
+const LinearChart = ({ options }) => {
+  const { createUserCollection, collectionData, collectionValue } =
+    useCollectionStore();
 
   return (
-    <div>
-      <canvas ref={chartRef} />
+    <div style={{ height: '500px' }}>
+      <ResponsiveLine
+        data={collectionData}
+        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        xScale={{ type: 'point' }}
+        yScale={{
+          type: 'linear',
+          min: 'auto',
+          max: 'auto',
+          stacked: true,
+          reverse: false,
+        }}
+        axisTop={null}
+        axisRight={null}
+        axisBottom={{
+          orient: 'bottom',
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'cards',
+          legendOffset: 36,
+          legendPosition: 'middle',
+        }}
+        axisLeft={{
+          orient: 'left',
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'value',
+          legendOffset: -40,
+          legendPosition: 'middle',
+        }}
+        // You can add more options here to customize the appearance
+        // see https://nivo.rocks/line/
+      />
     </div>
   );
 };

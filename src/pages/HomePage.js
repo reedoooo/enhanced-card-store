@@ -3,6 +3,7 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Container, Typography, Box } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
+// import Hero from './pageStyles/Hero';
 
 const useStyles = makeStyles((theme) => ({
   arrowStyles: {
@@ -105,20 +106,24 @@ const HomePage = () => {
   const theme = useTheme();
 
   return (
-    <HomeBanner>
-      <Container
-        sx={{
-          padding: theme.spacing(3),
-          borderRadius: theme.spacing(2),
-          backgroundColor: theme.palette.background.paper,
-          boxShadow: theme.shadows[10],
-        }}
-        maxWidth="md"
-      >
-        <WelcomeMessage />
-        <CarouselContainer />
-      </Container>
-    </HomeBanner>
+    <>
+      {/* <Hero /> */}
+
+      <HomeBanner>
+        <Container
+          sx={{
+            padding: theme.spacing(3),
+            borderRadius: theme.spacing(2),
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[10],
+          }}
+          maxWidth="md"
+        >
+          <WelcomeMessage />
+          <CarouselContainer />
+        </Container>
+      </HomeBanner>
+    </>
   );
 };
 

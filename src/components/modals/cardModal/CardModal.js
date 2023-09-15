@@ -19,7 +19,6 @@ import {
 } from 'react-icons/fa';
 import { makeStyles } from '@mui/styles';
 import placeholderImage from '../../../assets/placeholder.jpeg';
-import CartActionButtons from '../../buttons/CartActionButtons';
 import {
   CartContext,
   useCartStore,
@@ -28,7 +27,7 @@ import CardDetailsContainer from './CardDetailsContainer';
 import CollectionActionButtons from '../../buttons/CollectionActionButtons';
 import GenericActionButtons from '../../buttons/GenericActionButtons';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import CollectionDialog from '../../buttons/CollectionDialog';
+import CollectionDialog from '../../dialogs/CollectionDialog';
 
 const useStyles = (context) =>
   makeStyles((theme) => ({
@@ -59,7 +58,7 @@ const useStyles = (context) =>
     },
   }));
 
-const CardModal = ({ isOpen, onClose, card }) => {
+const CardModal = ({ isOpen, onClose, card, context }) => {
   const classes = useStyles();
   const { getCardQuantity } = useContext(CartContext);
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
@@ -88,14 +87,16 @@ const CardModal = ({ isOpen, onClose, card }) => {
             />
             <GenericActionButtons
               card={card}
-              storeHook={useCartStore}
+              // storeHook={useCartStore}
+              context={context}
               label="In Cart"
               className="some-cart-class"
             />
             <GenericActionButtons
               card={card}
-              storeHook={useCollectionStore}
+              // storeHook={useCollectionStore}
               dialogComponent={CollectionDialog}
+              context={context}
               label="In Collection"
               className="some-collection-class"
             />

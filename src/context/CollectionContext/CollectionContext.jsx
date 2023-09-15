@@ -40,6 +40,8 @@ export const CollectionProvider = ({ children }) => {
     totalPrice: 0,
   });
   const [allCollections, setAllCollections] = useState([]);
+  const [allCardPrices, setAllCardPrices] = useState([]);
+  const [prevTotalQuantity, setPrevTotalQuantity] = useState(0);
   const [selectedCollection, setSelectedCollection] = useState({
     _id: '',
     cards: [],
@@ -47,6 +49,16 @@ export const CollectionProvider = ({ children }) => {
     totalPrice: 0,
   });
   const userId = cookies.userCookie?.id;
+
+  const calculateAndUpdateTotalPrice = (collection) => {
+    let totalPrice = 0;
+    if (collection && collection.cards) {
+      totalPrice = collection.cards.reduce((total, card) => {
+        return total + card.price * card.quantity;
+      }, 0);
+    }
+    return totalPrice;
+  };
 
   const fetchCollectionsForUser = useCallback(async () => {
     try {
@@ -75,6 +87,12 @@ export const CollectionProvider = ({ children }) => {
       const userCollections = await fetchCollectionsForUser();
       if (userCollections && userCollections.length > 0) {
         const uniqueCollections = removeDuplicateCollections(userCollections);
+
+        // Initialize totalPrice for each collection based on its cards
+        uniqueCollections.forEach((collection) => {
+          collection.totalPrice = calculateAndUpdateTotalPrice(collection);
+        });
+
         setAllCollections(uniqueCollections);
         setCollectionData(uniqueCollections[0]);
       }
@@ -117,11 +135,11 @@ export const CollectionProvider = ({ children }) => {
       const activeCollection = selectedCollection._id
         ? selectedCollection
         : allCollections[0];
-
       let cardPrice = 0;
+
       if (
         card.card_prices &&
-        card.card_prices[0] &&
+        card.card_prices.length > 0 &&
         card.card_prices[0].tcgplayer_price
       ) {
         cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
@@ -134,6 +152,7 @@ export const CollectionProvider = ({ children }) => {
       // Find the card index in the current state
       const cardIndex = currentCards.findIndex((item) => item.id === card.id);
       if (isAdding) {
+        setAllCardPrices([...allCardPrices, { cardId: card.id, cardPrice }]);
         if (cardIndex !== -1) {
           currentCards[cardIndex].quantity += 1;
         } else {
@@ -141,6 +160,10 @@ export const CollectionProvider = ({ children }) => {
         }
         currentTotalPrice += cardPrice;
       } else {
+        setAllCardPrices((prevCardValues) =>
+          prevCardValues.filter((val) => val !== cardPrice)
+        );
+
         if (cardIndex !== -1) {
           currentCards[cardIndex].quantity -= 1;
           if (currentCards[cardIndex].quantity <= 0) {
@@ -149,9 +172,12 @@ export const CollectionProvider = ({ children }) => {
           currentTotalPrice -= cardPrice;
         }
       }
-      currentTotalPrice = Math.max(currentTotalPrice, 0);
-
+      currentTotalPrice = calculateAndUpdateTotalPrice({
+        ...activeCollection,
+        cards: currentCards,
+      });
       console.log('activeCollection:', activeCollection);
+      console.log('currentTotalPrice:', currentTotalPrice);
       const collectionId = activeCollection._id;
       console.log('currentCards:', currentCards);
       console.log('collectionId:', collectionId);
@@ -162,7 +188,7 @@ export const CollectionProvider = ({ children }) => {
         // Send a PUT request to the server to update the collection
         const updatedCollection = await fetchWrapper(url, 'PUT', {
           cards: currentCards,
-          totalPrice: currentTotalPrice, // Updating the total price here
+          totalPrice: currentTotalPrice,
         });
 
         // Update the state based on the server's response
@@ -179,31 +205,58 @@ export const CollectionProvider = ({ children }) => {
         console.error(`Failed to update the collection: ${error.message}`);
       }
     },
-    [selectedCollection, allCollections, userId, updateCollectionData]
+    [
+      selectedCollection,
+      allCollections,
+      userId,
+      updateCollectionData,
+      allCardPrices,
+    ]
   );
 
-  const saveEditedCollection = async (editedCollection) => {
-    try {
-      const url = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections/${editedCollection._id}`;
+  const saveEditedCollection = useCallback(
+    async (editedCollection) => {
+      try {
+        const { cards: editedCards } = editedCollection;
+        const { cards: currentCards } = selectedCollection;
 
-      // Send a PUT request to the server to update the collection
-      const updatedCollection = await fetchWrapper(
-        url,
-        'PUT',
-        editedCollection
-      );
+        const toMap = (cards) => new Map(cards.map((card) => [card.id, card]));
 
-      // Update the local state with the updated collection. This is just a placeholder. The actual implementation might differ based on your state structure.
-      updateCollectionData(updatedCollection, setAllCollections);
-    } catch (error) {
-      console.error(`Failed to update the collection: ${error.message}`);
-    }
-  };
+        const editedCardMap = toMap(editedCards);
+        const currentCardMap = toMap(currentCards);
+
+        // Determine which cards to add or remove
+        editedCardMap.forEach((card, cardId) => {
+          const currentCard = currentCardMap.get(cardId);
+          const diff = currentCard
+            ? card.quantity - currentCard.quantity
+            : card.quantity;
+          const toAdd = diff > 0;
+          Array.from({ length: Math.abs(diff) }).forEach(() =>
+            addOrRemoveCard(card, toAdd)
+          );
+        });
+
+        // Remove cards not in the edited collection
+        currentCardMap.forEach((card, cardId) => {
+          if (!editedCardMap.has(cardId)) {
+            Array.from({ length: card.quantity }).forEach(() =>
+              addOrRemoveCard(card, false)
+            );
+          }
+        });
+      } catch (error) {
+        console.error(`Failed to update the collection: ${error.message}`);
+      }
+    },
+    [selectedCollection, addOrRemoveCard]
+  );
 
   const contextValue = useMemo(
     () => ({
       collectionData,
       allCollections,
+      allCardPrices,
       selectedCollection,
       setSelectedCollection,
       fetchAllCollectionsForUser: fetchAndSetCollections,
@@ -212,21 +265,67 @@ export const CollectionProvider = ({ children }) => {
       removeAllFromCollection: (card) => addOrRemoveCard(card, false),
       createUserCollection,
       saveEditedCollection,
-      getCardQuantity: (cardId) =>
-        selectedCollection?.cards?.find((item) => item.id === cardId)
-          ?.quantity || 0,
-      collectionCardQuantity: selectedCollection?.cards
-        ? selectedCollection.cards.reduce((acc, card) => acc + card.quantity, 0)
-        : 0,
-      collectionValue: selectedCollection?.totalPrice || 0,
+      getCardQuantity: (collectionId) => {
+        const collection = allCollections?.find(
+          (item) => item._id === collectionId
+        );
+        if (!collection) return 0;
+        return collection.cards.reduce((acc, card) => acc + card.quantity, 0);
+      },
+      getCollectionCardDetails: (collectionId) => {
+        const collection = allCollections?.find(
+          (item) => item._id === collectionId
+        );
+        if (!collection || !collection.cards) return [0, []];
+
+        const totalQuantity = collection.cards.reduce(
+          (acc, card) => acc + card.quantity,
+          0
+        );
+        const cardDetails = collection.cards.map((card) => ({
+          name: card.name,
+          quantity: card.quantity,
+        }));
+
+        return [totalQuantity, cardDetails];
+      },
+      // getCollectionValue, // add this
+      // getCardQuantity, // add this
+      // totalCardsInCollection, // add this
+      // getCollectionCardDetails, // add this
     }),
-    [collectionData, allCollections, selectedCollection]
+    [collectionData, allCollections, selectedCollection, allCardPrices]
   );
 
   useEffect(() => {
     console.log('collectionData has been updated:', collectionData);
   }, [collectionData]);
 
+  useEffect(() => {
+    if (allCollections.length > 0) {
+      const firstCollection = allCollections[0];
+      const totalQuantity = firstCollection.cards.reduce(
+        (acc, card) => acc + card.quantity,
+        0
+      );
+
+      // Only log when a new card has been added
+      if (totalQuantity > prevTotalQuantity) {
+        const cardDetails = firstCollection.cards.map((card) => ({
+          name: card.name,
+          quantity: card.quantity,
+        }));
+        console.log(
+          'A new card has been added. Updated totals:',
+          totalQuantity,
+          cardDetails
+        );
+      }
+
+      // Update the previous total quantity
+      setPrevTotalQuantity(totalQuantity);
+    }
+  }, [allCollections]);
   useEffect(() => {
     console.log('COLLECTIONCONTEXT:', contextValue);
     if (userId) fetchAndSetCollections();

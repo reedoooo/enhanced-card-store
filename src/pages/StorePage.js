@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Grid } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import SearchBar from '../components/search/SearchBar';
-import ProductGrid from '../components/grids/ProductGrid';
+import ProductGrid from '../components/grids/storeSearchResultsGrid/ProductGrid';
 import { useCardStore } from '../context/CardContext/CardStore';
 import { BeatLoader } from 'react-spinners';
 import { useCartStore } from '../context/CartContext/CartContext';
@@ -53,7 +53,7 @@ const SearchContainer = () => {
   );
 };
 
-const ProductContainer = () => {
+const CardContainer = () => {
   return (
     <Grid item xs={12}>
       <ProductGrid />
@@ -73,6 +73,7 @@ const StorePage = () => {
       fetchUserCart(userId).catch((err) =>
         console.error('Failed to get user cart', err)
       );
+      console.log('(STORE PAGE) -- (SEARCHDATA):', searchData);
     }
   }, [userId, fetchUserCart]);
 
@@ -89,7 +90,7 @@ const StorePage = () => {
       <StoreTitle>Store</StoreTitle>
       <Grid container>
         <SearchContainer />
-        <ProductContainer />
+        <CardContainer />
       </Grid>
     </StoreBanner>
   );

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import SelectCollection from './SelectCollection';
-import PortfolioContent from './PortfolioContent';
+import PortfolioContent from '../content/PortfolioContent';
 import { Box, Typography } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const updateChartData = (selectedCollection) => {
-  const labels = [];
+  const labels = [
+    '2023-09-01',
+    '2023-09-02',
+    '2023-09-03',
+    '2023-09-04',
+    '2023-09-05',
+  ];
   let portfolioValue = 0;
   const portfolioValues = [];
 
@@ -20,17 +26,21 @@ const updateChartData = (selectedCollection) => {
     datasets: [
       {
         label: 'Portfolio Value',
-        data: portfolioValues,
+        data: [1000, 1100, 1050, 1200, 1300],
         fill: false,
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        borderColor: 'rgba(255, 0, 0, 0.5)',
+        pointBackgroundColor: 'rgba(255, 0, 0, 0.5)',
+        pointBorderColor: 'rgba(255, 0, 0, 0.5)',
+        pointHoverBackgroundColor: 'rgba(255, 0, 0, 0.5)',
+        pointHoverBorderColor: 'rgba(255, 0, 0, 0.5)',
       },
     ],
   };
 };
 
 // Your main CardPortfolio component
-const CardPortfolio = ({ userCollection = [] }) => {
+const CardPortfolio = ({ userCollection = [], saveEditedCollection }) => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
   const [selectedCards, setSelectedCards] = useState([]);
@@ -43,6 +53,7 @@ const CardPortfolio = ({ userCollection = [] }) => {
   const {
     allCollections,
     selectedCollection,
+    // savedEditedCollection,
     setSelectedCollection,
     fetchAllCollectionsForUser,
     addOneToCollection,
@@ -61,6 +72,20 @@ const CardPortfolio = ({ userCollection = [] }) => {
   useEffect(() => {
     setChartData(updateChartData(selectedCollection));
   }, [selectedCollection]);
+
+  const handleSaveCollection = (collectionId) => {
+    console.log(`Collection with id, ${collectionId}, is saved`);
+    const foundCollection = allCollections.find(
+      (collection) => collection?._id === collectionId
+    );
+    console.log(`Collection Found: ${foundCollection}`);
+
+    if (foundCollection) {
+      // Call saveEditedCollection here, passed down from parent.
+      saveEditedCollection(foundCollection); // This is the new part
+      setShowCollections(true);
+    }
+  };
 
   const handleSelectCollection = (collectionId) => {
     console.log(`Collection with id, ${collectionId}, is selected`);
@@ -105,12 +130,24 @@ const CardPortfolio = ({ userCollection = [] }) => {
   const removeCard = (card) => {
     removeOneFromCollection(card);
   };
-
+  console.log('(3) -- CARDPORTFOLIO (USERCOLLECITON):', userCollection);
   if (showCollections) {
     return (
       <SelectCollection
         userCollection={userCollection}
         handleSelectCollection={handleSelectCollection}
+        handleSaveCollection={handleSaveCollection}
+        selectedCards={selectedCards}
+        error={error}
+        newCard={newCard}
+        setNewCard={setNewCard}
+        newCardPrice={newCardPrice}
+        setNewCardPrice={setNewCardPrice}
+        newCardCondition={newCardCondition}
+        setNewCardCondition={setNewCardCondition}
+        addCard={addCard}
+        chartData={chartData}
+        removeCard={removeCard}
       />
     );
   }

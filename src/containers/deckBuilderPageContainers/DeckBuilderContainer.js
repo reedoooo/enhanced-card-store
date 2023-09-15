@@ -15,9 +15,9 @@ const useStyles = makeStyles((theme) => ({
     width: '100%', // Add this to make sure the container takes full width
   },
   searchGrid: {
-    [theme.breakpoints.up('lg')]: { flexBasis: '30%' }, // Changed from 28%
-    [theme.breakpoints.between('md', 'lg')]: { flexBasis: '45%' }, // Changed from 42%
-    [theme.breakpoints.down('sm')]: { flexBasis: '40%' }, // Changed from 35%
+    [theme.breakpoints.up('lg')]: { flexBasis: '35%' }, // Increased from 30%
+    [theme.breakpoints.between('md', 'lg')]: { flexBasis: '50%' }, // Increased from 45%
+    [theme.breakpoints.down('sm')]: { flexBasis: '50%' }, // Increased from 40%
   },
   displayGrid: {
     flex: 1,
@@ -32,12 +32,12 @@ const DeckBuilderContainer = ({ userDecks }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const getXsValue = () => {
-    if (isSmallScreen || isMediumScreen) return 4;
+    if (isSmallScreen || isMediumScreen) return 5; // Increased from 4
     return 3;
   };
 
   const getDisplayXsValue = () => {
-    if (isSmallScreen || isMediumScreen) return 8;
+    if (isSmallScreen || isMediumScreen) return 7; // Decreased from 8
     return 9;
   };
 

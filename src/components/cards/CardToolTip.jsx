@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './deckcard.css'; // Assuming you have styles here
+import { commonStyles } from './cardStyles';
 
 const CardToolTip = ({ cardInfo, isHovering, isDeckModalOpen, tooltipRef }) => {
   useEffect(() => {
@@ -10,12 +10,18 @@ const CardToolTip = ({ cardInfo, isHovering, isDeckModalOpen, tooltipRef }) => {
     }
   }, [isHovering]);
 
+  const classes = commonStyles();
+
   return (
     <div
       ref={tooltipRef}
-      className={`tooltip ${isHovering && !isDeckModalOpen ? 'show' : ''}`}
+      className={`${classes.tooltip} ${
+        isHovering && !isDeckModalOpen ? 'show' : ''
+      }`}
     >
-      {cardInfo?.name && <h4 className="tooltip-title">{cardInfo.name}</h4>}
+      {cardInfo?.name && (
+        <h4 className={classes.tooltipTitle}>{cardInfo.name}</h4>
+      )}
       {cardInfo?.level && (
         <span>
           <strong>LV:</strong> {cardInfo.level}
