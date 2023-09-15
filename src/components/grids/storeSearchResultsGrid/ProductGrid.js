@@ -43,7 +43,7 @@ const ProductGrid = () => {
             key={`${card.id}-${index}`}
             className={classes.gridItem}
           >
-            <GenericCard card={card} context="Store" page="storepage" />
+            <GenericCard card={card} context="Cart" page="storepage" />
           </Grid>
         ))}
     </Grid>

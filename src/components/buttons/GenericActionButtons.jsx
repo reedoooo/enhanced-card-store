@@ -13,14 +13,6 @@ const useStyles = makeStyles({
     justifyContent: 'space-evenly',
     height: '100%',
   },
-  actionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    '@media (max-width:600px)': {
-      flexDirection: 'column',
-    },
-  },
 });
 
 const GenericActionButtons = ({ card, context, ...contextSpecificProps }) => {
@@ -38,35 +30,43 @@ const GenericActionButtons = ({ card, context, ...contextSpecificProps }) => {
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
+
   const getContextSpecificProps = () => {
     switch (context) {
       case 'Deck':
-        return { ...deckContext, ...contextSpecificProps };
+        return {
+          ...deckContext, // Spread the context to ensure all functions are included
+        };
       case 'Cart':
-        return { ...cartContext, ...contextSpecificProps };
+      case 'Store':
+        return {
+          ...cartContext, // Spread the context to ensure all functions are included
+        };
       case 'Collection':
-        return { ...collectionContext, ...contextSpecificProps };
+        return {
+          ...collectionContext, // Spread the context to ensure all functions are included
+        };
       default:
         return {};
     }
   };
 
   const contextProps = getContextSpecificProps();
-  const { addOne, removeOne, removeAll } = contextProps; // Now, these should be properly initialized.
 
   return (
     <div className={classes.root}>
       <CardActionButtons
         card={card}
-        quantity={contextProps.deckCardQuantity} // Make sure deckCardQuantity exists on contextProps
         context={context}
+        contextProps={contextProps}
         handleOpenDialog={handleOpenDialog}
       />
 
-      {context === 'Deck' && (
+      {(context === 'Deck' || context === 'Cart' || context === 'Store') && (
         <DeckCardDialog
           isOpen={openDialog}
           onClose={handleDialogClose}
+          context={context}
           card={card}
         />
       )}

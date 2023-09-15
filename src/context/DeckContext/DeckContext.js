@@ -86,13 +86,13 @@ export const DeckProvider = ({ children }) => {
     }
   }, [fetchDecksForUser, userId]);
 
-  const formatDeckData = (deckId, updatedDeck) => ({
-    _id: deckId,
-    userId,
-    name: deckData.name,
-    description: deckData.description,
-    cards: updatedDeck.map((card) => formatCardData(card)),
-  });
+  // const formatDeckData = (deckId, updatedDeck) => ({
+  //   _id: deckId,
+  //   userId,
+  //   name: deckData.name,
+  //   description: deckData.description,
+  //   cards: updatedDeck.map((card) => formatCardData(card)),
+  // });
 
   const formatCardData = (card) => ({
     id: card.id,
@@ -181,6 +181,7 @@ export const DeckProvider = ({ children }) => {
     const cardIndex = currentCards.findIndex((item) => item.id === card.id);
 
     if (isAdding) {
+      console.log('isAdding:', isAdding);
       if (cardIndex !== -1) {
         currentCards[cardIndex].quantity += 1;
       } else {
@@ -188,6 +189,7 @@ export const DeckProvider = ({ children }) => {
       }
       currentTotalPrice += cardPrice;
     } else {
+      console.log('isRemoving:', isRemoving);
       if (cardIndex !== -1) {
         currentCards[cardIndex].quantity -= 1;
         if (currentCards[cardIndex].quantity <= 0) {

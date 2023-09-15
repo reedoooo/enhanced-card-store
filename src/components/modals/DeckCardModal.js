@@ -17,7 +17,7 @@ const useStyles = (context) =>
     },
   });
 
-const DeckCardModal = ({ isOpen, onClose, card, userDecks }) => {
+const DeckCardModal = ({ isOpen, onClose, card, userDecks, context }) => {
   const classes = useStyles();
   if (!card) return null; // or some other placeholder
 

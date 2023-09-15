@@ -20,6 +20,7 @@ const CustomerForm = () => {
     [handleModalClose]
   );
 
+  console.log('CUSTOMER FORM QUANTITY FROM CARTDATA', cartData.quantity);
   return (
     <Container maxWidth={false}>
       <Box sx={{ width: '100%', padding: '2rem' }}>
@@ -44,7 +45,7 @@ const CustomerForm = () => {
         open={isModalOpen}
         onClose={handleModalClose}
         purchases={cartData.cart}
-        total={getTotalCost()}
+        total={getTotalCost}
         onToken={onToken}
       />
     </Container>

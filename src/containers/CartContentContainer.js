@@ -12,9 +12,9 @@ const CartContentContainer = ({
     <Box sx={{ flex: 1, marginRight: '2rem', flexGrow: '1' }}>
       {cartData.length > 0 ? (
         <CartContent
-          cartData={cartData}
-          calculateTotalPrice={calculateTotalPrice}
-          onQuantityChange={onQuantityChange}
+        // cartData={cartData}
+        // calculateTotalPrice={calculateTotalPrice}
+        // onQuantityChange={onQuantityChange}
         />
       ) : (
         <LoadingIndicator />

@@ -1,9 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
-import { CartContext } from '../../context/CartContext/CartContext';
-import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,26 +26,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CardActionButtons = ({ card, quantity, context }) => {
+const CardActionButtons = ({
+  card,
+  quantity,
+  context,
+  contextProps, // Pass contextProps from the parent component
+}) => {
   const classes = useStyles();
-  const deckContext = useContext(DeckContext);
-  const cartContext = useContext(CartContext);
-  const collectionContext = useContext(CollectionContext);
-
-  const getContextSpecificProps = () => {
-    switch (context) {
-      case 'Deck':
-        return deckContext;
-      case 'Cart':
-        return cartContext;
-      case 'Collection':
-        return collectionContext;
-      default:
-        return {};
-    }
-  };
-
-  const contextProps = getContextSpecificProps();
+  console.log('contextProps:', contextProps);
 
   return (
     <div className={classes.root}>
@@ -77,7 +62,7 @@ const CardActionButtons = ({ card, quantity, context }) => {
           variant="contained"
           color="primary"
           className={classes.fullWidthButton}
-          onClick={() => contextProps.addOne(card)}
+          onClick={() => contextProps[`addOneTo${context}`](card)}
         >
           {`Add To ${context}`}
         </Button>

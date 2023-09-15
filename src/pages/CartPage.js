@@ -21,6 +21,7 @@ const CartPage = () => {
     cartData,
     addOneToCart,
     removeOneFromCart,
+    cartCardQuantity,
     getTotalCost,
     loading,
     error,
@@ -36,8 +37,8 @@ const CartPage = () => {
   if (pageLoading || loading) {
     return <LoadingIndicator />;
   }
-
-  const calculateTotalPrice = getTotalCost();
+  console.log('CART PAGE (QUANTITY):', cartCardQuantity);
+  const calculateTotalPrice = getTotalCost;
 
   const handleModifyItemInCart = async (cardId, operation) => {
     try {
@@ -79,9 +80,7 @@ const CartPage = () => {
                 calculateTotalPrice={calculateTotalPrice}
                 onQuantityChange={handleModifyItemInCart}
               />
-              <CustomerFormContainer
-                calculateTotalPrice={calculateTotalPrice}
-              />
+              <CustomerFormContainer />
             </Box>
           </CardContent>
         </CardElement>

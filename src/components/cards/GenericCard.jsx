@@ -20,17 +20,15 @@ import {
   deckCardStyles,
   productCardStyles,
 } from './cardStyles';
-import CardModal from '../modals/cardModal/CardModal';
+// import CardModal from '../modals/cardModal/CardModal';
 import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
 import GenericCardModal from '../modals/GenericCardModal';
 
 const GenericCard = ({ card, context, cardInfo }) => {
   const deckContext = useContext(DeckContext);
   const cartContext = useContext(CartContext);
-  // const cardContext = useContext(CardContext);
   const collectionContext = useContext(CollectionContext);
 
-  // New state for button variant
   const [buttonVariant, setButtonVariant] = useState('contained');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isHovering, setHovering] = useState(false);
@@ -48,16 +46,10 @@ const GenericCard = ({ card, context, cardInfo }) => {
     width: '100%',
   };
 
-  // Function to handle window resize events
   const handleResize = () => {
-    if (window.innerWidth < 768) {
-      setButtonVariant('outlined');
-    } else {
-      setButtonVariant('contained');
-    }
+    setButtonVariant(window.innerWidth < 768 ? 'outlined' : 'contained');
   };
 
-  // Adding window resize event listener
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -74,52 +66,49 @@ const GenericCard = ({ card, context, cardInfo }) => {
     }
   }, [isHovering]);
 
-  const classes = mergeStyles(
-    commonStyles(),
-    context === 'Deck' ? deckCardStyles() : productCardStyles()
-  );
-
-  // console.log(
-  //   'classes.card type:',
-  //   typeof classes.card,
-  //   'value:',
-  //   classes.card
-  // );
-
-  const openProductModal = () => {
-    openModal();
+  const styles = {
+    Deck: deckCardStyles(),
+    Store: productCardStyles(),
+    Cart: productCardStyles(),
+    Collection: productCardStyles(),
   };
 
-  // Function to handle context-specific actions
-  const getContextSpecificProps = () => {
-    switch (context) {
-      case 'Deck':
-        return {
-          deckCardQuantity: deckContext.getCardQuantity(card.id),
-          addOne: deckContext.addOneToDeck(card),
-          removeOne: deckContext.removeOneFromDeck(card),
-        };
-      case 'Cart':
-      case 'Store':
-        return {
-          deckCardQuantity: cartContext.getCardQuantity(card.id),
-          addOne: cartContext.addOneToCart(card),
-          removeOne: cartContext.removeOneFromCart(card),
-          removeAll: cartContext.deleteFromCart(card),
-        };
-      case 'Collection':
-        return {
-          deckCardQuantity: collectionContext.getCardQuantity(card.id),
-          addOne: collectionContext.addOneToCollection(card),
-          removeOne: collectionContext.removeOneFromCollection(card),
-          removeAll: collectionContext.removeAllFromCollection(card),
-        };
-      default:
-        return {};
+  const classes = mergeStyles(commonStyles(), styles[context] || {});
+
+  const openProductModal = () => openModal();
+  const getContextSpecificProps = (context, contextContext) => {
+    const contextProps = {
+      deckCardQuantity: 0,
+      addOne: () => console.log(`addOneTo${context}`),
+      removeOne: () => console.log(`removeOneFrom${context}`),
+      removeAll: () => console.log(`removeAllFrom${context}`),
+    };
+
+    if (contextContext) {
+      contextProps.deckCardQuantity = contextContext.getCardQuantity(card.id);
+      contextProps.addOne =
+        contextContext.addOneToDeck ||
+        contextContext.addOneToCart ||
+        contextContext.addOneToCollection;
+      contextProps.removeOne =
+        contextContext.removeOneFromDeck ||
+        contextContext.removeOneFromCart ||
+        contextContext.removeOneFromCollection;
+      contextProps.removeAll = contextContext.removeAllFromCollection;
     }
+
+    return contextProps;
   };
 
-  const contextProps = getContextSpecificProps();
+  const contextMapping = {
+    Deck: deckContext,
+    Cart: cartContext,
+    Collection: collectionContext,
+  };
+
+  const contextContext = contextMapping[context];
+
+  const contextProps = getContextSpecificProps(context, contextContext);
 
   const StoreCardContent = () => (
     <>
@@ -204,8 +193,9 @@ const GenericCard = ({ card, context, cardInfo }) => {
               <GenericActionButtons
                 card={card}
                 context={context}
+                contextProps={contextProps}
+                handleOpenDialog={openProductModal}
                 variant={buttonVariant}
-                {...contextProps}
                 style={buttonStyles}
               />
             </div>
@@ -224,8 +214,8 @@ const GenericCard = ({ card, context, cardInfo }) => {
           <GenericActionButtons
             card={card}
             context={context}
+            contextProps={contextProps}
             variant={buttonVariant}
-            {...contextProps}
             style={buttonStyles}
           />
         )}
@@ -254,6 +244,8 @@ const GenericCard = ({ card, context, cardInfo }) => {
         <GenericCardModal
           isOpen={isModalOpen}
           classes={classes}
+          contextProps={contextProps}
+          context={context}
           onClose={closeModal}
           card={card}
           cardInfo={cardInfo}

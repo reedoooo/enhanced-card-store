@@ -14,7 +14,13 @@ const CartContent = () => {
       {cartData.cart && cartData.cart.length > 0 ? (
         cartData.cart.map((card, index) =>
           card ? (
-            <CartItem key={card.id + index} card={card} page={page} />
+            <CartItem
+              key={card.id + index}
+              index={index}
+              card={card}
+              context={'Cart'}
+              page={page}
+            />
           ) : null
         )
       ) : (
@@ -23,7 +29,7 @@ const CartContent = () => {
         </Typography>
       )}
       {cartData.cart && cartData.cart.length > 0 && (
-        <CartTotal total={getTotalCost()} />
+        <CartTotal total={getTotalCost} />
       )}
     </CartContainer>
   );
