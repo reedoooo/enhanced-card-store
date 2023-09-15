@@ -10,6 +10,9 @@ package-lock.json
 # testing
 /coverage
 
+# card images
+/public/images/monster
+
 # production
 /build
 
@@ -24,3 +27,4 @@ package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/public/images/monster
