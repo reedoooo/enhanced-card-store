@@ -10,7 +10,7 @@ import {
 import CardToolTip from './CardToolTip';
 import DeckCardDialog from '../dialogs/DeckCardDialog';
 import CardMediaSection from '../media/CardMediaSection';
-import GenericActionButtons from '../buttons/GenericActionButtons';
+import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/placeholder.jpeg';
 import { CartContext } from '../../context/CartContext/CartContext';
 import { DeckContext } from '../../context/DeckContext/DeckContext';

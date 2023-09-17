@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Button, TextField, Paper, Typography } from '@mui/material';
 
@@ -30,40 +30,32 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     fontSize: 18,
     padding: theme.spacing(1, 4),
-    border: `2px solid ${theme.palette.secondary.main}`,
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText,
-    '&:hover': {
-      backgroundColor: theme.palette.secondary.dark,
-      borderColor: theme.palette.secondary.dark,
-    },
   },
 }));
 
-const CollectionEditPanel = ({ selectedCollection, onSave }) => {
+const CollectionEditPanel = ({
+  collection,
+  onSave,
+  isNew,
+  name,
+  setName,
+  setDescription,
+  description,
+}) => {
   const classes = useStyles();
-  const [name, setName] = useState(selectedCollection?.name || '');
-  const [description, setDescription] = useState(
-    selectedCollection?.description || ''
-  );
 
   const handleSave = () => {
     onSave({
-      ...selectedCollection,
+      ...collection,
       name,
       description,
     });
   };
 
-  // // Inside CollectionEditPanel
-  // const handleFinishEditing = () => {
-  //   onSave(editedCollection);
-  // };
-
   return (
     <Paper elevation={6} className={classes.root}>
       <Typography variant="h5" className={classes.header}>
-        Edit Collection
+        {isNew ? 'Create Collection' : 'Edit Collection'}
       </Typography>
       <TextField
         className={classes.textField}
@@ -88,7 +80,7 @@ const CollectionEditPanel = ({ selectedCollection, onSave }) => {
         className={classes.saveButton}
         onClick={handleSave}
       >
-        Save Changes
+        {isNew ? 'Create Collection' : 'Save Changes'}
       </Button>
     </Paper>
   );

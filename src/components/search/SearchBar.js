@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Box, Typography, Container } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
-import SearchButton from '../buttons/SearchButton';
+import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 import CustomSelector from '../other/CustomSelector';
 import { useUtility } from '../../context/UtilityContext/UtilityContext';

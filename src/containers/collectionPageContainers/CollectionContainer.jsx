@@ -1,17 +1,23 @@
 import React from 'react';
-import CardPortfolio from '../../components/collection/CardPortfolio';
+import { makeStyles } from '@mui/styles';
 
-const CollectionContainer = ({ userCollection, saveEditedCollection }) => {
-  console.log('(2) -- COLLECTION CONTAINER (USERCOLLECTION):', userCollection);
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    backgroundColor: '#f1f1f1',
+    padding: theme.spacing(2),
+    width: '100%',
+  },
+}));
 
-  return (
-    <div>
-      <CardPortfolio
-        userCollection={userCollection}
-        saveEditedCollection={saveEditedCollection}
-      />
-    </div>
-  );
+const CollectionContainer = ({ children }) => {
+  const classes = useStyles();
+
+  return <div className={classes.container}>{children}</div>;
 };
 
 export default CollectionContainer;

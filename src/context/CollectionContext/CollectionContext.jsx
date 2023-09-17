@@ -7,327 +7,246 @@ import React, {
   useMemo,
 } from 'react';
 import { useCookies } from 'react-cookie';
+import {
+  initialCollectionState,
+  fetchWrapper,
+  removeDuplicateCollections,
+  calculateAndUpdateTotalPrice,
+  // getCardQuantity,
+  getTotalCost,
+  getCardPrice,
+} from './exampleImport.js'; // Adjust the import according to where you store these functions
 
 export const CollectionContext = createContext(undefined);
 
-// Fetch function with proper error handling
-const fetchWrapper = async (url, method, body = null) => {
-  const options = {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    ...(body && { body: JSON.stringify(body) }),
-  };
-  const response = await fetch(url, options);
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  return await response.json();
-};
-
-// Function to remove duplicate collections
-const removeDuplicateCollections = (collections) => {
-  const uniqueCollections = {};
-  collections.forEach((collection) => {
-    uniqueCollections[collection._id] = collection;
-  });
-  return Object.values(uniqueCollections);
-};
-
 export const CollectionProvider = ({ children }) => {
-  const [cookies] = useCookies(['userCookie']);
-  const [collectionData, setCollectionData] = useState({
-    _id: '',
-    cards: [],
-    quantity: 0,
-    totalPrice: 0,
-  });
+  const [collectionData, setCollectionData] = useState(initialCollectionState);
   const [allCollections, setAllCollections] = useState([]);
+  // const [totalCost, setTotalCost] = useState(0);
   const [allCardPrices, setAllCardPrices] = useState([]);
-  const [prevTotalQuantity, setPrevTotalQuantity] = useState(0);
-  const [selectedCollection, setSelectedCollection] = useState({
-    _id: '',
-    cards: [],
-    quantity: 0,
-    totalPrice: 0,
-  });
+  const [prevQuantity, setPrevQuantity] = useState(0);
+  const [selectedCollection, setSelectedCollection] = useState(
+    !allCollections.length > 0 ? initialCollectionState : null
+  );
+  const [cookies] = useCookies(['userCookie']);
   const userId = cookies.userCookie?.id;
+  const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
 
-  const calculateAndUpdateTotalPrice = (collection) => {
-    let totalPrice = 0;
-    if (collection && collection.cards) {
-      totalPrice = collection.cards.reduce((total, card) => {
-        return total + card.price * card.quantity;
-      }, 0);
-    }
-    return totalPrice;
+  // getCardPrice(selectedCollection);
+  console.log(
+    'SELECTED COLLECTION CARD PRICE:',
+    getCardPrice(selectedCollection)
+  );
+
+  // Calculate the total cost of the selected collection
+  const totalCost = useMemo(() => {
+    return selectedCollection?.cards.reduce((total, card) => {
+      return card.card_prices?.[0]?.tcgplayer_price
+        ? total + parseFloat(card.card_prices[0].tcgplayer_price)
+        : total;
+    }, 0);
+  }, [selectedCollection]);
+
+  // const getCollectionQuantity = useCallback(() => {
+  //   return (
+  //     selectedCollection?.cards?.reduce(
+  //       (acc, card) => acc + card.quantity,
+  //       0
+  //     ) || 0
+  //   );
+  // }, [selectedCollection]);
+  const getCardQuantity = (cardId, cards) => {
+    const card = cards?.find((item) => item.id === cardId);
+    return card?.quantity || 0;
   };
 
-  const fetchCollectionsForUser = useCallback(async () => {
+  const fetchAndSetCollections = useCallback(async () => {
+    if (!userId) return;
     try {
-      const url = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections`;
-      return await fetchWrapper(url, 'GET');
+      const collections = await fetchWrapper(
+        `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections`,
+        'GET'
+      );
+      const uniqueCollections = removeDuplicateCollections(collections);
+      uniqueCollections.forEach((collection) => {
+        collection.totalPrice = calculateAndUpdateTotalPrice(collection);
+      });
+      setAllCollections(uniqueCollections);
+      setSelectedCollection(uniqueCollections[0]);
+      updateActiveCollection(
+        uniqueCollections[0],
+        uniqueCollections[0],
+        setAllCollections
+      );
     } catch (error) {
-      console.error(`Failed to fetch collections for user: ${error.message}`);
-      return null;
+      console.error(`Failed to fetch collections: ${error.message}`);
     }
   }, [userId]);
 
+  const findCollectionIndex = (collections, id) => {
+    return collections?.findIndex((collection) => collection._id === id) ?? -1;
+  };
+
   const updateCollectionData = useCallback((newData, updaterFn) => {
-    updaterFn((prevCollections) => {
-      const existingIndex = prevCollections.findIndex(
-        (collection) => collection._id === newData._id
-      );
+    updaterFn((prevCollections = []) => {
+      const existingIndex = findCollectionIndex(prevCollections, newData._id);
+
       if (existingIndex === -1) return [...prevCollections, newData];
+
       const updatedCollections = [...prevCollections];
       updatedCollections[existingIndex] = newData;
       return updatedCollections;
     });
   }, []);
 
-  const fetchAndSetCollections = useCallback(async () => {
+  const createUserCollection = async (userId, name, description) => {
     try {
-      const userCollections = await fetchCollectionsForUser();
-      if (userCollections && userCollections.length > 0) {
-        const uniqueCollections = removeDuplicateCollections(userCollections);
-
-        // Initialize totalPrice for each collection based on its cards
-        uniqueCollections.forEach((collection) => {
-          collection.totalPrice = calculateAndUpdateTotalPrice(collection);
-        });
-
-        setAllCollections(uniqueCollections);
-        setCollectionData(uniqueCollections[0]);
-      }
-    } catch (error) {
-      console.error(`Failed to fetch collections: ${error.message}`);
-    }
-  }, [fetchCollectionsForUser]);
-
-  const createUserCollection = useCallback(
-    async (userId, newCollectionInfo) => {
-      try {
-        const url = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections/newCollection`;
-        const initialCollection = newCollectionInfo.initialCard
-          ? [newCollectionInfo.initialCard]
-          : [];
-        const data = await fetchWrapper(url, 'POST', {
-          ...newCollectionInfo,
-          cards: initialCollection,
+      // Check if selectedCollection is defined and has _id property
+      if (selectedCollection && selectedCollection._id) {
+        const url = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections/newCollection/${userId}`;
+        const initialData = {
+          name,
+          description,
           userId,
-        });
-        setCollectionData(data);
-        setSelectedCollection(data);
-        updateCollectionData(data, setAllCollections);
-      } catch (error) {
-        console.error(`Failed to create a new collection: ${error.message}`);
-      }
-    },
-    [updateCollectionData]
-  );
+          totalPrice: totalCost,
+          quantity: getCardQuantity(selectedCollection._id),
+          allCardPrices: [],
+          cards: [],
+        };
 
-  const addOrRemoveCard = useCallback(
-    async (card, isAdding) => {
-      if (
-        !selectedCollection._id &&
-        (!allCollections[0] || !allCollections[0]._id)
-      ) {
-        console.error('No valid collection to add or remove a card.');
-        return;
-      }
-      const activeCollection = selectedCollection._id
-        ? selectedCollection
-        : allCollections[0];
-      let cardPrice = 0;
-
-      if (
-        card.card_prices &&
-        card.card_prices.length > 0 &&
-        card.card_prices[0].tcgplayer_price
-      ) {
-        cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
-      }
-
-      // Create a copy of the current state
-      const currentCards = [...(activeCollection?.cards || [])];
-      let currentTotalPrice = activeCollection.totalPrice || 0;
-
-      // Find the card index in the current state
-      const cardIndex = currentCards.findIndex((item) => item.id === card.id);
-      if (isAdding) {
-        setAllCardPrices([...allCardPrices, { cardId: card.id, cardPrice }]);
-        if (cardIndex !== -1) {
-          currentCards[cardIndex].quantity += 1;
-        } else {
-          currentCards.push({ ...card, quantity: 1, price: cardPrice });
-        }
-        currentTotalPrice += cardPrice;
-      } else {
-        setAllCardPrices((prevCardValues) =>
-          prevCardValues.filter((val) => val !== cardPrice)
+        const { savedCollection } = await fetchWrapper(
+          url,
+          'POST',
+          initialData
         );
 
-        if (cardIndex !== -1) {
-          currentCards[cardIndex].quantity -= 1;
-          if (currentCards[cardIndex].quantity <= 0) {
-            currentCards.splice(cardIndex, 1);
-          }
-          currentTotalPrice -= cardPrice;
-        }
-      }
-      currentTotalPrice = calculateAndUpdateTotalPrice({
-        ...activeCollection,
-        cards: currentCards,
-      });
-      console.log('activeCollection:', activeCollection);
-      console.log('currentTotalPrice:', currentTotalPrice);
-      const collectionId = activeCollection._id;
-      console.log('currentCards:', currentCards);
-      console.log('collectionId:', collectionId);
-      try {
-        // Replace this URL with your server's URL and route for updating the collection
-        const url = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections/${collectionId}`;
-
-        // Send a PUT request to the server to update the collection
-        const updatedCollection = await fetchWrapper(url, 'PUT', {
-          cards: currentCards,
-          totalPrice: currentTotalPrice,
-        });
-
-        // Update the state based on the server's response
-        setSelectedCollection({
-          ...updatedCollection,
-          totalPrice: currentTotalPrice,
-        });
-        updateCollectionData(
-          { ...updatedCollection, totalPrice: currentTotalPrice },
+        updateCollectionData(savedCollection, setAllCollections);
+        setCollectionData(savedCollection);
+        updateActiveCollection(
+          savedCollection,
+          savedCollection,
           setAllCollections
         );
-      } catch (error) {
-        // If the PUT request fails, log the error and revert to the previous state
-        console.error(`Failed to update the collection: ${error.message}`);
+      } else {
+        console.error(
+          'Selected collection is undefined or missing _id property.'
+        );
       }
+    } catch (error) {
+      console.error(`Failed to create a new collection: ${error.message}`);
+    }
+  };
+
+  const addOrRemoveCard = useCallback(
+    async (card, cardInfo, operation) => {
+      console.log('-----------OPERATION---------:', operation);
+      // Validate required variables
+      if (!selectedCollection?._id && !allCollections[0]?._id) {
+        console.error('No valid collection selected.');
+        return;
+      }
+
+      const collectionId = selectedCollection?._id || allCollections[0]._id;
+      const activeCollection = selectedCollection || allCollections[0];
+
+      let currentCards = activeCollection?.cards || [];
+      let updatedCards;
+
+      // This part checks the 'operation' parameter
+      if (operation === 'add') {
+        updatedCards = handleCardAddition(currentCards, card);
+      } else if (operation === 'remove') {
+        updatedCards = handleCardRemoval(currentCards, card);
+        if (updatedCards === null) return;
+      } else {
+        console.error('Invalid operation.');
+        return;
+      }
+
+      const currentTotalPrice = activeCollection.getCardPrice || 0;
+      const updateInfo = {
+        ...cardInfo,
+        cards: updatedCards,
+        userId: userId,
+        totalPrice: currentTotalPrice,
+      };
+
+      // Update selected collection and all collections
+      // setSelectedCollection({ ...activeCollection, ...updateInfo });
+
+      setCollectionData({ ...activeCollection, ...updateInfo });
+      updateCollectionData(updateInfo, setAllCollections);
+      updateActiveCollection({
+        ...updateInfo,
+        // activeCollection,
+        // setAllCollections,
+      });
     },
-    [
-      selectedCollection,
-      allCollections,
-      userId,
-      updateCollectionData,
-      allCardPrices,
-    ]
+    [selectedCollection, allCollections, userId]
   );
 
-  const saveEditedCollection = useCallback(
-    async (editedCollection) => {
-      try {
-        const { cards: editedCards } = editedCollection;
-        const { cards: currentCards } = selectedCollection;
+  const handleCardAddition = (currentCards, cardToAdd) => {
+    const cardIndex = currentCards.findIndex((c) => c.id === cardToAdd.id);
+    if (cardIndex !== -1) {
+      currentCards[cardIndex].quantity++;
+    } else {
+      currentCards.push({ ...cardToAdd, quantity: 1 });
+    }
+    return [...currentCards];
+  };
 
-        const toMap = (cards) => new Map(cards.map((card) => [card.id, card]));
+  const handleCardRemoval = (currentCards, cardToRemove) => {
+    const cardIndex = currentCards.findIndex((c) => c.id === cardToRemove.id);
+    if (cardIndex === -1) {
+      console.error('Card not found in the collection.');
+      return null;
+    }
+    currentCards[cardIndex].quantity--;
 
-        const editedCardMap = toMap(editedCards);
-        const currentCardMap = toMap(currentCards);
+    if (currentCards[cardIndex].quantity <= 0) {
+      currentCards.splice(cardIndex, 1);
+    }
+    return currentCards;
+  };
 
-        // Determine which cards to add or remove
-        editedCardMap.forEach((card, cardId) => {
-          const currentCard = currentCardMap.get(cardId);
-          const diff = currentCard
-            ? card.quantity - currentCard.quantity
-            : card.quantity;
-          const toAdd = diff > 0;
-          Array.from({ length: Math.abs(diff) }).forEach(() =>
-            addOrRemoveCard(card, toAdd)
-          );
-        });
+  const updateActiveCollection = async (updateInfo) => {
+    if (!updateInfo) {
+      console.error('One of the required variables is undefined');
+      return;
+    }
 
-        // Remove cards not in the edited collection
-        currentCardMap.forEach((card, cardId) => {
-          if (!editedCardMap.has(cardId)) {
-            Array.from({ length: card.quantity }).forEach(() =>
-              addOrRemoveCard(card, false)
-            );
-          }
-        });
-      } catch (error) {
-        console.error(`Failed to update the collection: ${error.message}`);
-      }
-    },
-    [selectedCollection, addOrRemoveCard]
-  );
+    try {
+      const url = `${BASE_API_URL}/${updateInfo.userId}/collections/${updateInfo.activeCollection._id}`;
+      const updatedCollection = await fetchWrapper(url, 'PUT', updateInfo);
+
+      updateCollectionData(
+        { ...updatedCollection, ...updateInfo },
+        setAllCollections
+      );
+      setSelectedCollection(updatedCollection);
+    } catch (error) {
+      console.error(`Failed to update the collection: ${error.message}`);
+    }
+  };
 
   const contextValue = useMemo(
     () => ({
-      collectionData,
       allCollections,
-      allCardPrices,
       selectedCollection,
-      setSelectedCollection,
-      fetchAllCollectionsForUser: fetchAndSetCollections,
-      addOneToCollection: (card) => addOrRemoveCard(card, true),
-      removeOneFromCollection: (card) => addOrRemoveCard(card, false),
-      removeAllFromCollection: (card) => addOrRemoveCard(card, false),
+      totalCost,
       createUserCollection,
-      saveEditedCollection,
-      getCardQuantity: (collectionId) => {
-        const collection = allCollections?.find(
-          (item) => item._id === collectionId
-        );
-        if (!collection) return 0;
-        return collection.cards.reduce((acc, card) => acc + card.quantity, 0);
-      },
-      getCollectionCardDetails: (collectionId) => {
-        const collection = allCollections?.find(
-          (item) => item._id === collectionId
-        );
-        if (!collection || !collection.cards) return [0, []];
-
-        const totalQuantity = collection.cards.reduce(
-          (acc, card) => acc + card.quantity,
-          0
-        );
-        const cardDetails = collection.cards.map((card) => ({
-          name: card.name,
-          quantity: card.quantity,
-        }));
-
-        return [totalQuantity, cardDetails];
-      },
-      // getCollectionValue, // add this
-      // getCardQuantity, // add this
-      // totalCardsInCollection, // add this
-      // getCollectionCardDetails, // add this
+      setSelectedCollection: updateActiveCollection,
+      getTotalCost,
+      // setSelectedCollection,
+      fetchAllCollectionsForUser: fetchAndSetCollections,
+      addOneToCollection: (card, cardInfo) =>
+        addOrRemoveCard(card, cardInfo, 'add'),
+      removeOneFromCollection: (card) => addOrRemoveCard(card, null, 'remove'),
     }),
-    [collectionData, allCollections, selectedCollection, allCardPrices]
+    [allCollections, selectedCollection, totalCost]
   );
 
   useEffect(() => {
-    console.log('collectionData has been updated:', collectionData);
-  }, [collectionData]);
-
-  useEffect(() => {
-    if (allCollections.length > 0) {
-      const firstCollection = allCollections[0];
-      const totalQuantity = firstCollection.cards.reduce(
-        (acc, card) => acc + card.quantity,
-        0
-      );
-
-      // Only log when a new card has been added
-      if (totalQuantity > prevTotalQuantity) {
-        const cardDetails = firstCollection.cards.map((card) => ({
-          name: card.name,
-          quantity: card.quantity,
-        }));
-        console.log(
-          'A new card has been added. Updated totals:',
-          totalQuantity,
-          cardDetails
-        );
-      }
-
-      // Update the previous total quantity
-      setPrevTotalQuantity(totalQuantity);
-    }
-  }, [allCollections]);
-  useEffect(() => {
-    console.log('COLLECTIONCONTEXT:', contextValue);
     if (userId) fetchAndSetCollections();
   }, [fetchAndSetCollections, userId]);
 

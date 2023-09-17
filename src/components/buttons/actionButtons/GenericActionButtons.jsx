@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { makeStyles } from '@mui/styles';
 import CardActionButtons from './CardActionButtons';
-import DeckCardDialog from '../dialogs/DeckCardDialog';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
-import { CartContext } from '../../context/CartContext/CartContext';
-import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
+import DeckCardDialog from '../../dialogs/DeckCardDialog';
+import { DeckContext } from '../../../context/DeckContext/DeckContext';
+import { CartContext } from '../../../context/CartContext/CartContext';
+import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles({
   root: {

@@ -34,6 +34,7 @@ const CardActionButtons = ({
 }) => {
   const classes = useStyles();
   console.log('contextProps:', contextProps);
+  console.log('contextProps:', contextProps);
 
   return (
     <div className={classes.root}>

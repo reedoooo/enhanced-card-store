@@ -1,5 +1,4 @@
 import React from 'react';
-import DeckCardModal from '../modals/DeckCardModal';
 import GenericCardModal from '../modals/GenericCardModal';
 
 const DeckCardDialog = ({ isOpen, onClose, card, cardInfo, context }) => {

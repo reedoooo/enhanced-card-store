@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
-import CollectionContainer from '../containers/collectionPageContainers/CollectionContainer';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
 import CollectionBanner from './pageStyles/CollectionBanner';
 import CollectionTitle from './pageStyles/CollectionTitle';
+import CardPortfolio from '../components/collection/CardPortfolio';
 
 const CollectionPage = () => {
   const [userCollection, setUserCollection] = useState([]);
@@ -34,6 +34,8 @@ const CollectionPage = () => {
       console.log('(COLLECTION PAGE) -- (USERCOLLECTION):', userCollection);
     }
   }, [allCollections, userId]);
+
+  console.log('ALL COLLECTIONS:', allCollections);
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
 
@@ -41,10 +43,14 @@ const CollectionPage = () => {
     <div>
       <CollectionBanner>
         <CollectionTitle>Your Collections</CollectionTitle>
-        <CollectionContainer
+        <CardPortfolio
           userCollection={userCollection}
           saveEditedCollection={saveEditedCollection}
         />
+        {/* <CollectionContainer
+          userCollection={userCollection}
+          saveEditedCollection={saveEditedCollection}
+        /> */}
       </CollectionBanner>
     </div>
   );

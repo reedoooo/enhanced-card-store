@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '12px',
     padding: '20px',
     height: '100%',
+    width: '100%',
     boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
   },
 }));
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 const PortfolioListContainer = ({ selectedCards, removeCard }) => {
   const classes = useStyles();
   return (
-    <Grid item xs={12} sx={{ height: '30%' }}>
+    <Grid item xs={12} sx={{ height: '30%', width: '100%' }}>
       <Paper elevation={3} className={classes.listPaper}>
         <CardList selectedCards={selectedCards} removeCard={removeCard} />
       </Paper>

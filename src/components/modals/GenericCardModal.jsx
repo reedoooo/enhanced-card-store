@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Dialog, DialogContent, DialogTitle, Grid } from '@mui/material';
 import CardMediaSection from '../media/CardMediaSection';
 import CardDetailsContainer from './cardModal/CardDetailsContainer';
-import GenericActionButtons from '../buttons/GenericActionButtons';
+import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
 import { CartContext } from '../../context/CartContext/CartContext';
 import { CollectionContext } from '../../context/CollectionContext/CollectionContext';

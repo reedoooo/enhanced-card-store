@@ -1,33 +1,76 @@
 import React from 'react';
-import { Box, Button, Typography, Paper, Grid, Divider } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  Grid,
+  Divider,
+  Container,
+  useMediaQuery,
+  Stack,
+} from '@mui/material';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import CronTrigger from '../../buttons/CronTrigger';
 
 const CardList = ({ selectedCards, removeCard }) => {
-  // Calculate the total price
-  console.log('SELECTED CARDS:', selectedCards);
-  console.log('SELECTED CARDS PRICES:', selectedCards.card_prices);
-  console.log(
-    'SELECTED CARDS PRICES:',
-    selectedCards.reduce(
-      (total, card) => total + parseFloat(card.tcgplayer_price),
-      0
-    )
-  );
+  const { getTotalCost, selectedCollection } = useCollectionStore();
+  const isSmScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const totalPrice = selectedCards.reduce(
-    (total, card) => total + parseFloat(card.tcgplayer_price),
-    0
-  );
+  const collectionId = selectedCollection?.id;
+  const collectionCost = getTotalCost(collectionId);
+
+  // Calculate the total cost only if selectedCards is available
+  const totalCost = selectedCards
+    ? selectedCards.reduce((total, card) => {
+        if (
+          card.card_prices &&
+          card.card_prices[0] &&
+          card.card_prices[0].tcgplayer_price
+        ) {
+          return total + parseFloat(card.card_prices[0].tcgplayer_price);
+        }
+        return total;
+      }, 0)
+    : 0;
 
   return (
-    <Box mb={4} width="100%">
-      <Paper elevation={8} sx={{ padding: 2, borderRadius: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{ wordWrap: 'break-word' }}>
-          Cards in Portfolio
-        </Typography>
+    <Container
+      maxWidth="lg"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Paper
+        elevation={8}
+        sx={{
+          padding: 2,
+          borderRadius: 2,
+          width: isSmScreen ? '100%' : '100%',
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="h4" gutterBottom sx={{ wordWrap: 'break-word' }}>
+            Cards in Portfolio
+          </Typography>
+          <CronTrigger /> {/* Include the CronTrigger button */}
+        </Stack>
         <Divider variant="middle" />
-        {selectedCards.length > 0 ? (
+        {selectedCards && selectedCards.length > 0 ? (
           selectedCards.map((card, index) => (
-            <Grid container alignItems="center" spacing={2} key={index}>
+            <Grid
+              container
+              alignItems="center"
+              spacing={2}
+              width={'100%'}
+              key={index}
+            >
               <Grid item xs={7} sm={8} md={9}>
                 <Typography
                   variant="body1"
@@ -38,7 +81,11 @@ const CardList = ({ selectedCards, removeCard }) => {
               </Grid>
               <Grid item xs={3} sm={2} md={2}>
                 <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                  {`$${card.price}`}
+                  {card.card_prices &&
+                  card.card_prices[0] &&
+                  card.card_prices[0].tcgplayer_price
+                    ? `$${card.card_prices[0].tcgplayer_price}`
+                    : 'Price not available'}
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={1}>
@@ -66,13 +113,20 @@ const CardList = ({ selectedCards, removeCard }) => {
             No cards selected.
           </Typography>
         )}
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <Typography variant="h5">{`Total: $${totalPrice.toFixed(
-            2
-          )}`}</Typography>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          mt={2}
+          sx={{
+            width: '100%', // Ensure the total cost aligns to the right
+          }}
+        >
+          <Typography variant="h5">
+            {`Total: $${totalCost.toFixed(2)}`}
+          </Typography>
         </Box>
       </Paper>
-    </Box>
+    </Container>
   );
 };
 

@@ -130,7 +130,7 @@ export const DeckProvider = ({ children }) => {
     });
 
     try {
-      const url = `${apiBase}/users/${userId}/decks`; // Removed deckId from the URL
+      const url = `${apiBase}/users/${userId}/decks/${selectedDeck._id}`; // Removed deckId from the URL
       const bodyData = {
         ...newDeckData,
         deckId: newDeckData._id, // Included deckId in the body
@@ -144,13 +144,16 @@ export const DeckProvider = ({ children }) => {
   const createUserDeck = async (userId, newDeckInfo) => {
     try {
       const url = `${apiBase}/newDeck/${userId}`;
-      const initialDeck = newDeckInfo.initialCard
-        ? [formatCardData(newDeckInfo.initialCard)]
+      const cards = newDeckInfo.cards
+        ? [formatCardData(newDeckInfo.cards)]
         : [];
       const data = await fetchWrapper(url, 'POST', {
-        ...newDeckInfo,
-        cards: initialDeck,
+        // ...newDeckInfo,
+        cards: cards,
         userId,
+        totalPrice: 0,
+        description: newDeckInfo.description || '',
+        name: newDeckInfo.name || '',
       });
       setDeckData(data);
     } catch (error) {

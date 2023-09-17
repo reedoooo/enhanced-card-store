@@ -1,9 +1,9 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { useCartStore } from '../../context/CartContext/CartContext';
-import CartContainer from './CartContainer';
-import CartItem from './CartItem';
-import CartTotal from './CartTotal';
+import CartContainer from '../../containers/CartContainer';
+import CartItem from '../grids/CartItem';
+import CartTotal from '../other/CartTotal';
 
 const CartContent = () => {
   const { cartData, getTotalCost } = useCartStore();

@@ -12,6 +12,7 @@ import StorePage from './pages/StorePage';
 import CollectionPage from './pages/CollectionPage';
 import ThreeJsCube from './ThreeJsCube'; // Import your Three.js component
 import CardDeckAnimation from './CardDeckAnimation';
+import ProfilePage from './pages/ProfilePage';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
@@ -66,6 +67,16 @@ const App = () => {
             path="/deckbuilder"
             element={
               <DeckBuilderPage
+                activeUserCartId={activeUserCartId}
+                setActiveUserCart={setActiveUserCartId}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/profile"
+            element={
+              <ProfilePage
                 activeUserCartId={activeUserCartId}
                 setActiveUserCart={setActiveUserCartId}
               />

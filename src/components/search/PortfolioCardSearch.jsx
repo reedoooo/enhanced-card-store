@@ -1,7 +1,7 @@
 // Importações
 import React from 'react';
 import { Grid } from '@mui/material';
-import SearchButton from '../buttons/SearchButton';
+import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 
 const PortfolioCardSearch = ({
