@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Grid, Box, Typography, Container } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
-import SearchButton from '../buttons/SearchButton';
+import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 import CustomSelector from '../other/CustomSelector';
+import { useUtility } from '../../context/UtilityContext/UtilityContext';
 
 const initialState = {
   name: '',
@@ -14,44 +15,53 @@ const initialState = {
 };
 
 const SearchBar = () => {
-  const [searchParams, setSearchParams] = useState(initialState);
+  const { searchParams, setSearchParams } = useUtility(initialState);
   const { handleRequest } = useCardStore();
 
-  const levels = [
-    'Unset',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
-  ];
-  const races = ['Unset', 'Aqua', 'Beast'];
-  const types = ['Unset', 'Effect Monster', 'Flip Effect Monster'];
-  const attributes = [
-    'Unset',
-    'Dark',
-    'Divine',
-    'Earth',
-    'Fire',
-    'Light',
-    'Water',
-    'Wind',
+  const filters = [
+    {
+      label: 'Level',
+      name: 'level',
+      values: [
+        'Unset',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+      ],
+    },
+    { label: 'Race', name: 'race', values: ['Unset', 'Aqua', 'Beast'] },
+    {
+      label: 'Type',
+      name: 'type',
+      values: ['Unset', 'Effect Monster', 'Flip Effect Monster'],
+    },
+    {
+      label: 'Attribute',
+      name: 'attribute',
+      values: [
+        'Unset',
+        'Dark',
+        'Divine',
+        'Earth',
+        'Fire',
+        'Light',
+        'Water',
+        'Wind',
+      ],
+    },
   ];
 
   return (
-    <Box
-      sx={{
-        padding: 2,
-        borderRadius: 2,
-      }}
-    >
+    <Box sx={{ padding: 2, borderRadius: 2 }}>
       <Container maxWidth="md">
         <Typography variant="h4" align="center" gutterBottom>
           Search Cards
@@ -69,48 +79,21 @@ const SearchBar = () => {
               handleRequest={() => handleRequest(searchParams)}
             />
           </Grid>
-          <CustomSelector
-            label="Level"
-            name="level"
-            value={searchParams.level}
-            setValue={(newValue) =>
-              setSearchParams((prevState) => ({
-                ...prevState,
-                level: newValue,
-              }))
-            }
-            values={levels}
-          />
-          <CustomSelector
-            label="Race"
-            name="race"
-            value={searchParams.race}
-            setValue={(newValue) =>
-              setSearchParams((prevState) => ({ ...prevState, race: newValue }))
-            }
-            values={races}
-          />
-          <CustomSelector
-            label="Type"
-            name="type"
-            value={searchParams.type}
-            setValue={(newValue) =>
-              setSearchParams((prevState) => ({ ...prevState, type: newValue }))
-            }
-            values={types}
-          />
-          <CustomSelector
-            label="Attribute"
-            name="attribute"
-            value={searchParams.attribute}
-            setValue={(newValue) =>
-              setSearchParams((prevState) => ({
-                ...prevState,
-                attribute: newValue,
-              }))
-            }
-            values={attributes}
-          />
+          {filters.map((filter) => (
+            <CustomSelector
+              key={filter.name}
+              label={filter.label}
+              name={filter.name}
+              value={searchParams[filter.name]}
+              setValue={(newValue) =>
+                setSearchParams((prevState) => ({
+                  ...prevState,
+                  [filter.name]: newValue,
+                }))
+              }
+              values={filter.values}
+            />
+          ))}
           <SearchButton searchParams={searchParams} />
         </Grid>
       </Container>

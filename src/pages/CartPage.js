@@ -9,8 +9,8 @@ import {
 import { useCartStore } from '../context/CartContext/CartContext';
 import LoadingIndicator from '../components/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/indicators/ErrorIndicator';
-import CartContentContainer from '../components/CartContentContainer';
-import CustomerFormContainer from '../components/CustomerFormContainer';
+import CartContentContainer from '../containers/CartContentContainer';
+import CustomerFormContainer from '../containers/CustomerFormContainer';
 
 const CartPage = () => {
   const [cookies] = useCookies(['userCookie']);
@@ -21,6 +21,7 @@ const CartPage = () => {
     cartData,
     addOneToCart,
     removeOneFromCart,
+    cartCardQuantity,
     getTotalCost,
     loading,
     error,
@@ -29,14 +30,15 @@ const CartPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
+    console.log('CART PAGE (CARTDATA):', cartData);
     setPageLoading(!(userId && cartData.cart && cartData.cart.length > 0));
   }, [cartData, userId]);
 
   if (pageLoading || loading) {
     return <LoadingIndicator />;
   }
-
-  const calculateTotalPrice = getTotalCost();
+  console.log('CART PAGE (QUANTITY):', cartCardQuantity);
+  const calculateTotalPrice = getTotalCost;
 
   const handleModifyItemInCart = async (cardId, operation) => {
     try {
@@ -78,9 +80,7 @@ const CartPage = () => {
                 calculateTotalPrice={calculateTotalPrice}
                 onQuantityChange={handleModifyItemInCart}
               />
-              <CustomerFormContainer
-                calculateTotalPrice={calculateTotalPrice}
-              />
+              <CustomerFormContainer />
             </Box>
           </CardContent>
         </CardElement>

@@ -10,6 +10,10 @@ package-lock.json
 # testing
 /coverage
 
+# card images
+/public/images/monster
+/public/images/cards
+/src/assets/cards
 # production
 /build
 

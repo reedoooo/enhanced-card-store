@@ -1,74 +1,76 @@
-// src/components/DeckDisplay.js
-import React, { useContext, useMemo } from 'react';
-import { useCardStore } from '../../context/CardContext/CardStore';
-import { makeStyles } from '@mui/styles';
-import DeckCard from '../cards/DeckCard';
-import { Grid } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Paper, Button } from '@mui/material';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import DeckButtonList from '../grids/deckBuilderGrids/DeckButtonList';
+import CardsGrid from '../grids/deckBuilderGrids/CardsGrid';
+import DeckEditPanel from './DeckEditPanel';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
-  gridItem: {
+  root: { backgroundColor: '#f4f6f8' },
+  paper: {
+    padding: theme.spacing(3),
+    borderRadius: '10px',
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+  },
+  deckEditPanel: {
     padding: theme.spacing(2),
-    width: '100%',
-    height: '100%', // Set the height to 100%
-    position: 'relative', // Required for the aspect-ratio trick
-    animation: 'fadeIn 0.5s ease-in-out', // Add animation
+    backgroundColor: '#ffffff',
+    border: '1px solid #ddd',
+    borderRadius: theme.spacing(1),
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    transition: 'opacity 0.5s ease-in-out',
   },
-  deckCard: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    aspectRatio: '2 / 3', // Adjusted the aspect ratio
-  },
-  '@global': {
-    '.card-enter': {
-      opacity: 0,
-    },
-    '.card-enter-active': {
-      opacity: 1,
-      transition: 'opacity 500ms',
-    },
-    '.card-exit': {
-      opacity: 1,
-    },
-    '.card-exit-active': {
-      opacity: 0,
-      transition: 'opacity 500ms',
-    },
+  noCardsText: {
+    color: '#666',
+    fontStyle: 'italic',
   },
 }));
 
-const DeckDisplay = () => {
-  // const { deckSearchData, savedDeckData } = useCardStore();
-  const { deckData } = useContext(DeckContext);
+const DeckDisplay = ({ userDecks = [] }) => {
   const classes = useStyles();
-  const isCardDataValid = deckData.deck && Array.isArray(deckData.deck);
+  const { setSelectedDeck, selectedDeck, updateAndSyncDeck } =
+    useContext(DeckContext);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [showAllDecks, setShowAllDecks] = useState(false);
 
-  const limitedCardsToRender = useMemo(
-    () => (deckData.deck ? Array.from(deckData.deck).slice(0, 30) : []),
-    [deckData]
-  );
+  useEffect(() => {
+    setSelectedCards(selectedDeck?.cards?.slice(0, 30) || []);
+  }, [selectedDeck]);
+
+  const handleSelectDeck = (deckId) => {
+    const foundDeck = userDecks.find((deck) => deck?._id === deckId);
+    if (foundDeck) {
+      setSelectedDeck(foundDeck);
+    }
+  };
+
   return (
-    <Grid container spacing={3}>
-      {isCardDataValid && (
-        <TransitionGroup component={null}>
-          {limitedCardsToRender.map((card, index) => (
-            <CSSTransition
-              key={`${card.id}-${index}`}
-              timeout={500}
-              classNames="card"
-            >
-              <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                <DeckCard card={card} className={classes.deckCard} />
-              </Grid>
-            </CSSTransition>
-          ))}
-        </TransitionGroup>
-      )}
-    </Grid>
+    <div className={classes.root}>
+      <Paper className={classes.paper}>
+        <Button onClick={() => setShowAllDecks(!showAllDecks)}>
+          {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
+        </Button>
+        {showAllDecks && (
+          <DeckButtonList
+            userDecks={userDecks}
+            handleSelectDeck={handleSelectDeck}
+          />
+        )}
+        {selectedDeck && (
+          <DeckEditPanel
+            selectedDeck={selectedDeck}
+            onSave={updateAndSyncDeck}
+            className={classes.deckEditPanel}
+          />
+        )}
+        {selectedCards.length > 0 ? (
+          <CardsGrid selectedCards={selectedCards} />
+        ) : (
+          <div className={classes.noCardsText}>No cards to display</div>
+        )}
+      </Paper>
+    </div>
   );
 };
 

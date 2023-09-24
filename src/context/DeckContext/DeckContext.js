@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React, {
   createContext,
   useState,
@@ -9,354 +8,255 @@ import React, {
 import { useCookies } from 'react-cookie';
 import { useCardStore } from '../CardContext/CardStore';
 
-export const DeckContext = createContext({
-  deckData: {
-    _id: '',
-    deck: [],
-  },
-  // searchData: [],
-  getCardQuantity: () => {},
-  addOneToDeck: () => {},
-  removeOneFromDeck: () => {},
-  deleteFromDeck: () => {},
-  getTotalCost: () => {},
-  setDeck: () => {},
-  fetchUserDeck: () => {},
-  createUserDeck: () => {},
-});
+export const DeckContext = createContext(null);
 
+const apiBase = `${process.env.REACT_APP_SERVER}/api`;
+
+const fetchWrapper = async (url, method, body = null) => {
+  const options = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    ...(body && { body: JSON.stringify(body) }),
+  };
+  const response = await fetch(url, options);
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  return response.json();
+};
+
+const removeDuplicateDecks = (decks) => {
+  const uniqueDecks = {};
+  decks.forEach((deck) => (uniqueDecks[deck._id] = deck));
+  return Object.values(uniqueDecks);
+};
 export const DeckProvider = ({ children }) => {
-  const [deckData, setDeckData] = useState({
-    _id: '', // Deck id
-    deck: [], // Deck items
-    quantity: 0, // Total quantity of items
-    totalPrice: 0, // Total price of items
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const { getCardData } = useCardStore();
-  const [cookies, setCookie] = useCookies(['userCookie', 'deck']);
-
+  const [cookies, setCookie] = useCookies(['userCookie']);
+  const [deckData, setDeckData] = useState({});
+  const [allDecks, setAllDecks] = useState([]);
+  const [selectedDeck, setSelectedDeck] = useState({});
   const userId = cookies.userCookie?.id;
 
-  const createUserDeck = async (userId) => {
-    const newDeckResponse = await fetch(
-      `${process.env.REACT_APP_SERVER}/api/decks/newDeck/${userId}`,
-      {
-        method: 'POST',
-      }
-    );
-
-    if (!newDeckResponse.ok) {
-      throw new Error(`HTTP error! status: ${newDeckResponse.status}`);
+  const calculateAndUpdateTotalPrice = (deck) => {
+    let totalPrice = 0;
+    if (deck && deck.cards) {
+      totalPrice = deck.cards.reduce((total, card) => {
+        return total + card.price * card.quantity;
+      }, 0);
     }
-
-    const newDeckData = await newDeckResponse.json();
-    console.log('DECK CREATED:', newDeckData);
-    const newDeckItems = Array.isArray(newDeckData.deck)
-      ? newDeckData.deck
-      : [];
-    setCookie('deck', newDeckItems, { path: '/' });
-    return newDeckItems;
+    return totalPrice;
   };
 
-  const fetchUserDeck = useCallback(
-    async (userId) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_SERVER}/api/decks/userDeck/${userId}`
+  const fetchDecksForUser = useCallback(async () => {
+    try {
+      const url = `${apiBase}/users/${userId}/decks`;
+      return await fetchWrapper(url, 'GET');
+    } catch (error) {
+      console.error(`Failed to fetch decks for user: ${error.message}`);
+      return null;
+    }
+  }, [userId]);
+
+  const fetchAndSetDecks = useCallback(async () => {
+    try {
+      const userDecks = await fetchDecksForUser();
+
+      if (userDecks && userDecks.length > 0) {
+        const uniqueDecks = removeDuplicateDecks(userDecks);
+        setAllDecks((prevDecks) =>
+          removeDuplicateDecks([...prevDecks, ...uniqueDecks])
+        );
+        setDeckData(uniqueDecks[0] || {});
+      } else {
+        // No decks found for user
+        const shouldCreateDeck = window.confirm(
+          'No decks found. Would you like to create a new one?'
         );
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            return createUserDeck(userId);
-          } else if (response.status === 500) {
-            setError('An unexpected error occurred. Please try again later.');
-          } else {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-        } else {
-          const data = await response.json();
-          console.log('DECK EXISTS:', data);
-          setCookie('deck', Array.isArray(data.deck) ? data.deck : [], {
-            path: '/',
+        if (shouldCreateDeck) {
+          const deckName = prompt('Enter the deck name:');
+          const deckDescription = prompt('Enter the deck description:');
+          await createUserDeck(userId, {
+            name: deckName,
+            description: deckDescription,
           });
-          setLoading(false);
-          return data;
         }
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
       }
-    },
-    [setCookie]
-  );
-
-  useEffect(() => {
-    if (userId && typeof userId === 'string') {
-      fetchUserDeck(userId).then((data) => {
-        if (data && data.deck) {
-          setDeckDataAndCookie(data);
-        } else {
-          console.error('Deck data was not retrieved for user', userId);
-        }
-      });
+    } catch (error) {
+      console.error(`Failed to fetch decks: ${error.message}`);
     }
-  }, [userId, fetchUserDeck]);
+  }, [fetchDecksForUser, userId]);
 
-  const updateDeckInBackend = async (deckId, updatedDeck) => {
-    const formattedDeckData = updatedDeck.map((item) => ({
-      id: item.id,
-      name: item.name,
-      type: item.type,
-      frameType: item.frameType,
-      desc: item.desc,
-      atk: item.atk,
-      def: item.def,
-      level: item.level,
-      race: item.race,
-      attribute: item.attribute,
-      card_images: item.card_images,
-      card_prices: item.card_prices,
-      quantity: item.quantity,
-    }));
+  // const formatDeckData = (deckId, updatedDeck) => ({
+  //   _id: deckId,
+  //   userId,
+  //   name: deckData.name,
+  //   description: deckData.description,
+  //   cards: updatedDeck.map((card) => formatCardData(card)),
+  // });
+
+  const formatCardData = (card) => ({
+    id: card.id,
+    ...Object.fromEntries(
+      [
+        'name',
+        'type',
+        'frameType',
+        'description',
+        'card_images',
+        'archetype',
+        'atk',
+        'def',
+        'level',
+        'race',
+        'attribute',
+        'quantity',
+      ].map((key) => [key, card[key] || null])
+    ),
+  });
+
+  const updateAndSyncDeck = async (newDeckData) => {
+    console.log('Updated Deck Name:', newDeckData.name);
+    console.log('Updated Deck Description:', newDeckData.description);
+
+    setDeckData(newDeckData);
+    setSelectedDeck(newDeckData); // <-- This line ensures that the selected deck is updated
+    setAllDecks((prevDecks) => {
+      const newAllDecks = prevDecks.map((deck) =>
+        deck._id === newDeckData._id ? newDeckData : deck
+      );
+      return prevDecks.some((deck) => deck._id === newDeckData._id)
+        ? newAllDecks
+        : [...newAllDecks, newDeckData];
+    });
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}/api/decks/${deckId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formattedDeckData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('data:', data);
-      return data;
+      const url = `${apiBase}/users/${userId}/decks/${selectedDeck._id}`; // Removed deckId from the URL
+      const bodyData = {
+        ...newDeckData,
+        deckId: newDeckData._id, // Included deckId in the body
+      };
+      await fetchWrapper(url, 'PUT', bodyData);
     } catch (error) {
       console.error(`Failed to update deck in backend: ${error.message}`);
     }
   };
 
-  const getCardQuantity = (cardId) => {
-    let totalItems = 0;
-    let quantityOfSameId = 0;
-
-    deckData.deck?.forEach((item) => {
-      totalItems += item.quantity;
-
-      if (item.id === cardId) {
-        quantityOfSameId += item.quantity;
-      }
-    });
-
-    return { totalItems, quantityOfSameId };
-  };
-
-  const addOneToDeck = async (cardInfo) => {
-    console.log('deckData at addOneToDeck:', deckData);
-    console.log('deckData._id at addOneToDeck:', deckData?._id);
-
-    if (!deckData?._id) {
-      console.log('A valid deck has not been fetched from the backend yet.');
-      return;
-    }
-
-    let quantityOfSameId = 0;
-    for (let item of deckData.deck) {
-      if (item.id === cardInfo.id) {
-        quantityOfSameId += item.quantity;
-      }
-    }
-
-    if (quantityOfSameId >= 3) {
-      console.log('Cannot add more than 3 cards with the same ID to the deck.');
-      return;
-    }
-
-    const itemExistsInDeck = deckData.deck.some(
-      (item) => item.id === cardInfo.id
-    );
-
-    let updatedDeck;
-    if (itemExistsInDeck) {
-      updatedDeck = deckData.deck.map((item) => {
-        if (item.id === cardInfo.id) {
-          return { ...item, quantity: item.quantity + 1 };
-        }
-        return item;
-      });
-    } else {
-      updatedDeck = [...deckData.deck, { ...cardInfo, quantity: 1 }];
-    }
-
-    const newDeckData = await updateDeckInBackend(deckData._id, updatedDeck);
-    setDeckDataAndCookie(newDeckData || []);
-  };
-
-  const decreaseItemQuantity = async (deckId, cardId, deckData) => {
+  const createUserDeck = async (userId, newDeckInfo) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}/api/decks/${deckId}/decrease`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ cardId, deckData }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
+      const url = `${apiBase}/newDeck/${userId}`;
+      const cards = newDeckInfo.cards
+        ? [formatCardData(newDeckInfo.cards)]
+        : [];
+      const data = await fetchWrapper(url, 'POST', {
+        // ...newDeckInfo,
+        cards: cards,
+        userId,
+        totalPrice: 0,
+        description: newDeckInfo.description || '',
+        name: newDeckInfo.name || '',
+      });
+      setDeckData(data);
     } catch (error) {
-      console.error(`Failed to decrease item quantity: ${error.message}`);
+      console.error(`Failed to create a new deck: ${error.message}`);
     }
   };
 
-  const removeOneFromDeck = async (cardId) => {
-    if (!deckData?._id) {
-      console.log('A valid deck has not been fetched from the backend yet.');
+  const addOrRemoveCard = async (card, isAdding, isRemoving) => {
+    if (!selectedDeck || !selectedDeck._id) {
+      console.error('No valid deck to add or remove a card.');
       return;
     }
 
-    const itemExistsInDeck = deckData.deck.some((item) => item.id === cardId);
-
-    if (!itemExistsInDeck) {
-      console.log('Cannot decrease quantity. Item does not exist in the deck.');
-      return;
+    let cardPrice = 0;
+    if (
+      card.card_prices &&
+      card.card_prices.length > 0 &&
+      card.card_prices[0].tcgplayer_price
+    ) {
+      cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
     }
 
-    let updatedDeck = deckData.deck.map((item) => {
-      if (item.id === cardId && item.quantity > 0) {
-        return { ...item, quantity: item.quantity - 1 };
+    // Create a copy of the current state
+    const currentCards = [...(selectedDeck?.cards || [])];
+    let currentTotalPrice = selectedDeck.totalPrice || 0;
+
+    // Find the card index in the current state
+    const cardIndex = currentCards.findIndex((item) => item.id === card.id);
+
+    if (isAdding) {
+      console.log('isAdding:', isAdding);
+      if (cardIndex !== -1) {
+        currentCards[cardIndex].quantity += 1;
+      } else {
+        currentCards.push({ ...card, quantity: 1, price: cardPrice });
       }
-      return item;
-    });
-
-    // Remove item from deck if quantity is 0
-    updatedDeck = updatedDeck.filter((item) => item.quantity !== 0);
-
-    const newDeckData = await decreaseItemQuantity(
-      deckData._id,
-      cardId,
-      updatedDeck
-    );
-    setDeckDataAndCookie(newDeckData || []);
-  };
-
-  const deleteFromDeck = async (cardId) => {
-    if (!deckData?._id) {
-      console.log('A valid deck has not been fetched from the backend yet.');
-      return;
+      currentTotalPrice += cardPrice;
+    } else {
+      console.log('isRemoving:', isRemoving);
+      if (cardIndex !== -1) {
+        currentCards[cardIndex].quantity -= 1;
+        if (currentCards[cardIndex].quantity <= 0) {
+          currentCards.splice(cardIndex, 1);
+        }
+        currentTotalPrice -= cardPrice;
+      }
     }
 
-    const itemExistsInDeck = deckData.deck.some((item) => item.id === cardId);
-
-    if (!itemExistsInDeck) {
-      console.log('Cannot delete item. It does not exist in the deck.');
-      return;
-    }
-
-    const updatedDeck = deckData.deck.filter((item) => item.id !== cardId);
-
-    const newDeckData = await updateDeckInBackend(deckData._id, updatedDeck);
-    setDeckDataAndCookie(newDeckData || []);
-  };
-
-  const getTotalCost = () => {
-    let totalCost = 0;
-
-    deckData.deck?.forEach((item) => {
-      const cardCost = item.card_prices ? item.card_prices.tcgplayer.price : 0;
-      totalCost += cardCost * item.quantity;
+    // Assuming you have a function to update the total price like in the example
+    currentTotalPrice = calculateAndUpdateTotalPrice({
+      ...selectedDeck,
+      cards: currentCards,
     });
 
-    return totalCost;
+    try {
+      const url = `${apiBase}/users/${userId}/decks/${selectedDeck._id}`;
+      const updatedDeck = await fetchWrapper(url, 'PUT', {
+        cards: currentCards,
+        totalPrice: currentTotalPrice,
+      });
+
+      setSelectedDeck({
+        ...updatedDeck,
+        totalPrice: currentTotalPrice,
+      });
+      updateAndSyncDeck({ ...updatedDeck, totalPrice: currentTotalPrice });
+    } catch (error) {
+      console.error(`Failed to update the deck: ${error.message}`);
+    }
   };
 
-  const setDeck = (deckData) => {
-    setDeckData(deckData);
-  };
-
-  const setDeckDataAndCookie = (newDeckData) => {
-    setDeckData(newDeckData);
-    setCookie('deck', newDeckData, { path: '/' });
+  const contextValue = {
+    deckData,
+    allDecks,
+    selectedDeck,
+    setSelectedDeck,
+    addOneToDeck: (card) => addOrRemoveCard(card, true, false),
+    removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),
+    getTotalCost: () =>
+      selectedDeck?.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) ||
+      0,
+    getCardQuantity: (cardId) =>
+      selectedDeck?.cards?.find((item) => item.id === cardId)?.quantity || 0,
+    updateAndSyncDeck,
+    fetchAllDecksForUser: fetchAndSetDecks,
   };
 
   useEffect(() => {
-    console.log('DECK CONTEXT (DeckProvider): ', {
-      deckData,
-      getCardQuantity,
-      addOneToDeck,
-      removeOneFromDeck,
-      deleteFromDeck,
-      getTotalCost,
-      setDeck,
-      fetchUserDeck,
-      createUserDeck,
-    });
-  }, []); // An empty dependency array will make this useEffect run only once after the initial render
+    console.log('DECKCONTEXT:', contextValue);
+    const userId = cookies.userCookie?.id;
+    if (userId) {
+      fetchAndSetDecks();
+    }
+  }, [fetchAndSetDecks, cookies.userCookie]);
 
   return (
-    <DeckContext.Provider
-      value={{
-        deckData,
-        getCardQuantity,
-        addOneToDeck,
-        removeOneFromDeck,
-        deleteFromDeck,
-        getTotalCost,
-        setDeck,
-        fetchUserDeck,
-        createUserDeck,
-      }}
-    >
-      {children}
-    </DeckContext.Provider>
+    <DeckContext.Provider value={contextValue}>{children}</DeckContext.Provider>
   );
 };
 
 export const useDeckStore = () => {
   const context = useContext(DeckContext);
-  if (!context) {
-    throw new Error('useDeck must be used within a DeckProvider');
-  }
-  const {
-    deckData,
-    getCardQuantity,
-    addOneToDeck,
-    removeOneFromDeck,
-    deleteFromDeck,
-    getTotalCost,
-    setDeck,
-    fetchUserDeck,
-    createUserDeck,
-  } = context;
-
-  return {
-    deckData,
-    getCardQuantity,
-    addOneToDeck,
-    removeOneFromDeck,
-    deleteFromDeck,
-    getTotalCost,
-    setDeck,
-    fetchUserDeck,
-    createUserDeck,
-  };
+  if (!context)
+    throw new Error('useDeckStore must be used within a DeckProvider');
+  return context;
 };
