@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
 import PortfolioContent from '../content/PortfolioContent';
 import { Box, Typography } from '@mui/material';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import CollectionContainer from '../../containers/collectionPageContainers/CollectionContainer';
-import UpdateChartData from './UpdateChartData';
+import { useCollectionStore } from '../../context/hooks/collection';
+// import UpdateChartData from './UpdateChartData';
 
-const CardPortfolio = ({ userCollection = [], saveEditedCollection }) => {
+const CardPortfolio = ({ allCollections }) => {
   const [error, setError] = useState(null);
   const [showCollections, setShowCollections] = useState(true);
+  const [showPortfolio, setShowPortfolio] = useState(false);
   const [newCard, setNewCard] = useState('');
   const [newCardPrice, setNewCardPrice] = useState('');
   const [newCardCondition, setNewCardCondition] = useState('');
   const [selectedCards, setSelectedCards] = useState([]);
-
+  // Define a ref to keep track of whether handleSelectCollection has been run
+  const hasRun = useRef(false);
   const {
-    allCollections,
+    // allCollections,
     selectedCollection,
     setSelectedCollection,
     fetchAllCollectionsForUser,
@@ -28,73 +30,46 @@ const CardPortfolio = ({ userCollection = [], saveEditedCollection }) => {
   }, []);
 
   useEffect(() => {
-    setSelectedCards(selectedCollection?.cards?.slice(0, 30) || []);
+    setSelectedCards(selectedCollection?.cards?.slice(0, 30));
   }, [selectedCollection]);
 
-  const handleSaveCollection = (collectionId) => {
-    const foundCollection = allCollections.find(
-      (collection) => collection?._id === collectionId
-    );
-
-    if (foundCollection) {
-      saveEditedCollection(foundCollection);
-      setShowCollections(true);
-    }
-  };
-
   const handleSelectCollection = (collectionId) => {
-    if (!collectionId) return;
+    if (hasRun.current) return; // Check if the function has already been run
 
-    // Find the selected collection based on the collectionId
-    const foundCollection = allCollections.find(
+    if (!collectionId) return;
+    const foundCollection = allCollections?.find(
       (collection) => collection._id === collectionId
     );
-
-    if (foundCollection) {
-      setSelectedCollection(foundCollection);
-      setShowCollections(false);
+    if (!foundCollection) {
+      console.error('Collection not found with ID:', collectionId);
+      setError('Collection not found!');
+      return;
     }
+    setSelectedCollection(foundCollection);
+
+    if (selectedCollection) {
+      setSelectedCards(selectedCollection?.cards?.slice(0, 30));
+    }
+
+    if (selectedCards) {
+      setShowCollections(false);
+      setShowPortfolio(true);
+    }
+
+    hasRun.current = true; // Set the ref to true after the function has been run
   };
 
-  // const addCard = () => {
-  //   if (
-  //     !newCard ||
-  //     isNaN(newCardPrice) ||
-  //     parseFloat(newCardPrice) <= 0 ||
-  //     !newCardCondition
-  //   ) {
-  //     setError('Invalid card name, price, or condition.');
-  //     return;
-  //   }
-
-  //   addOneToCollection({
-  //     name: newCard,
-  //     price: parseFloat(newCardPrice),
-  //     condition: newCardCondition,
-  //   });
-
-  //   setNewCard('');
-  //   setNewCardPrice('');
-  //   setNewCardCondition('');
-  //   setError(null);
-  // };
-
-  // const removeCard = (card) => {
-  //   removeOneFromCollection(card);
-  // };
-
-  console.log('ALL COLLECTIONS:', allCollections);
-  console.log('SELECTED COLLECTION:', selectedCollection);
-  console.log('SELECTED CARDS:', selectedCards);
-
+  // console.log('ALL COLLECTIONS:', allCollections);
+  // console.log('SELECTED COLLECTION:', selectedCollection);
+  // console.log('SELECTED CARDS:', selectedCards);
+  // console.log('SELECTED COLLECTION (CARD PORT):', selectedCollection);
   return (
     <CollectionContainer>
       {showCollections ? (
         <SelectCollection
-          userCollection={userCollection}
           allCollections={allCollections}
           handleSelectCollection={handleSelectCollection}
-          handleSaveCollection={handleSaveCollection}
+          // userCollection={userCollection}
           error={error}
           newCard={newCard}
           setNewCard={setNewCard}
@@ -102,11 +77,15 @@ const CardPortfolio = ({ userCollection = [], saveEditedCollection }) => {
           setNewCardPrice={setNewCardPrice}
           newCardCondition={newCardCondition}
           setSelectedCards={setSelectedCards}
+          selectedCollection={selectedCollection}
+          setSelectedCollection={setSelectedCollection}
           selectedCards={selectedCards}
           setNewCardCondition={setNewCardCondition}
           addCard={addOneToCollection}
+          setShowCollections={setShowCollections}
+          setShowPortfolio={setShowPortfolio}
         />
-      ) : selectedCollection ? (
+      ) : showPortfolio ? (
         <PortfolioContent
           error={error}
           allCollections={allCollections}
@@ -120,8 +99,16 @@ const CardPortfolio = ({ userCollection = [], saveEditedCollection }) => {
           setSelectedCards={setSelectedCards}
           selectedCards={selectedCards}
           selectedCollection={selectedCollection}
+          setSelectedCollection={setSelectedCollection}
           removeCard={removeOneFromCollection}
-          chartData={UpdateChartData(selectedCollection)}
+
+          // allCollections={allCollections}
+          // selectedCollection={selectedCollection}
+          // setSelectedCollection={setSelectedCollection}
+          // selectedCards={selectedCards}
+          // setSelectedCards={setSelectedCards}
+          // removeCard={removeOneFromCollection}
+          // chartData={UpdateChartData()}
         />
       ) : (
         <Box

@@ -1,15 +1,25 @@
 import React from 'react';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useUtility } from '../../context/UtilityContext/UtilityContext';
 
 const CronTrigger = () => {
-  const { triggerCronJob } = useUtility();
+  const { triggerCronJob, stopCronJob } = useUtility();
 
   const handleTriggerCron = () => {
     triggerCronJob();
   };
 
-  return <Button onClick={handleTriggerCron}>Trigger Cron Job</Button>;
+  const handleStopCron = () => {
+    stopCronJob();
+  };
+
+  return (
+    <Box>
+      <Button onClick={handleTriggerCron}>Trigger Cron Job</Button>
+
+      <Button onClick={handleStopCron}>Stop Cron Job</Button>
+    </Box>
+  );
 };
 
 export default CronTrigger;

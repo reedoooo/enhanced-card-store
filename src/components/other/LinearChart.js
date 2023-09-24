@@ -1,13 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import { makeStyles } from '@mui/styles';
+import { makeStyles, useTheme } from '@mui/styles';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   chartContainer: {
-    width: '100%',
-    height: '400px',
     position: 'relative',
+    width: '100%',
+    height: '100%',
+  },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
   xAxisLabel: {
     position: 'absolute',
@@ -29,136 +38,109 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1rem',
     color: theme.palette.text.primary,
   },
-  tooltip: {
-    background: 'white',
-    border: '1px solid #ccc',
-    padding: '12px',
-    boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.1)',
-    borderRadius: '4px',
-  },
-  tooltipTitle: {
-    fontWeight: 'bold',
-    fontSize: '1rem',
-  },
-  tooltipValue: {
-    fontWeight: 'bold',
-    fontSize: '1rem',
-    color: '#ff5722',
-  },
-  tooltipText: {
-    fontSize: '0.875rem',
-  },
 }));
 
-const LinearChart = ({ data, xAxisLabel, yAxisLabel, keyValue }) => {
+const LinearChart = ({ data = [], dimensions, loading, error }) => {
   const classes = useStyles();
+  const theme = useTheme();
+  const [isZoomed, setIsZoomed] = useState(false);
 
-  const [chartDimensions, setChartDimensions] = useState({
-    width: 600, // Default width
-    height: 400, // Default height
-  });
-  const chartContainerRef = useRef(null);
+  const transformedData = useMemo(() => {
+    if (!data.length) return [];
 
-  // Add a cleanup function
-  useEffect(() => {
-    const observerCallback = (entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        setChartDimensions({ width, height });
-      }
-    };
+    // Mapping each serie data to the desired format
+    return data.map((serie) => ({
+      id: serie.id,
+      data: serie.data.map((d) => ({
+        x: new Date(d.x),
+        y: parseFloat(d.y),
+        id: serie?._id,
+      })),
+    }));
+  }, [data]);
 
-    const resizeObserver = new ResizeObserver(observerCallback);
-    if (chartContainerRef.current) {
-      resizeObserver.observe(chartContainerRef.current);
-    }
+  console.log('TRANSFORMED DATA:', transformedData);
 
-    return () => {
-      if (chartContainerRef.current) {
-        resizeObserver.unobserve(chartContainerRef.current);
-      }
-    };
-  }, []);
+  if (loading) {
+    return (
+      <div className={classes.loadingContainer}>
+        <CircularProgress />
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <Typography variant="body1" color="error">
+        Error loading data
+      </Typography>
+    );
+  }
+
+  if (transformedData.length === 0) {
+    return <Typography variant="body1">No data available</Typography>;
+  }
+
+  const latestData = data[0]?.data?.slice(-1)[0] || {};
+
+  const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
+  console.log('LATEST DATA ARRAY:', latestDataArray);
   return (
     <div
       className={classes.chartContainer}
-      ref={chartContainerRef}
       style={{
-        width: chartDimensions.width,
-        height: chartDimensions.height,
+        width: dimensions?.width ?? '100%',
+        height: dimensions?.height ?? '100%',
       }}
-      key={keyValue}
     >
       <ResponsiveLine
-        data={data}
-        margin={{ top: 40, right: 60, bottom: 60, left: 80 }}
-        xScale={{ type: 'linear', min: 'auto', max: 'auto' }} // Use linear scale for timestamps
-        yScale={{
-          type: 'linear',
-          min: 'auto',
-          max: 'auto',
-          stacked: false,
-          reverse: false,
+        animate
+        data={[{ id: 'latestData', data: latestDataArray }]}
+        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        xScale={{
+          type: 'time',
+          format: '%Y-%m-%d %H:%M',
+          useUTC: false,
+          precision: 'minute',
         }}
-        axisTop={null}
-        axisRight={null}
+        yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
         axisBottom={{
-          orient: 'bottom',
+          tickValues: 'every 1 minute',
           tickSize: 5,
-          tickPadding: 10,
+          tickPadding: 5,
           tickRotation: 0,
-          legend: xAxisLabel,
-          legendOffsetY: 50,
-          legendPosition: 'middle',
-          legendOffsetX: 0,
-          legendTextColor: '#333',
-          legendTextSize: 14,
+          legendOffset: -12,
+          legend: 'time scale',
+          format: '%H:%M',
         }}
         axisLeft={{
           orient: 'left',
-          tickSize: 5,
-          tickPadding: 10,
-          tickRotation: 0,
-          legend: yAxisLabel,
-          legendOffsetY: -80,
+          legend: 'linear scale',
+          legendOffset: 12,
           legendPosition: 'middle',
-          legendOffsetX: -40,
-          legendTextColor: '#333',
+          legendTextColor: theme.palette.text.primary,
           legendTextSize: 14,
+          format: (value) => `$${value}`,
         }}
-        layers={['grid', 'lines', 'areas', 'slices', 'mesh', 'legends']}
-        width={600}
-        height={400}
-        enableSlices="x"
-        sliceTooltip={({ slice }) => (
-          <div className={classes.tooltip}>
-            <Typography
-              className={classes.tooltipTitle}
-              variant="subtitle1"
-              fontWeight="bold"
-            >
-              Date: {new Date(slice.points[0].data.x).toLocaleString()}
-            </Typography>
-            <Typography
-              className={classes.tooltipValue}
-              variant="subtitle1"
-              fontWeight="bold"
-              color="#ff5722"
-            >
-              Value: {slice.points[0].data.yFormatted}
-            </Typography>
-            <Typography className={classes.tooltipText} variant="body1">
-              Additional Data: {slice.points[0].data.additionalData}
-            </Typography>
-          </div>
-        )}
+        enablePointLabel
+        pointBorderColor={{
+          from: 'color',
+          modifiers: [['darker', 0.3]],
+        }}
+        pointLabel="y"
+        pointLabelYOffset={-12}
+        pointBorderWidth={1}
+        pointSize={10}
+        pointColor={theme.palette.primary.main}
+        curve="monotoneX"
+        useMesh={true}
+        onClick={() => setIsZoomed(!isZoomed)}
       />
-      <Typography className={classes.xAxisLabel} variant="subtitle1">
-        {xAxisLabel}
+      <Typography className={classes.xAxisLabel}>
+        {`${new Date(latestData.x).toLocaleString()}`}
       </Typography>
-      <Typography className={classes.yAxisLabel} variant="subtitle1">
-        {yAxisLabel}
+      <Typography className={classes.yAxisLabel}>
+        {`$${latestData.y}`}
       </Typography>
     </div>
   );

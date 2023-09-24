@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import ChooseCollectionDialog from './ChooseCollectionDialog';
+import { useModal } from '../../../context/hooks/modal';
+import { useCollectionStore } from '../../../context/hooks/collection';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,11 +33,22 @@ const CardActionButtons = ({
   card,
   quantity,
   context,
-  contextProps, // Pass contextProps from the parent component
+  contextProps,
+  handleOpenDialog,
 }) => {
   const classes = useStyles();
-  console.log('contextProps:', contextProps);
-  console.log('contextProps:', contextProps);
+  const { addOneToCollection } = useCollectionStore();
+
+  const handleAddToContext = useCallback(() => {
+    const addMethod = contextProps[`addOneTo${context}`];
+    if (typeof addMethod === 'function') {
+      addMethod(card);
+    } else if (context === 'Collection') {
+      handleOpenDialog();
+    } else {
+      console.error(`Method addOneTo${context} not found in contextProps`);
+    }
+  }, [context, contextProps, card, handleOpenDialog]);
 
   return (
     <div className={classes.root}>
@@ -63,7 +77,7 @@ const CardActionButtons = ({
           variant="contained"
           color="primary"
           className={classes.fullWidthButton}
-          onClick={() => contextProps[`addOneTo${context}`](card)}
+          onClick={handleAddToContext}
         >
           {`Add To ${context}`}
         </Button>

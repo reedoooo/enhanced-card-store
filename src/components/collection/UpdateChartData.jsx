@@ -1,72 +1,66 @@
-// const generateDateLabels = () => {
-//   const labels = [];
-//   const currentDate = new Date();
+import { useCallback, useEffect, useState, useContext } from 'react';
+import moment from 'moment';
+import { useCollectionStore } from '../../context/hooks/collection';
+import { ChartContext } from '../../context/ChartContext/ChartContext';
 
-//   for (let i = 0; i < 14; i++) {
-//     const date = new Date(currentDate);
-//     date.setDate(currentDate.getDate() + i);
-//     const formattedDate = date.toLocaleDateString(); // Format the date as needed
-//     labels.push(formattedDate);
-//   }
+const UpdateChartData = () => {
+  const { totalCost } = useCollectionStore() || {};
+  const { chartData, updateServerData } = useContext(ChartContext);
+  const [datasets, setDatasets] = useState(chartData || []);
 
-//   return labels;
-// };
-
-const calculateTotalPrice = (cards) => {
-  return cards.reduce((total, card) => {
-    const tcgplayerPrice = card.card_prices?.[0]?.tcgplayer_price || 0; // Use optional chaining to safely access nested properties
-    return total + parseFloat(tcgplayerPrice);
-  }, 0);
-};
-
-const createDataset = (label, data, labelField) => {
-  return {
+  const createDataset = (label, priceData) => ({
     id: label,
-    color: 'blue', // Set the desired color
-    data: data.map((item) => ({
-      x: item[labelField], // Use the specified label field as x value
-      y: item.y, // Assuming the y value is already set correctly
-      label: item.label,
-    })),
-  };
-};
+    color: 'blue',
+    data: priceData?.map(({ x, y }) => ({ x, y })),
+  });
 
-const UpdateChartData = (selectedCollection) => {
-  // const labels = generateDateLabels();
-  const datasets = [];
-  const updateTimes = []; // Array to store update timestamps
+  const newDataPoint = useCallback(() => {
+    const currentTime = new Date();
+    const formattedTime = moment(currentTime).format('YYYY-MM-DD HH:mm');
 
-  console.log('LABELS:', updateTimes);
+    return {
+      x: formattedTime,
+      y: totalCost ? parseFloat(totalCost).toFixed(2) : null,
+    };
+  }, [totalCost]);
 
-  const updateChart = () => {
-    if (selectedCollection?.cards) {
-      const totalPrice = calculateTotalPrice(selectedCollection.cards);
-      console.log('totalPrice:', totalPrice);
+  const updateChart = useCallback(() => {
+    let updatedDatasets = [];
 
-      const currentTimestamp = new Date().getTime();
-      updateTimes.push(currentTimestamp);
-
-      const totalPriceData = updateTimes.map((timestamp, index) => ({
-        x: timestamp,
-        y: totalPrice.toFixed(2), // Use the fetched totalPrice value directly
-        label: updateTimes[index],
-      }));
-
-      datasets.push(createDataset('totalPrice', totalPriceData, 'x'));
-      // Assuming you have a way to update your chart with the new datasets here
-      // You should update your chart with the new data in this function
+    if (!datasets.length && totalCost != null) {
+      // If there are no existing datasets and totalCost is defined, create a new dataset
+      const newDataset = createDataset('totalPrice', [newDataPoint()]);
+      updatedDatasets.push(newDataset);
+    } else if (datasets.length) {
+      // If there are existing datasets, add new data points to them
+      datasets.forEach((dataset) => {
+        const newData = newDataPoint();
+        const newDataset = {
+          ...dataset,
+          data: Array.isArray(dataset?.data)
+            ? [...dataset.data, newData]
+            : [newData],
+        };
+        updatedDatasets.push(newDataset);
+      });
     }
-  };
 
-  // Initial chart update
-  updateChart();
+    if (
+      updatedDatasets.length &&
+      JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
+    ) {
+      setDatasets(updatedDatasets);
+      updateServerData(updatedDatasets);
+    }
+  }, [datasets, newDataPoint, updateServerData, totalCost]);
 
-  // Update the chart every 30 minutes (adjust the interval as needed)
-  // setInterval(updateChart, 30 * 60 * 1000);
+  useEffect(() => {
+    const intervalId = setInterval(updateChart, 3600000);
+    updateChart();
+    return () => clearInterval(intervalId);
+  }, []);
 
-  setInterval(updateChart, 60 * 1000); // Change to 60 seconds for every minute
-
-  return datasets;
+  return { datasets };
 };
 
 export default UpdateChartData;

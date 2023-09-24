@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { makeStyles } from '@mui/styles';
 import CardActionButtons from './CardActionButtons';
 import DeckCardDialog from '../../dialogs/DeckCardDialog';
+import ChooseCollectionDialog from './ChooseCollectionDialog';
 import { DeckContext } from '../../../context/DeckContext/DeckContext';
 import { CartContext } from '../../../context/CartContext/CartContext';
 import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
@@ -15,43 +16,21 @@ const useStyles = makeStyles({
   },
 });
 
-const GenericActionButtons = ({ card, context, ...contextSpecificProps }) => {
+const GenericActionButtons = ({ card, context }) => {
   const classes = useStyles();
-  const deckContext = useContext(DeckContext);
-  const cartContext = useContext(CartContext);
-  const collectionContext = useContext(CollectionContext);
+  const contexts = {
+    Deck: useContext(DeckContext),
+    Cart: useContext(CartContext),
+    Store: useContext(CartContext), // Assuming the Store context is similar to Cart
+    Collection: useContext(CollectionContext),
+  };
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openCollectionDialog, setOpenCollectionDialog] = useState(false);
 
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-  };
+  const contextProps = contexts[context] || {};
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const getContextSpecificProps = () => {
-    switch (context) {
-      case 'Deck':
-        return {
-          ...deckContext, // Spread the context to ensure all functions are included
-        };
-      case 'Cart':
-      case 'Store':
-        return {
-          ...cartContext, // Spread the context to ensure all functions are included
-        };
-      case 'Collection':
-        return {
-          ...collectionContext, // Spread the context to ensure all functions are included
-        };
-      default:
-        return {};
-    }
-  };
-
-  const contextProps = getContextSpecificProps();
+  const toggleDialog = (setState) => () => setState((prevState) => !prevState);
 
   return (
     <div className={classes.root}>
@@ -59,14 +38,20 @@ const GenericActionButtons = ({ card, context, ...contextSpecificProps }) => {
         card={card}
         context={context}
         contextProps={contextProps}
-        handleOpenDialog={handleOpenDialog}
+        handleOpenDialog={toggleDialog(setOpenDialog)}
       />
-
-      {(context === 'Deck' || context === 'Cart' || context === 'Store') && (
+      {context in contexts && (
         <DeckCardDialog
           isOpen={openDialog}
-          onClose={handleDialogClose}
+          onClose={toggleDialog(setOpenDialog)}
           context={context}
+          card={card}
+        />
+      )}
+      {openCollectionDialog && (
+        <ChooseCollectionDialog
+          isOpen={openCollectionDialog}
+          onClose={toggleDialog(setOpenCollectionDialog)}
           card={card}
         />
       )}

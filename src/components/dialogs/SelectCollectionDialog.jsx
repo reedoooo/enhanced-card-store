@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Dialog, DialogContent, Button, TextField } from '@mui/material';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { useCollectionStore } from '../../context/hooks/collection';
 
 export const SelectCollectionDialog = ({
   isDialogOpen,
   closeDialog,
-  selectedCollection,
-  name,
   onSave,
-  description,
-  setName,
-  setDescription,
+  // name,
+  // description,
+  // setName,
+  // setDescription,
   isNew,
   userId,
+  editedName,
+  setEditedName,
+  editedDescription,
+  setEditedDescription,
 }) => {
   const { createUserCollection, addOneToCollection } = useCollectionStore();
-  const [editedName, setEditedName] = useState(name);
-  const [editedDescription, setEditedDescription] = useState(description);
 
   const handleSave = () => {
     const newCollectionInfo = {
@@ -25,28 +27,17 @@ export const SelectCollectionDialog = ({
       userId,
     };
 
-    if (isNew === true) {
-      // Call the createUserCollection function with user ID, name, and description
-      createUserCollection(
-        newCollectionInfo.name,
-        newCollectionInfo.description,
-        newCollectionInfo
-      );
+    if (isNew) {
+      createUserCollection(newCollectionInfo);
     } else {
-      // Use either 'name' or 'editedName' based on isNew
-      const collectionNameToUse = isNew ? name : editedName;
-      // Check if 'card' is defined before calling addOneToCollection
-      if (selectedCollection && selectedCollection.cards) {
-        addOneToCollection(
-          selectedCollection.cards[0] || {},
-          collectionNameToUse,
-          newCollectionInfo
-        );
+      if (editedName && editedDescription) {
+        addOneToCollection(newCollectionInfo);
       } else {
         console.error('No card to add to the collection');
       }
     }
 
+    onSave(newCollectionInfo);
     closeDialog();
   };
 
@@ -56,7 +47,6 @@ export const SelectCollectionDialog = ({
         <div>
           <TextField
             label="Collection Name"
-            // value={isNew ? name : editedName}
             value={editedName}
             onChange={(e) => setEditedName(e.target.value)}
             variant="outlined"
@@ -67,7 +57,6 @@ export const SelectCollectionDialog = ({
         <div>
           <TextField
             label="Collection Description"
-            // value={isNew ? description : editedDescription}
             value={editedDescription}
             onChange={(e) => setEditedDescription(e.target.value)}
             variant="outlined"
@@ -91,6 +80,22 @@ export const SelectCollectionDialog = ({
       </DialogContent>
     </Dialog>
   );
+};
+
+SelectCollectionDialog.propTypes = {
+  isDialogOpen: PropTypes.bool.isRequired,
+  closeDialog: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  // name: PropTypes.string,
+  // description: PropTypes.string,
+  // setName: PropTypes.func.isRequired,
+  // setDescription: PropTypes.func.isRequired,
+  isNew: PropTypes.bool,
+  userId: PropTypes.string,
+  editedName: PropTypes.string,
+  setEditedName: PropTypes.func.isRequired,
+  editedDescription: PropTypes.string,
+  setEditedDescription: PropTypes.func.isRequired,
 };
 
 export default SelectCollectionDialog;

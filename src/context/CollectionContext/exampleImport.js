@@ -14,6 +14,7 @@ export const fetchWrapper = async (url, method, body = null) => {
     ...(body && { body: JSON.stringify(body) }),
   };
   const response = await fetch(url, options);
+  console.log('RESPONSE:', response);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -75,5 +76,28 @@ export const getTotalCost = (selectedCollection) => {
   }, 0);
 };
 
-export const getCardPrice = (card) =>
-  parseFloat(card.card_prices?.[0]?.tcgplayer_price || 0);
+export const getCardPrice = (collection) =>
+  console.log('CARD:', collection) ||
+  parseFloat(collection?.cards?.card_prices?.[0]?.tcgplayer_price || 0);
+
+// Function to calculate total price of a collection
+export const calculateTotalPrice = (collection) => {
+  // Assuming collection is an object where each key-value pair is cardId-price
+  return Object.values(collection).reduce((total, price) => total + price, 0);
+};
+// const getCollectionQuantity = useCallback(() => {
+//   return (
+//     selectedCollection?.cards?.reduce(
+//       (acc, card) => acc + card.quantity,
+//       0
+//     ) || 0
+//   );
+// }, [selectedCollection]);
+
+// getCardPrice(selectedCollection);
+// console.log(
+//   'SELECTED COLLECTION CARD PRICE:',
+//   getCardPrice(
+//     selectedCollection?.cards?.find((card) => card.id === collectionData.id)
+//   )
+// );

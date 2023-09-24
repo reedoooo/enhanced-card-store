@@ -10,6 +10,8 @@ import { CardProvider } from './context/CardContext/CardStore';
 import { ScrapeDataProvider } from './context/ScraperContext/ScraperContext';
 import { CollectionProvider } from './context/CollectionContext/CollectionContext';
 import { UtilityProvider } from './context/UtilityContext/UtilityContext';
+import { ModalProvider } from './context/ModalContext/ModalContext';
+import { ChartDataProvider } from './context/ChartContext/ChartContext';
 
 const root = document.getElementById('root');
 
@@ -17,20 +19,24 @@ function Main() {
   return (
     <AuthProvider>
       <UtilityProvider>
-        <CardProvider>
-          <DeckProvider>
-            <ScrapeDataProvider>
-              <CollectionProvider>
-                <CartProvider>
-                  {/* <AuthProvider> */}
-                  <GlobalStyles />
-                  <App />
-                  {/* </AuthProvider> */}
-                </CartProvider>
-              </CollectionProvider>
-            </ScrapeDataProvider>
-          </DeckProvider>
-        </CardProvider>
+        <ChartDataProvider>
+          <ModalProvider>
+            <CardProvider>
+              <DeckProvider>
+                <ScrapeDataProvider>
+                  <CollectionProvider>
+                    <CartProvider>
+                      {/* <AuthProvider> */}
+                      <GlobalStyles />
+                      <App />
+                      {/* </AuthProvider> */}
+                    </CartProvider>
+                  </CollectionProvider>
+                </ScrapeDataProvider>
+              </DeckProvider>
+            </CardProvider>
+          </ModalProvider>
+        </ChartDataProvider>
       </UtilityProvider>
     </AuthProvider>
   );

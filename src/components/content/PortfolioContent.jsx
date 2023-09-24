@@ -1,75 +1,71 @@
 import React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box } from '@mui/system';
-import { Typography } from '@mui/material';
 import PortfolioHeader from '../headings/PortfolioHeader';
 import PortfolioListContainer from '../../containers/PortfolioListContainer';
 import PortfolioChart from '../other/PortfolioChart';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useUtility } from '../../context/UtilityContext/UtilityContext';
+import { useCollectionStore } from '../../context/hooks/collection';
 
-const PortfolioContent = ({ error, selectedCards, removeCard, chartData }) => {
-  const { allCollections, selectedCollection, totalCost } =
-    useCollectionStore();
-  const { cronCounter, totalCardPrice, cardPriceUpdates, cronData } =
-    useUtility();
-  console.log('PORTFOLIOCONTENT CRONDATA:', cronData);
-  console.log('PORTFOLIOCONTENT CRONRUNS:', cronCounter);
-  console.log('PORTFOLIOCONTENT TOTALCARDPRICE:', totalCardPrice);
-  console.log('PORTFOLIOCONTENT CARDPRICEUPDATES:', cardPriceUpdates);
-  console.log('PORTFOLIOCONTENT ALLCOLLECTIONS:', allCollections);
-  console.log('PORTFOLIOCONTENT SELECTEDCOLLECTION:', selectedCollection);
-  // const totalPrice = selectedCards.reduce((total, card) => {
-  //   if (
-  //     card.card_prices &&
-  //     card.card_prices[0] &&
-  //     card.card_prices[0].tcgplayer_price
-  //   ) {
-  //     return total + parseFloat(card.card_prices[0].tcgplayer_price);
-  //   }
-  //   return total;
-  // }, 0);
-  console.log('PORTFOLIOCONTENT TOTALCOST:', totalCost);
+const PortfolioContent = ({ error, selectedCards, removeCard }) => {
+  const { selectedCollection } = useCollectionStore();
+
+  // Define a custom theme with a breakpoint at 950px
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 950, // Set md breakpoint to 950px
+        lg: 1280,
+        xl: 1920,
+      },
+    },
+  });
+
   return (
-    <Box
-      height="100vh"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      padding="20px"
-    >
-      <PortfolioHeader error={error} />
-
-      {/* Container for Chart and List */}
+    <ThemeProvider theme={theme}>
       <Box
+        height="100vh"
+        width={{ md: '100vw', lg: '150vw' }} // Adjust width based on the custom breakpoint
         display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="flex-start"
-        width="100%" // Full width
-        marginTop="20px" // Add some top margin for separation
+        margin={'auto'}
+        justifyContent={'center'}
+        flexDirection="column"
+        alignItems="center"
+        padding="20px"
       >
-        {/* Chart */}
-        <Box flex="1" marginRight="10px">
-          {' '}
-          {/* Adjust the right margin for spacing */}
-          <PortfolioChart
-            data={chartData}
-            xAxisLabel={`x-axis: ${cronCounter} cron jobs`}
-            yAxisLabel={`y-axis: $${totalCardPrice}`}
-          />
-        </Box>
-
-        {/* List */}
-        <Box flex="1" marginLeft="10px">
-          {' '}
-          {/* Adjust the left margin for spacing */}
-          <PortfolioListContainer
-            selectedCards={selectedCards}
-            removeCard={removeCard}
-          />
+        <PortfolioHeader error={error} />
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems="flex-start"
+          width="100%"
+          marginTop="20px"
+          height="100%" // Ensure it takes the rest of the available height
+        >
+          <Box
+            flex="1"
+            marginBottom={{ xs: '10px', md: '0px' }}
+            marginRight={{ md: '10px' }}
+            height="100%"
+          >
+            <PortfolioChart selectedCards={selectedCards} />
+          </Box>
+          <Box
+            flex="1"
+            marginTop={{ xs: '10px', md: '0px' }}
+            marginLeft={{ md: '10px' }}
+            height="100%"
+          >
+            <PortfolioListContainer
+              selectedCards={selectedCards}
+              removeCard={removeCard}
+            />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 };
 
