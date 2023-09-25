@@ -1,5 +1,11 @@
-import React, { useContext } from 'react';
-import { Dialog, DialogContent, DialogTitle, Grid } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Snackbar,
+} from '@mui/material';
 import CardMediaSection from '../media/CardMediaSection';
 import CardDetailsContainer from './cardModal/CardDetailsContainer';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
@@ -41,6 +47,8 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
   const deckContext = useContext(DeckContext);
   const cartContext = useContext(CartContext);
   const collectionContext = useContext(CollectionContext);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const contextProps =
     {
@@ -55,7 +63,9 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
     : 0;
 
   const handleClose = (event, reason) => {
-    if (reason === 'backdropClick') {
+    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+      setSnackbarMessage(`${context} successfully updated`);
+      setOpenSnackbar(true);
       onClose();
     }
   };
@@ -99,6 +109,12 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
           )}
         </>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        message={snackbarMessage}
+      />
     </Dialog>
   );
 };

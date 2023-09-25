@@ -12,6 +12,7 @@ import { CollectionProvider } from './context/CollectionContext/CollectionContex
 import { UtilityProvider } from './context/UtilityContext/UtilityContext';
 import { ModalProvider } from './context/ModalContext/ModalContext';
 import { ChartDataProvider } from './context/ChartContext/ChartContext';
+import { UserProvider } from './context/UserContext/UserContext';
 
 const root = document.getElementById('root');
 
@@ -26,10 +27,12 @@ function Main() {
                 <ScrapeDataProvider>
                   <CollectionProvider>
                     <CartProvider>
-                      {/* <AuthProvider> */}
-                      <GlobalStyles />
-                      <App />
-                      {/* </AuthProvider> */}
+                      <UserProvider>
+                        {/* <AuthProvider> */}
+                        <GlobalStyles />
+                        <App />
+                        {/* </AuthProvider> */}
+                      </UserProvider>
                     </CartProvider>
                   </CollectionProvider>
                 </ScrapeDataProvider>

@@ -16,6 +16,8 @@ import ProfilePage from './pages/ProfilePage';
 
 const App = () => {
   const [activeUserCartId, setActiveUserCartId] = useState(null);
+  // const [activeUserDeckId, setActiveUserDeckId] = useState(null);
+  // const [activeUserCollectionId, setActiveUserCollectionId] = useState(null);
 
   return (
     <Router>
@@ -75,6 +77,16 @@ const App = () => {
           <Route
             exact
             path="/profile"
+            element={
+              <ProfilePage
+                activeUserCartId={activeUserCartId}
+                setActiveUserCart={setActiveUserCartId}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/userprofile"
             element={
               <ProfilePage
                 activeUserCartId={activeUserCartId}

@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useContext,
 } from 'react';
 import { useCookies } from 'react-cookie';
 import {
@@ -15,6 +16,7 @@ import {
   getTotalCost,
   getCardPrice,
 } from './exampleImport.js';
+import { UtilityContext } from '../UtilityContext/UtilityContext.jsx';
 
 export const CollectionContext = createContext(undefined);
 
@@ -62,6 +64,7 @@ export const CollectionProvider = ({ children }) => {
   // const [selectedCollection, setSelectedCollection] = useState(
   //   initialCollectionState
   // );
+  const { triggerCronJob } = useContext(UtilityContext); // Use the UtilityContext here
   const [selectedCollection, setSelectedCollection] = useState({});
 
   const totalCost = useMemo(
@@ -267,8 +270,11 @@ export const CollectionProvider = ({ children }) => {
   }, [contextValue]);
 
   useEffect(() => {
-    console.log('Selected Collection has been updated:', selectedCollection);
-  }, [selectedCollection]);
+    if (selectedCollection && totalCost) {
+      // Trigger the cron job whenever the selectedCollection changes
+      triggerCronJob();
+    }
+  }, [selectedCollection, triggerCronJob, totalCost]);
 
   useEffect(() => {
     console.log('Total Cost has been updated:', totalCost);
