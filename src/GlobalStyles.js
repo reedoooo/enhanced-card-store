@@ -22,9 +22,10 @@ const MyGlobalStyles = () => (
         textDecoration: 'none', // remove underline from all links
         color: 'inherit', // links will inherit their parent color
       },
-      '*::-webkit-scrollbar': {
-        width: '8px',
-      },
+      // '*::-webkit-scrollbar': {
+      //   visibility: 'hidden',
+      //   // width: '8px',
+      // },
       '*::-webkit-scrollbar-track': {
         backgroundColor: 'gray.200',
       },

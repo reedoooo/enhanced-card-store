@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import { useUtility } from '../../context/UtilityContext/UtilityContext';
+import { useCombinedContext } from '../../context/CombinedProvider';
 
 const CronTrigger = () => {
-  const { triggerCronJob, stopCronJob } = useUtility();
+  const { triggerCronJob, stopCronJob } = useCombinedContext();
 
   const handleTriggerCron = () => {
     triggerCronJob();

@@ -4,7 +4,7 @@ import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 import CustomSelector from '../other/CustomSelector';
-import { useUtility } from '../../context/UtilityContext/UtilityContext';
+import { useCombinedContext } from '../../context/CombinedProvider';
 
 const initialState = {
   name: '',
@@ -15,7 +15,7 @@ const initialState = {
 };
 
 const SearchBar = () => {
-  const { searchParams, setSearchParams } = useUtility(initialState);
+  const { searchParams, setSearchParams } = useCombinedContext(initialState);
   const { handleRequest } = useCardStore();
 
   const filters = [

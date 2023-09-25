@@ -60,6 +60,14 @@ const SelectCollectionList = ({ onSave, openDialog }) => {
     [allCollections, onSave]
   );
 
+  const handleOpenDialog = useCallback(
+    (collection) => {
+      // setSelectedCollection(collection?._id);
+      openDialog(true);
+    },
+    [openDialog]
+  );
+
   // console.log(
   //   'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
   //   selectedCollection
@@ -83,7 +91,7 @@ const SelectCollectionList = ({ onSave, openDialog }) => {
               </ButtonBase>
               <Button
                 className={classes.editButton}
-                onClick={() => openDialog(collection)}
+                onClick={() => handleOpenDialog(collection)}
               >
                 Edit
               </Button>
@@ -101,97 +109,3 @@ SelectCollectionList.propTypes = {
 };
 
 export default SelectCollectionList;
-
-// import React from 'react';
-// import {
-//   List,
-//   ListItem,
-//   ButtonBase,
-//   ListItemText,
-//   Divider,
-//   Button,
-// } from '@mui/material';
-// import { makeStyles } from '@mui/styles';
-// import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-// import { useCookies } from 'react-cookie';
-
-// const useStyles = makeStyles((theme) => ({
-//   listItem: {
-//     display: 'flex',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     padding: theme.spacing(2),
-//     backgroundColor: '#ffffff',
-//     borderRadius: '8px',
-//     marginBottom: theme.spacing(2),
-//     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-//   },
-//   listItemText: {
-//     flex: 1,
-//     textAlign: 'left',
-//     marginLeft: theme.spacing(3),
-//   },
-//   editButton: {
-//     marginLeft: theme.spacing(2),
-//     backgroundColor: theme.palette.primary.main,
-//     color: '#ffffff',
-//     '&:hover': {
-//       backgroundColor: theme.palette.primary.dark,
-//     },
-//   },
-// }));
-
-// export const SelectCollectionList = ({
-//   // userCollection,
-//   // collectionData,
-//   // allCollections,
-//   handleSelectCollection,
-//   // handleSaveCollection,
-//   openDialog,
-// }) => {
-//   const classes = useStyles();
-//   const { allCollections, setSelectedCollection } = useCollectionStore();
-//   const [cookies] = useCookies(['userCookie']);
-//   const userId = cookies.userCookie?.id;
-//   // console.log('SELECTED USERID:', userId);
-//   // console.log('SELECTED COLLECTION:', selectedCollection);
-//   console.log('ALL COLLECTIONS:', allCollections);
-
-//   const handleSelect = (selectedId) => {
-//     const selected = allCollections.find(
-//       (collection) => collection._id === selectedId
-//     );
-//     setSelectedCollection(selected); // update the selectedCollection in context
-//   };
-
-//   return (
-//     <List className={classes.list}>
-//       {allCollections
-//         ?.filter((collection) => !!collection?._id)
-//         .map((collection) => (
-//           <React.Fragment key={collection?._id}>
-//             <ListItem className={classes.listItem}>
-//               <ButtonBase
-//                 sx={{ width: '100%' }}
-//                 onClick={() => handleSelect(collection?._id)} // modified here
-//               >
-//                 <ListItemText
-//                   primary={collection?.name}
-//                   className={classes.listItemText}
-//                 />
-//               </ButtonBase>
-//               <Button
-//                 className={classes.editButton}
-//                 onClick={() => openDialog(collection)}
-//               >
-//                 Edit
-//               </Button>
-//             </ListItem>
-//             <Divider />
-//           </React.Fragment>
-//         ))}
-//     </List>
-//   );
-// };
-
-// export default SelectCollectionList;

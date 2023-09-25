@@ -43,6 +43,9 @@ const StyledLink = styled(Link)(({ theme }) => ({
 //   fontSize: '1em', // or any other value you want
 // });
 
+const currentPage = window.location.pathname;
+console.log('CURRENT PAGE:', currentPage);
+
 function MenuItems({
   isLoggedIn,
   handleCartIconClick,
@@ -106,20 +109,27 @@ function MenuItems({
         {/* <Stripe /> */}
         {/* </CartModal> */}
       </StyledMenuItem>
-      {isLoggedIn && (
-        <StyledMenuItem key="profile">
-          <StyledLink
-            to="/userprofile"
-            style={{ color: '#000', textDecoration: 'none' }}
-          >
-            <AccountCircleIcon /> User Profile
-          </StyledLink>
-        </StyledMenuItem>
-      )}
       {isLoggedIn ? (
-        <Button variant="outlined" onClick={logout} endIcon={<LogoutIcon />}>
-          Logout
-        </Button>
+        currentPage === '/userprofile' ? (
+          <StyledMenuItem key="logout">
+            <Button
+              variant="outlined"
+              onClick={logout}
+              endIcon={<LogoutIcon />}
+            >
+              Logout
+            </Button>
+          </StyledMenuItem>
+        ) : (
+          <StyledMenuItem key="profile">
+            <StyledLink
+              to="/userprofile"
+              style={{ color: '#000', textDecoration: 'none' }}
+            >
+              <AccountCircleIcon /> User Profile
+            </StyledLink>
+          </StyledMenuItem>
+        )
       ) : (
         <Dialog open={!isLoggedIn} onClose={handleDrawerClose}>
           <DialogTitle>Login</DialogTitle>

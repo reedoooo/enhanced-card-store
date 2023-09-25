@@ -20,7 +20,7 @@ const PortfolioChart = () => {
   const chartContainerRef = useRef(null);
 
   const { datasets } = UpdateChartData();
-  console.log('DATASETS:', datasets);
+  // console.log('DATASETS:', datasets);
 
   useEffect(() => {
     if (!datasets) return;

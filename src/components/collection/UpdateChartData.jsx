@@ -1,15 +1,23 @@
-import { useCallback, useEffect, useState, useContext } from 'react';
+import { useCallback, useEffect, useState, useContext, useRef } from 'react';
 import moment from 'moment';
 import { useCollectionStore } from '../../context/hooks/collection';
-import { ChartContext } from '../../context/ChartContext/ChartContext';
-import { UtilityContext } from '../../context/UtilityContext/UtilityContext';
+import { useCombinedContext } from '../../context/CombinedProvider';
 
 const UpdateChartData = () => {
   const { totalCost } = useCollectionStore() || {};
-  const { chartData, updateServerData, isUpdated, setIsUpdated } =
-    useContext(ChartContext);
-  const { isCronJobTriggered } = useContext(UtilityContext);
+  const {
+    isCronJobTriggered,
+    chartData,
+    updateServerData,
+    isUpdated,
+    setIsUpdated,
+  } = useCombinedContext();
   const [datasets, setDatasets] = useState(chartData || []);
+  const prevTotalCostRef = useRef(); // Reference to store the previous totalCost
+
+  useEffect(() => {
+    prevTotalCostRef.current = totalCost; // Update the ref on each render
+  });
 
   const createDataset = (label, priceData) => ({
     id: label,
@@ -30,45 +38,34 @@ const UpdateChartData = () => {
   const updateChart = useCallback(() => {
     let updatedDatasets = [];
 
-    if (!datasets.length && totalCost != null) {
-      // If there are no existing datasets and totalCost is defined, create a new dataset
-      const newDataset = createDataset('totalPrice', [newDataPoint()]);
-      updatedDatasets.push(newDataset);
-    } else if (datasets.length) {
-      // If there are existing datasets, add new data points to them
-      datasets.forEach((dataset) => {
-        const newData = newDataPoint();
-        const newDataset = {
-          ...dataset,
-          data: Array.isArray(dataset?.data)
-            ? [...dataset.data, newData]
-            : [newData],
-        };
+    if (totalCost !== prevTotalCostRef.current) {
+      if (!datasets.length && totalCost != null) {
+        // If there are no existing datasets and totalCost is defined, create a new dataset
+        const newDataset = createDataset('totalPrice', [newDataPoint()]);
         updatedDatasets.push(newDataset);
-      });
-    }
+      } else if (datasets.length) {
+        // If there are existing datasets, add new data points to them
+        datasets.forEach((dataset) => {
+          const newData = newDataPoint();
+          const newDataset = {
+            ...dataset,
+            data: Array.isArray(dataset?.data)
+              ? [...dataset.data, newData]
+              : [newData],
+          };
+          updatedDatasets.push(newDataset);
+        });
+      }
 
-    if (
-      updatedDatasets.length &&
-      JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
-    ) {
-      setDatasets(updatedDatasets);
-      updateServerData(updatedDatasets);
+      if (
+        updatedDatasets.length &&
+        JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
+      ) {
+        setDatasets(updatedDatasets);
+        updateServerData(updatedDatasets);
+      }
     }
   }, [datasets, newDataPoint, updateServerData, totalCost]);
-
-  // Update the local datasets state when the chartData in the context is updated
-  useEffect(() => {
-    setDatasets(chartData || []);
-  }, [chartData]);
-
-  // Existing useEffects and other code
-  useEffect(() => {
-    if (isUpdated || isCronJobTriggered) {
-      updateChart();
-      setIsUpdated(false);
-    }
-  }, [isUpdated, updateChart, setIsUpdated, isCronJobTriggered]);
 
   useEffect(() => {
     // every 10 minutes, update the chart

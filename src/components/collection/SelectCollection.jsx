@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { SelectCollectionDialog } from '../dialogs/SelectCollectionDialog';
-import SimpleReusableButton from '../buttons/SimpleReusableButton';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
+import SimpleReusableButton from '../buttons/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
 import { useCollectionStore } from '../../context/hooks/collection';
+import SelectCollectionDialog from '../dialogs/SelectCollectionDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,22 +37,28 @@ const SelectCollection = ({
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { setSelectedCollection, selectedCollection } = useCollectionStore();
-  // const [name, setName] = useState('');
-  // const [description, setDescription] = useState('');
   const [editedName, setEditedName] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
 
-  const openDialog = useCallback(() => {
-    setDialogOpen(true);
+  const openDialog = useCallback(
+    (isNewCollection) => {
+      setDialogOpen(true);
+      setIsNew(isNewCollection);
 
-    // If selectedCollection is defined, then we are editing an existing collection
-    if (selectedCollection) {
-      // setName(selectedCollection.name);
-      // setDescription(selectedCollection.description);
-      setEditedName(selectedCollection.name);
-      setEditedDescription(selectedCollection.description);
-    }
-  }, [selectedCollection]);
+      if (isNewCollection) {
+        setEditedName('');
+        setEditedDescription('');
+      } else if (selectedCollection) {
+        setEditedName(selectedCollection.name);
+        setEditedDescription(selectedCollection.description);
+      }
+    },
+    [selectedCollection]
+  );
+
+  const handleOpenCollectionModal = useCallback(() => {
+    openDialog(true);
+  }, [openDialog]);
 
   const closeDialog = useCallback(() => setDialogOpen(false), []);
 
@@ -66,18 +72,12 @@ const SelectCollection = ({
     [setSelectedCollection, closeDialog]
   );
 
-  const handleOpenCollectionModal = useCallback(() => {
-    setIsNew(true);
-    openDialog();
-  }, [openDialog]);
-
   useEffect(() => {
     if (selectedCollection) {
       setEditedName(selectedCollection.name);
       setEditedDescription(selectedCollection.description);
     }
   }, [selectedCollection]);
-  // console.log('SELECTED COLLECTION (SELECT COLLECTION):', selectedCollection);
 
   return (
     <Box className={classes.root}>
@@ -94,36 +94,15 @@ const SelectCollection = ({
         <SelectCollectionList
           handleSelectCollection={handleSelectCollection}
           onSave={handleSave}
-          openDialog={openDialog}
+          openDialog={() => openDialog(false)} // Indicate that this is not a new collection
         />
       </div>
-      {/* <SelectCollectionDialog
-        isDialogOpen={isDialogOpen}
-        closeDialog={closeDialog}
-        onSave={handleSave}
-        name={name}
-        isNew={isNew}
-        setName={setName}
-        description={description}
-        setDescription={setDescription}
-        userId={userId}
-        editedName={editedName}
-        setEditedName={setEditedName}
-        editedDescription={editedDescription}
-        setEditedDescription={setEditedDescription}
-      /> */}
       <SelectCollectionDialog
         {...{
           isDialogOpen,
           closeDialog,
           onSave: handleSave,
-          // name,
           isNew,
-          // setName,
-          // description,
-          // setDescription,
-          // name,
-          // description,
           userId,
           editedName,
           setEditedName,

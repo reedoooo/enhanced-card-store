@@ -48,7 +48,7 @@ const CardPortfolio = ({ allCollections }) => {
     setSelectedCollection(foundCollection);
 
     if (selectedCollection) {
-      setSelectedCards(selectedCollection?.cards?.slice(0, 30));
+      setSelectedCards(selectedCollection?.cards?.slice(0, 60));
     }
 
     if (selectedCards) {
