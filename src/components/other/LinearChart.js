@@ -38,7 +38,28 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1rem',
     color: theme.palette.text.primary,
   },
+  customTooltip: {
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[3],
+  },
 }));
+
+const CustomTooltip = ({ point }) => {
+  const { x, y, serieId } = point;
+  return (
+    <Box p={1} boxShadow={3} bgcolor="background.default" borderRadius={1}>
+      <Typography variant="subtitle2" color="textSecondary">
+        {`Series: ${serieId}`}
+      </Typography>
+      <Typography variant="body1">
+        {`X: ${new Date(x).toLocaleString()}`}
+      </Typography>
+      <Typography variant="body1">{`Y: $${y}`}</Typography>
+    </Box>
+  );
+};
 
 const LinearChart = ({ data = [], dimensions, loading, error }) => {
   const classes = useStyles();
@@ -132,16 +153,28 @@ const LinearChart = ({ data = [], dimensions, loading, error }) => {
         pointBorderWidth={1}
         pointSize={10}
         pointColor={theme.palette.primary.main}
+        tooltip={({ point }) => <CustomTooltip point={point} />}
+        theme={{
+          tooltip: {
+            container: {
+              borderRadius: theme.shape.borderRadius,
+            },
+          },
+        }}
         curve="monotoneX"
         useMesh={true}
         onClick={() => setIsZoomed(!isZoomed)}
       />
-      <Typography className={classes.xAxisLabel}>
-        {`${new Date(latestData.x).toLocaleString()}`}
-      </Typography>
-      <Typography className={classes.yAxisLabel}>
-        {`$${latestData.y}`}
-      </Typography>
+      <Tooltip title={`Time: ${new Date(latestData.x).toLocaleString()}`} arrow>
+        <Typography className={classes.xAxisLabel}>
+          {`${new Date(latestData.x).toLocaleString()}`}
+        </Typography>
+      </Tooltip>
+      <Tooltip title={`Value: $${latestData.y}`} arrow>
+        <Typography className={classes.yAxisLabel}>
+          {`$${latestData.y}`}
+        </Typography>
+      </Tooltip>
     </div>
   );
 };

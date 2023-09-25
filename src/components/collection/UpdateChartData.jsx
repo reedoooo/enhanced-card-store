@@ -2,10 +2,13 @@ import { useCallback, useEffect, useState, useContext } from 'react';
 import moment from 'moment';
 import { useCollectionStore } from '../../context/hooks/collection';
 import { ChartContext } from '../../context/ChartContext/ChartContext';
+import { UtilityContext } from '../../context/UtilityContext/UtilityContext';
 
 const UpdateChartData = () => {
   const { totalCost } = useCollectionStore() || {};
-  const { chartData, updateServerData } = useContext(ChartContext);
+  const { chartData, updateServerData, isUpdated, setIsUpdated } =
+    useContext(ChartContext);
+  const { isCronJobTriggered } = useContext(UtilityContext);
   const [datasets, setDatasets] = useState(chartData || []);
 
   const createDataset = (label, priceData) => ({
@@ -54,11 +57,25 @@ const UpdateChartData = () => {
     }
   }, [datasets, newDataPoint, updateServerData, totalCost]);
 
+  // Update the local datasets state when the chartData in the context is updated
   useEffect(() => {
-    const intervalId = setInterval(updateChart, 3600000);
+    setDatasets(chartData || []);
+  }, [chartData]);
+
+  // Existing useEffects and other code
+  useEffect(() => {
+    if (isUpdated || isCronJobTriggered) {
+      updateChart();
+      setIsUpdated(false);
+    }
+  }, [isUpdated, updateChart, setIsUpdated, isCronJobTriggered]);
+
+  useEffect(() => {
+    // every 10 minutes, update the chart
+    const intervalId = setInterval(updateChart, 600000);
     updateChart();
     return () => clearInterval(intervalId);
-  }, []);
+  }, [updateChart]);
 
   return { datasets };
 };

@@ -14,7 +14,12 @@ import CronTrigger from '../../buttons/CronTrigger';
 import { useCollectionStore } from '../../../context/hooks/collection';
 
 const CardList = ({ selectedCards, removeCard }) => {
-  const { getTotalCost, selectedCollection } = useCollectionStore();
+  const {
+    getTotalCost,
+    selectedCollection,
+    removeOneFromCollection,
+    addOneToCollection,
+  } = useCollectionStore();
   const isSmScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   // console.log('SELECTED COLLECTION:', selectedCollection);
   const collectionId = selectedCollection?.id;
@@ -97,7 +102,7 @@ const CardList = ({ selectedCards, removeCard }) => {
                     size="small"
                     variant="contained"
                     color="secondary"
-                    onClick={() => removeCard(index)}
+                    onClick={() => removeOneFromCollection(card, card.id)}
                     sx={{
                       fontSize: '0.6rem',
                       minWidth: 'inherit',
@@ -105,6 +110,19 @@ const CardList = ({ selectedCards, removeCard }) => {
                     }}
                   >
                     Remove
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => addOneToCollection(card, card.id)}
+                    sx={{
+                      fontSize: '0.6rem',
+                      minWidth: 'inherit',
+                      padding: '2px 4px',
+                    }}
+                  >
+                    Add
                   </Button>
                 </Grid>
                 <Grid item xs={12}>

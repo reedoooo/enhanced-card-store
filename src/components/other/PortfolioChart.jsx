@@ -26,7 +26,8 @@ const PortfolioChart = () => {
     if (!datasets) return;
     const currentTime = new Date().getTime();
 
-    if (lastUpdateTime === null || currentTime - lastUpdateTime >= 3600000) {
+    // Update the latest data point every 10 minutes
+    if (lastUpdateTime === null || currentTime - lastUpdateTime >= 600000) {
       setLastUpdateTime(currentTime);
 
       const lastDataset = datasets[0]?.data?.[datasets[0]?.data?.length - 1];

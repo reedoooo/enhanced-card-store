@@ -1,33 +1,39 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
+import { UtilityContext } from '../UtilityContext/UtilityContext';
 
 export const ChartContext = createContext();
 
 export const ChartDataProvider = ({ children }) => {
   const [chartData, setChartData] = useState(null);
-  const [cookies] = useCookies(['userCookie']);
-  const userId = cookies.userCookie?.id;
+  const [{ userCookie }] = useCookies(['userCookie']);
+  const userId = userCookie?.id;
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/chart-data`;
+  const [isUpdated, setIsUpdated] = useState(false);
+  const { isCronJobTriggered } = useContext(UtilityContext);
 
+  const fetchData = async () => {
+    if (!userId) return;
+    try {
+      const response = await axios.get(`${BASE_API_URL}/${userId}`);
+      setChartData(response.data);
+    } catch (error) {
+      console.error('Error fetching updated data:', error);
+      // More informative error handling can be added here
+    }
+  };
+
+  // Effect for initial data fetch or when cron job triggers
   useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) return;
-      try {
-        const response = await axios.get(`${BASE_API_URL}/${userId}`);
-        console.log('CHART CONTEXT SERVER RESPONSE (GET):', response);
-        setChartData(response.data);
-      } catch (error) {
-        console.error('Error fetching initial data', error);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
+    if (isCronJobTriggered) {
+      fetchData();
+      if (isUpdated) setIsUpdated(false);
+    }
+  }, [isCronJobTriggered, isUpdated, userId]);
 
   const updateServerData = async (updatedData) => {
     if (!userId) return;
-    console.log('CHART CONTEXT UPDATED DATA:', updatedData);
 
     const reducedData = updatedData?.reduce((accumulator, currentObject) => {
       if (currentObject?.data && currentObject?.data?.length > 0) {
@@ -36,29 +42,33 @@ export const ChartDataProvider = ({ children }) => {
       return accumulator;
     }, []);
 
-    console.log('CHART CONTEXT REDUCED DATA:', reducedData);
-
     // Filter out identical data
     const uniqueData = Array.from(
       new Set(reducedData?.map(JSON.stringify))
     ).map(JSON.parse);
-    console.log('CHART CONTEXT UNIQUE DATA:', uniqueData);
 
     try {
       await axios.post(`${BASE_API_URL}/updateChart/${userId}`, {
         data: uniqueData,
         datasets: uniqueData,
       });
-
-      console.log('CHART CONTEXT SERVER RESPONSE (POST):', uniqueData);
       setChartData(uniqueData);
     } catch (error) {
-      console.error('Error sending data', error);
+      console.error('Error updating server data:', error);
+      // More informative error handling can be added here
     }
   };
 
   return (
-    <ChartContext.Provider value={{ chartData, updateServerData }}>
+    <ChartContext.Provider
+      value={{
+        chartData,
+        setChartData,
+        updateServerData,
+        isUpdated,
+        setIsUpdated,
+      }}
+    >
       {children}
     </ChartContext.Provider>
   );

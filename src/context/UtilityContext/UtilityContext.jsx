@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios'; // Import Axios or your preferred HTTP library
+import { ChartContext } from '../ChartContext/ChartContext';
 
 // Create UtilityContext
 export const UtilityContext = createContext();
@@ -25,6 +26,10 @@ export const UtilityProvider = ({ children }) => {
   const [totalDeckPrice, setTotalDeckPrice] = useState(0);
   const [totalCronJobs, setTotalCronJobs] = useState(0);
   const [totalCollectionPrice, setTotalCollectionPrice] = useState(0); // Initialize the state
+  const [cronTriggerTimestamps, setCronTriggerTimestamps] = useState([]);
+  const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
+  const { isUpdated } = useContext(ChartContext);
+
   const [prices, setPrices] = useState({
     totalCard: 0,
     updated: 0,
@@ -43,8 +48,21 @@ export const UtilityProvider = ({ children }) => {
   const confirm = (message) => window.confirm(message);
   // Function to trigger cron job
   const triggerCronJob = async () => {
+    const now = Date.now();
+    // Filter timestamps in the last minute
+    const timestampsLastMinute = cronTriggerTimestamps.filter(
+      (timestamp) => now - timestamp < 60000
+    );
+
+    if (timestampsLastMinute.length >= 5) {
+      toast(
+        'Cron job has been triggered the maximum number of times in the last minute'
+      );
+      return;
+    }
     setIsLoading(true);
     setCronActive(true);
+    setCronTriggerTimestamps([...timestampsLastMinute, now]);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER}/other/cron/update`
@@ -58,7 +76,6 @@ export const UtilityProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-  console.log('CRON DAT RUN ROUNTER GEST 2', cronCounter);
 
   const updateSpecificItem = async (itemType, itemId) => {
     setIsLoading(true);
@@ -105,6 +122,12 @@ export const UtilityProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    if (isUpdated) {
+      setIsCronJobTriggered(false);
+    }
+  }, [isCronJobTriggered]);
+
   const value = {
     searchParams,
     setSearchParams,
@@ -131,7 +154,13 @@ export const UtilityProvider = ({ children }) => {
     confirm,
     stopCronJob,
     triggerCronJob, // Add the triggerCronJob function to the context
+    isCronJobTriggered,
+    setIsCronJobTriggered,
   };
+
+  useEffect(() => {
+    console.log('CRONJOB CONTEXT VALUE:', value);
+  }, [value]);
 
   return (
     <UtilityContext.Provider value={value}>{children}</UtilityContext.Provider>
