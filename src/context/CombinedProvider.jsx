@@ -16,18 +16,27 @@ const initialState = {
 // Create CombinedProvider component
 export const CombinedProvider = ({ children }) => {
   const [chartData, setChartData] = useState(null);
+  // CRON JOB STATUS
   const [isLoading, setIsLoading] = useState(false);
   const [cronActive, setCronActive] = useState(false);
+  const [lastWarningTimestamp, setLastWarningTimestamp] = useState(0);
+  const [cronTriggerTimestamps, setCronTriggerTimestamps] = useState([]);
+  const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
+
+  // CRON JOB DATA
+  const [totalCronJobs, setTotalCronJobs] = useState(0);
+  const [cronCounter, setCronCounter] = useState(0);
+
+  // SEARCH PARAMS
   const [searchParams, setSearchParams] = useState(initialState);
+
+  // PRICES
   const [totalCardPrice, setTotalCardPrice] = useState(0);
   const [updatedPrice, setUpdatedPrice] = useState(0);
   const [allUpdatedPrices, setAllUpdatedPrices] = useState([]);
-  const [cronCounter, setCronCounter] = useState(0);
   const [totalDeckPrice, setTotalDeckPrice] = useState(0);
-  const [totalCronJobs, setTotalCronJobs] = useState(0);
   const [totalCollectionPrice, setTotalCollectionPrice] = useState(0);
-  const [cronTriggerTimestamps, setCronTriggerTimestamps] = useState([]);
-  const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
+
   const [cronData, setCronData] = useState({
     counter: 0,
     totalJobs: 0,
@@ -35,14 +44,15 @@ export const CombinedProvider = ({ children }) => {
 
   const [{ userCookie }] = useCookies(['userCookie']);
   const userId = userCookie?.id;
-  const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/chart-data`;
+  const BASE_API_URL_CHARTS = `${process.env.REACT_APP_SERVER}/api/chart-data`;
+  const BASE_API_URL_CRON = `${process.env.REACT_APP_SERVER}/other/cron`;
 
   // Combine all the functions from both contexts here
   // For example:
   const fetchData = async () => {
     if (!userId) return;
     try {
-      const response = await axios.get(`${BASE_API_URL}/${userId}`);
+      const response = await axios.get(`${BASE_API_URL_CHARTS}/${userId}`);
       setChartData(response.data);
     } catch (error) {
       console.error('Error fetching updated data:', error);
@@ -63,7 +73,7 @@ export const CombinedProvider = ({ children }) => {
     ).map(JSON.parse);
 
     try {
-      await axios.post(`${BASE_API_URL}/updateChart/${userId}`, {
+      await axios.post(`${BASE_API_URL_CHARTS}/updateChart/${userId}`, {
         data: uniqueData,
       });
       setChartData(uniqueData);
@@ -87,9 +97,12 @@ export const CombinedProvider = ({ children }) => {
     );
 
     if (timestampsLastMinute.length >= 5) {
-      toast(
-        'Cron job has been triggered the maximum number of times in the last minute'
-      );
+      if (now - lastWarningTimestamp >= 60000) {
+        toast(
+          'Cron job has been triggered the maximum number of times in the last minute'
+        );
+        setLastWarningTimestamp(now);
+      }
       return;
     }
 
@@ -100,9 +113,7 @@ export const CombinedProvider = ({ children }) => {
     setCronTriggerTimestamps([...timestampsLastMinute, now]);
 
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER}/other/cron/update`
-      );
+      const response = await axios.get(`${BASE_API_URL_CRON}/update`);
       setCronData({ ...cronData, totalJobs: response.data.totalRuns });
       setAllUpdatedPrices(response.data.allUpdatedPrices);
       // setPrices({ ...prices, allUpdated: response.data.allUpdatedPrices });
@@ -118,7 +129,7 @@ export const CombinedProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER}/other/update/${itemType}/${itemId}`
+        `${BASE_API_URL_CRON}/update/${itemType}/${itemId}`
       );
       const updatedTotalPrice = response.data.updatedTotalPrice;
 
@@ -139,10 +150,9 @@ export const CombinedProvider = ({ children }) => {
   const stopCronJob = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER}/other/cron/stopAndReset`
-      );
+      const response = await axios.get(`${BASE_API_URL_CRON}/stopAndReset`);
 
+      console.log(response.data);
       setCronActive(false);
       setCronCounter(0);
       toast('Cron job stopped successfully');
@@ -168,32 +178,33 @@ export const CombinedProvider = ({ children }) => {
 
   const value = {
     chartData,
-    setChartData,
     isLoading,
-    setIsLoading,
-    cronActive,
-    setCronActive,
-    searchParams,
-    setSearchParams,
     totalCardPrice,
-    setTotalCardPrice,
+    cronActive,
+    searchParams,
     updatedPrice,
-    setUpdatedPrice,
     allUpdatedPrices,
-    setAllUpdatedPrices,
     cronCounter,
-    setCronCounter,
     totalDeckPrice,
-    setTotalDeckPrice,
     totalCronJobs,
-    setTotalCronJobs,
     totalCollectionPrice,
-    setTotalCollectionPrice,
     cronTriggerTimestamps,
-    setCronTriggerTimestamps,
     isCronJobTriggered,
-    setIsCronJobTriggered,
     cronData,
+
+    setChartData,
+    setIsLoading,
+    setCronActive,
+    setSearchParams,
+    setTotalCardPrice,
+    setUpdatedPrice,
+    setAllUpdatedPrices,
+    setCronCounter,
+    setTotalDeckPrice,
+    setTotalCronJobs,
+    setTotalCollectionPrice,
+    setCronTriggerTimestamps,
+    setIsCronJobTriggered,
     setCronData,
     fetchData,
     updateServerData,
@@ -203,6 +214,10 @@ export const CombinedProvider = ({ children }) => {
     updateSpecificItem,
     stopCronJob,
   };
+
+  useEffect(() => {
+    console.log('COMBINED CONTEXT VALUE:', value);
+  }, [value]);
 
   return (
     <CombinedContext.Provider value={value}>

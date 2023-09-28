@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
-import SimpleReusableButton from '../buttons/SimpleReusableButton';
+import SimpleReusableButton from '../reusable/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
 import { useCollectionStore } from '../../context/hooks/collection';
 import SelectCollectionDialog from '../dialogs/SelectCollectionDialog';
@@ -101,6 +101,7 @@ const SelectCollection = ({
         {...{
           isDialogOpen,
           closeDialog,
+          onOpen: handleOpenCollectionModal,
           onSave: handleSave,
           isNew,
           userId,

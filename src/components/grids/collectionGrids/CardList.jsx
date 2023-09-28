@@ -9,10 +9,11 @@ import {
   Container,
   useMediaQuery,
   Stack,
+  IconButton,
 } from '@mui/material';
 import CronTrigger from '../../buttons/CronTrigger';
 import { useCollectionStore } from '../../../context/hooks/collection';
-
+import AssessmentIcon from '@mui/icons-material/Assessment';
 const CardList = ({ selectedCards, removeCard }) => {
   const {
     getTotalCost,
@@ -75,7 +76,22 @@ const CardList = ({ selectedCards, removeCard }) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h4" gutterBottom sx={{ wordWrap: 'break-word' }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              wordWrap: 'break-word',
+              color: 'primary.main',
+              fontWeight: 'bold',
+              textShadow: '1px 1px 2px #aaa',
+              paddingLeft: '8px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <IconButton color="primary">
+              <AssessmentIcon /> {/* Adding an icon next to the title */}
+            </IconButton>
             Cards in Portfolio
           </Typography>
           <CronTrigger /> {/* Include the CronTrigger button */}
@@ -85,9 +101,11 @@ const CardList = ({ selectedCards, removeCard }) => {
           selectedCards
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map((card, index) => {
-              const key = isIdUnique(card.id, selectedCards)
+              const key = isIdUnique(card.id || index, selectedCards)
                 ? card.id
                 : `${card.id}-${index}`;
+              console.log('Generated Key:', key);
+
               return (
                 <Grid
                   container

@@ -65,6 +65,12 @@ const UpdateChartData = () => {
         updateServerData(updatedDatasets);
       }
     }
+    console.log('UPDATED DATASETS:', updatedDatasets);
+    console.log('TOTAL COST:', totalCost);
+    console.log('PREV TOTAL COST:', prevTotalCostRef.current);
+    console.log('IS CRON JOB TRIGGERED:', isCronJobTriggered);
+    console.log('IS UPDATED:', isUpdated);
+    console.log('DATASETS:', datasets);
   }, [datasets, newDataPoint, updateServerData, totalCost]);
 
   useEffect(() => {

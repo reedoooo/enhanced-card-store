@@ -30,7 +30,7 @@
 //   // const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
 //   const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
 
-//   const { isUpdated, setIsUpdated } = useContext(ChartContext);
+//   // const { isUpdated, setIsUpdated } = useContext(ChartContext);
 
 //   const [prices, setPrices] = useState({
 //     totalCard: 0,
@@ -46,6 +46,11 @@
 //   // Toast and confirm functions
 //   const toast = (message, duration = 10000) => {
 //     /* Implementation */
+//     console.log(message);
+
+//     setTimeout(() => {
+//       console.log('TOAST MESSAGE:', message);
+//     }, duration);
 //   };
 //   const confirm = (message) => window.confirm(message);
 //   // Function to trigger cron job
@@ -126,12 +131,12 @@
 //     }
 //   };
 
-//   useEffect(() => {
-//     if (isUpdated) {
-//       triggerCronJob();
-//       setIsUpdated(false);
-//     }
-//   }, [isUpdated]);
+//   // useEffect(() => {
+//   //   if (isUpdated) {
+//   //     triggerCronJob();
+//   //     setIsUpdated(false);
+//   //   }
+//   // }, [isUpdated]);
 
 //   const value = {
 //     searchParams,

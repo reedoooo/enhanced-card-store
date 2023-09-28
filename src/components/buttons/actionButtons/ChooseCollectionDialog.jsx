@@ -13,11 +13,36 @@ import { useCollectionStore } from '../../../context/hooks/collection';
 import { useModal } from '../../../context/hooks/modal';
 import SelectCollectionList from '../../grids/collectionGrids/SelectCollectionList';
 
-const ChooseCollectionDialog = ({ onSave, isOpen, onClose, card }) => {
+const ChooseCollectionDialog = ({
+  onSave,
+  isOpen,
+  onClose,
+  card,
+  deckDialogIsOpen,
+}) => {
   const { allCollections, setSelectedCollection, selectedCollection } =
     useCollectionStore();
   const { hideModal } = useModal();
   const [error, setError] = useState(null);
+
+  // If handleSelectCollection is a function, define it
+  const handleSelectCollection = (collectionId) => {
+    if (!collectionId) return;
+
+    const foundCollection = allCollections?.find(
+      (collection) => collection._id === collectionId
+    );
+
+    if (!foundCollection) {
+      console.error('Collection not found with ID:', collectionId);
+      setError('Collection not found!');
+      return;
+    }
+
+    setSelectedCollection(foundCollection);
+    onSave(foundCollection);
+    hideModal();
+  };
 
   const handleAddToCollection = (collectionId) => {
     if (!collectionId) return;
@@ -52,13 +77,23 @@ const ChooseCollectionDialog = ({ onSave, isOpen, onClose, card }) => {
     [setSelectedCollection, onClose]
   );
 
+  const handleOpenDialog = () => {
+    if (deckDialogIsOpen) {
+      hideModal();
+    }
+  };
+
   console.log('SELECTED COLLECTION (SELECT COLLECTION):', selectedCollection);
 
   return (
     // <Dialog onClose={hideModal} open={true}>
-    <Dialog open={isOpen} onClose={onClose} /*... other props */>
+    <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>Select a Collection</DialogTitle>
-      <SelectCollectionList onSave={handleSave} />
+      <SelectCollectionList
+        handleSelectCollection={handleSelectCollection}
+        onSave={handleSave}
+        openDialog={handleOpenDialog}
+      />
       {error && (
         <Typography variant="body2" color="error" align="center">
           {error}

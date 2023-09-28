@@ -6,6 +6,7 @@ import CollectionBanner from './pageStyles/CollectionBanner';
 import CollectionTitle from './pageStyles/CollectionTitle';
 import CardPortfolio from '../components/collection/CardPortfolio';
 import { useCollectionStore } from '../context/hooks/collection';
+import HeaderTitle from '../components/reusable/HeaderTitle';
 
 const CollectionPage = () => {
   // const [defaultCollection, setDefaultCollection] = useState([]);
@@ -32,49 +33,14 @@ const CollectionPage = () => {
       });
   }, [fetchAllCollectionsForUser]);
 
-  // useEffect(() => {
-  //   if (allCollections && userId) {
-  //     const filteredCollections = allCollections.filter(
-  //       (collection) => collection?.userId === userId
-  //     );
-  //     setSelectedCollection(filteredCollections && filteredCollections[0]);
-  //     console.log(
-  //       '(COLLECTION PAGE) -- (userCollections):',
-  //       selectedCollection
-  //     );
-  //   }
-  // }, [allCollections, userId]);
-
-  // useEffect(() => {
-  //   console.log('Running effect with:', { allCollections, userId });
-
-  //   if (allCollections && userId) {
-  //     const filteredCollections = allCollections.filter(
-  //       (collection) => collection?.userId === userId
-  //     );
-  //     console.log('Setting user collection with:', filteredCollections);
-  //     setAllCollections(filteredCollections);
-  //     setDefaultCollection(filteredCollections[0]);
-  //   }
-  // }, [allCollections, userId]);
-
-  // console.log('ALL COLLECTIONS:', allCollections);
-  // console.log('TOTAL PRICE:', calculateTotalPrice());
-  // console.log('DEFAULT COLLECTION:', defaultCollection);
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
 
-  // console.log('ALL COLLECTION (COLLECTION PAGE):', allCollections);
-  // console.log('SELECTED COLLECTION (COLLECTION PAGE):', selectedCollection);
   return (
     <div>
       <CollectionBanner>
-        <CollectionTitle>Your Collections</CollectionTitle>
-        <CardPortfolio
-          // userCollection={userCollection}
-          allCollections={allCollections}
-          // setUserCollection={setUserCollection}
-        />
+        <HeaderTitle title="Collection Portfolio" />
+        <CardPortfolio allCollections={allCollections} />
       </CollectionBanner>
     </div>
   );

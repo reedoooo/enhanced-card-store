@@ -31,7 +31,12 @@ const GenericActionButtons = ({ card, context }) => {
   const contextProps = contexts[context] || {};
 
   const toggleDialog = (setState) => () => setState((prevState) => !prevState);
-
+  // console.log('context', context);
+  // console.log('contextProps', contextProps);
+  // console.log('contexts', contexts);
+  // console.log('card', card);
+  // console.log('openDialog', openDialog);
+  // console.log('openCollectionDialog', openCollectionDialog);
   return (
     <div className={classes.root}>
       <CardActionButtons
@@ -48,10 +53,12 @@ const GenericActionButtons = ({ card, context }) => {
           card={card}
         />
       )}
-      {openCollectionDialog && (
+      {openDialog && (
         <ChooseCollectionDialog
-          isOpen={openCollectionDialog}
+          deckDialogIsOpen={openDialog}
+          isOpen={openCollectionDialog} // Corrected the prop value
           onClose={toggleDialog(setOpenCollectionDialog)}
+          context={context}
           card={card}
         />
       )}

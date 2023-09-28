@@ -6,6 +6,7 @@ const MyGlobalStyles = () => (
       html: {
         height: '100vh',
         fontSize: '16px', // default font-size
+        maxWidth: '100vw',
         fontFamily: '"Roboto", sans-serif', // default font
         color: '#333', // default text color
       },
@@ -13,6 +14,7 @@ const MyGlobalStyles = () => (
         backgroundColor: '#f4f4f4', // a light grey background
         margin: '0', // remove default margin
         padding: '0', // remove default padding
+        maxWidth: '100vw',
         boxSizing: 'border-box', // box model handling
       },
       '*': {

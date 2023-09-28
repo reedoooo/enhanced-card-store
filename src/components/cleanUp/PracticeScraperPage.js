@@ -4,21 +4,6 @@ import { BeatLoader } from 'react-spinners';
 import { useCookies } from 'react-cookie';
 import { ScraperContext } from '../../context/ScraperContext/ScraperContext';
 
-const LoadingIndicator = ({ loading }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <BeatLoader color={'#123abc'} loading={loading} size={24} />
-    </div>
-  );
-};
-
 const ErrorIndicator = ({ error }) => {
   return <div>Error: {error}</div>;
 };

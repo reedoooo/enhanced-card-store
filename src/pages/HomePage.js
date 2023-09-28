@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Container, Typography, Box } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
+import { ColorModeContext } from '../context/ColorModeProvider';
+import { useMode } from '../context/hooks/colormode';
+import HeaderTitle from '../components/reusable/HeaderTitle';
 // import Hero from './pageStyles/Hero';
 
 const useStyles = makeStyles((theme) => ({
   arrowStyles: {
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: theme.palette.primary.main,
     borderRadius: '50%',
   },
   imageStyles: {
@@ -55,25 +58,56 @@ const carouselImages = [
 ];
 
 const HomeBanner = ({ children }) => {
-  const classes = useStyles();
-  return <Box className={classes.bannerBox}>{children}</Box>;
+  return (
+    <Box
+      sx={{
+        backgroundImage: (theme) =>
+          `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
+        minHeight: '100vh',
+        padding: 4,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {children}
+    </Box>
+  );
 };
 
 const WelcomeMessage = () => {
-  const classes = useStyles();
+  // const classes = useStyles();
   return (
-    <Typography variant="h2" className={classes.welcomeMessage}>
-      Welcome to Mythical Card-Mart!
-    </Typography>
+    // <Typography variant="h2" className={classes.welcomeMessage}>
+    //   Welcome to Mythical Card-Mart!
+    // </Typography>
+    <HeaderTitle
+      title="Welcome to Our Application!"
+      size="huge"
+      location={'center'}
+    />
   );
 };
 
 const CarouselImage = ({ image, caption }) => {
-  const classes = useStyles();
   return (
     <div>
-      <img src={image} alt={caption} className={classes.imageStyles} />
-      <Box className={classes.captionBox}>
+      <img
+        src={image}
+        alt={caption}
+        style={{ height: '600px', width: '100%', objectFit: 'cover' }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          width: '100%',
+          color: 'common.white',
+          padding: 2,
+          textAlign: 'center',
+        }}
+      >
         <Typography variant="body1">
           Browse and shop for your favorite trading cards. Whether buying or
           selling, we&apos;ve got something for every collector!
@@ -104,7 +138,7 @@ const CarouselContainer = () => {
 
 const HomePage = () => {
   const theme = useTheme();
-
+  console.log('theme', theme);
   return (
     <>
       {/* <Hero /> */}
@@ -112,10 +146,10 @@ const HomePage = () => {
       <HomeBanner>
         <Container
           sx={{
-            padding: theme.spacing(3),
-            borderRadius: theme.spacing(2),
-            backgroundColor: theme.palette.background.paper,
-            boxShadow: theme.shadows[10],
+            padding: 3,
+            borderRadius: 2,
+            backgroundColor: 'background.paper',
+            boxShadow: (theme) => theme.shadows[10],
           }}
           maxWidth="md"
         >

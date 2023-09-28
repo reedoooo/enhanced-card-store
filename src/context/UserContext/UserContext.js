@@ -9,7 +9,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const { id, username } = cookies.userCookie || {};
-    console.log('USER COOKIE:', cookies.userCookie);
+    // console.log('USER COOKIE:', cookies.userCookie);
     const userID = id;
     if (userID) {
       setUser({ userID: userID, username: username });

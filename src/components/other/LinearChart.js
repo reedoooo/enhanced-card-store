@@ -77,7 +77,8 @@ const CustomTooltip = ({ point }) => {
   );
 };
 
-const LinearChart = ({ data = [], dimensions, loading, error }) => {
+// const LinearChart = ({ data = [], dimensions, loading, error }) => {
+const LinearChart = ({ data, dimensions, loading, error }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isZoomed, setIsZoomed] = useState(false);
@@ -116,17 +117,15 @@ const LinearChart = ({ data = [], dimensions, loading, error }) => {
     );
   }
 
-  if (transformedData.length === 0) {
-    return (
-      <Box className={classes.loadingContainer}>
-        <Typography variant="subtitle1">No data available</Typography>
-      </Box>
-    );
-  }
+  // if (transformedData.length === 0) {
+  //   return (
+  //     <Box className={classes.loadingContainer}>
+  //       <Typography variant="subtitle1">No data available</Typography>
+  //     </Box>
+  //   );
+  // }
 
   const latestData = data[0]?.data?.slice(-1)[0] || {};
-
-  const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
 
   // Filter the latestDataArray to have unique y values
   const uniqueYDataArray = useMemo(() => {

@@ -25,7 +25,7 @@ const DeckBuilderPage = () => {
     if (allDecks && userId) {
       const filteredDecks = allDecks.filter((deck) => deck.userId === userId);
       setUserDecks(filteredDecks);
-      console.log('(DECK PAGE) -- (USERDECKS):', userDecks);
+      // console.log('(DECK PAGE) -- (USERDECKS):', userDecks);
     }
   }, [allDecks, userId]);
 

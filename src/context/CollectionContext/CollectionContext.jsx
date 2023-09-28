@@ -18,8 +18,51 @@ import {
 } from './exampleImport.js';
 import { useCombinedContext } from '../CombinedProvider.jsx';
 // import { useUserContext } from '../UserContext/UserContext.js';
+export const CollectionContext = createContext(null);
+// export const CollectionContext = createContext({
+//   contextValue: {
+//     // DATA
+//     allCollections: [],
+//     selectedCollection: initialCollectionState,
+//     collectionData: initialCollectionState,
+//     totalCost: 0,
 
-export const CollectionContext = createContext(undefined);
+//     // FUNCTIONS
+//     createUserCollection: () => {
+//       // intentionally empty
+//     },
+//     removeCollection: () => {
+//       // intentionally empty
+//     },
+//     fetchAllCollectionsForUser: () => {
+//       // intentionally empty
+//     },
+//     setSelectedCollection: () => {
+//       // intentionally empty
+//     },
+//     setAllCollections: () => {
+//       // intentionally empty
+//     },
+//     addOneToCollection: () => {
+//       // intentionally empty
+//     },
+//     removeOneFromCollection: () => {
+//       // intentionally empty
+//     },
+
+//     // FUNCTIONS
+//     calculateTotalPrice: () => {
+//       // intentionally empty
+//     },
+//     getTotalCost: () => {
+//       // intentionally empty
+//     },
+
+// FUNCTIONS
+// updateActiveCollection: () => {},
+// updateCollectionData: () => {},
+//   },
+// });
 
 const handleCardAddition = (currentCards, cardToAdd) => {
   const cardIndex = currentCards.findIndex((c) => c.id === cardToAdd.id);
@@ -137,8 +180,13 @@ export const CollectionProvider = ({ children }) => {
     [findCollectionIndex]
   );
 
-  const createUserCollection = async (collection, name, description) => {
-    if (!selectedCollection?._id) {
+  const createUserCollection = async (
+    userId,
+    collection,
+    name,
+    description
+  ) => {
+    if (!selectedCollection || !userId) {
       console.error(
         'Selected collection is undefined or missing _id property.'
       );
@@ -155,9 +203,9 @@ export const CollectionProvider = ({ children }) => {
 
       // Filling the initialData object with provided values or fallbacks
       const initialData = {
-        name: collection.name || '',
-        description: collection.description || '',
-        userId: collection.userId,
+        name: collection?.name || '',
+        description: collection?.description || '',
+        userId: collection?.userId,
         totalPrice: 0,
         quantity: 0,
         allCardPrices: [],
@@ -307,18 +355,21 @@ export const CollectionProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
+      // DATA
       allCollections,
       selectedCollection,
       collectionData,
-      calculateTotalPrice: () => getCardPrice(selectedCollection),
       totalCost,
+      // FUNCTIONS
+      calculateTotalPrice: () => getCardPrice(selectedCollection),
       getTotalCost: () => getTotalCost(selectedCollection),
-      createUserCollection,
-      removeCollection,
-      setAllCollections,
-      setSelectedCollection: updateActiveCollection,
-      // getTotalCost,
+      // FUNCTIONS
+      createUserCollection: (collection, name, description) =>
+        createUserCollection(userId, collection, name, description),
+      removeCollection: (collection) => removeCollection(collection),
       fetchAllCollectionsForUser: fetchAndSetCollections,
+      setSelectedCollection: updateActiveCollection,
+      setAllCollections: (collections) => setAllCollections(collections),
       addOneToCollection: (card, cardInfo) =>
         addOrRemoveCard(card, cardInfo, 'add'),
       removeOneFromCollection: (card) => addOrRemoveCard(card, null, 'remove'),

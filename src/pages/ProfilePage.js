@@ -16,6 +16,7 @@ import placeholder from '../assets/placeholder.jpeg';
 import UserStats from '../components/other/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
+import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
 
 const AvatarStyled = styled(Avatar)({
   width: 60,
@@ -137,6 +138,7 @@ const ProfilePage = () => {
         />
       </Box>
       <UserStats />
+      <ThemeToggleButton />
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

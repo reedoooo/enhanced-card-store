@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   List,
   ListItem,
@@ -38,12 +38,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SelectCollectionList = ({ onSave, openDialog }) => {
+const SelectCollectionList = ({
+  onSave,
+  openDialog,
+  collectionIdFromDialog,
+}) => {
   const classes = useStyles();
   const { allCollections, setSelectedCollection, selectedCollection } =
     useCollectionStore();
   const [cookies] = useCookies(['userCookie']);
-  const userId = cookies.userCookie?.id;
+  // const userId = cookies.userCookie?.id;
+  // const [collections, setCollections] = useState([]);
 
   const handleSelect = useCallback(
     (selectedId) => {
@@ -55,24 +60,26 @@ const SelectCollectionList = ({ onSave, openDialog }) => {
         // Handle the error accordingly, maybe set an error state here
         return;
       }
+      setSelectedCollection(selected);
       onSave(selected);
     },
-    [allCollections, onSave]
+    [allCollections, onSave, setSelectedCollection]
   );
 
   const handleOpenDialog = useCallback(
     (collection) => {
-      // setSelectedCollection(collection?._id);
+      setSelectedCollection(collection);
+      console.log('SELECTED COLLECTION:', collection);
       openDialog(true);
     },
-    [openDialog]
+    [openDialog, setSelectedCollection]
   );
 
-  // console.log(
-  //   'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
-  //   selectedCollection
-  // );
-
+  console.log(
+    'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
+    selectedCollection
+  );
+  // The rendering part of the component
   return (
     <List className={classes.list}>
       {allCollections
@@ -91,7 +98,7 @@ const SelectCollectionList = ({ onSave, openDialog }) => {
               </ButtonBase>
               <Button
                 className={classes.editButton}
-                onClick={() => handleOpenDialog(collection)}
+                onClick={() => handleOpenDialog(collection)} // Pass the collection object here
               >
                 Edit
               </Button>
@@ -104,8 +111,9 @@ const SelectCollectionList = ({ onSave, openDialog }) => {
 };
 
 SelectCollectionList.propTypes = {
-  handleSelectCollection: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
+  collectionIdFromDialog: PropTypes.string,
 };
 
 export default SelectCollectionList;
