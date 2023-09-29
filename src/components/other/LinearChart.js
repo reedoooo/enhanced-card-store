@@ -49,11 +49,9 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomTooltip = ({ point }) => {
   const theme = useTheme();
+  const { serieId } = point;
   const x = point.data.xFormatted;
   const y = point.data.yFormatted;
-  const serieId = point.serieId;
-  // const { x, y, serieId } = point;
-
   return (
     <Box
       p={2}
@@ -66,13 +64,12 @@ const CustomTooltip = ({ point }) => {
       <Typography variant="subtitle1" color="textPrimary">
         {`Series: ${serieId}`}
       </Typography>
-      <Typography variant="body2">{`Time: ${new Date(
-        point?.data?.x
-      ).toLocaleString()}`}</Typography>
-      <Typography
-        variant="h6"
-        color="textSecondary"
-      >{`Value: $${point?.data?.y.toFixed(2)}`}</Typography>
+      <Typography variant="body2">
+        {`Time: ${new Date(point?.data?.x).toLocaleString()}`}
+      </Typography>
+      <Typography variant="h6" color="textSecondary">
+        {`Value: $${point?.data?.y.toFixed(2)}`}
+      </Typography>
     </Box>
   );
 };
@@ -84,53 +81,24 @@ const LinearChart = ({ data, dimensions, loading, error }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [hoveredData, setHoveredData] = useState(null);
 
-  const transformedData = useMemo(() => {
-    if (!data.length) return [];
-
-    // Mapping each serie data to the desired format
-    return data.map((serie) => ({
-      id: serie.id,
-      data: serie.data.map((d) => ({
-        x: new Date(d.x),
-        y: parseFloat(d.y),
-        id: serie?._id,
-      })),
-    }));
-  }, [data]);
-
-  if (error) {
-    return (
-      <Box className={classes.loadingContainer}>
-        <Typography variant="body1" color="error">
-          <ErrorOutlineIcon />
-          Error loading data
-        </Typography>
-      </Box>
-    );
-  }
-
-  if (loading) {
+  if (loading)
     return (
       <Box className={classes.loadingContainer}>
         <CircularProgress />
       </Box>
     );
-  }
+  if (error)
+    return (
+      <Box className={classes.loadingContainer}>
+        <Typography variant="body1" color="error">
+          <ErrorOutlineIcon /> Error loading data
+        </Typography>
+      </Box>
+    );
 
-  // if (transformedData.length === 0) {
-  //   return (
-  //     <Box className={classes.loadingContainer}>
-  //       <Typography variant="subtitle1">No data available</Typography>
-  //     </Box>
-  //   );
-  // }
-
-  const latestData = data[0]?.data?.slice(-1)[0] || {};
-
-  // Filter the latestDataArray to have unique y values
   const uniqueYDataArray = useMemo(() => {
     const seenYValues = new Set();
-    const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
+    const latestDataArray = data?.slice(-1)[0]?.data || [];
     return latestDataArray.filter(({ y }) => {
       if (!seenYValues.has(y)) {
         seenYValues.add(y);
@@ -138,7 +106,24 @@ const LinearChart = ({ data, dimensions, loading, error }) => {
       }
       return false;
     });
-  }, [transformedData]);
+  }, [data]);
+
+  const latestData = uniqueYDataArray.slice(-1)[0] || null;
+  console.log('LATEST DATA:', latestData);
+
+  // const latestData = data[0]?.data?.slice(-1)[0] || {};
+
+  // const uniqueYDataArray = useMemo(() => {
+  //   const seenYValues = new Set();
+  //   const latestDataArray = data?.slice(-1)[0]?.data || [];
+  //   return latestDataArray.filter(({ y }) => {
+  //     if (!seenYValues.has(y)) {
+  //       seenYValues.add(y);
+  //       return true;
+  //     }
+  //     return false;
+  //   });
+  // }, [data]);
 
   return (
     <div

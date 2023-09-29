@@ -14,31 +14,35 @@ import { CombinedProvider } from './context/CombinedProvider';
 import { ThemeProvider } from '@mui/styles';
 import { useMode } from './context/hooks/colormode';
 import { ColorModeProvider } from './context/ColorModeProvider';
+import withCombinedProviderHOC from './withCombinedProviderHOC';
+import withCollectionProvider from './withCollectionProviderHOC';
 
 const root = document.getElementById('root');
 
 function Main() {
   const { theme } = useMode();
-  console.log('theme', theme);
+
   return (
     <ColorModeProvider>
       <AuthProvider>
         <UserProvider>
           <ModalProvider>
-            <CombinedProvider>
-              <CardProvider>
-                <DeckProvider>
-                  <CollectionProvider>
+            {' '}
+            <CollectionProvider>
+              {/* Wrap CombinedProvider with CollectionProvider */}
+              <CombinedProvider>
+                <CardProvider>
+                  <DeckProvider>
                     <CartProvider>
                       <GlobalStyles />
                       <ThemeProvider theme={theme}>
                         <App />
                       </ThemeProvider>
                     </CartProvider>
-                  </CollectionProvider>
-                </DeckProvider>
-              </CardProvider>
-            </CombinedProvider>
+                  </DeckProvider>
+                </CardProvider>
+              </CombinedProvider>
+            </CollectionProvider>
           </ModalProvider>
         </UserProvider>
       </AuthProvider>

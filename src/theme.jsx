@@ -180,6 +180,9 @@ export const themeSettings = (mode) => {
       },
     },
     spacing: (factor) => `${0.25 * factor}rem`,
+    shape: {
+      borderRadius: 4,
+    },
     // You need to decide what to return here...
     shadows: [
       'none',

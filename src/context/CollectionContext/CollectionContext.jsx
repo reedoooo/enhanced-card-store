@@ -17,6 +17,7 @@ import {
   getCardPrice,
 } from './exampleImport.js';
 import { useCombinedContext } from '../CombinedProvider.jsx';
+import { useUserContext } from '../UserContext/UserContext.js';
 // import { useUserContext } from '../UserContext/UserContext.js';
 export const CollectionContext = createContext(null);
 // export const CollectionContext = createContext({
@@ -108,7 +109,7 @@ export const CollectionProvider = ({ children }) => {
   // const [selectedCollection, setSelectedCollection] = useState(
   //   initialCollectionState
   // );
-  const { triggerCronJob } = useCombinedContext(); // Use the UtilityContext here
+  const { triggerCronJob } = useUserContext(); // Use the UtilityContext here
   // const { user } = useUserContext(); // Use the UserContext here
   const [selectedCollection, setSelectedCollection] = useState({});
 
