@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogActions,
   Box,
+  Typography,
 } from '@mui/material';
 import DeckOfCardsIcon from '../../icons/DeckOfCardsIcon';
 // import TestingIcon from '../../icons/TestingIcon';
@@ -45,6 +46,13 @@ const StyledLink = styled(Link)(({ theme }) => ({
 // const StyledHomeIcon = styled(HomeIcon)({
 //   fontSize: '1em', // or any other value you want
 // });
+
+// Style the container of the Logout label and icon
+const LogoutContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+});
 
 const currentPage = window.location.pathname;
 console.log('CURRENT PAGE:', currentPage);
@@ -79,14 +87,12 @@ function MenuItems({
       </StyledMenuItem>
       {isLoggedIn ? (
         <Box right={0} marginRight={'-10%'}>
-          <StyledMenuItem
-            onClick={logout}
-            component={Button}
-            endIcon={<LogoutIcon />}
-            marginRight={'40%'}
-            // marginLeft={'40%'}
-          >
-            Logout
+          <StyledMenuItem>
+            {/* Use the LogoutContainer component to wrap the LogoutIcon and the label */}
+            <LogoutContainer onClick={logout}>
+              <LogoutIcon />
+              <Typography>Logout</Typography>
+            </LogoutContainer>
           </StyledMenuItem>
         </Box>
       ) : (

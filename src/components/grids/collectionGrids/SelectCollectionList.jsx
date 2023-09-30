@@ -75,10 +75,10 @@ const SelectCollectionList = ({
     [openDialog, setSelectedCollection]
   );
 
-  console.log(
-    'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
-    selectedCollection
-  );
+  // console.log(
+  //   'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
+  //   selectedCollection
+  // );
   // The rendering part of the component
   return (
     <List className={classes.list}>

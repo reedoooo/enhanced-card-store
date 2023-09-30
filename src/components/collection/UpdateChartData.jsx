@@ -1,108 +1,75 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { format } from 'date-fns';
+import { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
 import { useCollectionStore } from '../../context/hooks/collection';
 import { useCombinedContext } from '../../context/CombinedProvider';
 
 const UpdateChartData = () => {
   const { totalCost } = useCollectionStore() || {};
   const {
-    isCronJobTriggered,
     chartData,
     updateServerData,
-    isUpdated,
-    setIsUpdated,
-    datasets,
-    setDatasets,
-  } = useCombinedContext();
+    isCronJobTriggered,
+    setIsCronJobTriggered,
+  } = useCombinedContext() || {};
 
-  const prevTotalCostRef = useRef(totalCost);
-  const [transformedData, setTransformedData] = useState([]);
-  const [latestData, setLatestData] = useState(null);
+  const [datasets, setDatasets] = useState(chartData || []);
 
-  useEffect(() => {
-    prevTotalCostRef.current = totalCost;
-  }, [totalCost]);
-
-  const createDataset = useCallback(
-    (label, priceData) => ({
-      id: label,
-      color: 'blue',
-      data: priceData?.map(({ x, y }) => ({ x, y })),
-    }),
-    []
-  );
+  const createDataset = (label, priceData) => ({
+    id: label,
+    color: 'blue',
+    data: priceData?.map(({ x, y }) => ({ x, y })),
+  });
 
   const newDataPoint = useCallback(() => {
     const currentTime = new Date();
-    const formattedTime = format(currentTime, 'yyyy-MM-dd HH:mm');
+    const formattedTime = moment(currentTime).format('YYYY-MM-DD HH:mm');
 
     return {
       x: formattedTime,
-      y: totalCost ? parseFloat(parseFloat(totalCost).toFixed(2)) : null,
+      y: totalCost ? parseFloat(totalCost).toFixed(2) : null,
     };
   }, [totalCost]);
 
   const updateChart = useCallback(() => {
     let updatedDatasets = [];
 
-    if (
-      isCronJobTriggered ||
-      isUpdated ||
-      totalCost !== prevTotalCostRef.current
-    ) {
-      if (!datasets.length && totalCost !== null) {
-        const newDataset = createDataset('totalPrice', [newDataPoint()]);
+    if (!datasets.length && totalCost != null) {
+      const newDataset = createDataset('totalPrice', [newDataPoint()]);
+      updatedDatasets.push(newDataset);
+    } else if (datasets.length) {
+      datasets.forEach((dataset) => {
+        const newData = newDataPoint();
+        const newDataset = {
+          ...dataset,
+          data: Array.isArray(dataset?.data)
+            ? [...dataset.data, newData]
+            : [newData],
+        };
         updatedDatasets.push(newDataset);
-      } else if (datasets.length) {
-        datasets.forEach((dataset) => {
-          const newData = newDataPoint();
-          const newDataset = {
-            ...dataset,
-            data: Array.isArray(dataset?.data)
-              ? [...dataset.data, newData]
-              : [newData],
-          };
-          updatedDatasets.push(newDataset);
-        });
-      }
-
-      if (JSON.stringify(datasets) !== JSON.stringify(updatedDatasets)) {
-        updateServerData(updatedDatasets);
-        setDatasets(updatedDatasets);
-        setIsUpdated(false);
-      }
+      });
     }
 
-    if (updatedDatasets.length) {
-      const uniqueYDataArray =
-        updatedDatasets[0]?.data
-          ?.filter(
-            ({ y }, index, self) =>
-              index === self.findIndex((item) => item.y === y)
-          )
-          .map((d) => ({ x: new Date(d.x), y: parseFloat(d.y) })) || [];
-
-      setTransformedData([{ id: 'alldatasets', data: uniqueYDataArray }]);
-      setLatestData(uniqueYDataArray.slice(-1)[0] || null);
+    if (
+      updatedDatasets.length &&
+      JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
+    ) {
+      setDatasets(updatedDatasets);
+      updateServerData(updatedDatasets);
     }
-  }, [
-    datasets,
-    newDataPoint,
-    updateServerData,
-    totalCost,
-    isCronJobTriggered,
-    isUpdated,
-    setIsUpdated,
-    createDataset,
-  ]);
+  }, [datasets, newDataPoint, updateServerData, totalCost]);
 
   useEffect(() => {
-    const intervalId = setInterval(updateChart, 600000);
-    updateChart();
-    return () => clearInterval(intervalId);
-  }, [updateChart]);
+    setDatasets(chartData || []);
+  }, [chartData]);
 
-  return { datasets, transformedData, latestData };
+  useEffect(() => {
+    if (isCronJobTriggered) {
+      updateChart();
+      setIsCronJobTriggered(false); // reset the trigger state
+    }
+  }, [isCronJobTriggered, updateChart, setIsCronJobTriggered]);
+
+  return { datasets };
 };
 
 export default UpdateChartData;

@@ -52,7 +52,12 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
   };
 
   useEffect(() => {
-    setFormData({ userName, name, age, status });
+    setFormData({
+      userName: userName || '',
+      name: name || '',
+      age: age || '',
+      status: status || '',
+    });
   }, [userName, name, age, status]);
 
   return (

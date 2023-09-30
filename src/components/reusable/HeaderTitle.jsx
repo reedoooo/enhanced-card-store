@@ -21,8 +21,8 @@ const HeaderTitle = ({ title, size, location }) => {
     right: 'right',
   }[location]; // Default to 'left' justify
 
-  console.log('theme', theme);
-  console.log('theme', themeSettings);
+  // console.log('theme', theme);
+  // console.log('theme', themeSettings);
   return (
     <Container
       sx={{
