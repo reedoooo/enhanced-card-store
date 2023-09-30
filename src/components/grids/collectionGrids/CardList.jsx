@@ -50,9 +50,9 @@ const CardList = ({ selectedCards, removeCard }) => {
     return true;
   };
 
-  useEffect(() => {
-    console.log('CardList rendered with selectedCards:', selectedCards);
-  }, [selectedCards]);
+  // useEffect(() => {
+  //   console.log('CardList rendered with selectedCards:', selectedCards);
+  // }, [selectedCards]);
 
   return (
     <Container
@@ -104,7 +104,6 @@ const CardList = ({ selectedCards, removeCard }) => {
               const key = isIdUnique(card.id || index, selectedCards)
                 ? card.id
                 : `${card.id}-${index}`;
-              console.log('Generated Key:', key);
 
               return (
                 <Grid

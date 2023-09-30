@@ -3,7 +3,8 @@ import moment from 'moment';
 import { useCollectionStore } from '../../context/hooks/collection';
 import { useCombinedContext } from '../../context/CombinedProvider';
 
-const UpdateChartData = () => {
+// Hook for updating chart data
+const useUpdateChartData = () => {
   const { totalCost } = useCollectionStore() || {};
   const {
     chartData,
@@ -15,40 +16,35 @@ const UpdateChartData = () => {
   const [datasets, setDatasets] = useState(chartData || []);
 
   const createDataset = (label, priceData) => ({
-    id: label,
+    name: label,
     color: 'blue',
     data: priceData?.map(({ x, y }) => ({ x, y })),
   });
 
   const newDataPoint = useCallback(() => {
-    const currentTime = new Date();
-    const formattedTime = moment(currentTime).format('YYYY-MM-DD HH:mm');
-
     return {
-      x: formattedTime,
+      x: moment().format('YYYY-MM-DD HH:mm'),
       y: totalCost ? parseFloat(totalCost).toFixed(2) : null,
     };
   }, [totalCost]);
 
+  // Logic for updating chart datasets
   const updateChart = useCallback(() => {
     let updatedDatasets = [];
 
     if (!datasets.length && totalCost != null) {
-      const newDataset = createDataset('totalPrice', [newDataPoint()]);
-      updatedDatasets.push(newDataset);
+      updatedDatasets.push(createDataset('totalPrice', [newDataPoint()]));
     } else if (datasets.length) {
       datasets.forEach((dataset) => {
         const newData = newDataPoint();
-        const newDataset = {
+        updatedDatasets.push({
           ...dataset,
-          data: Array.isArray(dataset?.data)
-            ? [...dataset.data, newData]
-            : [newData],
-        };
-        updatedDatasets.push(newDataset);
+          data: [...(dataset?.data || []), newData],
+        });
       });
     }
 
+    // Update if necessary
     if (
       updatedDatasets.length &&
       JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
@@ -65,11 +61,11 @@ const UpdateChartData = () => {
   useEffect(() => {
     if (isCronJobTriggered) {
       updateChart();
-      setIsCronJobTriggered(false); // reset the trigger state
+      setIsCronJobTriggered(false);
     }
   }, [isCronJobTriggered, updateChart, setIsCronJobTriggered]);
 
   return { datasets };
 };
 
-export default UpdateChartData;
+export default useUpdateChartData;

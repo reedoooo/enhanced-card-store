@@ -11,29 +11,21 @@ import { useCookies } from 'react-cookie';
 import io from 'socket.io-client';
 import { useCollectionStore } from './hooks/collection';
 import { useUserContext } from './UserContext/UserContext';
+import useSocket from './SocketProvider';
+import { useApiServiceProvider } from './ApiServiceProvider';
 
 export const CombinedContext = createContext();
-
-// const reducer = (state, action) => {
-//   switch (action.type) {
-//     case 'SET_LOADING':
-//       return { ...state, isLoading: action.payload };
-//     // Add other cases for different actions
-//     default:
-//       return state;
-//   }
-// };
 
 const initialState = {
   chartData: [],
   isLoading: false,
-  data: [],
+  data: {},
   cronTriggerTimestamps: [],
   collectionData: [],
   deckData: [],
   allData: [],
   allUpdatedPrices: [],
-  allItemTypeData: [],
+  allItemTypeData: {},
   prices: {
     totalCard: 0,
     updated: 0,
@@ -43,7 +35,7 @@ const initialState = {
   },
 };
 
-const BASE_API_URL_CHARTS = `${process.env.REACT_APP_SERVER}/api/chart-data`;
+const BASE_API_URL_CHARTS = `${process.env.REACT_APP_SERVER}/other/chart-data`;
 const BASE_API_URL_CRON = `${process.env.REACT_APP_SERVER}/other/cron`;
 const CRON_JOB_DELAY = 60000;
 const getSocketURL = () =>
@@ -52,13 +44,9 @@ const getSocketURL = () =>
 // Create CombinedProvider component
 export const CombinedProvider = ({ children }) => {
   const { userCookie } = useCookies(['userCookie']);
-  const { setIsCronJobTriggered, isCronJobTriggered } = useUserContext();
-  const userId = userCookie?.id;
   const [state, setState] = useState(initialState);
-  const socket = useMemo(
-    () => io(getSocketURL(), { transports: ['websocket'] }),
-    []
-  );
+  const userId = userCookie?.id;
+  const { fetchData, updateServerData } = useApiServiceProvider();
 
   const setChartData = useCallback((newChartData) => {
     setState((prevState) => ({ ...prevState, chartData: newChartData }));
@@ -68,23 +56,6 @@ export const CombinedProvider = ({ children }) => {
       rawData?.find((data) => data?.id === id)
     );
   }, []);
-
-  // Fetching Data
-  const fetchData = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const response = await axios.get(
-        `${BASE_API_URL_CHARTS}/charts/${userId}`
-      );
-      console.log('FETCHED DATA:', response);
-      setChartData(response?.data);
-      // setDatasets(response?.data?.datasets || []);
-      console.log('FETCHED DATA:', response?.data);
-      // setState((prevState) => ({ ...prevState, chartData:  }));
-    } catch (error) {
-      console.error('Error fetching updated data:', error);
-    }
-  }, [userId]);
 
   const updateItemData = useCallback(
     (itemType, response) => {
@@ -114,16 +85,6 @@ export const CombinedProvider = ({ children }) => {
     [processUniqueData]
   );
 
-  //   totalCollectionPrice:
-  //   fetchedItemType === 'Collection'
-  //     ? totalCollectionPrice
-  //     : prevState.totalCollectionPrice,
-  // totalDeckPrice:
-  //   fetchedItemType === 'Deck' ? totalDeckPrice : prevState.totalDeckPrice,
-  // updatedPrice,
-  // }));
-  // };
-
   const updateSpecificItem = useCallback(
     async (itemType, itemId) => {
       setState((prevState) => ({ ...prevState, isLoading: true }));
@@ -141,64 +102,6 @@ export const CombinedProvider = ({ children }) => {
       }
     },
     [updateItemData]
-  );
-  useEffect(() => {
-    if (isCronJobTriggered) {
-      fetchData();
-      if (isCronJobTriggered) setIsCronJobTriggered(false);
-    }
-  }, [isCronJobTriggered, userId]);
-
-  const updateServerData = useCallback(
-    async (updatedData) => {
-      if (!userId) return;
-      const dataSetId = updatedData?._id || 'all';
-      const name = updatedData?.name || 'all';
-
-      const uniqueData = useMemo(
-        () =>
-          Array.from(
-            new Set(
-              (updatedData || [])
-                .flatMap((obj) => obj.data || [])
-                .map(JSON.stringify)
-            )
-          ).map(JSON.parse),
-        [updatedData]
-      );
-
-      try {
-        const response = await axios.post(
-          `${BASE_API_URL_CHARTS}/charts/updateChart/${userId}`,
-          {
-            userId: userId,
-            data: uniqueData,
-            name: name || 'all',
-            _id: dataSetId || 'all',
-            datasets: uniqueData || [],
-          }
-        );
-
-        io.on('all-items-updated', (data) => {
-          console.log('ALL ITEMS UPDATED:', data);
-          setState((prevState) => ({
-            ...prevState,
-            allItemTypeData: response.data,
-          }));
-        });
-
-        console.log('UPDATE SERVER DATA RESPONSE:', response);
-        const { returnValue } = response.data;
-
-        console.log('RETURN VALUE:', returnValue);
-        // Update chartData state here
-        setState((prevState) => ({ ...prevState, chartData: uniqueData }));
-        setIsCronJobTriggered(true);
-      } catch (error) {
-        console.error('Error updating server data:', error);
-      }
-    },
-    [userId, setIsCronJobTriggered]
   );
 
   const toast = (message, duration = 10000) => {
@@ -307,62 +210,83 @@ export const CombinedProvider = ({ children }) => {
     }
   };
 
+  const handleExistingChartData = useCallback(
+    (existingChartData) => {
+      setChartData(existingChartData);
+    },
+    [setChartData]
+  );
+
+  const handleUpdatedChartData = useCallback((updatedData) => {
+    setChartData((prevData) => {
+      // Merge or replace previous chart data with the updatedData as per requirement
+      return [...prevData, ...updatedData];
+    });
+    // Additional logic as needed
+  }, []);
+
+  const handleDataUpdate = useCallback((dataUpdate) => {
+    // Logic to handle 'updateChartData' event
+    // Example: update the chartData state
+  }, []);
+
+  const handleReturnValue = useCallback((returnValue) => {
+    // Logic to handle 'returnvalue' event
+    // Example: Maybe update a state or log to console
+  }, []);
+
+  const handleAllItemsUpdated = useCallback((updatedItems) => {
+    setAllItems(updatedItems);
+    // Additional logic as needed
+  }, []);
+
+  const handleS2CChartUpdate = useCallback((s2cUpdate) => {
+    // Logic to handle 'RECEIVE_S2C_CHART_UPDATE' event
+    // Example: Update chart data or emit an event
+  }, []);
+
+  const handleS2SChartUpdate = useCallback((s2sUpdate) => {
+    // Logic to handle 'RECEIVE_S2S_CHART_UPDATE' event
+    // Example: Update chart data or emit an event
+  }, []);
+
+  const socket = useSocket([
+    { event: 'EXISTING_CHART_DATA', handler: handleExistingChartData },
+    { event: 'UPDATED_CHART_DATA', handler: handleUpdatedChartData },
+    { event: 'updateChartData', handler: handleDataUpdate },
+    { event: 'returnvalue', handler: handleReturnValue },
+    { event: 'all-items-updated', handler: handleAllItemsUpdated },
+    { event: 'RECEIVE_S2C_CHART_UPDATE', handler: handleS2CChartUpdate },
+    { event: 'RECEIVE_S2S_CHART_UPDATE', handler: handleS2SChartUpdate },
+  ]);
+
   useEffect(() => {
-    const socket = io('ws://localhost:3001', {
-      transports: ['websocket'],
-    });
-    // Setup socket listeners
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
-
-    socket.on('dataUpdate', (data) => {
-      console.log('Data received from WebSocket server:', data);
-      setChartData(data);
-    });
-
-    socket.on('returnvalue', (data) => {
-      console.log('Data received from WebSocket server:', data);
-      setState((prevState) => ({ ...prevState, allItemTypeData: data }));
-      // setAllItemTypeData(data);
-    });
-
-    // Fetch data initially
-    fetchData();
-
-    // Setup cronTrigger interval
-    const interval = setInterval(cronTrigger, CRON_JOB_DELAY);
-
     return () => {
-      // Cleanup
       socket.disconnect();
-      console.log('Disconnected from WebSocket server');
-      clearInterval(interval);
     };
   }, [socket]);
 
   useEffect(() => {
-    if (isCronJobTriggered) {
+    if (state.isCronJobTriggered) {
       fetchData();
-      setIsCronJobTriggered(false);
+      setState((prevState) => ({ ...prevState, isCronJobTriggered: false }));
     }
-  }, [isCronJobTriggered]);
+  }, [state.isCronJobTriggered, fetchData]);
 
-  const value = {
-    ...state,
-    toast,
-    setChartData,
-    confirm,
-    fetchData,
-    updateServerData,
-    updateSpecificItem,
-    onTrigger: trigger,
-    stopCronJob,
-    setData: (newData) =>
-      setState((prevState) => ({ ...prevState, data: newData })),
-    setCollectionData: (newData) =>
-      setState((prevState) => ({ ...prevState, collectionData: newData })),
-  };
+  const value = useMemo(
+    () => ({
+      ...state,
+      toast,
+      confirm,
+      fetchData,
+      updateServerData,
+      updateSpecificItem,
+      setChartData,
+      setData: (newData) =>
+        setState((prevState) => ({ ...prevState, data: newData })),
+    }),
+    [state, fetchData, updateServerData, updateSpecificItem, setChartData]
+  );
 
   useEffect(() => {
     console.log('COMBINED CONTEXT VALUE:', value);

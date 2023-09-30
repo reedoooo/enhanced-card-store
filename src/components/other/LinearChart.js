@@ -75,90 +75,50 @@ const CustomTooltip = ({ point }) => {
 };
 
 // const LinearChart = ({ data = [], dimensions, loading, error }) => {
-const LinearChart = ({ data = [], dimensions, loading, error }) => {
+const LinearChart = ({ data = [], dimensions, latestData }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isZoomed, setIsZoomed] = useState(false);
   const [hoveredData, setHoveredData] = useState(null);
 
-  const transformedData = useMemo(() => {
-    if (!data.length) return [];
-
-    // Mapping each serie data to the desired format
-    return data.map((serie) => ({
-      id: serie.id,
-      data: serie.data.map((d) => ({
-        x: new Date(d.x),
-        y: parseFloat(d.y),
-        id: serie?._id,
+  const transformedData = useMemo(
+    () =>
+      data.map((serie) => ({
+        id: serie.id,
+        data: serie.data.map((d) => ({ x: new Date(d.x), y: parseFloat(d.y) })),
       })),
-    }));
-  }, [data]);
+    [data]
+  );
+
+  if (!transformedData.length) {
+    return <Typography variant="body1">No data available</Typography>;
+  }
 
   console.log('TRANSFORMED DATA:', transformedData);
-  if (loading) {
-    return (
-      <div className={classes.loadingContainer}>
-        <CircularProgress />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className={classes.loadingContainer}>
+  //       <CircularProgress />
+  //     </div>
+  //   );
+  // }
 
-  if (error) {
-    return (
-      <Typography variant="body1" color="error">
-        Error loading data
-      </Typography>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <Typography variant="body1" color="error">
+  //       Error loading data
+  //     </Typography>
+  //   );
+  // }
 
   if (transformedData.length === 0) {
     return <Typography variant="body1">No data available</Typography>;
   }
 
-  const latestData = data[0]?.data?.slice(-1)[0] || {};
+  // const latestData = data[0]?.data?.slice(-1)[0] || {};
 
   const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
   console.log('LATEST DATA ARRAY:', latestDataArray);
-  // console.log('DATA:', data);
-  // if (loading)
-  //   return (
-  //     <Box className={classes.loadingContainer}>
-  //       <CircularProgress />
-  //     </Box>
-  //   );
-  // if (error)
-  //   return (
-  //     <Box className={classes.loadingContainer}>
-  //       <Typography variant="body1" color="error">
-  //         <ErrorOutlineIcon /> Error loading data
-  //       </Typography>
-  //     </Box>
-  //   );
-
-  // const uniqueYDataArray = useMemo(() => {
-  //   const seenYValues = new Set();
-  //   return (
-  //     data[0]?.data?.filter(({ y }) => {
-  //       if (!seenYValues.has(y)) {
-  //         seenYValues.add(y);
-  //         return true;
-  //       }
-  //       return false;
-  //     }) || []
-  //   );
-  // }, [data]);
-
-  // if (transformedData.length === 0) {
-  //   return <Typography variant="body1">No data available</Typography>;
-  // }
-
-  // const latestData = data[0]?.data?.slice(-1)[0] || {};
-
-  // const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
-  // console.log('LATEST DATA ARRAY:', latestDataArray);
-  // console.log('LATEST DATA:', latestData);
-  // console.log('UNIQUE Y DATA ARRAY:', uniqueYDataArray);
   return (
     <div
       className={classes.chartContainer}

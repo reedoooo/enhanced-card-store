@@ -14,7 +14,7 @@ export const fetchWrapper = async (url, method, body = null) => {
     ...(body && { body: JSON.stringify(body) }),
   };
   const response = await fetch(url, options);
-  console.log('RESPONSE:', response);
+  // console.log('RESPONSE:', response);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -83,7 +83,7 @@ export const getCardPrice = (collection) =>
 // Function to calculate total price of a collection
 export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
-  return Object.values(collection).reduce((total, price) => total + price, 0);
+  return Object.allCardPrices(collection).reduce;
 };
 // const getCollectionQuantity = useCallback(() => {
 //   return (
