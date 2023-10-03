@@ -17,6 +17,7 @@ import UserStats from '../components/other/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
+import { useCombinedContext } from '../context/CombinedProvider';
 
 const AvatarStyled = styled(Avatar)({
   width: 60,
@@ -113,7 +114,16 @@ ProfileForm.propTypes = {
 const ProfilePage = () => {
   const { user, updateUser } = useUserContext();
   const [cookies] = useCookies(['userCookie']);
-
+  const {
+    handleSend,
+    handleRequestData,
+    handleRequestChartData,
+    // handleAddDataSet,
+    handleCronRequest,
+    handleStartCron,
+    chartData,
+  } = useCombinedContext();
+  console.log('CHART DATA', chartData);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   console.log('USER:', user);
   const handleSaveChanges = useCallback(
@@ -123,6 +133,27 @@ const ProfilePage = () => {
     },
     [updateUser]
   );
+  const dataset = { x: 10, y: 20 };
+  const userId = user?.userID;
+  const chartId = chartData[0]?._id;
+  // const name = chartData[0].name;
+
+  console.log('chartId', chartId);
+  console.log('dataset', dataset);
+
+  const handleButtonClick = () => {
+    handleSend('Hello, Server!');
+    if (userId) {
+      handleRequestData(userId.toString());
+
+      handleRequestChartData(userId.toString());
+      handleCronRequest(userId.toString());
+      // handleAddDataSet(chartId, dataset, userId, name);
+      // handleStartCron(userId);
+    } else {
+      console.error('UserId is undefined or null');
+    }
+  };
 
   return (
     <Container maxWidth="sm">
@@ -134,6 +165,7 @@ const ProfilePage = () => {
         <IconButtonStyled>
           <EditIcon />
         </IconButtonStyled>
+        <button onClick={handleButtonClick}>Send Message</button>
       </Box>
       <Box mt={3}>
         <ProfileForm

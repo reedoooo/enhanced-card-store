@@ -1,39 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import io from 'socket.io-client';
 
-const getSocketURL = () =>
-  process.env.REACT_APP_SERVER || 'ws://localhost:3001';
+const SocketContext = createContext();
 
-const useSocket = (eventListeners = []) => {
+export const useSocket = () => {
+  return useContext(SocketContext);
+};
+
+export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
-  const socketInstance = useMemo(
-    () => io(getSocketURL(), { transports: ['websocket'] }),
-    []
-  );
-
   useEffect(() => {
+    const socketInstance = io(
+      process.env.REACT_APP_SERVER || 'ws://localhost:3001',
+      {
+        transports: ['websocket'],
+      }
+    );
     setSocket(socketInstance);
+
     return () => {
       socketInstance.disconnect();
     };
-  }, [socketInstance]);
+  }, []);
 
-  useEffect(() => {
-    if (!socket) return;
-
-    eventListeners.forEach(({ event, handler }) => {
-      socket.on(event, handler);
-    });
-
-    return () => {
-      eventListeners.forEach(({ event, handler }) => {
-        socket.off(event, handler);
-      });
-    };
-  }, [socket, eventListeners]);
-
-  return socket;
+  return (
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+  );
 };
-
-export default useSocket;

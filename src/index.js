@@ -16,6 +16,9 @@ import { useMode } from './context/hooks/colormode';
 import { ColorModeProvider } from './context/ColorModeProvider';
 import withCombinedProviderHOC from './withCombinedProviderHOC';
 import withCollectionProvider from './withCollectionProviderHOC';
+import { ApiServiceProvider } from './context/ApiServiceProvider';
+import { SocketProvider } from './context/SocketProvider';
+import { SocketActionsProvider } from './context/SocketActions';
 
 const root = document.getElementById('root');
 
@@ -24,28 +27,34 @@ function Main() {
 
   return (
     <ColorModeProvider>
-      <AuthProvider>
-        <UserProvider>
-          <ModalProvider>
-            {' '}
-            <CollectionProvider>
-              {/* Wrap CombinedProvider with CollectionProvider */}
-              <CombinedProvider>
-                <CardProvider>
-                  <DeckProvider>
-                    <CartProvider>
-                      <GlobalStyles />
-                      <ThemeProvider theme={theme}>
-                        <App />
-                      </ThemeProvider>
-                    </CartProvider>
-                  </DeckProvider>
-                </CardProvider>
-              </CombinedProvider>
-            </CollectionProvider>
-          </ModalProvider>
-        </UserProvider>
-      </AuthProvider>
+      <SocketProvider>
+        <SocketActionsProvider>
+          <ApiServiceProvider>
+            <AuthProvider>
+              <UserProvider>
+                <ModalProvider>
+                  {' '}
+                  <CollectionProvider>
+                    {/* Wrap CombinedProvider with CollectionProvider */}
+                    <CombinedProvider>
+                      <CardProvider>
+                        <DeckProvider>
+                          <CartProvider>
+                            <GlobalStyles />
+                            <ThemeProvider theme={theme}>
+                              <App />
+                            </ThemeProvider>
+                          </CartProvider>
+                        </DeckProvider>
+                      </CardProvider>
+                    </CombinedProvider>
+                  </CollectionProvider>
+                </ModalProvider>
+              </UserProvider>
+            </AuthProvider>
+          </ApiServiceProvider>
+        </SocketActionsProvider>
+      </SocketProvider>
     </ColorModeProvider>
   );
 }
