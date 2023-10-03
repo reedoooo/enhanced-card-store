@@ -176,6 +176,10 @@ export const CombinedProvider = ({ children }) => {
     console.log('Received existing CRON data:', data.data);
     setCronData(data.data);
   };
+  const handleNewChartData = (data) => {
+    console.log('Received existing CRON data:', data.data);
+    setCronData(data.data);
+  };
   const cronTrigger = useCallback(
     (userId) => {
       // const now = Date.now();
@@ -229,6 +233,7 @@ export const CombinedProvider = ({ children }) => {
     'RECEIVE_S2S_COLLECTION_UPDATE',
     handleUpdateExistingCollectionData
   );
+  useSocketEvent(socket, 'NEW_CHART', handleNewChartData);
 
   const handleRequestCollectionData = useCallback(
     (userId) => {
@@ -295,7 +300,10 @@ export const CombinedProvider = ({ children }) => {
       const chartId = chartData?._id;
       const name = chartData?.name;
       const newValue = chartData;
+      // const userId = userId;
       console.log('new', newValue);
+      // console.log('userId', userId);
+
       const uniqueData = Array.from(
         new Set(
           (
@@ -312,10 +320,12 @@ export const CombinedProvider = ({ children }) => {
       ).map(JSON.parse);
 
       socket.emit('REQUEST_EXISTING_CHART_DATA', {
+        // data: {
         userId,
         chartId,
         name,
-        datasets: uniqueData,
+        // datasets: uniqueData,
+        // },
       });
 
       return uniqueData;
@@ -330,7 +340,7 @@ export const CombinedProvider = ({ children }) => {
       ...state,
       toast,
       confirm,
-      updateServerData,
+      // updateServerData,
       // trigger,
       // startCronJob,
       // cronTrigger,

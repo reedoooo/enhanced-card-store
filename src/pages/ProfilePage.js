@@ -33,6 +33,30 @@ const IconButtonStyled = styled(IconButton)({
   marginBottom: 20,
 });
 
+const DataBoxStyled = styled(Box)({
+  margin: '10px 0',
+  padding: '10px',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  textAlign: 'center',
+  width: '100%',
+});
+
+const ButtonStyled = styled(Button)({
+  margin: '15px 0',
+  padding: '10px',
+  color: '#fff',
+  backgroundColor: '#3f51b5',
+  '&:hover': {
+    backgroundColor: '#303f9f',
+  },
+});
+
+const DataTextStyled = styled(Typography)({
+  margin: '5px 0',
+  fontSize: '0.9rem',
+});
+
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const [formData, setFormData] = useState({
     userName: userName || '', // default to empty string if undefined
@@ -119,6 +143,7 @@ const ProfilePage = () => {
     handleRequestData,
     handleRequestChartData,
     // handleAddDataSet,
+    cronData,
     handleCronRequest,
     handleStartCron,
     chartData,
@@ -133,20 +158,23 @@ const ProfilePage = () => {
     },
     [updateUser]
   );
-  const dataset = { x: 10, y: 20 };
+  // const dataset = { x: 10, y: 20 };
   const userId = user?.userID;
   const chartId = chartData[0]?._id;
   // const name = chartData[0].name;
-
+  // const chartData = state.chartData; // retrieving chartData from state
+  // const chartId = chartData?._id;
+  const name = chartData?.name;
+  const newValue = chartData;
   console.log('chartId', chartId);
-  console.log('dataset', dataset);
+  console.log('dataset', cronData);
 
   const handleButtonClick = () => {
     handleSend('Hello, Server!');
     if (userId) {
       handleRequestData(userId.toString());
 
-      handleRequestChartData(userId.toString());
+      handleRequestChartData(userId.toString(), newValue, name);
       handleCronRequest(userId.toString());
       // handleAddDataSet(chartId, dataset, userId, name);
       // handleStartCron(userId);
@@ -165,7 +193,28 @@ const ProfilePage = () => {
         <IconButtonStyled>
           <EditIcon />
         </IconButtonStyled>
-        <button onClick={handleButtonClick}>Send Message</button>
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleButtonClick}
+        >
+          Send Message
+        </ButtonStyled>
+        {cronData?.datasets?.map((data) => (
+          <DataBoxStyled key={data?._id}>
+            {data?.x && (
+              <>
+                <DataTextStyled variant="body2">
+                  Date: {new Date(data.x).toLocaleDateString()}
+                </DataTextStyled>
+                <DataTextStyled variant="body2">
+                  Time: {new Date(data.x).toLocaleTimeString()}
+                </DataTextStyled>
+              </>
+            )}
+            <DataTextStyled variant="body2">Value: {data?.y}</DataTextStyled>
+          </DataBoxStyled>
+        ))}
       </Box>
       <Box mt={3}>
         <ProfileForm
