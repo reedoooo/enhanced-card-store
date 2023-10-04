@@ -64,6 +64,7 @@ export const CollectionContext = createContext(null);
 // updateCollectionData: () => {},
 //   },
 // });
+// const { datasets } = useCombinedContext() || {};
 
 const handleCardAddition = (currentCards, cardToAdd) => {
   const cardIndex = currentCards.findIndex((c) => c.id === cardToAdd.id);
@@ -209,6 +210,7 @@ export const CollectionProvider = ({ children }) => {
         userId: collection?.userId,
         totalPrice: 0,
         quantity: 0,
+        // chartData: datasets,
         allCardPrices: [],
         cards: [],
       };

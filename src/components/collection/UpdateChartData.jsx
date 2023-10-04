@@ -7,14 +7,14 @@ import { useCombinedContext } from '../../context/CombinedProvider';
 const useUpdateChartData = () => {
   const { totalCost } = useCollectionStore() || {};
   const {
-    chartData,
     updateServerData,
     isCronJobTriggered,
     setIsCronJobTriggered,
+    chartData,
   } = useCombinedContext() || {};
 
-  const [datasets, setDatasets] = useState(chartData || []);
-
+  // const [datasets, setDatasets] = useState(chartData || []);
+  const datasets = chartData.datasets;
   const createDataset = (label, priceData) => ({
     name: label,
     color: 'blue',
@@ -49,14 +49,14 @@ const useUpdateChartData = () => {
       updatedDatasets.length &&
       JSON.stringify(updatedDatasets) !== JSON.stringify(datasets)
     ) {
-      setDatasets(updatedDatasets);
+      // setDatasets(updatedDatasets);
       updateServerData(updatedDatasets);
     }
   }, [datasets, newDataPoint, updateServerData, totalCost]);
 
-  useEffect(() => {
-    setDatasets(chartData || []);
-  }, [chartData]);
+  // useEffect(() => {
+  //   setDatasets(chartData || []);
+  // }, [chartData]);
 
   useEffect(() => {
     if (isCronJobTriggered) {

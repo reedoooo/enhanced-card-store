@@ -6,14 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import axios from 'axios';
 import { useCookies } from 'react-cookie';
-// import io from 'socket.io-client';
-import {
-  fetchDataForUser,
-  // fetchFromAPI,
-  updateServerDataForUser,
-} from './CombinedFetcher';
 import { useSocket } from './SocketProvider';
 import { useSocketActions } from './SocketActions';
 import useSocketEvent from './useSocketEvent';
@@ -25,7 +18,7 @@ const initialState = {
   isLoading: false,
   data: {},
   cronTriggerTimestamps: [],
-  collectionData: [],
+  collectionData: {},
   deckData: [],
   allData: [],
   allUpdatedPrices: [],
@@ -149,25 +142,41 @@ export const CombinedProvider = ({ children }) => {
   };
 
   const handleExistingCollectionData = (data) => {
-    console.log('Received existing collection data:', data.data);
+    console.log(
+      'Received existing collection data: REQUEST_EXISTING_COLLECTION_DATA',
+      data.data
+    );
     setCollectionData(data.data);
+  };
+  const handleCollection = (data) => {
+    console.log('HANDLING HANDLING HANDLING HANDLING LALALALALA', data.data);
+    // setAllData(data.data);
   };
   const handleUpdateExistingCollectionData = (data) => {
-    console.log('Received existing CHART data:', data.data);
-    setCollectionData(data.data);
+    console.log('REQUEST_EXISTING_COLLECTION_DATA', data.data);
+    // setAllData(data.data);
   };
   const handleExistingChartData = (data) => {
+    if (!data || !data.data) {
+      console.error('Unexpected data format received:', data);
+      return;
+    }
     console.log('Received existing CHART data:', data.data);
     setChartData(data.data);
   };
+
   const handleUpdateExistingChartData = (data) => {
+    if (!data || !data.data) {
+      console.error('Unexpected data format received:', data);
+      return;
+    }
     console.log('Received existing CHART data:', data.data);
     setChartData(data.data);
   };
-  const handleUpdateAllData = (data) => {
-    console.log('Received existing COLLECTION data:', data.data);
-    setAllData(data.data);
-  };
+  // const handleUpdateAllData = (data) => {
+  //   console.log('Received existing COLLECTION data:', data.data);
+  //   setAllData(data.data);
+  // };
   const handleCronData = (data) => {
     console.log('Received existing CRON data:', data.data);
     setCronData(data.data);
@@ -177,33 +186,28 @@ export const CombinedProvider = ({ children }) => {
     setCronData(data.data);
   };
   const handleNewChartData = (data) => {
-    console.log('Received existing CRON data:', data.data);
-    setCronData(data.data);
+    console.log('Received new CHART data:', data.data); // Correcting the log message
+    setChartData(data.data);
   };
+
+  const handleManageCollectionData = (data) => {
+    console.log('RESEEEVED THE DATAAAAAAAA+++++++++++++!!!!!!:', data); // Correcting the log message
+    setAllData(data.data);
+  };
+
+  const handleCollectionUpdated = (message, data) => {
+    console.log('Message', message); // Correcting the log message
+
+    const { data: updatedCollection } = data;
+    console.log('Data', updatedCollection); // Correcting the log message
+    console.log(
+      'RNUM KJNFJKF K:JNHKJNKJLBKJB:KJFBJK:D BKSFN J:KFB JK------------->:'
+    ); // Correcting the log message
+    setAllData(data);
+  };
+
   const cronTrigger = useCallback(
     (userId) => {
-      // const now = Date.now();
-      // const { cronTriggerTimestamps, isDelaying } = state;
-
-      // const timestampsLastMinute = cronTriggerTimestamps.filter(
-      //   (timestamp) => now - timestamp < 60000
-      // );
-
-      // if (timestampsLastMinute.length >= 5) {
-      //   if (!isDelaying) {
-      //     toast(
-      //       'Too many cron job attempts, waiting for a minute before retrying'
-      //     );
-      //     setState((prevState) => ({ ...prevState, isDelaying: true }));
-      //   }
-      //   return;
-      // }
-
-      // if (isDelaying) {
-      //   clearInterval(window.cronJobInterval);
-      //   window.cronJobInterval = setInterval(cronTrigger, 60000);
-      // }
-
       console.log('STARTING JOB NOW___________', userId);
       // socket.emit('START_CRON_JOB', userId);
       socket.emit('START_CRON_JOB', {
@@ -215,6 +219,18 @@ export const CombinedProvider = ({ children }) => {
     },
     [socket, userId]
   );
+
+  const handleUpdateCollectionData = useCallback(
+    (userId) => {
+      console.log('Requesting data for userId:', userId);
+      console.log('Requesting data for userId:', userId);
+      // console.log('Requesting data for cron triggerq2:', collectionData);
+
+      socket.emit('REQUEST_UPDATE_COLLECTION', userId);
+    },
+    [socket]
+  );
+
   useSocketEvent(socket, 'MESSAGE_TO_CLIENT', handleReceive);
   useSocketEvent(socket, 'SEND_S2C_EXISTING_CHART', handleExistingChartData);
   useSocketEvent(
@@ -222,12 +238,16 @@ export const CombinedProvider = ({ children }) => {
     'SEND_S2C_EXISTING_COLLECTION',
     handleExistingCollectionData
   );
-
+  // useSocketEvent(socket, 'SEND_S2C_EXISTING_CRON', handleUpdateCollectionData);
   useSocketEvent(socket, 'CHART_DATA_UPDATED', handleUpdateExistingChartData);
-  useSocketEvent(socket, 'ALL_DATA_ITEMS', handleUpdateAllData);
+  // useSocketEvent(socket, 'ALL_DATA_ITEMS', handleUpdateAllData);EVENT_HERE
   useSocketEvent(socket, 'CRON_DATA', handleCronData);
+
   useSocketEvent(socket, 'CRON_DATA_SPECIFIC', handleCronDataSpecific);
   useSocketEvent(socket, 'TRIGGER_CRON_JOB', cronTrigger);
+  useSocketEvent(socket, 'UPDATE_COLLECTION', handleManageCollectionData);
+  useSocketEvent(socket, 'COLLECTION_UPDATED', handleCollectionUpdated);
+  useSocketEvent(socket, 'updateCollection', handleCollection);
   useSocketEvent(
     socket,
     'RECEIVE_S2S_COLLECTION_UPDATE',
@@ -235,18 +255,28 @@ export const CombinedProvider = ({ children }) => {
   );
   useSocketEvent(socket, 'NEW_CHART', handleNewChartData);
 
-  const handleRequestCollectionData = useCallback(
-    (userId) => {
-      console.log('Requesting data for userId:', userId);
-      socket.emit('REQUEST_EXISTING_COLLECTION_DATA', {
-        // type: 'REQUEST_EXISTING_COLLECTION_DATA',
-        userId: userId,
-      });
+  // const handleRequestCollectionData = (userId) => {
+  //   console.log('Requesting data for userId:', userId);
+  //   socket?.emit('REQUEST_EXISTING_COLLECTION_DATA', {
+  //     // type: 'REQUEST_EXISTING_COLLECTION_DATA',
+  //     userId,
+  //   });
+  // };
+  const requestUpdateCollection = (userId, collectionId, collectionData) => {
+    socket.emit('REQUEST_UPDATE_COLLECTION', {
+      data: {
+        userId,
+        collectionId,
+        data: collectionData,
+      },
+    });
+  };
+  // // Request existing collection data
+  // const requestExistingCollectionData = (userId) => {
+  //   socket.emit('REQUEST_EXISTING_COLLECTION_DATA', userId);
+  // };
 
-      // socket?.emit('REQUEST_EXISTING_COLLECTION_DATA', userId);
-    },
-    [socket]
-  );
+  // Request to update a collection
   // const handleRequestAllData = useCallback(
   //   (userId) => {
   //     console.log('Requesting data for userId:', userId);
@@ -254,13 +284,21 @@ export const CombinedProvider = ({ children }) => {
   //   },
   //   [socket]
   // );
-
+  // const handleThing = useCallback(
+  //   (userId) => {
+  //     console.log('Requesting data for userId:', userId);
+  //     socket.emit('EVENT_HERE', {
+  //       userId,
+  //     });
+  //   },
+  //   [socket]
+  // );
   const handleTriggerCronJob = (userId) => {
     console.log('Requesting data for cron trigger:', userId);
-    // socket.emit('TRIGGER_CRON_JOB', { userId });
+    console.log('Requesting data for cron triggerq2:', userId);
+
     socket.emit('START_CRON_JOB', {
-      // type: 'REQUEST_EXISTING_COLLECTION_DATA',
-      userId: userId,
+      userId,
     });
   };
 
@@ -290,42 +328,50 @@ export const CombinedProvider = ({ children }) => {
     });
   };
 
-  // const handleStartCron = (userId) => {
-  //   // socket?.emit('ADD_DATA_TO_CHART', { chartId, x: 10, y: 20 });
-  //   socket.emit('START_JOB', { userId });
-  // };
-  const updateServerData = async (userId) => {
+  const updateServerData = async (clientInput) => {
     try {
-      const chartData = state.chartData; // retrieving chartData from state
-      const chartId = chartData?._id;
-      const name = chartData?.name;
-      const newValue = chartData;
+      const chartData = state.chartData || {}; // Ensure chartData is initialized
+
+      if (!chartData) {
+        throw new Error('Chart data is missing or not initialized.');
+      }
+      const collectionData = state.collectionData || {}; // Ensure collectionData is initialized
+      const chartId = chartData._id;
+      const name = chartData.name;
+      const newValue = chartData.datasets || []; // Ensure datasets are initialized
+
       // const userId = userId;
       console.log('new', newValue);
       // console.log('userId', userId);
+      if (!Array.isArray(newValue)) {
+        console.error('chartData is not an array:', newValue);
+        return;
+      }
+      let uniqueData = [];
 
-      const uniqueData = Array.from(
-        new Set(
-          (
-            chartData || [
-              {
-                x: Date.now(),
-                y: newValue,
-              },
-            ]
+      if (newValue && newValue.length > 0) {
+        uniqueData = Array.from(
+          new Set(
+            (
+              newValue || [
+                {
+                  x: Date.now(),
+                  y: newValue.y,
+                },
+              ]
+            )
+              .flatMap((obj) => obj.data || [])
+              .map(JSON.stringify)
           )
-            .flatMap((obj) => obj.data || [])
-            .map(JSON.stringify)
-        )
-      ).map(JSON.parse);
+        ).map(JSON.parse);
+      }
 
       socket.emit('REQUEST_EXISTING_CHART_DATA', {
-        // data: {
-        userId,
-        chartId,
-        name,
-        // datasets: uniqueData,
-        // },
+        data: {
+          userId,
+          name,
+          datasets: uniqueData,
+        },
       });
 
       return uniqueData;
@@ -340,26 +386,23 @@ export const CombinedProvider = ({ children }) => {
       ...state,
       toast,
       confirm,
-      // updateServerData,
-      // trigger,
-      // startCronJob,
-      // cronTrigger,
-      // stopCronJob,
       setLoader,
       setCronStatus,
       handleSend,
       handleAddDataSet,
-      // handleRequestAllData,
-      // handleStartCron,
       trigger: cronTrigger,
-      handleRequestData: handleRequestCollectionData,
+      handleRequestData: requestUpdateCollection,
+      // handleSendData: handleUpdateCollectionData,
+      handleSendData: handleUpdateCollectionData,
+      // handleCronRequest: cronTrigger,
       handleCronRequest: handleTriggerCronJob,
       handleRequestChartData: updateServerData,
+      // sendCollectionDataToServer, // Adding the new function here
       setChartData,
       setData: (newData) =>
         setState((prevState) => ({ ...prevState, data: newData })),
     }),
-    [state, updateServerData, setChartData]
+    [state, updateServerData, setChartData] // Also add it in the dependency array
   );
 
   useEffect(() => {

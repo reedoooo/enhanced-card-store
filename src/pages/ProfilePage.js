@@ -18,6 +18,7 @@ import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
 import { useCombinedContext } from '../context/CombinedProvider';
+import { useCollectionStore } from '../context/hooks/collection';
 
 const AvatarStyled = styled(Avatar)({
   width: 60,
@@ -136,6 +137,7 @@ ProfileForm.propTypes = {
 };
 
 const ProfilePage = () => {
+  const { allCollection, collectionData } = useCollectionStore();
   const { user, updateUser } = useUserContext();
   const [cookies] = useCookies(['userCookie']);
   const {
@@ -143,12 +145,15 @@ const ProfilePage = () => {
     handleRequestData,
     handleRequestChartData,
     // handleAddDataSet,
+    handleSendData,
     cronData,
     handleCronRequest,
     handleStartCron,
     chartData,
   } = useCombinedContext();
   console.log('CHART DATA', chartData);
+  console.log('CHART DATA', chartData.datasets);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   console.log('USER:', user);
   const handleSaveChanges = useCallback(
@@ -160,27 +165,41 @@ const ProfilePage = () => {
   );
   // const dataset = { x: 10, y: 20 };
   const userId = user?.userID;
-  const chartId = chartData[0]?._id;
+  // const chartId = chartData[0]?._id;
+  const _id = collectionData?._id;
+  const collectionId = _id;
+  const cards = collectionData?.cards;
+  // console.log('collectionId', collectionId);
+  // console.log('collectionData', collectionData);
+  // console.log('cards', cards);
+
   // const name = chartData[0].name;
   // const chartData = state.chartData; // retrieving chartData from state
   // const chartId = chartData?._id;
-  const name = chartData?.name;
-  const newValue = chartData;
-  console.log('chartId', chartId);
-  console.log('dataset', cronData);
-
+  // const name = chartData?.name;
+  // const newValue = chartData;
+  // console.log('dataset', cronData);
   const handleButtonClick = () => {
     handleSend('Hello, Server!');
-    if (userId) {
-      handleRequestData(userId.toString());
 
-      handleRequestChartData(userId.toString(), newValue, name);
-      handleCronRequest(userId.toString());
-      // handleAddDataSet(chartId, dataset, userId, name);
-      // handleStartCron(userId);
-    } else {
+    if (!userId) {
       console.error('UserId is undefined or null');
+      return;
     }
+
+    const stringUserId = userId.toString();
+
+    // Use destructuring to extract values used in function calls
+    const { _id: chartId, name, data: newValue } = chartData || {};
+
+    // Your existing code uses `allCollections` but it's not defined in the provided code snippet, ensure it's available in the scope.
+    // const { dataset } = chartData; // If cronData is in the state and you want to use it as dataset.
+
+    handleRequestData(stringUserId);
+    handleRequestChartData(stringUserId, newValue, name);
+    handleCronRequest(userId);
+    // handleSendData(stringUserId);
+    handleSendData(stringUserId, collectionId, { data: collectionData.cards });
   };
 
   return (

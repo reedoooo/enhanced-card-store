@@ -19,7 +19,7 @@ const PortfolioChart = () => {
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
   const { datasets } = useUpdateChartData();
-
+  console.log('datasets', datasets);
   // Update the latest data point every 10 minutes
   useEffect(() => {
     if (!datasets) return;
