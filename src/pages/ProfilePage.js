@@ -58,6 +58,47 @@ const DataTextStyled = styled(Typography)({
   fontSize: '0.9rem',
 });
 
+function convertCardToChartData(cardData, userId) {
+  const currentDate = new Date();
+
+  // Extracting values from the card data
+  const cardName = cardData.name;
+  const cardPrice = cardData.card_prices[0]?.tcgplayer_price || 0; // Assuming tcgplayer_price is the main price point
+  const totalQuantity = cardData.quantity;
+  const totalPrice = cardPrice * totalQuantity;
+
+  // Constructing the data point
+  const dataPoint = {
+    cardName: cardName,
+    x: currentDate, // Current date for the data point
+    y: cardPrice, // Single card price
+    totalQuantity: totalQuantity,
+    totalPrice: totalPrice, // Total price for this card
+    // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the data point
+  };
+
+  // Constructing the dataset (assuming you might have more datasets in future)
+  const dataset = {
+    label: cardName, // Using card name as label for the dataset
+    totalquantity: totalQuantity,
+    data: {
+      points: [dataPoint], // Initial single data point for the card
+    },
+    // You can also define other properties like backgroundColor, borderColor etc.
+  };
+
+  // Constructing the entire chart data
+  const chartData = {
+    // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the chart data
+    name: cardName, // Using card name as chart name
+    userId: userId,
+    datasets: [dataset], // Initial single dataset for the chart data
+    // You can also define other properties like collectionId, chartId etc.
+  };
+
+  return chartData;
+}
+
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const [formData, setFormData] = useState({
     userName: userName || '', // default to empty string if undefined
@@ -137,25 +178,21 @@ ProfileForm.propTypes = {
 };
 
 const ProfilePage = () => {
-  const { allCollection, collectionData } = useCollectionStore();
+  const { selectedCollection } = useCollectionStore();
   const { user, updateUser } = useUserContext();
   const [cookies] = useCookies(['userCookie']);
   const {
     handleSend,
     handleRequestData,
     handleRequestChartData,
-    // handleAddDataSet,
     handleSendData,
-    cronData,
+    handleSendChart,
     handleCronRequest,
-    handleStartCron,
-    chartData,
+    chartDataToSend,
   } = useCombinedContext();
-  console.log('CHART DATA', chartData);
-  console.log('CHART DATA', chartData.datasets);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  console.log('USER:', user);
+
   const handleSaveChanges = useCallback(
     (data) => {
       updateUser(data);
@@ -163,44 +200,76 @@ const ProfilePage = () => {
     },
     [updateUser]
   );
-  // const dataset = { x: 10, y: 20 };
-  const userId = user?.userID;
-  // const chartId = chartData[0]?._id;
-  const _id = collectionData?._id;
-  const collectionId = _id;
-  const cards = collectionData?.cards;
-  // console.log('collectionId', collectionId);
-  // console.log('collectionData', collectionData);
-  // console.log('cards', cards);
 
-  // const name = chartData[0].name;
-  // const chartData = state.chartData; // retrieving chartData from state
-  // const chartId = chartData?._id;
-  // const name = chartData?.name;
-  // const newValue = chartData;
-  // console.log('dataset', cronData);
-  const handleButtonClick = () => {
+  const handleSendMessage = () => {
     handleSend('Hello, Server!');
-
-    if (!userId) {
-      console.error('UserId is undefined or null');
-      return;
-    }
-
-    const stringUserId = userId.toString();
-
-    // Use destructuring to extract values used in function calls
-    const { _id: chartId, name, data: newValue } = chartData || {};
-
-    // Your existing code uses `allCollections` but it's not defined in the provided code snippet, ensure it's available in the scope.
-    // const { dataset } = chartData; // If cronData is in the state and you want to use it as dataset.
-
-    handleRequestData(stringUserId);
-    handleRequestChartData(stringUserId, newValue, name);
-    handleCronRequest(userId);
-    // handleSendData(stringUserId);
-    handleSendData(stringUserId, collectionId, { data: collectionData.cards });
   };
+
+  const handleRequestCollectionData = () => {
+    const userIdString = user?.userID?.toString();
+    if (userIdString) handleRequestData(userIdString);
+  };
+
+  const handleRequestChartDataFunction = () => {
+    const userIdString = user?.userID?.toString();
+    if (!userIdString) return;
+    const { datasets, name } = chartDataToSend || {};
+    handleRequestChartData(userIdString, datasets, name);
+  };
+
+  const handleTriggerCronJob = () => {
+    handleCronRequest(user?.userID);
+  };
+
+  const handleSendCollectionData = () => {
+    const userIdString = user?.userID?.toString();
+    if (userIdString) {
+      handleSendData(userIdString, selectedCollection?._id, {
+        data: selectedCollection?.cards,
+      });
+    }
+  };
+  const handleSendChartData = () => {
+    const userId = user?.userID;
+    const collectionId = selectedCollection?._id;
+    const rawDatasets = selectedCollection?.cards || [];
+    const name = selectedCollection?.name || '';
+    const chartId = selectedCollection?._id || '';
+
+    // Convert raw data to chart data
+    const datasets = rawDatasets.map((card) =>
+      convertCardToChartData(card, userId)
+    );
+
+    // Logging to check values
+    console.log('handleSendChartData -> userId:', userId);
+    console.log('handleSendChartData -> chartId:', chartId);
+    console.log('handleSendChartData -> datasets:', datasets);
+    console.log('handleSendChartData -> name:', name);
+
+    // Uncomment below to hardcode values for testing
+    // userId = "your-hardcoded-value";
+    // chartId = "your-hardcoded-value";
+    // datasets = [{...}]; // hardcode datasets structure
+    // name = "your-hardcoded-value";
+
+    if (!userId) console.error('userId is missing');
+    if (!chartId) console.error('chartId is missing');
+    if (!datasets || datasets.length === 0)
+      console.error('datasets is missing or empty');
+    if (!name) console.error('name is missing');
+
+    const chartDataToSend = {
+      userId,
+      datasets: datasets || [],
+      name,
+      chartId,
+    };
+
+    // Now, use the handleSendChart function from the combined context to send the chart data
+    handleSendChart(chartDataToSend);
+  };
+  // const chartData = {};
 
   return (
     <Container maxWidth="sm">
@@ -215,25 +284,67 @@ const ProfilePage = () => {
         <ButtonStyled
           variant="contained"
           color="primary"
-          onClick={handleButtonClick}
+          onClick={handleSendMessage}
         >
-          Send Message
+          Send Message to Server
         </ButtonStyled>
-        {cronData?.datasets?.map((data) => (
-          <DataBoxStyled key={data?._id}>
-            {data?.x && (
-              <>
-                <DataTextStyled variant="body2">
-                  Date: {new Date(data.x).toLocaleDateString()}
-                </DataTextStyled>
-                <DataTextStyled variant="body2">
-                  Time: {new Date(data.x).toLocaleTimeString()}
-                </DataTextStyled>
-              </>
-            )}
-            <DataTextStyled variant="body2">Value: {data?.y}</DataTextStyled>
-          </DataBoxStyled>
-        ))}
+
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleRequestCollectionData}
+        >
+          Request Collection Data
+        </ButtonStyled>
+
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleRequestChartDataFunction}
+        >
+          Request Chart Data
+        </ButtonStyled>
+
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleSendChartData} // directly calling the function without needing to pass chartData
+        >
+          Request Chart Data Update
+        </ButtonStyled>
+
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleTriggerCronJob}
+        >
+          Trigger Cron Job
+        </ButtonStyled>
+
+        <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleSendCollectionData}
+        >
+          Send Collection Data
+        </ButtonStyled>
+        {chartDataToSend?.datasets?.map((dataset) =>
+          dataset.data?.points?.map((data) => (
+            <DataBoxStyled key={data.cardId || data._id}>
+              {data?.x && (
+                <>
+                  <DataTextStyled variant="body2">
+                    Date: {new Date(data.x).toLocaleDateString()}
+                  </DataTextStyled>
+                  <DataTextStyled variant="body2">
+                    Time: {new Date(data.x).toLocaleTimeString()}
+                  </DataTextStyled>
+                </>
+              )}
+              <DataTextStyled variant="body2">Value: {data?.y}</DataTextStyled>
+            </DataBoxStyled>
+          ))
+        )}
       </Box>
       <Box mt={3}>
         <ProfileForm

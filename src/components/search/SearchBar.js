@@ -69,7 +69,7 @@ const SearchBar = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <CardNameInput
-              value={searchParams.name}
+              value={searchParams?.name}
               setValue={(newValue) =>
                 setSearchParams((prevState) => ({
                   ...prevState,
@@ -79,19 +79,19 @@ const SearchBar = () => {
               handleRequest={() => handleRequest(searchParams)}
             />
           </Grid>
-          {filters.map((filter) => (
+          {filters?.map((filter) => (
             <CustomSelector
-              key={filter.name}
-              label={filter.label}
-              name={filter.name}
-              value={searchParams[filter.name]}
+              key={filter?.name}
+              label={filter?.label}
+              name={filter?.name}
+              value={searchParams?.[filter?.name]}
               setValue={(newValue) =>
                 setSearchParams((prevState) => ({
                   ...prevState,
-                  [filter.name]: newValue,
+                  [filter?.name]: newValue,
                 }))
               }
-              values={filter.values}
+              values={filter?.values}
             />
           ))}
           <SearchButton searchParams={searchParams} />

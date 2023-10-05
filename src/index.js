@@ -26,16 +26,14 @@ function Main() {
   const { theme } = useMode();
 
   return (
-    <ColorModeProvider>
-      <SocketProvider>
-        <SocketActionsProvider>
-          <ApiServiceProvider>
-            <AuthProvider>
+    <AuthProvider>
+      <ColorModeProvider>
+        <SocketProvider>
+          <SocketActionsProvider>
+            <ApiServiceProvider>
               <UserProvider>
                 <ModalProvider>
-                  {' '}
                   <CollectionProvider>
-                    {/* Wrap CombinedProvider with CollectionProvider */}
                     <CombinedProvider>
                       <CardProvider>
                         <DeckProvider>
@@ -51,11 +49,11 @@ function Main() {
                   </CollectionProvider>
                 </ModalProvider>
               </UserProvider>
-            </AuthProvider>
-          </ApiServiceProvider>
-        </SocketActionsProvider>
-      </SocketProvider>
-    </ColorModeProvider>
+            </ApiServiceProvider>
+          </SocketActionsProvider>
+        </SocketProvider>
+      </ColorModeProvider>
+    </AuthProvider>
   );
 }
 

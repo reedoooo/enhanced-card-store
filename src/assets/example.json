@@ -1,0 +1,32 @@
+{
+  "chartData": {
+    "_id": 64163367,
+    "name": "\"A\" Cell Incubator",
+    "userId": "Spell Card",
+    "collectionId": "spell",
+    "chartId": "Each time an A-Counter(s) is removed from play by a card effect, place 1 A-Counter on this card. When this card is destroyed, distribute the A-Counters on this card among face-up monsters.",
+    "datasets": [
+      {
+        "label": "Set x",
+				"totalquantity": 37,
+        "data": {
+					"points": [
+						"card name": {
+							"x": "x/x/2023",
+							"y": 3,
+							"price change": "prev y - y",
+							"price change %": "price change / prev y",
+							"total quantity": "totalquantity",
+							"total price": "totalquantity * y"
+						},
+
+						}
+				],
+			},
+        "backgroundColor": "rgba(255, 99, 132, 0.2)",
+        "borderColor": "rgb(255, 99, 132)",
+        "borderWidth": 1
+      }
+    ]
+  }
+}

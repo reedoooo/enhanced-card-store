@@ -30,6 +30,7 @@ function Login() {
       );
     } else {
       try {
+        console.log('username', username);
         const loggedIn = await authContext.login(username, password);
         if (loggedIn) {
           // Store login status in local storage
