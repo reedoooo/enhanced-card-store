@@ -18,106 +18,115 @@ import {
 } from './exampleImport.js';
 import { useCombinedContext } from '../CombinedProvider.jsx';
 import { useUserContext } from '../UserContext/UserContext.js';
+import moment from 'moment';
 // import { useUserContext } from '../UserContext/UserContext.js';
 export const CollectionContext = createContext(null);
-// export const CollectionContext = createContext({
-//   contextValue: {
-//     // DATA
-//     allCollections: [],
-//     selectedCollection: initialCollectionState,
-//     collectionData: initialCollectionState,
-//     totalCost: 0,
+const filterOutDuplicateYValues = (datasets) => {
+  console.log('DATASETS:', datasets);
+  const seenYValues = new Set();
+  return datasets?.filter((data) => {
+    const yValue = data?.y;
+    if (seenYValues.has(yValue)) {
+      return false;
+    }
+    seenYValues.add(yValue);
+    return true;
+  });
+};
 
-//     // FUNCTIONS
-//     createUserCollection: () => {
-//       // intentionally empty
-//     },
-//     removeCollection: () => {
-//       // intentionally empty
-//     },
-//     fetchAllCollectionsForUser: () => {
-//       // intentionally empty
-//     },
-//     setSelectedCollection: () => {
-//       // intentionally empty
-//     },
-//     setAllCollections: () => {
-//       // intentionally empty
-//     },
-//     addOneToCollection: () => {
-//       // intentionally empty
-//     },
-//     removeOneFromCollection: () => {
-//       // intentionally empty
-//     },
+const transformChartData = (chartData) => {
+  let pointsArray = [];
 
-//     // FUNCTIONS
-//     calculateTotalPrice: () => {
-//       // intentionally empty
-//     },
-//     getTotalCost: () => {
-//       // intentionally empty
-//     },
+  if (Array.isArray(chartData?.datasets)) {
+    chartData?.datasets?.forEach((dataset) => {
+      dataset.data?.forEach((dataEntry) => {
+        const { x, y } = dataEntry.xy;
+        if (x && y !== undefined) {
+          pointsArray.push(dataEntry.xy);
+        }
+      });
+    });
+  } else {
+    console.error(
+      'Expected chartData.datasets to be an array, but got:',
+      chartData
+    );
+  }
 
-// FUNCTIONS
-// updateActiveCollection: () => {},
-// updateCollectionData: () => {},
-//   },
-// });
-// const { datasets } = useCombinedContext() || {};
+  return pointsArray;
+};
+
+const createDataset = (label, priceData) => ({
+  name: label,
+  color: 'blue',
+  data: priceData?.map(({ x, y }) => ({ x, y })),
+});
 
 const handleCardAddition = (currentCards, cardToAdd) => {
-  const cardIndex = currentCards.findIndex((c) => c.id === cardToAdd.id);
-  console.log('CARD INDEX:', cardIndex);
-  console.log('CURRENT CARDS:', currentCards);
-  console.log('CARD TO ADD:', cardToAdd);
-  if (cardIndex !== -1) {
-    currentCards[cardIndex].quantity++;
+  // Check if the card already exists in the currentCards array
+  const cardToAddId =
+    typeof cardToAdd.id === 'number' ? String(cardToAdd.id) : cardToAdd.id;
+
+  const matchingCard = currentCards.find((c) => c.id === cardToAddId);
+
+  if (matchingCard) {
+    matchingCard.quantity++;
+    return [...currentCards];
   } else {
-    currentCards.push({ ...cardToAdd, quantity: 1 });
+    return [...currentCards, { ...cardToAdd, id: cardToAddId, quantity: 1 }];
   }
-  return currentCards.map((card) =>
-    card.id === cardToAdd.id ? { ...card, quantity: card.quantity + 1 } : card
-  );
 };
 
 const handleCardRemoval = (currentCards, cardToRemove) => {
-  const cardIndex = currentCards.findIndex((c) => c.id === cardToRemove.id);
-  if (cardIndex === -1) {
+  // Convert the cardToRemove's id to a string if it's a number
+  const cardToRemoveId =
+    typeof cardToRemove.id === 'number'
+      ? String(cardToRemove.id)
+      : cardToRemove.id;
+
+  const matchingCard = currentCards.find((c) => c.id === cardToRemoveId);
+
+  if (!matchingCard) {
     console.error('Card not found in the collection.');
-    return null;
+    return [...currentCards];
   }
-  currentCards[cardIndex].quantity--;
-  if (currentCards[cardIndex].quantity <= 0) {
-    currentCards.splice(cardIndex, 1);
+
+  if (matchingCard.quantity > 1) {
+    matchingCard.quantity--;
+    return [...currentCards];
+  } else {
+    return currentCards.filter((card) => card.id !== cardToRemoveId);
   }
-  return currentCards
-    .map((card) =>
-      card.id === cardToRemove.id
-        ? { ...card, quantity: card.quantity - 1 }
-        : card
-    )
-    .filter((card) => card.quantity > 0);
 };
 
 export const CollectionProvider = ({ children }) => {
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
   const [cookies] = useCookies(['userCookie']);
-  const userId = cookies.userCookie?.id;
+  const { triggerCronJob } = useUserContext();
 
   const [collectionData, setCollectionData] = useState(initialCollectionState);
   const [allCollections, setAllCollections] = useState([]);
-  // const [selectedCollection, setSelectedCollection] = useState(
-  //   initialCollectionState
-  // );
-  const { triggerCronJob } = useUserContext(); // Use the UtilityContext here
-  // const { user } = useUserContext(); // Use the UserContext here
   const [selectedCollection, setSelectedCollection] = useState({});
-
+  const chartData = selectedCollection?.chartData || {};
+  // const datasets = chartData?.datasets || [];
+  const userId = cookies.userCookie?.id;
   const totalCost = useMemo(
     () => getTotalCost(selectedCollection),
     [selectedCollection]
   );
+
+  const calculateTotalFromAllCardPrices = (allCardPrices) => {
+    if (!Array.isArray(allCardPrices)) return 0;
+    return allCardPrices.reduce(
+      (total, price) => total + ensureNumber(price, 0),
+      0
+    );
+  };
+
+  const ensureNumber = (value, defaultValue = 0) => {
+    let num = parseFloat(value);
+    return isNaN(num) ? defaultValue : num;
+  };
 
   const fetchAndSetCollections = useCallback(async () => {
     if (!userId) return;
@@ -132,7 +141,9 @@ export const CollectionProvider = ({ children }) => {
       const validCollections = uniqueCollections.filter(Boolean);
 
       validCollections.forEach((collection) => {
-        collection.totalPrice = calculateAndUpdateTotalPrice(collection);
+        collection.totalPrice = calculateTotalFromAllCardPrices(
+          collection.allCardPrices
+        );
       });
 
       setAllCollections(validCollections);
@@ -203,14 +214,14 @@ export const CollectionProvider = ({ children }) => {
     try {
       const url = `${BASE_API_URL}/${collection.userId}/collections/newCollection/${collection.userId}`;
 
-      // Filling the initialData object with provided values or fallbacks
       const initialData = {
         name: collection?.name || '',
         description: collection?.description || '',
         userId: collection?.userId,
+        totalCost: 0,
         totalPrice: 0,
         quantity: 0,
-        // chartData: datasets,
+        totalQuantity: 0,
         allCardPrices: [],
         cards: [],
       };
@@ -222,16 +233,6 @@ export const CollectionProvider = ({ children }) => {
       }
 
       const { savedCollection } = response;
-      // setAllCollections((prevCollections = []) => {
-      //   const existingIndex = findCollectionIndex(
-      //     prevCollections,
-      //     savedCollection?._id
-      //   );
-      //   if (existingIndex === -1) return [...prevCollections, savedCollection];
-      //   const updatedCollections = [...prevCollections];
-      //   updatedCollections[existingIndex] = savedCollection;
-      //   return updatedCollections;
-      // });
 
       console.log('SAVED COLLECTION:', savedCollection);
       // Uncomment the lines below and provide the correct function implementation if necessary
@@ -275,46 +276,100 @@ export const CollectionProvider = ({ children }) => {
     }
   };
 
+  const getUpdatedCards = (activeCollection, card, operation) => {
+    const cardsToUpdate =
+      operation === 'add'
+        ? handleCardAddition(activeCollection?.cards, card)
+        : handleCardRemoval(activeCollection?.cards, card);
+
+    return cardsToUpdate.map((card) => {
+      const cardPrice = card.card_prices?.[0]?.tcgplayer_price;
+      const computedPrice = cardPrice * card.quantity;
+      const allDatasets = [
+        ...(card?.chart_datasets || []),
+        { x: moment().format('YYYY-MM-DD HH:mm'), y: computedPrice },
+      ];
+      card.chart_datasets = filterOutDuplicateYValues(allDatasets);
+      card.price = cardPrice;
+      card.totalPrice = computedPrice;
+      return card;
+    });
+  };
+
+  const getNewChartData = (activeCollection, updatedPrice, newDataSet) => ({
+    name: `Chart for Collection: ${activeCollection?.name}`,
+    userId: userId,
+    updatedPrice: updatedPrice,
+    datasets: [...(selectedCollection?.chartData?.datasets || []), newDataSet],
+    allXYValues: [
+      ...(selectedCollection?.chartData?.datasets?.flatMap(
+        (dataset) => dataset.data
+      ) || []),
+      newDataSet.data[0].xy,
+    ],
+  });
+
   const addOrRemoveCard = useCallback(
     async (card, cardInfo, operation) => {
-      if (!selectedCollection?._id && !allCollections[0]?._id) {
+      const collectionId = selectedCollection?._id || allCollections[0]?._id;
+      if (!collectionId) {
         console.error('No valid collection selected.');
         return;
       }
 
-      const collectionId = selectedCollection?._id || allCollections[0]._id;
-      // const activeCollection = selectedCollection || allCollections[0];
-      const activeCollection = selectedCollection;
-
-      // const allCardQuantities = activeCollection?.cards?.reduce(
-      //   (accumulator, currentCard) => {
-      //     accumulator[currentCard?.id] = currentCard?.quantity;
-      //     return accumulator;
-      //   }
-      // );
-
-      let updatedCards =
-        operation === 'add'
-          ? handleCardAddition(activeCollection?.cards, card)
-          : handleCardRemoval(activeCollection?.cards, card);
-
-      console.log('UPDATED CARDS:', updatedCards);
-      if (!updatedCards) return;
+      const updatedCards = getUpdatedCards(selectedCollection, card, operation);
+      const allCardPrices = updatedCards.flatMap((card) =>
+        Array(card.quantity).fill(card.card_prices?.[0]?.tcgplayer_price)
+      );
+      const initialPrice = selectedCollection?.totalPrice;
+      const updatedPrice = calculateTotalFromAllCardPrices(allCardPrices);
+      const priceDifference =
+        updatedPrice - (selectedCollection.chartData?.updatedPrice || 0);
+      const newDataSet = {
+        data: [
+          {
+            xy: {
+              label: `Update Number ${
+                selectedCollection?.chartData?.datasets?.length + 1 || 1
+              }`,
+              x: moment().format('YYYY-MM-DD HH:mm'),
+              y: updatedPrice,
+            },
+            additionalPriceData: {
+              priceChanged: priceDifference !== 0,
+              initialPrice: initialPrice,
+              updatedPrice: updatedPrice,
+              priceDifference: priceDifference,
+              priceChange:
+                Math.round((priceDifference / (initialPrice || 1)) * 100) / 100,
+            },
+          },
+        ],
+      };
 
       const updateInfo = {
         ...cardInfo,
         cards: updatedCards,
         userId: userId,
-        // totalPrice: calculateTotalPrice(updatedCards),
-        totalPrice: getCardPrice(selectedCollection),
+        totalCost: updatedPrice,
         quantity: updatedCards.length,
+        totalQuantity: updatedCards.reduce(
+          (acc, card) => acc + card.quantity,
+          0
+        ),
+        chartData: getNewChartData(
+          selectedCollection,
+          updatedPrice,
+          newDataSet
+        ),
+        allCardPrices: allCardPrices,
         _id: collectionId,
       };
-      const updatedCollection = { ...activeCollection, ...updateInfo };
+
+      const updatedCollection = { ...selectedCollection, ...updateInfo };
+      await updateActiveCollection(updatedCollection);
       updateCollectionData(updatedCollection, 'selectedCollection');
       updateCollectionData(updatedCollection, 'allCollections');
-
-      await updateActiveCollection(updatedCollection);
     },
     [
       selectedCollection,
@@ -328,24 +383,42 @@ export const CollectionProvider = ({ children }) => {
 
   const updateActiveCollection = useCallback(
     async (updatedCollectionData) => {
-      if (!updatedCollectionData) {
-        console.error('One of the required variables is undefined');
+      if (!updatedCollectionData?._id) {
+        console.error('Collection ID or Data is undefined.');
         return;
       }
-
-      const collectionId = updatedCollectionData?._id;
-      const url = `${BASE_API_URL}/${userId}/collections/${collectionId}`;
-
-      // Log the URL and payload before making the request
-      console.log('URL:', url);
-      console.log('Payload:', updatedCollectionData);
+      const url = `${BASE_API_URL}/${userId}/collections/${updatedCollectionData._id}`;
       try {
         const { updatedCollection } = await fetchWrapper(
           url,
           'PUT',
           updatedCollectionData
         );
-
+        const newChartData = {
+          ...updatedCollection.chartData,
+          datasets: [
+            ...(updatedCollection.chartData?.datasets || []),
+            {
+              data: [
+                {
+                  xy: {
+                    x: moment().format('YYYY-MM-DD HH:mm'),
+                    y: updatedCollection.totalPrice,
+                  },
+                  additionalPriceData: {
+                    priceChanged: false,
+                    initialPrice:
+                      updatedCollection.chartData?.updatedPrice || 0,
+                    updatedPrice: updatedCollection.totalPrice,
+                    priceDifference: 0,
+                    priceChange: 0,
+                  },
+                },
+              ],
+            },
+          ],
+        };
+        updatedCollection.chartData = newChartData;
         console.log('UPDATED COLLECTION FROM SERVER:', updatedCollection);
         updateCollectionData(updatedCollection, 'selectedCollection');
         updateCollectionData(updatedCollection, 'allCollections');

@@ -26,13 +26,13 @@ const LoginForm = ({
           onChange={(e) => setUsername(e.target.value)}
           variant="outlined"
         />
-        <TextField
+        {/* <TextField
           placeholder="Email"
           value={email}
           type="email"
           onChange={(e) => setEmail(e.target.value)}
           variant="outlined"
-        />
+        /> */}
         <TextField
           placeholder="Password"
           value={password}

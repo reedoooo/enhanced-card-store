@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/system';
 import LinearChart from './LinearChart';
-import useUpdateChartData from '../collection/UpdateChartData';
+import useUpdateChartData from '../../context/cleanUp/useUpdateChartData';
+import { useCollectionStore } from '../../context/hooks/collection';
 
 const ChartPaper = styled('div')(({ theme }) => ({
   borderRadius: '12px',
@@ -18,19 +19,26 @@ const PortfolioChart = () => {
   const [latestData, setLatestData] = useState(null);
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
-  const { datasets } = useUpdateChartData();
-  console.log('datasets', datasets);
-  // Update the latest data point every 10 minutes
+  const { selectedCollection } = useCollectionStore();
+  const datasets = selectedCollection?.chartData?.allXYValues;
+
   useEffect(() => {
     if (!datasets) return;
     const currentTime = new Date().getTime();
+
     if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
       setLastUpdateTime(currentTime);
 
-      const lastDataset = datasets[0]?.data?.[datasets[0]?.data?.length - 1];
+      const lastDatasetIndex = datasets.length - 1;
+      const lastDataset = datasets[lastDatasetIndex];
       lastDataset && setLatestData(lastDataset);
     }
+    // If you intend to add timeouts or intervals later, ensure you add the cleanup
+    // return () => {
+    //   clearTimeout(yourTimeout);
+    // };
   }, [datasets, lastUpdateTime]);
+
   const chartDimensions = useMemo(
     () =>
       chartContainerRef.current?.getBoundingClientRect() || {
@@ -45,14 +53,9 @@ const PortfolioChart = () => {
       <ChartPaper elevation={3} ref={chartContainerRef}>
         {datasets && datasets?.length > 0 ? (
           <LinearChart
-            data={datasets}
-            dimensions={
-              chartContainerRef.current?.getBoundingClientRect() || {
-                width: 400,
-                height: 500,
-              }
-            }
+            data={datasets || []}
             latestData={latestData}
+            dimensions={chartDimensions}
           />
         ) : (
           <div>No data available</div>

@@ -97,11 +97,11 @@ const CardList = ({ selectedCards, removeCard }) => {
           <CronTrigger /> {/* Include the CronTrigger button */}
         </Stack>
         <Divider variant="middle" />
-        {selectedCards && selectedCards.length > 0 ? (
+        {selectedCards && selectedCards?.length > 0 ? (
           selectedCards
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map((card, index) => {
-              const key = isIdUnique(card.id || index, selectedCards)
+              const key = isIdUnique(card?.id || index, selectedCards)
                 ? card.id
                 : `${card.id}-${index}`;
 
@@ -127,9 +127,9 @@ const CardList = ({ selectedCards, removeCard }) => {
                   <Grid item xs={3} sm={2} md={2}>
                     <Typography variant="body1" sx={{ textAlign: 'right' }}>
                       {card.card_prices &&
-                      card.card_prices[0] &&
-                      card.card_prices[0].tcgplayer_price
-                        ? `$${card.card_prices[0].tcgplayer_price}`
+                      card?.card_prices[0] &&
+                      card?.card_prices[0]?.tcgplayer_price
+                        ? `$${card?.card_prices[0]?.tcgplayer_price}`
                         : 'Price not available'}
                     </Typography>
                   </Grid>
@@ -138,7 +138,7 @@ const CardList = ({ selectedCards, removeCard }) => {
                       size="small"
                       variant="contained"
                       color="secondary"
-                      onClick={() => removeOneFromCollection(card, card.id)}
+                      onClick={() => removeOneFromCollection(card, card?.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',
@@ -151,7 +151,7 @@ const CardList = ({ selectedCards, removeCard }) => {
                       size="small"
                       variant="contained"
                       color="primary"
-                      onClick={() => addOneToCollection(card, card.id)}
+                      onClick={() => addOneToCollection(card, card?.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',
@@ -180,7 +180,7 @@ const CardList = ({ selectedCards, removeCard }) => {
             width: '100%', // Ensure the total cost aligns to the right
           }}
         >
-          <Typography variant="h5">{`Total: $${selectedCollection.totalPrice}`}</Typography>
+          <Typography variant="h5">{`Total: $${selectedCollection?.totalPrice}`}</Typography>
         </Box>
         <Box
           display="flex"

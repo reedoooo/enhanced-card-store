@@ -6,7 +6,7 @@ import { UtilityContext } from '../UtilityContext/UtilityContext';
 export const ChartContext = createContext();
 
 export const ChartDataProvider = ({ children }) => {
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState({});
   const [{ userCookie }] = useCookies(['userCookie']);
   const userId = userCookie?.id;
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/chart-data`;
@@ -51,7 +51,7 @@ export const ChartDataProvider = ({ children }) => {
       await axios.post(`${BASE_API_URL}/updateChart/${userId}`, {
         data: uniqueData,
       });
-      setChartData(uniqueData);
+      setChartData({ uniqueData });
       setIsCronJobTriggered(true);
     } catch (error) {
       console.error('Error updating server data:', error);

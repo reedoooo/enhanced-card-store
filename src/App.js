@@ -38,10 +38,6 @@ const AppWrapper = styled.div`
 `;
 
 const App = () => {
-  const [activeUserCartId, setActiveUserCartId] = useState(null);
-  // const [activeUserDeckId, setActiveUserDeckId] = useState(null);
-  // const [activeUserCollectionId, setActiveUserCollectionId] = useState(null);
-
   return (
     <Router>
       <Helmet>
@@ -60,66 +56,12 @@ const App = () => {
           <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route exact path="/home" element={<HomePage />} />
-            <Route
-              exact
-              path="/store"
-              element={
-                <StorePage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/cart"
-              element={
-                <CartPage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/collection"
-              element={
-                <CollectionPage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/deckbuilder"
-              element={
-                <DeckBuilderPage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/profile"
-              element={
-                <ProfilePage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/userprofile"
-              element={
-                <ProfilePage
-                  activeUserCartId={activeUserCartId}
-                  setActiveUserCart={setActiveUserCartId}
-                />
-              }
-            />
+            <Route exact path="/store" element={<StorePage />} />
+            <Route exact path="/cart" element={<CartPage />} />
+            <Route exact path="/collection" element={<CollectionPage />} />
+            <Route exact path="/deckbuilder" element={<DeckBuilderPage />} />
+            <Route exact path="/profile" element={<ProfilePage />} />
+            <Route exact path="/userprofile" element={<ProfilePage />} />
             {/* Add your Three.js cube component */}
             <Route exact path="/threejs" element={<ThreeJsCube />} />
             <Route exact path="/cardDeck" element={<CardDeckAnimation />} />

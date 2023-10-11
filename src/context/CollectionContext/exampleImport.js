@@ -68,11 +68,20 @@ export const getCardQuantity = (collectionId, allCollections) => {
 };
 
 // Calculate total cost of the selected collection
+// export const getTotalCost = (selectedCollection) => {
+//   if (!selectedCollection?.cards) return 0;
+//   return selectedCollection.cards.reduce((total, card) => {
+//     const price = card.card_prices?.[0]?.tcgplayer_price;
+//     return price ? total + parseFloat(price) : total;
+//   }, 0);
+// };
 export const getTotalCost = (selectedCollection) => {
-  if (!selectedCollection?.cards) return 0;
+  if (!selectedCollection || !Array.isArray(selectedCollection.cards)) return 0;
+
   return selectedCollection.cards.reduce((total, card) => {
-    const price = card.card_prices?.[0]?.tcgplayer_price;
-    return price ? total + parseFloat(price) : total;
+    const cardPrice =
+      (card.card_prices && card.card_prices[0]?.tcgplayer_price) || 0;
+    return total + cardPrice * card.quantity;
   }, 0);
 };
 

@@ -4,11 +4,13 @@ import { useCombinedContext } from '../../context/CombinedProvider';
 import { useUserContext } from '../../context/UserContext/UserContext';
 
 const CronTrigger = () => {
-  const { stopCronJob, onTrigger } = useCombinedContext();
-  // const { triggerCronJob } = useUserContext();
+  const { stopCronJob, handleSendAllCardsInCollections, listOfMonitoredCards } =
+    useCombinedContext();
+  const { user } = useUserContext();
 
   const handleTriggerCron = () => {
-    onTrigger();
+    console.log('TRIGGERING CRON JOB TO UPDATE: ' + listOfMonitoredCards);
+    handleSendAllCardsInCollections(user.userID, listOfMonitoredCards);
   };
 
   const handleStopCron = () => {

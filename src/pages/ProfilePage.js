@@ -58,46 +58,46 @@ const DataTextStyled = styled(Typography)({
   fontSize: '0.9rem',
 });
 
-function convertCardToChartData(cardData, userId) {
-  const currentDate = new Date();
+// function convertCardToChartData(cardData, userId) {
+//   const currentDate = new Date();
 
-  // Extracting values from the card data
-  const cardName = cardData.name;
-  const cardPrice = cardData.card_prices[0]?.tcgplayer_price || 0; // Assuming tcgplayer_price is the main price point
-  const totalQuantity = cardData.quantity;
-  const totalPrice = cardPrice * totalQuantity;
+//   // Extracting values from the card data
+//   const cardName = cardData.name;
+//   const cardPrice = cardData.card_prices[0]?.tcgplayer_price || 0; // Assuming tcgplayer_price is the main price point
+//   const totalQuantity = cardData.quantity;
+//   const totalPrice = cardPrice * totalQuantity;
 
-  // Constructing the data point
-  const dataPoint = {
-    cardName: cardName,
-    x: currentDate, // Current date for the data point
-    y: cardPrice, // Single card price
-    totalQuantity: totalQuantity,
-    totalPrice: totalPrice, // Total price for this card
-    // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the data point
-  };
+//   // Constructing the data point
+//   const dataPoint = {
+//     cardName: cardName,
+//     x: currentDate, // Current date for the data point
+//     y: cardPrice, // Single card price
+//     totalQuantity: totalQuantity,
+//     totalPrice: totalPrice, // Total price for this card
+//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the data point
+//   };
 
-  // Constructing the dataset (assuming you might have more datasets in future)
-  const dataset = {
-    label: cardName, // Using card name as label for the dataset
-    totalquantity: totalQuantity,
-    data: {
-      points: [dataPoint], // Initial single data point for the card
-    },
-    // You can also define other properties like backgroundColor, borderColor etc.
-  };
+//   // Constructing the dataset (assuming you might have more datasets in future)
+//   const dataset = {
+//     label: cardName, // Using card name as label for the dataset
+//     totalquantity: totalQuantity,
+//     data: {
+//       points: [dataPoint], // Initial single data point for the card
+//     },
+//     // You can also define other properties like backgroundColor, borderColor etc.
+//   };
 
-  // Constructing the entire chart data
-  const chartData = {
-    // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the chart data
-    name: cardName, // Using card name as chart name
-    userId: userId,
-    datasets: [dataset], // Initial single dataset for the chart data
-    // You can also define other properties like collectionId, chartId etc.
-  };
+//   // Constructing the entire chart data
+//   const chartData = {
+//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the chart data
+//     name: cardName, // Using card name as chart name
+//     userId: userId,
+//     datasets: [dataset], // Initial single dataset for the chart data
+//     // You can also define other properties like collectionId, chartId etc.
+//   };
 
-  return chartData;
-}
+//   return chartData;
+// }
 
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const [formData, setFormData] = useState({
@@ -181,94 +181,111 @@ const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();
   const { user, updateUser } = useUserContext();
   const [cookies] = useCookies(['userCookie']);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: '',
+  });
+
   const {
     handleSend,
-    handleRequestData,
     handleRequestChartData,
+    handleRequestCollectionData,
+    // handleRequestCollectionData,
     handleSendData,
     handleSendChart,
     handleCronRequest,
     chartDataToSend,
+    handleSendAllCardsInCollections,
+    listOfMonitoredCards,
+    handleRetreiveListOfMonitoredCards,
+    retrievedListOfMonitoredCards,
   } = useCombinedContext();
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-
+  const openSnackbar = (message) => {
+    setSnackbarData({ open: true, message });
+  };
+  const userId = user?.userID;
+  // console.log('USER ID:', userId);
+  // console.log('USER:', user);
   const handleSaveChanges = useCallback(
     (data) => {
       updateUser(data);
-      setOpenSnackbar(true);
+      openSnackbar('Saved changes.');
     },
     [updateUser]
   );
 
   const handleSendMessage = () => {
     handleSend('Hello, Server!');
+    openSnackbar('Sent message to the server.');
   };
 
-  const handleRequestCollectionData = () => {
-    const userIdString = user?.userID?.toString();
-    if (userIdString) handleRequestData(userIdString);
+  const handleRequestCollectionDataFunction = () => {
+    if ((userId, selectedCollection)) {
+      handleRequestCollectionData(userId, selectedCollection);
+      console.log('REQUESTING COLLECTION DATA');
+      openSnackbar('Requested collection data.');
+    }
   };
 
   const handleRequestChartDataFunction = () => {
-    const userIdString = user?.userID?.toString();
-    if (!userIdString) return;
-    const { datasets, name } = chartDataToSend || {};
-    handleRequestChartData(userIdString, datasets, name);
+    if (userId && selectedCollection) {
+      handleRequestChartData(userId, selectedCollection);
+      openSnackbar('Requested chart data.');
+    }
   };
 
   const handleTriggerCronJob = () => {
-    handleCronRequest(user?.userID);
-  };
-
-  const handleSendCollectionData = () => {
-    const userIdString = user?.userID?.toString();
-    if (userIdString) {
-      handleSendData(userIdString, selectedCollection?._id, {
-        data: selectedCollection?.cards,
-      });
+    // if (userId) {
+    //   handleCronRequest(userId);
+    //   console.log('TRIGGERING CRON JOB');
+    // }
+    if (userId && listOfMonitoredCards && retrievedListOfMonitoredCards) {
+      handleSendAllCardsInCollections(
+        userId,
+        listOfMonitoredCards,
+        retrievedListOfMonitoredCards
+      );
+      console.log('SENDING ALL CARDS IN COLLECTIONS');
+      openSnackbar('Triggered the cron job.');
+    } else if (
+      userId &&
+      listOfMonitoredCards &&
+      !retrievedListOfMonitoredCards
+    ) {
+      console.log('RETRIEVING LIST OF MONITORED CARDS');
+      handleSendAllCardsInCollections(
+        userId,
+        listOfMonitoredCards,
+        handleRetreiveListOfMonitoredCards()
+      );
+      openSnackbar('Triggered the cron job.');
     }
   };
-  const handleSendChartData = () => {
-    const userId = user?.userID;
-    const collectionId = selectedCollection?._id;
-    const rawDatasets = selectedCollection?.cards || [];
-    const name = selectedCollection?.name || '';
-    const chartId = selectedCollection?._id || '';
 
-    // Convert raw data to chart data
-    const datasets = rawDatasets.map((card) =>
-      convertCardToChartData(card, userId)
-    );
+  // const handleSendCollectionData = () => {
+  //   if (userId && selectedCollection) {
+  //     handleSendData({
+  //       userId,
+  //       collectionId: selectedCollection._id,
+  //       collectionData: selectedCollection.cards,
+  //     });
+  //   }
+  // };
 
-    // Logging to check values
-    console.log('handleSendChartData -> userId:', userId);
-    console.log('handleSendChartData -> chartId:', chartId);
-    console.log('handleSendChartData -> datasets:', datasets);
-    console.log('handleSendChartData -> name:', name);
-
-    // Uncomment below to hardcode values for testing
-    // userId = "your-hardcoded-value";
-    // chartId = "your-hardcoded-value";
-    // datasets = [{...}]; // hardcode datasets structure
-    // name = "your-hardcoded-value";
-
-    if (!userId) console.error('userId is missing');
-    if (!chartId) console.error('chartId is missing');
-    if (!datasets || datasets.length === 0)
-      console.error('datasets is missing or empty');
-    if (!name) console.error('name is missing');
-
-    const chartDataToSend = {
-      userId,
-      datasets: datasets || [],
-      name,
-      chartId,
-    };
-
-    // Now, use the handleSendChart function from the combined context to send the chart data
-    handleSendChart(chartDataToSend);
-  };
+  // const handleSendChartData = () => {
+  //   if (userId && selectedCollection) {
+  //     const datasets = selectedCollection.cards.map((card) =>
+  //       convertCardToChartData(card, userId)
+  //     );
+  //     handleSendChart({
+  //       userId,
+  //       chartId: selectedCollection.chartId, // Assuming the collection object has a chartId field
+  //       datasets,
+  //       name: selectedCollection.name,
+  //     });
+  //   }
+  // };
   // const chartData = {};
 
   return (
@@ -292,7 +309,7 @@ const ProfilePage = () => {
         <ButtonStyled
           variant="contained"
           color="primary"
-          onClick={handleRequestCollectionData}
+          onClick={handleRequestCollectionDataFunction}
         >
           Request Collection Data
         </ButtonStyled>
@@ -308,27 +325,27 @@ const ProfilePage = () => {
         <ButtonStyled
           variant="contained"
           color="primary"
-          onClick={handleSendChartData} // directly calling the function without needing to pass chartData
-        >
-          Request Chart Data Update
-        </ButtonStyled>
-
-        <ButtonStyled
-          variant="contained"
-          color="primary"
           onClick={handleTriggerCronJob}
         >
           Trigger Cron Job
         </ButtonStyled>
 
-        <ButtonStyled
+        {/* <ButtonStyled
+          variant="contained"
+          color="primary"
+          onClick={handleSendChartData} // directly calling the function without needing to pass chartData
+        >
+          Request Chart Data Update
+        </ButtonStyled> */}
+
+        {/* <ButtonStyled
           variant="contained"
           color="primary"
           onClick={handleSendCollectionData}
         >
           Send Collection Data
-        </ButtonStyled>
-        {chartDataToSend?.datasets?.map((dataset) =>
+        </ButtonStyled> */}
+        {/* {chartDataToSend?.datasets?.map((dataset) =>
           dataset.data?.points?.map((data) => (
             <DataBoxStyled key={data.cardId || data._id}>
               {data?.x && (
@@ -344,7 +361,7 @@ const ProfilePage = () => {
               <DataTextStyled variant="body2">Value: {data?.y}</DataTextStyled>
             </DataBoxStyled>
           ))
-        )}
+        )} */}
       </Box>
       <Box mt={3}>
         <ProfileForm
@@ -356,10 +373,10 @@ const ProfilePage = () => {
       <UserStats />
       <ThemeToggleButton />
       <Snackbar
-        open={openSnackbar}
+        open={snackbarData.open}
         autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        message="Profile updated successfully"
+        onClose={() => setSnackbarData({ ...snackbarData, open: false })}
+        message={snackbarData.message}
       />
     </Container>
   );

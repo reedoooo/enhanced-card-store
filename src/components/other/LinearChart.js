@@ -50,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
 const CustomTooltip = ({ point }) => {
   const theme = useTheme();
   const { serieId } = point;
-  const x = point.data.xFormatted;
-  const y = point.data.yFormatted;
+  const label = point?.data?.label;
+  const x = point?.data?.xFormatted;
+  const y = point?.data?.yFormatted;
   return (
     <Box
       p={2}
@@ -64,61 +65,46 @@ const CustomTooltip = ({ point }) => {
       <Typography variant="subtitle1" color="textPrimary">
         {`Series: ${serieId}`}
       </Typography>
+      <Typography variant="body1" color="textPrimary">
+        {`Card: ${label}`}
+      </Typography>
       <Typography variant="body2">
-        {`Time: ${new Date(point?.data?.x).toLocaleString()}`}
+        {`Time: ${new Date(point?.data?.x || x).toLocaleString()}`}
       </Typography>
       <Typography variant="h6" color="textSecondary">
-        {`Value: $${point?.data?.y.toFixed(2)}`}
+        {`Value: $${point?.data?.y?.toFixed(2) || y}`}
       </Typography>
     </Box>
   );
 };
 
 // const LinearChart = ({ data = [], dimensions, loading, error }) => {
-const LinearChart = ({ data = [], dimensions, latestData }) => {
+const LinearChart = ({ data, latestData, dimensions }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isZoomed, setIsZoomed] = useState(false);
   const [hoveredData, setHoveredData] = useState(null);
 
-  const transformedData = useMemo(
-    () =>
-      data.map((serie) => ({
-        id: serie.id,
-        data: serie.data.map((d) => ({ x: new Date(d.x), y: parseFloat(d.y) })),
-      })),
-    [data]
-  );
-
-  if (!transformedData.length) {
-    return <Typography variant="body1">No data available</Typography>;
+  // Ensure data is an array
+  if (!Array.isArray(data) || data.some((d) => !d.x || !d.y)) {
+    return <Typography variant="body1">No valid data available</Typography>;
   }
+  // console.log('datasets', data);
+  // console.log('latestData', latestData);
 
-  console.log('TRANSFORMED DATA:', transformedData);
-  // if (loading) {
-  //   return (
-  //     <div className={classes.loadingContainer}>
-  //       <CircularProgress />
-  //     </div>
-  //   );
-  // }
+  const LinearChartData = useMemo(() => {
+    return [
+      {
+        id: 'Dataset',
+        data: data?.map((d) => ({
+          x: new Date(d?.x),
+          y: parseFloat(d?.y),
+        })),
+      },
+    ];
+  }, [data]);
 
-  // if (error) {
-  //   return (
-  //     <Typography variant="body1" color="error">
-  //       Error loading data
-  //     </Typography>
-  //   );
-  // }
-
-  if (transformedData.length === 0) {
-    return <Typography variant="body1">No data available</Typography>;
-  }
-
-  // const latestData = data[0]?.data?.slice(-1)[0] || {};
-
-  const latestDataArray = transformedData?.slice(-1)[0]?.data || [];
-  console.log('LATEST DATA ARRAY:', latestDataArray);
+  // console.log('chartData', chartData);
   return (
     <div
       className={classes.chartContainer}
@@ -129,7 +115,7 @@ const LinearChart = ({ data = [], dimensions, latestData }) => {
     >
       <ResponsiveLine
         animate
-        data={[{ id: 'alldatasets', data: latestDataArray }]}
+        data={LinearChartData}
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
         xScale={{
           type: 'time',
@@ -190,8 +176,8 @@ const LinearChart = ({ data = [], dimensions, latestData }) => {
         onMouseMove={(point) => {
           if (point) {
             setHoveredData({
-              x: point.data.x,
-              y: point.data.y,
+              x: point?.data?.x,
+              y: point?.data?.y,
             });
           }
         }}
@@ -200,22 +186,24 @@ const LinearChart = ({ data = [], dimensions, latestData }) => {
       />
       <Tooltip
         title={`Time: ${
-          hoveredData ? new Date(hoveredData.x).toLocaleString() : latestData?.x
+          hoveredData
+            ? new Date(hoveredData?.x).toLocaleString()
+            : latestData?.x
         }`}
         arrow
       >
         <Typography className={classes.xAxisLabel}>
           {hoveredData
-            ? new Date(hoveredData.x).toLocaleString()
+            ? new Date(hoveredData?.x).toLocaleString()
             : latestData?.x}
         </Typography>
       </Tooltip>
       <Tooltip
-        title={`Value: $${hoveredData ? hoveredData.y : latestData?.y}`}
+        title={`Value: $${hoveredData ? hoveredData?.y : latestData?.y}`}
         arrow
       >
         <Typography className={classes.yAxisLabel}>
-          {`$${hoveredData ? hoveredData.y : latestData?.y}`}
+          {`$${hoveredData ? hoveredData?.y : latestData?.y}`}
         </Typography>
       </Tooltip>
     </div>

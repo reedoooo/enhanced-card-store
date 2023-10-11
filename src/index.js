@@ -14,11 +14,9 @@ import { CombinedProvider } from './context/CombinedProvider';
 import { ThemeProvider } from '@mui/styles';
 import { useMode } from './context/hooks/colormode';
 import { ColorModeProvider } from './context/ColorModeProvider';
-import withCombinedProviderHOC from './withCombinedProviderHOC';
-import withCollectionProvider from './withCollectionProviderHOC';
-import { ApiServiceProvider } from './context/ApiServiceProvider';
+// import { ApiServiceProvider } from './context/cleanUp/ApiServiceProvider';
+import ErrorBoundary from './context/ErrorBoundary';
 import { SocketProvider } from './context/SocketProvider';
-import { SocketActionsProvider } from './context/SocketActions';
 
 const root = document.getElementById('root');
 
@@ -26,34 +24,34 @@ function Main() {
   const { theme } = useMode();
 
   return (
-    <AuthProvider>
-      <ColorModeProvider>
-        <SocketProvider>
-          <SocketActionsProvider>
-            <ApiServiceProvider>
-              <UserProvider>
-                <ModalProvider>
-                  <CollectionProvider>
-                    <CombinedProvider>
-                      <CardProvider>
-                        <DeckProvider>
-                          <CartProvider>
-                            <GlobalStyles />
-                            <ThemeProvider theme={theme}>
-                              <App />
-                            </ThemeProvider>
-                          </CartProvider>
-                        </DeckProvider>
-                      </CardProvider>
-                    </CombinedProvider>
-                  </CollectionProvider>
-                </ModalProvider>
-              </UserProvider>
-            </ApiServiceProvider>
-          </SocketActionsProvider>
-        </SocketProvider>
-      </ColorModeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ColorModeProvider>
+          <SocketProvider>
+            {/* <ApiServiceProvider> */}
+            <UserProvider>
+              <ModalProvider>
+                <CollectionProvider>
+                  <CombinedProvider>
+                    <CardProvider>
+                      <DeckProvider>
+                        <CartProvider>
+                          <GlobalStyles />
+                          <ThemeProvider theme={theme}>
+                            <App />
+                          </ThemeProvider>
+                        </CartProvider>
+                      </DeckProvider>
+                    </CardProvider>
+                  </CombinedProvider>
+                </CollectionProvider>
+              </ModalProvider>
+            </UserProvider>
+            {/* </ApiServiceProvider> */}
+          </SocketProvider>
+        </ColorModeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
