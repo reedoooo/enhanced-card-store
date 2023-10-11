@@ -86,14 +86,6 @@ export const DeckProvider = ({ children }) => {
     }
   }, [fetchDecksForUser, userId]);
 
-  // const formatDeckData = (deckId, updatedDeck) => ({
-  //   _id: deckId,
-  //   userId,
-  //   name: deckData.name,
-  //   description: deckData.description,
-  //   cards: updatedDeck.map((card) => formatCardData(card)),
-  // });
-
   const formatCardData = (card) => ({
     id: card.id,
     ...Object.fromEntries(
@@ -247,7 +239,7 @@ export const DeckProvider = ({ children }) => {
     if (userId) {
       fetchAndSetDecks();
     }
-  }, [fetchAndSetDecks, cookies.userCookie]);
+  }, [cookies.userCookie?.id, fetchAndSetDecks]);
 
   return (
     <DeckContext.Provider value={contextValue}>{children}</DeckContext.Provider>

@@ -6,12 +6,12 @@ import { UtilityContext } from '../UtilityContext/UtilityContext';
 export const ChartContext = createContext();
 
 export const ChartDataProvider = ({ children }) => {
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState({});
   const [{ userCookie }] = useCookies(['userCookie']);
   const userId = userCookie?.id;
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/chart-data`;
-  const [isUpdated, setIsUpdated] = useState(false);
-  const { isCronJobTriggered } = useContext(UtilityContext);
+  const { isCronJobTriggered, setIsCronJobTriggered } =
+    useContext(UtilityContext);
 
   const fetchData = async () => {
     if (!userId) return;
@@ -25,12 +25,12 @@ export const ChartDataProvider = ({ children }) => {
   };
 
   // Effect for initial data fetch or when cron job triggers
-  useEffect(() => {
-    if (isCronJobTriggered) {
-      fetchData();
-      if (isUpdated) setIsUpdated(false);
-    }
-  }, [isCronJobTriggered, isUpdated, userId]);
+  // useEffect(() => {
+  //   if (isUpdated) {
+  //     fetchData();
+  //     setIsUpdated(false);
+  //   }
+  // }, [isUpdated, userId]);
 
   const updateServerData = async (updatedData) => {
     if (!userId) return;
@@ -50,14 +50,21 @@ export const ChartDataProvider = ({ children }) => {
     try {
       await axios.post(`${BASE_API_URL}/updateChart/${userId}`, {
         data: uniqueData,
-        datasets: uniqueData,
       });
-      setChartData(uniqueData);
+      setChartData({ uniqueData });
+      setIsCronJobTriggered(true);
     } catch (error) {
       console.error('Error updating server data:', error);
       // More informative error handling can be added here
     }
   };
+
+  useEffect(() => {
+    if (isCronJobTriggered) {
+      fetchData();
+      setIsCronJobTriggered(false);
+    }
+  }, [isCronJobTriggered, userId]);
 
   return (
     <ChartContext.Provider
@@ -65,8 +72,8 @@ export const ChartDataProvider = ({ children }) => {
         chartData,
         setChartData,
         updateServerData,
-        isUpdated,
-        setIsUpdated,
+        isCronJobTriggered,
+        setIsCronJobTriggered,
       }}
     >
       {children}

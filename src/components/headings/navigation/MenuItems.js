@@ -16,10 +16,13 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
+  Box,
+  Typography,
 } from '@mui/material';
 import DeckOfCardsIcon from '../../icons/DeckOfCardsIcon';
-import TestingIcon from '../../icons/TestingIcon';
-
+// import TestingIcon from '../../icons/TestingIcon';
+import theme from '../../../assets/styles/themes';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiTypography-root': {
     fontSize: '1.2em',
@@ -28,6 +31,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiSvgIcon-root': {
     marginRight: theme.spacing(1),
   },
+  justifyContent: 'right',
 }));
 
 const StyledLink = styled(Link)(({ theme }) => ({
@@ -43,83 +47,54 @@ const StyledLink = styled(Link)(({ theme }) => ({
 //   fontSize: '1em', // or any other value you want
 // });
 
+// Style the container of the Logout label and icon
+const LogoutContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+});
+
+const currentPage = window.location.pathname;
+console.log('CURRENT PAGE:', currentPage);
+console.log('theme', theme);
+
 function MenuItems({
   isLoggedIn,
-  handleCartIconClick,
-  handleTestingIconClick,
-  isCartModalOpen,
   logout,
   handleDrawerClose,
+  handleCloseNavMenu,
 }) {
   return (
     <>
-      <StyledMenuItem key="home">
-        <StyledLink to="/home">
-          <HomeIcon /> Home
-        </StyledLink>
+      <StyledMenuItem component={Link} to="/home" theme={theme}>
+        <HomeIcon onClick={handleCloseNavMenu} /> Home
       </StyledMenuItem>
       {isLoggedIn && (
-        <StyledMenuItem key="store">
-          <StyledLink
-            to="/store"
-            style={{ color: '#000', textDecoration: 'none' }}
-          >
+        <>
+          <StyledMenuItem component={Link} to="/store">
             <StoreIcon /> Store
-          </StyledLink>
-        </StyledMenuItem>
-      )}
-      {isLoggedIn && (
-        <StyledMenuItem key="deckbuilder">
-          <StyledLink
-            to="/deckbuilder"
-            style={{ color: '#000', textDecoration: 'none' }}
-          >
+          </StyledMenuItem>
+          <StyledMenuItem component={Link} to="/deckbuilder">
             <DeckOfCardsIcon /> Deck Builder
-          </StyledLink>
-        </StyledMenuItem>
+          </StyledMenuItem>
+        </>
       )}
-      <StyledMenuItem onClick={handleCartIconClick} key="cart">
-        <StyledLink
-          to="/cart"
-          style={{ color: '#000', textDecoration: 'none' }}
-        >
-          <CartIcon /> Cart
-        </StyledLink>
-        {/* <CartModal isOpen={isCartModalOpen} onClose={handleCartIconClick}> */}
-        {/* <Stripe /> */}
-        {/* </CartModal> */}
+      <StyledMenuItem component={Link} to="/cart">
+        <CartIcon /> Cart
       </StyledMenuItem>
-      <StyledMenuItem onClick={handleTestingIconClick} key="test">
-        {/* <StyledLink
-          to="/scrapertester"
-          style={{ color: '#000', textDecoration: 'none' }}
-        >
-          <TestingIcon /> Cart
-        </StyledLink> */}
-        <StyledLink
-          to="/collection"
-          style={{ color: '#000', textDecoration: 'none' }}
-        >
-          <TestingIcon /> Collection
-        </StyledLink>
-        {/* <CartModal isOpen={isCartModalOpen} onClose={handleCartIconClick}> */}
-        {/* <Stripe /> */}
-        {/* </CartModal> */}
+      <StyledMenuItem component={Link} to="/collection">
+        <AssessmentIcon /> Collection
       </StyledMenuItem>
-      {isLoggedIn && (
-        <StyledMenuItem key="profile">
-          <StyledLink
-            to="/userprofile"
-            style={{ color: '#000', textDecoration: 'none' }}
-          >
-            <AccountCircleIcon /> User Profile
-          </StyledLink>
-        </StyledMenuItem>
-      )}
       {isLoggedIn ? (
-        <Button variant="outlined" onClick={logout} endIcon={<LogoutIcon />}>
-          Logout
-        </Button>
+        <Box right={0} marginRight={'-10%'}>
+          <StyledMenuItem>
+            {/* Use the LogoutContainer component to wrap the LogoutIcon and the label */}
+            <LogoutContainer onClick={logout}>
+              <LogoutIcon />
+              <Typography>Logout</Typography>
+            </LogoutContainer>
+          </StyledMenuItem>
+        </Box>
       ) : (
         <Dialog open={!isLoggedIn} onClose={handleDrawerClose}>
           <DialogTitle>Login</DialogTitle>

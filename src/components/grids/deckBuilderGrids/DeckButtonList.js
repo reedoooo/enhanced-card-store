@@ -36,12 +36,25 @@ const useDeckButtonListStyles = makeStyles((theme) => ({
     fontWeight: '600',
   },
 }));
+const useStyles = makeStyles((theme) => ({
+  root: {
+    [theme.breakpoints.up('md')]: {
+      backgroundColor: 'blue',
+    },
+    [theme.breakpoints.down('sm')]: {
+      backgroundColor: 'red',
+    },
+    [theme.breakpoints.between('sm', 'md')]: {
+      backgroundColor: 'green',
+    },
+  },
+}));
 
 const DeckButtonList = ({ userDecks, handleSelectDeck }) => {
   const classes = useDeckButtonListStyles();
   const { selectedDeck } = useContext(DeckContext);
-  console.log('SELECTED DECK:', selectedDeck.name);
-  console.log('userDecks', userDecks);
+  // console.log('SELECTED DECK:', selectedDeck.name);
+  // console.log('userDecks', userDecks);
   return (
     <Grid container spacing={1} className={classes.grid}>
       {userDecks.map((deck) => (

@@ -4,7 +4,7 @@ import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/CardNameInput';
 import CustomSelector from '../other/CustomSelector';
-import { useUtility } from '../../context/UtilityContext/UtilityContext';
+import { useCombinedContext } from '../../context/CombinedProvider';
 
 const initialState = {
   name: '',
@@ -15,7 +15,7 @@ const initialState = {
 };
 
 const SearchBar = () => {
-  const { searchParams, setSearchParams } = useUtility(initialState);
+  const { searchParams, setSearchParams } = useCombinedContext(initialState);
   const { handleRequest } = useCardStore();
 
   const filters = [
@@ -69,7 +69,7 @@ const SearchBar = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <CardNameInput
-              value={searchParams.name}
+              value={searchParams?.name}
               setValue={(newValue) =>
                 setSearchParams((prevState) => ({
                   ...prevState,
@@ -79,19 +79,19 @@ const SearchBar = () => {
               handleRequest={() => handleRequest(searchParams)}
             />
           </Grid>
-          {filters.map((filter) => (
+          {filters?.map((filter) => (
             <CustomSelector
-              key={filter.name}
-              label={filter.label}
-              name={filter.name}
-              value={searchParams[filter.name]}
+              key={filter?.name}
+              label={filter?.label}
+              name={filter?.name}
+              value={searchParams?.[filter?.name]}
               setValue={(newValue) =>
                 setSearchParams((prevState) => ({
                   ...prevState,
-                  [filter.name]: newValue,
+                  [filter?.name]: newValue,
                 }))
               }
-              values={filter.values}
+              values={filter?.values}
             />
           ))}
           <SearchButton searchParams={searchParams} />

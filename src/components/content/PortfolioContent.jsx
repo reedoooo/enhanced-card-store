@@ -26,7 +26,7 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
     <ThemeProvider theme={theme}>
       <Box
         height="100vh"
-        width={{ md: '100vw', lg: '150vw' }} // Adjust width based on the custom breakpoint
+        width={{ md: '100vw', lg: '100vw' }} // Adjust width based on the custom breakpoint
         display="flex"
         margin={'auto'}
         justifyContent={'center'}

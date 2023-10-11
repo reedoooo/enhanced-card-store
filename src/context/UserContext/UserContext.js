@@ -6,10 +6,14 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['userCookie']);
   const [user, setUser] = useState(null);
+  const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
 
+  const triggerCronJob = async () => {
+    // Add your code here
+  };
   useEffect(() => {
     const { id, username } = cookies.userCookie || {};
-    console.log('USER COOKIE:', cookies.userCookie);
+    // console.log('USER COOKIE:', cookies.userCookie);
     const userID = id;
     if (userID) {
       setUser({ userID: userID, username: username });
@@ -24,7 +28,18 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, setCookie, updateUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        setCookie,
+        updateUser,
+        // eslint-disable-next-line no-empty
+        triggerCronJob,
+        isCronJobTriggered,
+        setIsCronJobTriggered,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

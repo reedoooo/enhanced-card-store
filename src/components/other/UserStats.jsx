@@ -8,7 +8,7 @@ const UserStats = () => {
   const { allDecks } = useDeckStore();
   const { allCollections } = useCollectionStore();
   const { cartData } = useCartStore();
-  console.log('allDecks', allDecks);
+  // console.log('allDecks', allDecks);
   return (
     <Box mt={3}>
       <Typography variant="h6">User Statistics</Typography>

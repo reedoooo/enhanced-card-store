@@ -1,118 +1,138 @@
 import React, { useContext, useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Drawer } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Drawer,
+  Container,
+  Menu,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../../context/Auth/authContext';
-import logo from '../../../assets/navlogo.png';
-import './header.css';
 import MenuIcon from '@mui/icons-material/Menu';
-import styled from 'styled-components';
+import { AuthContext } from '../../../context/Auth/authContext';
 import MenuItems from '../navigation/MenuItems';
-// import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-// import SimpleCart from '../../SimpleCart/index';
+import theme from '../../../assets/styles/themes';
+import logo from '../../../assets/navlogo.png';
+import { Image } from '@mui/icons-material';
 
-const HeaderWrapper = styled(AppBar)`
-  background-color: #333;
-  color: #fff;
-  padding: 1rem;
-
-  .menuIcon {
-    color: #fff;
-  }
-
-  .linkToHome {
-    color: #fff;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-  }
-
-  .navLogo {
-    height: 3em;
-    margin-left: 1em;
-  }
-`;
-
-const ToolbarWrapper = styled(Toolbar)`
-  display: flex;
-  justify-content: space-between;
-
-  @media (max-width: 768px) {
-    .desktopMenuItems {
-      display: none;
-    }
-    .mobileMenuIcon {
-      display: block; // Make sure this is here
-    }
-  }
-
-  @media (min-width: 769px) {
-    .mobileMenuIcon {
-      display: none;
-    }
-
-    .desktopMenuItems {
-      display: flex;
-    }
-  }
-`;
-
-function Header() {
+const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useContext(AuthContext);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+
+  // Adjusted the breakpoint to 'xs' to switch to Drawer for smaller screens
+  const isXsDown = useMediaQuery(theme.breakpoints.down('xs'));
 
   const handleDrawerOpen = () => setIsOpen(true);
   const handleDrawerClose = () => setIsOpen(false);
 
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const currentPage = window.location.pathname;
+  console.log('CURRENT PAGE:', currentPage);
+
   return (
-    <HeaderWrapper position="static">
-      <ToolbarWrapper>
-        <div>
-          {/* Add the IconButton here */}
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleDrawerOpen}
-            className="menuIcon mobileMenuIcon"
-          >
-            <MenuIcon />
-          </IconButton>
-          <div className="desktopLogo">
-            {/* Move the logo rendering here */}
+    <AppBar
+      position="sticky"
+      elevation={4}
+      sx={{ backgroundColor: theme.palette.primary.main, padding: '0 2em' }}
+      // maxWidth="lg"
+    >
+      <Container maxWidth="lg">
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            maxWidth: '100vw',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={isXsDown ? handleDrawerOpen : handleOpenNavMenu}
+              sx={{ color: theme.palette.text.primary }}
+            >
+              <MenuIcon />
+            </IconButton>
             <Typography variant="h6">
-              <Link to="/home" className="linkToHome">
-                <img src={logo} className="navLogo" alt="Logo" />
+              <Link
+                to="/home"
+                underline="none"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none',
+                  color: theme.palette.text.primary,
+                }}
+              >
+                <Image
+                  src={logo}
+                  alt="Logo"
+                  sx={{ height: '3em', marginLeft: '1em' }}
+                />
               </Link>
             </Typography>
-          </div>
-        </div>
-        <div>
-          <Drawer anchor="right" open={isOpen} onClose={handleDrawerClose}>
-            <div className="mobileLogo">
-              {/* Display the logo at the top of the drawer */}
-              <Typography variant="h6">
-                <Link to="/home" className="linkToHome">
-                  <img src={logo} className="navLogo" alt="Logo" />
-                </Link>
-              </Typography>
-            </div>
-            <MenuItems
-              isLoggedIn={isLoggedIn}
-              logout={logout}
-              handleDrawerClose={handleDrawerClose}
-            />
-          </Drawer>
-          <div className="desktopMenuItems">
-            <MenuItems
-              isLoggedIn={isLoggedIn}
-              logout={logout}
-              handleDrawerClose={handleDrawerClose}
-            />
-          </div>
-        </div>
-      </ToolbarWrapper>
-    </HeaderWrapper>
+          </Box>
+          <Box sx={{ flexGrow: 1 }}>
+            {isXsDown ? (
+              <Drawer anchor="right" open={isOpen} onClose={handleDrawerClose}>
+                <MenuItems
+                  isLoggedIn={isLoggedIn}
+                  logout={logout}
+                  handleDrawerClose={handleDrawerClose}
+                />
+              </Drawer>
+            ) : (
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  justifyContent: 'right',
+                  marginLeft: '30%',
+                  display: { xs: 'none', md: 'flex' },
+                }}
+              >
+                <MenuItems
+                  isLoggedIn={isLoggedIn}
+                  logout={logout}
+                  handleCloseNavMenu={handleCloseNavMenu}
+                />
+              </Box>
+            )}
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
-}
+};
 
 export default Header;
+
+{
+  /* <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+              > */
+}

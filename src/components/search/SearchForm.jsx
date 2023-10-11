@@ -3,7 +3,7 @@ import { TextField, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles((theme) => ({
   form: {
-    minWidth: '90%', // Set the min-width
+    // minWidth: '90%', // Set the min-width
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(2), // You can control the gap between the TextField and Button

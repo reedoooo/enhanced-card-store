@@ -2,21 +2,20 @@ import React from 'react';
 import styled from 'styled-components';
 
 const FooterWrapper = styled.footer`
-  background-color: #2c3e50; /* Darker blue shade */
-  color: #ecf0f1; /* Off white for better contrast */
-  padding: 1.5rem; /* Increased padding */
-  text-align: center;
-  position: fixed;
-  left: 0;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 1.5rem;
   bottom: 0;
+  margin-top: 100%;
+  text-align: center;
   width: 100%;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow for depth */
-  z-index: 1000; /* Ensure it appears above other elements if needed */
+  height: 5rem;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 
-  /* Responsive design */
   @media (min-width: 768px) {
-    padding: 2rem; /* Increase padding for larger screens */
-    text-align: left; /* Align text to the left for larger screens */
+    padding: 2rem;
+    text-align: left;
   }
 `;
 
