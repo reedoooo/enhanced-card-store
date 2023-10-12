@@ -113,7 +113,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && typeof userId === 'string') {
-      console.log('Fetching user cart');
+      // console.log('Fetching user cart');
       fetchUserCart(userId)
         .then((data) => {
           if (data && data.cart) {
@@ -228,47 +228,38 @@ export const CartProvider = ({ children }) => {
 
   const value = {
     cartData,
-    getTotalCost,
     getCardQuantity,
-    fetchUserCart,
+    cartCardQuantity: cartData.cart?.reduce(
+      (acc, card) => acc + card.quantity,
+      0
+    ),
+    cartCardCount: cartData.cart?.length,
+    cartValue: cartData.cart?.reduce(
+      (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
+      0
+    ),
     addOneToCart,
     removeOneFromCart,
     deleteFromCart,
+    getTotalCost,
+    fetchUserCart,
     createUserCart,
   };
 
   useEffect(() => {
     console.log('CART CONTEXT: ', {
-      value,
+      cartData,
+      // getTotalCost,
+      // // getCardQuantity,
+      // fetchUserCart,
+      // addOneToCart,
+      // removeOneFromCart,
+      // deleteFromCart,
+      // createUserCart,
     });
-  }, [value]);
+  }, [cartData]);
 
-  return (
-    <CartContext.Provider
-      value={{
-        cartData,
-        getCardQuantity,
-        cartCardQuantity: cartData.cart?.reduce(
-          (acc, card) => acc + card.quantity,
-          0
-        ),
-        cartCardCount: cartData.cart?.length,
-        cartValue: cartData.cart?.reduce(
-          (acc, card) =>
-            acc + card.card_prices[0].tcgplayer_price * card.quantity,
-          0
-        ),
-        addOneToCart,
-        removeOneFromCart,
-        deleteFromCart,
-        getTotalCost,
-        fetchUserCart,
-        createUserCart,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 export const useCartStore = () => {

@@ -8,7 +8,7 @@ import {
   Button,
 } from '@mui/material';
 import CardToolTip from './CardToolTip';
-import DeckCardDialog from '../dialogs/DeckCardDialog';
+// import DeckCardDialog from '../cleanUp/DeckCardDialog';
 import CardMediaSection from '../media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/placeholder.jpeg';
@@ -59,10 +59,10 @@ const GenericCard = ({ card, context, cardInfo }) => {
   }, []);
 
   useEffect(() => {
-    if (isHovering && tooltipRef.current && cardRef.current) {
-      const cardRect = cardRef.current.getBoundingClientRect();
-      tooltipRef.current.style.top = `${cardRect.top}px`;
-      tooltipRef.current.style.left = `${cardRect.right}px`;
+    if (isHovering && tooltipRef?.current && cardRef?.current) {
+      const cardRect = cardRef?.current?.getBoundingClientRect();
+      tooltipRef.current.style.top = `${cardRect?.top}px`;
+      tooltipRef.current.style.left = `${cardRect?.right}px`;
     }
   }, [isHovering]);
 
@@ -149,7 +149,7 @@ const GenericCard = ({ card, context, cardInfo }) => {
       </Typography>
       <Typography variant="body2" color="text.secondary">
         Quantity:{' '}
-        {contextProps.deckCardQuantity?.quantityOfSameId || 'Not in deck'}
+        {contextProps?.deckCardQuantity?.quantityOfSameId || 'Not in deck'}
       </Typography>
     </>
   );
@@ -167,11 +167,11 @@ const GenericCard = ({ card, context, cardInfo }) => {
           cardInfo={cardInfo}
         />
       ) : (
-        <CardMedia component="img" alt={card.name} image={imgUrl} />
+        <CardMedia component="img" alt={card?.name} image={imgUrl} />
       )}
       <CardContent>
         <Typography variant="h5" className={classes.text}>
-          {card.name}
+          {card?.name}
         </Typography>
         {context === 'Store' && (
           <StoreCardContent className={classes.content} />
@@ -231,7 +231,7 @@ const GenericCard = ({ card, context, cardInfo }) => {
         />
       )}
       {context === 'Deck' && (
-        <DeckCardDialog
+        <GenericCardModal
           isOpen={isModalOpen}
           classes={classes}
           context={context}

@@ -1,9 +1,7 @@
 import React, { useCallback } from 'react';
 import { Button, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import ChooseCollectionDialog from './ChooseCollectionDialog';
 import { useModal } from '../../../context/hooks/modal';
-import { useCollectionStore } from '../../../context/hooks/collection';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,13 +35,16 @@ const CardActionButtons = ({
   handleOpenDialog,
 }) => {
   const classes = useStyles();
-  const { addOneToCollection } = useCollectionStore();
 
   const handleAddToContext = useCallback(() => {
+    console.log(`Context is: ${context}`);
     const addMethod = contextProps[`addOneTo${context}`];
     if (typeof addMethod === 'function') {
       addMethod(card);
     } else if (context === 'Collection') {
+      console.log(
+        "Opening ChooseCollectionDialog because the context is 'Collection'"
+      );
       handleOpenDialog();
     } else {
       console.error(`Method addOneTo${context} not found in contextProps`);

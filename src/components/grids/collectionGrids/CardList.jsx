@@ -25,7 +25,7 @@ const CardList = ({ selectedCards, removeCard }) => {
   // console.log('SELECTED COLLECTION:', selectedCollection);
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const maxPages = Math.ceil(selectedCards.length / itemsPerPage);
+  const maxPages = Math.ceil(selectedCards?.length / itemsPerPage);
 
   // Handler to go to the next page
   const nextPage = () => {

@@ -3,7 +3,7 @@ import StoreIcon from '@mui/icons-material/Store';
 import CartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Login from '../../Auth/login';
 
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +23,7 @@ import DeckOfCardsIcon from '../../icons/DeckOfCardsIcon';
 // import TestingIcon from '../../icons/TestingIcon';
 import theme from '../../../assets/styles/themes';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import { useEffect, useRef } from 'react';
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiTypography-root': {
     fontSize: '1.2em',
@@ -54,9 +55,7 @@ const LogoutContainer = styled(Box)({
   cursor: 'pointer',
 });
 
-const currentPage = window.location.pathname;
-console.log('CURRENT PAGE:', currentPage);
-console.log('theme', theme);
+// console.log('theme', theme);
 
 function MenuItems({
   isLoggedIn,
@@ -64,6 +63,16 @@ function MenuItems({
   handleDrawerClose,
   handleCloseNavMenu,
 }) {
+  const location = useLocation(); // get current location
+  const previousPageRef = useRef(); // useRef to track the previous page
+
+  useEffect(() => {
+    if (location.pathname !== previousPageRef.current) {
+      // only log if the current page is different from the previously logged page
+      console.log('CURRENT PAGE:', location.pathname);
+      previousPageRef.current = location.pathname; // update ref with current page
+    }
+  }, [location.pathname]);
   return (
     <>
       <StyledMenuItem component={Link} to="/home" theme={theme}>

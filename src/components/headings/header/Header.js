@@ -37,8 +37,8 @@ const Header = () => {
     setAnchorElNav(event.currentTarget);
   };
 
-  const currentPage = window.location.pathname;
-  console.log('CURRENT PAGE:', currentPage);
+  // const currentPage = window.location.pathname;
+  // console.log('CURRENT PAGE:', currentPage);
 
   return (
     <AppBar

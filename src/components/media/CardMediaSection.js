@@ -27,7 +27,7 @@ const CardMediaSection = ({
 
   useEffect(() => {
     if (!hasLoggedCard) {
-      console.log('CARD:', card);
+      // console.log('CARD:', card);
       setHasLoggedCard(true);
     }
   }, [hasLoggedCard, card]);

@@ -58,47 +58,6 @@ const DataTextStyled = styled(Typography)({
   fontSize: '0.9rem',
 });
 
-// function convertCardToChartData(cardData, userId) {
-//   const currentDate = new Date();
-
-//   // Extracting values from the card data
-//   const cardName = cardData.name;
-//   const cardPrice = cardData.card_prices[0]?.tcgplayer_price || 0; // Assuming tcgplayer_price is the main price point
-//   const totalQuantity = cardData.quantity;
-//   const totalPrice = cardPrice * totalQuantity;
-
-//   // Constructing the data point
-//   const dataPoint = {
-//     cardName: cardName,
-//     x: currentDate, // Current date for the data point
-//     y: cardPrice, // Single card price
-//     totalQuantity: totalQuantity,
-//     totalPrice: totalPrice, // Total price for this card
-//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the data point
-//   };
-
-//   // Constructing the dataset (assuming you might have more datasets in future)
-//   const dataset = {
-//     label: cardName, // Using card name as label for the dataset
-//     totalquantity: totalQuantity,
-//     data: {
-//       points: [dataPoint], // Initial single data point for the card
-//     },
-//     // You can also define other properties like backgroundColor, borderColor etc.
-//   };
-
-//   // Constructing the entire chart data
-//   const chartData = {
-//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the chart data
-//     name: cardName, // Using card name as chart name
-//     userId: userId,
-//     datasets: [dataset], // Initial single dataset for the chart data
-//     // You can also define other properties like collectionId, chartId etc.
-//   };
-
-//   return chartData;
-// }
-
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const [formData, setFormData] = useState({
     userName: userName || '', // default to empty string if undefined
@@ -194,6 +153,7 @@ const ProfilePage = () => {
     handleSendData,
     handleSendChart,
     handleCronRequest,
+    handleRequestCronStop,
     chartDataToSend,
     handleSendAllCardsInCollections,
     listOfMonitoredCards,
@@ -263,30 +223,14 @@ const ProfilePage = () => {
     }
   };
 
-  // const handleSendCollectionData = () => {
-  //   if (userId && selectedCollection) {
-  //     handleSendData({
-  //       userId,
-  //       collectionId: selectedCollection._id,
-  //       collectionData: selectedCollection.cards,
-  //     });
-  //   }
-  // };
+  const handleStopCronJob = () => {
+    if (userId) {
+      handleRequestCronStop(userId);
+      console.log('STOPPING CRON JOB');
+    }
 
-  // const handleSendChartData = () => {
-  //   if (userId && selectedCollection) {
-  //     const datasets = selectedCollection.cards.map((card) =>
-  //       convertCardToChartData(card, userId)
-  //     );
-  //     handleSendChart({
-  //       userId,
-  //       chartId: selectedCollection.chartId, // Assuming the collection object has a chartId field
-  //       datasets,
-  //       name: selectedCollection.name,
-  //     });
-  //   }
-  // };
-  // const chartData = {};
+    openSnackbar('Cron job stopped.');
+  };
 
   return (
     <Container maxWidth="sm">
@@ -329,7 +273,13 @@ const ProfilePage = () => {
         >
           Trigger Cron Job
         </ButtonStyled>
-
+        <ButtonStyled
+          variant="contained"
+          color="secondary"
+          onClick={handleStopCronJob}
+        >
+          Stop Cron Job
+        </ButtonStyled>
         {/* <ButtonStyled
           variant="contained"
           color="primary"

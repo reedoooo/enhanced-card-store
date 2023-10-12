@@ -103,10 +103,11 @@ export const CollectionProvider = ({ children }) => {
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
   const [cookies] = useCookies(['userCookie']);
   const { triggerCronJob } = useUserContext();
-
   const [collectionData, setCollectionData] = useState(initialCollectionState);
   const [allCollections, setAllCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState({});
+  const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
+    useState(false);
   const chartData = selectedCollection?.chartData || {};
   // const datasets = chartData?.datasets || [];
   const userId = cookies.userCookie?.id;
@@ -224,6 +225,7 @@ export const CollectionProvider = ({ children }) => {
         totalQuantity: 0,
         allCardPrices: [],
         cards: [],
+        chartData: {},
       };
 
       const response = await fetchWrapper(url, 'POST', initialData);
@@ -314,6 +316,7 @@ export const CollectionProvider = ({ children }) => {
       const collectionId = selectedCollection?._id || allCollections[0]?._id;
       if (!collectionId) {
         console.error('No valid collection selected.');
+        setOpenChooseCollectionDialog(true);
         return;
       }
 
@@ -349,6 +352,8 @@ export const CollectionProvider = ({ children }) => {
 
       const updateInfo = {
         ...cardInfo,
+        name: selectedCollection?.name,
+        description: selectedCollection?.description,
         cards: updatedCards,
         userId: userId,
         totalCost: updatedPrice,
@@ -375,25 +380,53 @@ export const CollectionProvider = ({ children }) => {
       selectedCollection,
       allCollections,
       userId,
+      openChooseCollectionDialog,
       handleCardAddition,
       handleCardRemoval,
       updateCollectionData,
+      setOpenChooseCollectionDialog,
     ]
   );
 
   const updateActiveCollection = useCallback(
     async (updatedCollectionData) => {
+      let endpoint;
+      let method;
+
+      // Check if collection ID is missing or undefined.
       if (!updatedCollectionData?._id) {
-        console.error('Collection ID or Data is undefined.');
-        return;
+        console.warn(
+          'Collection ID is missing. Assuming this is a new collection.'
+        );
+        endpoint = `${BASE_API_URL}/${userId}/collections`;
+        method = 'POST';
+      } else {
+        endpoint = `${BASE_API_URL}/${userId}/collections/${updatedCollectionData._id}`;
+        method = 'PUT';
       }
-      const url = `${BASE_API_URL}/${userId}/collections/${updatedCollectionData._id}`;
+
       try {
-        const { updatedCollection } = await fetchWrapper(
-          url,
-          'PUT',
+        const response = await fetchWrapper(
+          endpoint,
+          method,
           updatedCollectionData
         );
+
+        let updatedCollection;
+        let all;
+
+        if (method === 'POST' && response.newCollection) {
+          updatedCollection = response.newCollection;
+        } else if (method === 'PUT' && response.updatedCollection) {
+          updatedCollection = response.updatedCollection;
+          console.log(
+            'UPDATED COLLECTION NOW UPDATES ALL AS WELL:',
+            (all = response.allCollections)
+          );
+        } else {
+          throw new Error('Unexpected response format');
+        }
+
         const newChartData = {
           ...updatedCollection.chartData,
           datasets: [
@@ -418,6 +451,7 @@ export const CollectionProvider = ({ children }) => {
             },
           ],
         };
+
         updatedCollection.chartData = newChartData;
         console.log('UPDATED COLLECTION FROM SERVER:', updatedCollection);
         updateCollectionData(updatedCollection, 'selectedCollection');
@@ -436,6 +470,8 @@ export const CollectionProvider = ({ children }) => {
       selectedCollection,
       collectionData,
       totalCost,
+      openChooseCollectionDialog,
+      setOpenChooseCollectionDialog,
       // FUNCTIONS
       calculateTotalPrice: () => getCardPrice(selectedCollection),
       getTotalCost: () => getTotalCost(selectedCollection),
@@ -458,6 +494,12 @@ export const CollectionProvider = ({ children }) => {
       contextValue,
     });
   }, [contextValue]);
+  useEffect(() => {
+    console.log(
+      'OPEN CHOOSE COLLECTION DIALOG UPDATED:',
+      openChooseCollectionDialog
+    );
+  }, [openChooseCollectionDialog]);
 
   useEffect(() => {
     if (selectedCollection && totalCost) {
@@ -479,4 +521,18 @@ export const CollectionProvider = ({ children }) => {
       {children}
     </CollectionContext.Provider>
   );
+};
+
+// useCollectionStore.js
+// import { useContext } from 'react';
+// import { CollectionContext } from '../CollectionContext/CollectionContext';
+
+export const useCollectionStore = () => {
+  const context = useContext(CollectionContext);
+  if (!context) {
+    throw new Error(
+      'useCollectionStore must be used within a CollectionProvider'
+    );
+  }
+  return context;
 };

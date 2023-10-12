@@ -173,6 +173,17 @@ export const CombinedProvider = ({ children }) => {
       // setAllCollections(collections);
     };
 
+    const handleError = (errorData) => {
+      console.error('Server Error:', errorData.message);
+      console.error('Error Source:', errorData.source);
+
+      // If you sent error detail from server, you can also log it
+      if (errorData.detail) {
+        console.error('Error Detail:', errorData.detail);
+      }
+      setDataFunctions.error(errorData);
+    };
+
     const handleCronJobTracker = (incomingData) => {
       console.log('Automated Message from Server:', incomingData.message);
 
@@ -190,10 +201,10 @@ export const CombinedProvider = ({ children }) => {
       setDataFunctions.cronData({ data });
     };
 
-    // const handleExistingCollectionData = (userId, selectedCollection) => {
-    //   console.log('Received existing collection data:', selectedCollection);
-    //   setDataFunctions.collectionData({ selectedCollection });
-    // };
+    const handleExistingCollectionData = (userId, selectedCollection) => {
+      console.log('Received existing collection data:', selectedCollection);
+      setDataFunctions.collectionData({ selectedCollection });
+    };
 
     const handleExistingChartData = (data) => {
       if (!data) {
@@ -203,9 +214,17 @@ export const CombinedProvider = ({ children }) => {
         );
         return;
       }
-      console.log('Received existing CHART data:', data);
+      if (Array.isArray(data?.chartData)) {
+        console.error('The provided chartData is an array, not an object!');
+        return; // Exit without saving or updating the data
+      }
+      console.log('chartData being saved:', data);
 
-      setDataFunctions.chartData(data);
+      const { chartData } = data;
+
+      // console.log('Received existing CHART data:', data);
+
+      setDataFunctions.chartData({ chartData });
     };
 
     const handleCollectionUpdated = ({ message, data }) => {
@@ -262,47 +281,20 @@ export const CombinedProvider = ({ children }) => {
       setDataFunctions.cardPrices({ allPrices });
     };
 
-    // const handleChartUpdated = ({ message, data }) => {
-    //   console.log('Message:', message);
-    //   console.log('Updated chart Data:', data);
-    //   setDataFunctions.updatedChartData(data?.data);
-    // };
-
-    // const handleNewChartCreated = ({ message, data }) => {
-    //   console.log('Message:', message);
-    //   console.log('Updated New CHart Data:', data?.data);
-    //   setDataFunctions.chartData(data?.data);
-    // };
-
-    // const handleCardStatsUpdate = (data) => {
-    //   console.log('Card stats updated:', data?.data);
-    //   setDataFunctions.cardStats(data?.data);
-    // };
-
-    // const cardStatsUpdate = (data) => {
-    //   console.log('Card stats updated:', data);
-    //   setDataFunctions.cardStatsArray(data?.data);
-    // };
-
     socket.on('MESSAGE_TO_CLIENT', handleReceive);
     socket.on('RESPONSE_EXISTING_CHART_DATA', handleExistingChartData);
     socket.on('RESPONSE_CRON_DATA', handleCronJobTracker);
-    // socket.on(
-    //   'RESPONSE_EXISTING_COLLECTION_DATA',
-    //   handleExistingCollectionData
-    // );
+    socket.on(
+      'RESPONSE_EXISTING_COLLECTION_DATA',
+      handleExistingCollectionData
+    );
     socket.on(
       'RESPONSE_CRON_UPDATED_CARDS_IN_COLLECTION',
       handleCardPricesUpdated
     );
+    socket.on('ERROR', handleError);
     socket.on('RESPONSE_CRON_UPDATED_ALLCOLLECTIONS', handleCronJobResponse);
     socket.on('COLLECTION_UPDATED', handleCollectionUpdated);
-    // socket.on('CARD_STATS_UPDATE', handleCardStatsUpdate);
-    // socket.on('CHART_UPDATED', handleChartUpdated);
-    // socket.on('ALL_DATA_ITEMS', handleAllDataItemsReceived);
-    // socket.on('updateCollection', cardStatsUpdate);
-
-    // Cleanup to avoid multiple listeners
     return () => {
       socket.off('MESSAGE_TO_CLIENT', handleReceive);
       socket.off('RESPONSE_EXISTING_CHART_DATA', handleExistingChartData);
@@ -331,7 +323,7 @@ export const CombinedProvider = ({ children }) => {
         if (!userId || !selectedCollection)
           return console.error('Missing userId or selectedCollection.');
         // socket.emit('REQUEST_EXISTING_COLLECTION_DATA', userId);
-        socket.emit('RESPONSE_EXISTING_COLLECTION_DATA', {
+        socket.emit('REQUEST_EXISTING_COLLECTION_DATA', {
           userId,
           selectedCollection: selectedCollection,
         });
@@ -343,13 +335,11 @@ export const CombinedProvider = ({ children }) => {
           return console.error(
             'Missing selectedCollection for chart data request.'
           );
-        if (selectedCollection.chartData === undefined || null || '') {
+        if (selectedCollection.chartData === undefined || null) {
           if (selectedCollection.chartData === undefined)
             console.log('chartData is undefined');
           if (selectedCollection.chartData === null)
             console.log('chartData is null');
-          if (selectedCollection.chartData === '')
-            console.log('chartData is empty');
           return console.error(
             'The selected collections chart data is missing, null or undefined.'
           );
@@ -359,11 +349,11 @@ export const CombinedProvider = ({ children }) => {
           'Attempting to retrieve chart data',
           selectedCollection?.chartData
         );
-        const chartData = selectedCollection?.chartData;
+        const chartData = selectedCollection?.chartData || {};
         socket.emit('REQUEST_EXISTING_CHART_DATA', {
           data: {
             userId,
-            chartData,
+            chartData: chartData,
           },
         });
       },
@@ -373,25 +363,10 @@ export const CombinedProvider = ({ children }) => {
         if (!message) return console.error('Message content is missing.');
         socket.emit('MESSAGE_FROM_CLIENT', { message });
       },
-      // updateCollection: () => {
-      //   if (!userId || !selectedCollection)
-      //     return console.error('Invalid data for collection update.');
-      //   socket.emit('REQUEST_UPDATE_COLLECTION', {
-      //     userId,
-      //     collectionId: selectedCollection._id,
-      //     data: selectedCollection,
-      //   });
-      // },
-      // updateChart: () => {
-      //   if (!userId || !selectedCollection)
-      //     return console.error('Missing userId or collection data.');
-      //   socket.emit('REQUEST_UPDATE_OR_CREATE_CHART', {
-      //     userId,
-      //     chartId: selectedCollection.chartId, // Assuming your collection has a chartId field
-      //     datasets: selectedCollection.datasets,
-      //     name: selectedCollection.name,
-      //   });
-      // },
+      stopCronJob: (userId) => {
+        if (!userId) return console.error('Missing userId for cron job stop.');
+        socket.emit('REQUEST_CRON_STOP', { userId });
+      },
       checkAndUpdateCardPrices: (
         userId,
         listOfMonitoredCards,
@@ -449,7 +424,7 @@ export const CombinedProvider = ({ children }) => {
 
   useEffect(() => {
     if (allCollections) {
-      console.log('allCollections', allCollections);
+      // console.log('allCollections', allCollections);
       console.log('listOfMonitoredCards', listOfMonitoredCards);
 
       if (
@@ -491,18 +466,11 @@ export const CombinedProvider = ({ children }) => {
       handleSend: handleSocketInteraction.sendAction.message,
       handleRequestCollectionData:
         handleSocketInteraction.requestData.collection,
-      // handleRequestChartDataFunction: handleSocketInteraction.requestData.chart, // Ensure it's provided here
       handleRequestChartData: handleSocketInteraction.requestData.chart, // Assuming this is the correct mapping
       handleSendAllCardsInCollections:
         handleSocketInteraction.sendAction.checkAndUpdateCardPrices, // Ensure it's provided here
+      handleRequestCronStop: handleSocketInteraction.sendAction.stopCronJob, // Ensure it's provided here
       handleRetreiveListOfMonitoredCards: retrieveListOfMonitoredCards,
-      // handleSendCollectionData:
-      //   handleSocketInteraction.sendAction.updateCollection, // Ensure it's provided here
-      // handleSendChartData: handleSocketInteraction.sendAction.updateChart, // Ensure it's provided here
-
-      // handleRequestData: handleSocketInteraction.requestData.collection, // Assuming this is the correct mapping
-      // handleSendData: handleSocketInteraction.sendAction.updateCollection,
-      // handleSendChart: handleSocketInteraction.sendAction.updateChart,
       handleSocketInteraction,
       setDataFunctions,
       socket,
@@ -523,6 +491,7 @@ export const CombinedProvider = ({ children }) => {
     cardPrices: value.cardPrices,
     retrievedListOfMonitoredCards: value.retrievedListOfMonitoredCards,
     listOfMonitoredCards: value.listOfMonitoredCards,
+    error: value.error,
     // isLoading: value.isLoading,
     // cronTriggerTimestamps: value.cronTriggerTimestamps,
     // error: value.error,
@@ -533,7 +502,7 @@ export const CombinedProvider = ({ children }) => {
 
   useEffect(() => {
     console.log('COMBINED CONTEXT VALUE:', dataValues);
-  }, [dataValues]);
+  }, [dataValues.cronData, dataValues.chartData, dataValues.collectionData]);
 
   return (
     <CombinedContext.Provider value={value}>
