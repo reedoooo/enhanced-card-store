@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import React, {
   createContext,
   useState,
@@ -20,7 +22,27 @@ import { useCombinedContext } from '../CombinedProvider.jsx';
 import { useUserContext } from '../UserContext/UserContext.js';
 import moment from 'moment';
 // import { useUserContext } from '../UserContext/UserContext.js';
-export const CollectionContext = createContext(null);
+// 1. Define a default context value
+const defaultContextValue = {
+  allCollections: [],
+  selectedCollection: {},
+  collectionData: initialCollectionState,
+  totalCost: 0,
+  openChooseCollectionDialog: false,
+  setOpenChooseCollectionDialog: () => {},
+  calculateTotalPrice: () => {},
+  getTotalCost: () => {},
+  createUserCollection: () => {},
+  removeCollection: () => {},
+  fetchAllCollectionsForUser: () => {},
+  setSelectedCollection: () => {},
+  setAllCollections: () => {},
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+};
+
+// 2. Replace null with the default value when creating the context
+export const CollectionContext = createContext(defaultContextValue);
 const filterOutDuplicateYValues = (datasets) => {
   console.log('DATASETS:', datasets);
   const seenYValues = new Set();
@@ -228,6 +250,10 @@ export const CollectionProvider = ({ children }) => {
         chartData: {},
       };
 
+      const paylaod = {
+        ...initialData,
+      };
+      console.log('PAYLOAD:', paylaod);
       const response = await fetchWrapper(url, 'POST', initialData);
       if (response.error) {
         console.error('Failed to create a new collection:', response.error);
@@ -235,7 +261,10 @@ export const CollectionProvider = ({ children }) => {
       }
 
       const { savedCollection } = response;
-
+      if (!savedCollection._id) {
+        // Check if savedCollection has _id
+        throw new Error('Response does not contain saved collection with _id');
+      }
       console.log('SAVED COLLECTION:', savedCollection);
       // Uncomment the lines below and provide the correct function implementation if necessary
       updateCollectionData(savedCollection, 'allCollections');
@@ -372,6 +401,10 @@ export const CollectionProvider = ({ children }) => {
       };
 
       const updatedCollection = { ...selectedCollection, ...updateInfo };
+      console.log(
+        'UPDATED COLLECTION DATA PRIOR TO SERVER UPDATE:',
+        updatedCollection
+      );
       await updateActiveCollection(updatedCollection);
       updateCollectionData(updatedCollection, 'selectedCollection');
       updateCollectionData(updatedCollection, 'allCollections');
@@ -413,16 +446,15 @@ export const CollectionProvider = ({ children }) => {
         );
 
         let updatedCollection;
-        let all;
 
-        if (method === 'POST' && response.newCollection) {
-          updatedCollection = response.newCollection;
-        } else if (method === 'PUT' && response.updatedCollection) {
-          updatedCollection = response.updatedCollection;
-          console.log(
-            'UPDATED COLLECTION NOW UPDATES ALL AS WELL:',
-            (all = response.allCollections)
-          );
+        // Check if it is a POST method and the response contains 'savedCollection'
+        if (method === 'POST' && response.data?.newCollection) {
+          updatedCollection = response.data.newCollection;
+        }
+        // Check if it is a PUT method and the response contains 'data' and 'updatedCollection'
+        else if (method === 'PUT' && response.data?.updatedCollection) {
+          console.log('RESPONSE REGARDING UPDATE:', response.data.message);
+          updatedCollection = response.data.updatedCollection;
         } else {
           throw new Error('Unexpected response format');
         }

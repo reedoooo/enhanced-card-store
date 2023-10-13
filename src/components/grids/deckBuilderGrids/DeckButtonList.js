@@ -6,7 +6,7 @@ import { DeckContext } from '../../../context/DeckContext/DeckContext';
 
 const useDeckButtonListStyles = makeStyles((theme) => ({
   grid: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme?.spacing(2),
   },
   deckButton: {
     width: '100%',
@@ -16,15 +16,15 @@ const useDeckButtonListStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
-    margin: theme.spacing(1),
-    [theme.breakpoints.down('xs')]: {
+    margin: theme?.spacing(1),
+    [theme?.breakpoints.down('xs')]: {
       fontSize: '0.7rem',
       padding: '5px 8px',
     },
-    [theme.breakpoints.up('sm')]: {
+    [theme?.breakpoints.up('sm')]: {
       fontSize: '0.8rem',
     },
-    [theme.breakpoints.up('md')]: {
+    [theme?.breakpoints.up('md')]: {
       fontSize: '1rem',
     },
   },
@@ -38,13 +38,13 @@ const useDeckButtonListStyles = makeStyles((theme) => ({
 }));
 const useStyles = makeStyles((theme) => ({
   root: {
-    [theme.breakpoints.up('md')]: {
+    [theme?.breakpoints.up('md')]: {
       backgroundColor: 'blue',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme?.breakpoints.down('sm')]: {
       backgroundColor: 'red',
     },
-    [theme.breakpoints.between('sm', 'md')]: {
+    [theme?.breakpoints.between('sm', 'md')]: {
       backgroundColor: 'green',
     },
   },
@@ -57,7 +57,7 @@ const DeckButtonList = ({ userDecks, handleSelectDeck }) => {
   // console.log('userDecks', userDecks);
   return (
     <Grid container spacing={1} className={classes.grid}>
-      {userDecks.map((deck) => (
+      {userDecks?.map((deck) => (
         <Grid item xs={3} sm={2} key={deck?._id}>
           <Button
             variant="outlined"

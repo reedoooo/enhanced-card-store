@@ -41,6 +41,7 @@ export const CardProvider = ({ children }) => {
             return false;
           } else {
             ids.add(card.id);
+            // ids.add(card.cardId);
             return true;
           }
         });

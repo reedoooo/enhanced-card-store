@@ -120,31 +120,46 @@ export const CombinedProvider = ({ children }) => {
   // ----------- XXX -----------
 
   const listOfMonitoredCards = useMemo(() => {
-    const cards = allCollections.flatMap((collection) => collection.cards);
-    const uniqueCards = Array.from(new Set(cards.map((card) => card.id))).map(
-      (id) => cards.find((card) => card.id === id)
+    const cards = allCollections?.flatMap((collection) => collection?.cards);
+    console.log('cards', cards);
+    if (!cards) return [];
+    const uniqueCards = Array.from(new Set(cards.map((card) => card?.id))).map(
+      (id) => cards?.find((card) => card?.id === id)
     );
+    let updatedPrices = null;
+    if (state.cardPrices?.updatedPrices) {
+      updatedPrices = state.cardPrices?.updatedPrices;
+    }
 
-    return uniqueCards.map((card) => ({
-      name: card.name,
-      id: card.id,
-      previousPrice: card.card_prices[0]?.tcgplayer_price,
-      updatedPrice: card.card_prices[0]?.tcgplayer_price, // Initialize with the current price
-    }));
+    if (uniqueCards && uniqueCards.length) {
+      return uniqueCards?.map((card) => ({
+        name: card?.name,
+        id: card?.id,
+        previousPrice: card?.price,
+        updatedPrice: updatedPrices?.[card?.id] || card?.price,
+      }));
+    }
   }, [allCollections]);
 
   const retrieveListOfMonitoredCards = useCallback(() => {
-    const cards = allCollections.flatMap((collection) => collection.cards);
-    const uniqueCards = Array.from(new Set(cards.map((card) => card.id))).map(
-      (id) => cards.find((card) => card.id === id)
+    const cards = allCollections?.flatMap((collection) => collection?.cards);
+    console.log('cards', cards);
+    const uniqueCards = Array.from(new Set(cards.map((card) => card?.id))).map(
+      (id) => cards.find((card) => card?.id === id)
     );
+    let updatedPrices = null;
+    if (state.cardPrices?.updatedPrices) {
+      updatedPrices = state.cardPrices?.updatedPrices;
+    }
 
-    return uniqueCards.map((card) => ({
-      name: card.name,
-      id: card.id,
-      previousPrice: card.card_prices[0]?.tcgplayer_price,
-      updatedPrice: card.card_prices[0]?.tcgplayer_price, // Initialize with the current price
-    }));
+    if (uniqueCards && uniqueCards.length) {
+      return uniqueCards?.map((card) => ({
+        name: card?.name,
+        id: card?.id,
+        previousPrice: card?.price,
+        updatedPrice: updatedPrices?.[card?.id] || card?.price,
+      }));
+    }
   }, [allCollections]);
 
   // ----------- SOCKET EVENT HANDLERS -----------

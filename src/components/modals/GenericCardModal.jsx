@@ -77,31 +77,6 @@ const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
     return null;
   }
 
-  const {
-    // allCollections,
-    selectedCollection,
-    collectionData,
-    totalCost,
-    // openChooseCollectionDialog,
-    // setOpenChooseCollectionDialog,
-    calculateTotalPrice,
-    getTotalCost,
-    createUserCollection,
-    removeCollection,
-    fetchAllCollectionsForUser,
-    // setSelectedCollection,
-    setAllCollections,
-    addOneToCollection,
-    removeOneFromCollection,
-  } = collectionContext;
-
-  const {
-    allCollections,
-    setSelectedCollection,
-    openChooseCollectionDialog,
-    setOpenChooseCollectionDialog,
-  } = useCollectionStore();
-
   const contextProps =
     {
       Deck: deckContext,
@@ -110,6 +85,13 @@ const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
       Collection: collectionContext,
     }[context] || {};
 
+  const {
+    openChooseCollectionDialog,
+    setOpenChooseCollectionDialog,
+    allCollections,
+    fetchAllCollectionsForUser,
+    setSelectedCollection,
+  } = contextProps;
   const handleSelectCollection = useCallback(
     (collectionId) => {
       const foundCollection = allCollections.find(
@@ -181,7 +163,9 @@ const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
                 context={'Collection'}
                 component={'GenericCardModal'}
                 label={'In Collection'}
-                productQuantity={contextProps.productQuantity}
+                productQuantity={
+                  contextProps.productQuantity || contextProps.totalQuantity
+                }
               />
               <button onClick={() => setOpenChooseCollectionDialog(true)}>
                 Open Dialog
