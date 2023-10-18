@@ -17,7 +17,14 @@ const useStyles = makeStyles({
   },
 });
 
-const GenericActionButtons = ({ card, context, component }) => {
+const GenericActionButtons = ({
+  card,
+  context,
+  open,
+  component,
+  closeModal,
+  // handleOpenDialog,
+}) => {
   const classes = useStyles();
 
   const collectionContext = useContext(CollectionContext);
@@ -26,24 +33,6 @@ const GenericActionButtons = ({ card, context, component }) => {
     console.error("The component isn't wrapped with CollectionProvider");
     return null;
   }
-
-  const {
-    allCollections,
-    selectedCollection,
-    collectionData,
-    totalCost,
-    openChooseCollectionDialog,
-    setOpenChooseCollectionDialog,
-    calculateTotalPrice,
-    getTotalCost,
-    createUserCollection,
-    removeCollection,
-    fetchAllCollectionsForUser,
-    setSelectedCollection,
-    setAllCollections,
-    addOneToCollection,
-    removeOneFromCollection,
-  } = collectionContext;
 
   const contexts = {
     Deck: useContext(DeckContext),
@@ -70,12 +59,14 @@ const GenericActionButtons = ({ card, context, component }) => {
         card={card}
         context={context}
         contextProps={contextProps}
+        // handleOpenDialog={handleOpenDialog}
         handleOpenDialog={toggleDialog(setOpenDialog)}
       />
       {context in contexts && (
         <GenericCardModal
-          isOpen={openDialog}
-          onClose={toggleDialog(setOpenDialog)}
+          open={open}
+          onClose={closeModal}
+          handleCloseDialog={toggleDialog(setOpenDialog)}
           context={context}
           card={card}
         />

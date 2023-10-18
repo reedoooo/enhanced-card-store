@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Container from '@mui/material/Container';
+import { Alert, AlertTitle } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,7 +34,10 @@ const ErrorIndicator = ({ error }) => {
       <Paper elevation={3} className={classes.paper}>
         <Typography variant="h6" className={classes.typography}>
           <ErrorOutlineIcon className={classes.icon} />
-          Error: {error}
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            This is an error alert — <strong> Error: {error}</strong>
+          </Alert>
         </Typography>
       </Paper>
     </Container>

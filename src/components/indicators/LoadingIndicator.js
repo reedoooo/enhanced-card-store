@@ -1,18 +1,12 @@
-import React from 'react';
-import { BeatLoader } from 'react-spinners';
+import * as React from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const LoadingIndicator = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <BeatLoader color={'#123abc'} loading={true} size={24} />
-    </div>
+    <Box sx={{ display: 'flex' }}>
+      <CircularProgress />
+    </Box>
   );
 };
 

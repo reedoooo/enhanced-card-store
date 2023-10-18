@@ -8,17 +8,21 @@ export const AuthContext = React.createContext();
 export default function AuthProvider(props) {
   const [cookies, setCookie, removeCookie] = useCookies(['auth', 'userCookie']);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({ capabilities: [] });
+  const [isloggedin, setIsloggedin] = useState(false);
+  const [user, setUser] = useState({ capabilities: ['admin'] });
   const [error, setError] = useState(null);
   const [token, setToken] = useState(undefined);
 
   const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
   const setLoginState = (loggedIn, token, user, error = null) => {
-    setCookie('auth', token, { secure: true, sameSite: 'strict' });
+    setCookie('auth', token, {
+      secure: true,
+      sameSite: 'strict',
+      capabilities: user.capabilities || ['admin'],
+    });
     setCookie('userCookie', user, { secure: true, sameSite: 'strict' });
-    setIsLoggedIn(loggedIn);
+    setIsloggedin(loggedIn); // Updated here
     setToken(token);
     setUser(user);
     setError(error);
@@ -46,7 +50,11 @@ export default function AuthProvider(props) {
           }
         );
         if (response.status === 200) {
-          setUser((prevUser) => ({ ...prevUser, ...response.data }));
+          setUser((prevUser) => ({
+            ...prevUser,
+            ...response.data,
+            ...user.capabilities,
+          }));
         }
       } catch (e) {
         setError('Token validation failed');
@@ -112,7 +120,7 @@ export default function AuthProvider(props) {
   const logout = () => {
     removeCookie('auth');
     removeCookie('userCookie');
-    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('isloggedin');
     setLoginState(false, null, {});
   };
 
@@ -126,7 +134,7 @@ export default function AuthProvider(props) {
     <AuthContext.Provider
       value={{
         isLoading,
-        isLoggedIn,
+        isloggedin,
         can,
         login,
         logout,

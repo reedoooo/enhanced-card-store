@@ -6,251 +6,214 @@ import {
   CardMedia,
   Typography,
   Button,
+  Popover,
+  Grid,
+  ButtonGroup,
 } from '@mui/material';
-import CardToolTip from './CardToolTip';
-// import DeckCardDialog from '../cleanUp/DeckCardDialog';
 import CardMediaSection from '../media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
-import placeholderImage from '../../assets/placeholder.jpeg';
-import { CartContext } from '../../context/CartContext/CartContext';
+import placeholderImage from '../../assets/images/placeholder.jpeg';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import {
-  mergeStyles,
-  commonStyles,
-  deckCardStyles,
-  productCardStyles,
-} from './cardStyles';
-// import CardModal from '../modals/cardModal/CardModal';
+import { CartContext } from '../../context/CartContext/CartContext';
 import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
-import GenericCardModal from '../modals/GenericCardModal';
+import { makeStyles } from '@mui/styles';
 
-const GenericCard = ({ card, context, cardInfo }) => {
-  const deckContext = useContext(DeckContext);
-  const cartContext = useContext(CartContext);
-  const collectionContext = useContext(CollectionContext);
-
-  const [buttonVariant, setButtonVariant] = useState('contained');
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isHovering, setHovering] = useState(false);
-  const tooltipRef = useRef(null);
-  const cardRef = useRef(null);
-  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
-
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-
-  const buttonStyles = {
-    maxWidth: '200px',
+const useStyles = makeStyles((theme) => ({
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    maxHeight: '300px', // or any desired max height
+    minHeight: '300px', // make sure it matches max height
+    overflow: 'hidden', // ensures content doesn't spill out
+    borderRadius: theme.spacing(1), // Add border radius for cards
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Add shadow for cards
+    transition: 'transform 0.2s',
+    '&:hover': {
+      transform: 'scale(1.03)', // Add a slight scale effect on hover
+    },
+  },
+  image: {
+    maxHeight: '200px',
+    width: '100%',
+    objectFit: 'cover', // Ensure the image covers the entire space
+  },
+  text: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  button: {
+    // maxWidth: '200px',
     minHeight: '40px',
     maxHeight: '60px',
     width: '100%',
+  },
+  content: {
+    transform: 'scale(0.9)', // scales down to 90% of the original size
+    padding: 0,
+  },
+  cardActions: {
+    marginTop: 'auto', // pushes the actions to the bottom
+    display: 'flex',
+    justifyContent: 'center', // centers the buttons
+    width: '100%',
+  },
+}));
+
+const GenericCard = ({
+  card,
+  context,
+  cardInfo,
+  cardRef,
+  setHoveredCard,
+  hoveredCard,
+  setIsPopoverOpen,
+  isPopoverOpen,
+  // anchorEl,
+  // handlePopoverOpen,
+  // handlePopoverClose,
+  // open,
+}) => {
+  const deckContext = useContext(DeckContext);
+  const cartContext = useContext(CartContext);
+  const collectionContext = useContext(CollectionContext);
+  const contextProps =
+    {
+      Deck: deckContext,
+      Cart: cartContext,
+      Collection: collectionContext,
+    }[context] || {};
+  // const tooltipRef = useRef(null);
+  // const cardRef = useRef(null);
+
+  const [buttonVariant, setButtonVariant] = useState('contained');
+  const [isModalOpen, setModalOpen] = useState(false);
+  // const [anchorEl, setAnchorEl] = useState(null);
+  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
+  const open = Boolean(hoveredCard === card);
+
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+  const openProductModal = openModal;
+  // const handlePopoverOpen = () => {
+  //   setHoveredCard(card);
+  // };
+
+  // const handlePopoverClose = () => {
+  //   setHoveredCard(null);
+  // };
+
+  const classes = useStyles();
+  const handleCardHover = (cardData) => {
+    setHoveredCard(cardData);
+    setIsPopoverOpen(true); // or based on other logic you might have
   };
 
-  const handleResize = () => {
-    setButtonVariant(window.innerWidth < 768 ? 'outlined' : 'contained');
+  const CardContentByContext = ({ context }) => {
+    const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price}`;
+    return (
+      <>
+        <Typography variant="body3" color="text.secondary" noWrap>
+          {price}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" noWrap>
+          {/* Quantity: {contextProps?.deckCardQuantity?.quantityOfSameId || `Not in ${context?.toLowerCase()}`} */}
+        </Typography>
+      </>
+    );
   };
-
-  useEffect(() => {
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isHovering && tooltipRef?.current && cardRef?.current) {
-      const cardRect = cardRef?.current?.getBoundingClientRect();
-      tooltipRef.current.style.top = `${cardRect?.top}px`;
-      tooltipRef.current.style.left = `${cardRect?.right}px`;
-    }
-  }, [isHovering]);
-
-  const styles = {
-    Deck: deckCardStyles(),
-    Store: productCardStyles(),
-    Cart: productCardStyles(),
-    Collection: productCardStyles(),
-  };
-
-  const classes = mergeStyles(commonStyles(), styles[context] || {});
-
-  const openProductModal = () => openModal();
-  const getContextSpecificProps = (context, contextContext) => {
-    const contextProps = {
-      deckCardQuantity: 0,
-      addOne: () => console.log(`addOneTo${context}`),
-      removeOne: () => console.log(`removeOneFrom${context}`),
-      removeAll: () => console.log(`removeAllFrom${context}`),
-    };
-
-    if (contextContext) {
-      contextProps.deckCardQuantity = contextContext.getCardQuantity(card.id);
-      contextProps.addOne =
-        contextContext.addOneToDeck ||
-        contextContext.addOneToCart ||
-        contextContext.addOneToCollection;
-      contextProps.removeOne =
-        contextContext.removeOneFromDeck ||
-        contextContext.removeOneFromCart ||
-        contextContext.removeOneFromCollection;
-      contextProps.removeAll = contextContext.removeAllFromCollection;
-    }
-
-    return contextProps;
-  };
-
-  const contextMapping = {
-    Deck: deckContext,
-    Cart: cartContext,
-    Collection: collectionContext,
-  };
-
-  const contextContext = contextMapping[context];
-
-  const contextProps = getContextSpecificProps(context, contextContext);
-
-  const StoreCardContent = () => (
-    <>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        className={classes.content}
-      >
-        Price: {card?.card_prices?.[0]?.tcgplayer_price}
-      </Typography>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        className={classes.content}
-      >
-        Quantity:{' '}
-        {contextProps.deckCardQuantity?.quantityOfSameId || 'Not in cart'}
-      </Typography>
-    </>
-  );
-
-  const CartCardContent = () => (
-    <>
-      <Typography variant="body2" color="text.secondary">
-        Price: {card?.card_prices?.[0]?.tcgplayer_price}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Quantity:{' '}
-        {contextProps.deckCardQuantity?.quantityOfSameId || 'Not in cart'}
-      </Typography>
-    </>
-  );
-
-  const DeckCardContent = () => (
-    <>
-      <Typography variant="body2" color="text.secondary">
-        Price: {card?.card_prices?.[0]?.tcgplayer_price}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Quantity:{' '}
-        {contextProps?.deckCardQuantity?.quantityOfSameId || 'Not in deck'}
-      </Typography>
-    </>
-  );
-
+  // console.log('cardRef:', cardRef.current);
+  // console.log('anchorEl:', anchorEl);
+  // console.log('open:', open);
+  // console.log('handlePopoverClose:', handlePopoverClose);
+  // console.log('handlePopoverOpen:', handlePopoverOpen);
   return (
-    <Card ref={cardRef} className={classes.card ? classes.card.toString() : ''}>
+    <Card
+      className={classes.card}
+      // aria-owns={open ? 'mouse-over-popover' : undefined}
+      // aria-haspopup="true"
+      // onMouseEnter={handlePopoverOpen}
+      // onMouseLeave={handlePopoverClose}
+    >
       {context === 'Deck' ? (
         <CardMediaSection
           imgUrl={imgUrl}
-          className={classes.media}
-          openModal={openModal}
-          setHovering={setHovering}
-          cardRef={cardRef}
           card={card}
-          cardInfo={cardInfo}
+          onCardHover={handleCardHover}
+          cardData={hoveredCard}
+          openModal={openModal}
+          closeModal={closeModal}
+          setIsPopoverOpen={setIsPopoverOpen}
+          isPopoverOpen={isPopoverOpen}
+          cardRef={cardRef}
+          // hoveredCard={hoveredCard}
+          setHoveredCard={setHoveredCard}
+          modalIsOpen={isModalOpen}
+          // anchorEl={anchorEl}
         />
       ) : (
-        <CardMedia component="img" alt={card?.name} image={imgUrl} />
+        <CardMedia
+          component="img"
+          alt={card?.name}
+          // cardRef={ref}
+          image={imgUrl}
+          className={classes.image}
+        />
       )}
-      <CardContent>
-        <Typography variant="h5" className={classes.text}>
-          {card?.name}
-        </Typography>
-        {context === 'Store' && (
-          <StoreCardContent className={classes.content} />
-        )}
-        {context === 'Cart' && <CartCardContent className={classes.content} />}
-        {context === 'Deck' && <DeckCardContent className={classes.content} />}
-      </CardContent>
-      <CardActions>
-        {context === 'Store' || context === 'Cart' ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              height: '100%',
-              width: '100%',
-            }}
-          >
-            <div style={{ flex: 1 }}>
+      <Grid item xs zeroMinWidth>
+        <CardContent className={classes.content}>
+          <Typography variant="h6">{card?.name}</Typography>
+          <CardContentByContext context={context} />
+        </CardContent>
+        <CardActions className={classes.cardActions}>
+          {context === 'Store' || context === 'Cart' ? (
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <GenericActionButtons
                 card={card}
                 context={context}
-                contextProps={contextProps}
-                handleOpenDialog={openProductModal}
+                // handleOpenDialog={openModal}
+                open={openModal}
                 variant={buttonVariant}
-                style={buttonStyles}
               />
-            </div>
-            <div style={{ flex: 1 }}>
               <Button
                 variant={buttonVariant}
                 color="primary"
                 onClick={openProductModal}
-                style={buttonStyles}
+                className={classes.button}
               >
                 View Details
               </Button>
             </div>
-          </div>
-        ) : (
-          <GenericActionButtons
-            card={card}
-            context={context}
-            contextProps={contextProps}
-            variant={buttonVariant}
-            style={buttonStyles}
-          />
-        )}
-      </CardActions>
-      {context === 'Deck' && isHovering && (
-        <CardToolTip
-          cardInfo={cardInfo}
-          isHovering={isHovering}
-          context={context}
-          classes={classes}
-          isModalOpen={isModalOpen}
-          tooltipRef={tooltipRef}
-        />
-      )}
-      {context === 'Deck' && (
-        <GenericCardModal
-          isOpen={isModalOpen}
-          classes={classes}
-          context={context}
-          onClose={closeModal}
-          card={card}
-          cardInfo={cardInfo}
-        />
-      )}
-      {(context === 'Store' || context === 'Cart') && (
-        <GenericCardModal
-          isOpen={isModalOpen}
-          classes={classes}
-          contextProps={contextProps}
-          context={context}
-          onClose={closeModal}
-          card={card}
-          cardInfo={cardInfo}
-        />
-      )}
+          ) : (
+            <ButtonGroup
+              variant="contained"
+              aria-label="outlined primary button group"
+              // fullWidth={true}//
+              display="flex"
+              maxWidth="110px"
+              margin="0"
+              padding="0"
+              left="0"
+            >
+              {/* <GenericActionButtons
+                card={card}
+                open={isModalOpen}
+                closeModal={closeModal}
+                context={context}
+                variant={buttonVariant}
+              /> */}
+              <GenericActionButtons
+                card={card}
+                open={isModalOpen}
+                closeModal={closeModal}
+                context={'Collection'}
+                variant={buttonVariant}
+              />
+            </ButtonGroup>
+          )}
+        </CardActions>
+      </Grid>
     </Card>
   );
 };

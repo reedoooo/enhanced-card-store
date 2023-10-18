@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, Paper } from '@mui/material';
-import CardList from '../components/grids/collectionGrids/CardList';
+import PortfolioChart from '../components/other/PortfolioChart'; // Assuming the import path based on your previous code
 
-const PortfolioListContainer = ({ selectedCards, removeCard }) => {
+const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
   return (
     <Grid item xs={12} sx={{ height: '100%', width: '100%' }}>
       <Paper
@@ -17,10 +17,10 @@ const PortfolioListContainer = ({ selectedCards, removeCard }) => {
           boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
         }}
       >
-        <CardList selectedCards={selectedCards} removeCard={removeCard} />
+        <PortfolioChart selectedCards={selectedCards} removeCard={removeCard} />
       </Paper>
     </Grid>
   );
 };
 
-export default PortfolioListContainer;
+export default PortfolioChartContainer;

@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
+const GenericCardModal = ({ open, onClose, card, cardInfo, context }) => {
   const classes = useStyles();
   const deckContext = useContext(DeckContext);
   const cartContext = useContext(CartContext);
@@ -119,17 +119,17 @@ const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
     }
   };
 
-  console.log('openChooseCollectionDialog', openChooseCollectionDialog);
+  // console.log('openChooseCollectionDialog', openChooseCollectionDialog);
 
   useEffect(() => {
-    if (openChooseCollectionDialog) {
+    if (openChooseCollectionDialog === true) {
       console.log('Fetching collections...', openChooseCollectionDialog);
       fetchAllCollectionsForUser();
     }
-  });
-
+  }, [openChooseCollectionDialog]);
+  console.log('open --------> ', open);
   return (
-    <Dialog open={isOpen} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <Grid container spacing={2}>
@@ -176,7 +176,7 @@ const GenericCardModal = ({ isOpen, onClose, card, cardInfo, context }) => {
       )}
       {openChooseCollectionDialog && (
         <Dialog
-          open={openChooseCollectionDialog}
+          open={open}
           onClose={() => setOpenChooseCollectionDialog(false)}
         >
           <DialogTitle>Select a Collection</DialogTitle>

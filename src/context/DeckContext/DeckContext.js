@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, {
   createContext,
   useState,
@@ -8,8 +9,18 @@ import React, {
 import { useCookies } from 'react-cookie';
 import { useCardStore } from '../CardContext/CardStore';
 
-export const DeckContext = createContext(null);
-
+export const DeckContext = createContext({
+  deckData: {}, // Provide default values for context properties
+  allDecks: [],
+  selectedDeck: {},
+  setSelectedDeck: () => {},
+  addOneToDeck: () => {},
+  removeOneFromDeck: () => {},
+  getTotalCost: () => 0,
+  getCardQuantity: () => 0,
+  updateAndSyncDeck: () => {},
+  fetchAllDecksForUser: () => {},
+});
 const apiBase = `${process.env.REACT_APP_SERVER}/api`;
 
 const fetchWrapper = async (url, method, body = null) => {
@@ -217,18 +228,26 @@ export const DeckProvider = ({ children }) => {
     }
   };
 
+  const getQuantity = (cardId) => {
+    const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
+    return foundCard?.quantity || 0;
+  };
+
   const contextValue = {
     deckData,
     allDecks,
     selectedDeck,
+    totalQuantity: getQuantity,
     setSelectedDeck,
     addOneToDeck: (card) => addOrRemoveCard(card, true, false),
     removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),
     getTotalCost: () =>
       selectedDeck?.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) ||
       0,
-    getCardQuantity: (cardId) =>
-      selectedDeck?.cards?.find((item) => item.id === cardId)?.quantity || 0,
+    getCardQuantity: (cardId) => {
+      const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
+      return foundCard?.quantity || 0;
+    },
     updateAndSyncDeck,
     fetchAllDecksForUser: fetchAndSetDecks,
   };

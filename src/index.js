@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './assets/styles/index.css';
 import App from './App';
-import GlobalStyles from './GlobalStyles';
+import GlobalStyles from './assets/GlobalStyles';
 import AuthProvider from './context/Auth/authContext';
 import { CartProvider } from './context/CartContext/CartContext';
 import { DeckProvider } from './context/DeckContext/DeckContext';
@@ -17,6 +17,8 @@ import { ColorModeProvider } from './context/ColorModeProvider';
 // import { ApiServiceProvider } from './context/cleanUp/ApiServiceProvider';
 import ErrorBoundary from './context/ErrorBoundary';
 import { SocketProvider } from './context/SocketProvider';
+import { SidebarProvider } from './context/SideBarProvider';
+import { ChartProvider } from './context/ChartContext/ChartContext';
 
 const root = document.getElementById('root');
 
@@ -38,7 +40,11 @@ function Main() {
                         <CartProvider>
                           <GlobalStyles />
                           <ThemeProvider theme={theme}>
-                            <App />
+                            <ChartProvider>
+                              <SidebarProvider>
+                                <App />
+                              </SidebarProvider>
+                            </ChartProvider>
                           </ThemeProvider>
                         </CartProvider>
                       </DeckProvider>

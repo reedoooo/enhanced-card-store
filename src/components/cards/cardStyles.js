@@ -1,17 +1,27 @@
 import { makeStyles } from '@mui/styles';
 
-export const commonStyles = makeStyles({
-  // Existing styles
+export const commonStyles = makeStyles((theme) => ({
   card: {
     display: 'flex',
     flexDirection: 'column',
     margin: '16px',
+    // Enhanced responsiveness:
+    // Use percentage widths and media queries to better adjust card size on various screens
+    width: '100%',
+    [theme?.breakpoints?.up('sm')]: {
+      width: '80%',
+    },
+    [theme?.breakpoints?.up('md')]: {
+      width: '60%',
+    },
   },
   media: {
-    flex: 0.75,
+    flex: 1,
+    objectFit: 'cover',
   },
   content: {
-    flex: 0.25,
+    flex: 1,
+    overflow: 'auto',
   },
   button: {
     margin: '4px',
@@ -22,7 +32,6 @@ export const commonStyles = makeStyles({
     margin: '8px 0',
     borderRadius: '8px',
   },
-  // New tooltip styles
   tooltip: {
     display: 'none',
     position: 'absolute',
@@ -58,21 +67,17 @@ export const commonStyles = makeStyles({
       textAlign: 'center',
     },
   },
-});
+}));
 
 export const deckCardStyles = makeStyles({
   card: {
-    position: 'relative', // Add this
-    display: 'flex',
-    flexDirection: 'column',
+    position: 'relative',
+    maxHeight: 100,
     height: '100%',
     width: '100%',
-    flexGrow: 1,
   },
   content: {
-    flex: '1 1 auto',
     overflow: 'hidden',
-    // padding: theme.spacing(1),
   },
   media: {
     width: '100%',
@@ -95,6 +100,9 @@ export const productCardStyles = makeStyles({
     margin: '0 8px',
     padding: '10px',
     fontSize: '20px',
+    '@media(max-width: 600px)': {
+      fontSize: '16px',
+    },
   },
   actionButtons: {
     padding: '10px',
@@ -105,18 +113,16 @@ export const productCardStyles = makeStyles({
 
 // Function to merge common and specific styles
 export const mergeStyles = (common, specific) => {
-  return {
+  const mergedStyles = {
     ...common,
     ...specific,
+  };
+
+  // Convert the merged styles into valid class names
+  const classNames = {
     card: {
       ...common.card,
       ...specific.card,
-      //   width: '100%', // <- Set width to 100% of parent container
-      //   '@media (min-width:600px)': {
-      //     // <- Media query example
-      //     width: '80%',
-      //   },
-      // },
     },
     media: {
       ...common.media,
@@ -135,4 +141,8 @@ export const mergeStyles = (common, specific) => {
       ...specific.actionButtons,
     },
   };
+  for (const key in mergedStyles) {
+    classNames[key] = Object.keys(mergedStyles[key]).join(' ');
+  }
+  return classNames;
 };

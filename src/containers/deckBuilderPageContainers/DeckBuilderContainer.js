@@ -64,7 +64,8 @@ import { styled } from '@mui/system'; // Use @mui/system for Emotion styling
 
 // Define your components using the styled function from @mui/system
 const SearchGrid = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.up('lg')]: { flexBasis: '35%' },
+  [theme.breakpoints.up('xl')]: { flexBasis: '60%' },
+  [theme.breakpoints.up('lg')]: { flexBasis: '50%' },
   [theme.breakpoints.between('md', 'lg')]: { flexBasis: '50%' },
   [theme.breakpoints.down('sm')]: { flexBasis: '50%' },
 }));
@@ -85,17 +86,33 @@ const RootGrid = styled(Grid)(({ theme }) => ({
 
 const DeckBuilderContainer = ({ userDecks }) => {
   const theme = useTheme(); // Use the theme from Emotion
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const getXsValue = () => {
-    if (isSmallScreen || isMediumScreen) return 5;
-    return 3;
+    // if (isSmallScreen || isMediumScreen) return 5;
+    // return 3;
+    if (isLargeScreen) return 3;
+    if (isMediumScreen) return 4;
+    return 5;
   };
+  //   case 'xs':
+  //     return 5;
+  //   case 'sm':
+  //     return 5;
+  //   case 'md':
+  //     return 5;
+  //   case 'lg':
+  //     return 7;
+  // };
 
   const getDisplayXsValue = () => {
-    if (isSmallScreen || isMediumScreen) return 7;
-    return 9;
+    // if (isSmallScreen || isMediumScreen) return 7;
+    // return 9;
+    if (isLargeScreen) return 9;
+    if (isMediumScreen) return 8;
+    return 7;
   };
 
   return (

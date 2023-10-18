@@ -7,6 +7,7 @@ import CollectionTitle from './pageStyles/CollectionTitle';
 import CardPortfolio from '../components/collection/CardPortfolio';
 import { useCollectionStore } from '../context/hooks/collection';
 import HeaderTitle from '../components/reusable/HeaderTitle';
+import Subheader from '../components/reusable/Subheader';
 
 const CollectionPage = () => {
   // const [defaultCollection, setDefaultCollection] = useState([]);
@@ -39,7 +40,12 @@ const CollectionPage = () => {
   return (
     <div>
       <CollectionBanner>
-        <HeaderTitle title="Collection Portfolio" />
+        <HeaderTitle
+          title="Collection Portfolio"
+          size="large"
+          location="center"
+        />
+        <Subheader text={`${selectedCollection?.name}`} />
         <CardPortfolio allCollections={allCollections} />
       </CollectionBanner>
     </div>

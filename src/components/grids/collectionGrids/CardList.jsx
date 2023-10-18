@@ -1,144 +1,140 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   Box,
-  Button,
   Typography,
   Paper,
-  Grid,
-  Divider,
   Container,
-  useMediaQuery,
-  Stack,
   IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TablePagination,
+  TableRow,
+  Button,
 } from '@mui/material';
-import CronTrigger from '../../buttons/CronTrigger';
 import { useCollectionStore } from '../../../context/hooks/collection';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-const CardList = ({ selectedCards, removeCard }) => {
+import TablePaginationActions from './TablePaginationActions'; // Assume the provided pagination component is here
+import Logger from './Logger';
+
+const CardList = ({ selectedCards }) => {
   const {
     getTotalCost,
     selectedCollection,
     removeOneFromCollection,
     addOneToCollection,
   } = useCollectionStore();
-  const isSmScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-  // console.log('SELECTED COLLECTION:', selectedCollection);
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const maxPages = Math.ceil(selectedCards?.length / itemsPerPage);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const chartContainerRef = useRef(null);
 
-  // Handler to go to the next page
-  const nextPage = () => {
-    if (currentPage < maxPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - selectedCards.length) : 0;
+
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
+
+  // const handleChangeRowsPerPage = (event) => {
+  //   setRowsPerPage(parseInt(event.target.value, 10));
+  //   setPage(0);
+  // };
+  const cardLogger = new Logger([
+    'Action',
+    'Card Name',
+    'Quantity',
+    'Total Price',
+  ]);
+
+  const handleChangePage = (event, newPage) => {
+    cardLogger.logCardAction('Change Page', {});
+    setPage(newPage);
   };
 
-  // Handler to go to the previous page
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
+  const handleChangeRowsPerPage = (event) => {
+    cardLogger.logCardAction('Change Rows Per Page', {});
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
-  const isIdUnique = (id, cards) => {
-    let count = 0;
-    for (const card of cards) {
-      if (card.id === id) count++;
-      if (count > 1) return false;
-    }
-    return true;
+  const handleRemoveCard = (card) => {
+    removeOneFromCollection(card, card.id);
+    cardLogger.logCardAction('Remove Card', card);
   };
 
-  // useEffect(() => {
-  //   console.log('CardList rendered with selectedCards:', selectedCards);
-  // }, [selectedCards]);
+  const handleAddCard = (card) => {
+    addOneToCollection(card, card.id);
+    cardLogger.logCardAction('Add Card', card);
+  };
+
+  const chartDimensions = useMemo(
+    () =>
+      chartContainerRef.current?.getBoundingClientRect() || {
+        width: 400,
+        height: 600,
+      },
+    [chartContainerRef.current]
+  );
 
   return (
     <Container
       maxWidth="lg"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
+      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
       <Paper
         elevation={8}
-        sx={{
-          padding: 2,
-          borderRadius: 2,
-          width: isSmScreen ? '100%' : '100%',
-        }}
+        ref={chartContainerRef}
+        sx={{ padding: 2, borderRadius: 2, width: '100%' }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            color: 'primary.main',
+            fontWeight: 'bold',
+            paddingLeft: '8px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
         >
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              wordWrap: 'break-word',
-              color: 'primary.main',
-              fontWeight: 'bold',
-              textShadow: '1px 1px 2px #aaa',
-              paddingLeft: '8px',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <IconButton color="primary">
-              <AssessmentIcon /> {/* Adding an icon next to the title */}
-            </IconButton>
-            Cards in Portfolio
-          </Typography>
-          <CronTrigger /> {/* Include the CronTrigger button */}
-        </Stack>
-        <Divider variant="middle" />
-        {selectedCards && selectedCards?.length > 0 ? (
-          selectedCards
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map((card, index) => {
-              const key = isIdUnique(card?.id || index, selectedCards)
-                ? card.id
-                : `${card.id}-${index}`;
-
-              return (
-                <Grid
-                  container
-                  alignItems="center"
-                  spacing={2}
-                  width={'100%'}
-                  key={key}
-                >
-                  <Grid item xs={7} sm={8} md={9}>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        wordWrap: 'break-word',
-                        overflowWrap: 'break-word',
-                      }}
-                    >
-                      {card.name}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3} sm={2} md={2}>
-                    <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                      {card.card_prices &&
-                      card?.card_prices[0] &&
-                      card?.card_prices[0]?.tcgplayer_price
-                        ? `$${card?.card_prices[0]?.tcgplayer_price}`
-                        : 'Price not available'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} sm={2} md={1}>
+          <IconButton color="primary">
+            <AssessmentIcon />
+          </IconButton>
+          Cards in Portfolio
+        </Typography>
+        {/* Include the CronTrigger button */}
+        <TableContainer component={Paper} dimensions={chartDimensions}>
+          <Table aria-label="custom pagination table">
+            <TableBody>
+              {(rowsPerPage > 0
+                ? selectedCards.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : selectedCards
+              ).map((card, index) => (
+                <TableRow key={card.id || index}>
+                  <TableCell component="th" scope="row">
+                    {card?.name}
+                  </TableCell>
+                  <TableCell align="right">{card?.totalPrice}</TableCell>
+                  <TableCell align="right">{card?.quantity}</TableCell>
+                  <TableCell align="right">
+                    {card.card_prices &&
+                    card.card_prices[0] &&
+                    card.card_prices[0].tcgplayer_price
+                      ? `$${card.card_prices[0].tcgplayer_price}`
+                      : 'Price not available'}
+                  </TableCell>
+                  <TableCell align="right">
                     <Button
                       size="small"
                       variant="contained"
                       color="secondary"
-                      onClick={() => removeOneFromCollection(card, card?.id)}
+                      onClick={() => handleRemoveCard(card)}
+                      // onClick={() => removeOneFromCollection(card, card.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',
@@ -151,7 +147,8 @@ const CardList = ({ selectedCards, removeCard }) => {
                       size="small"
                       variant="contained"
                       color="primary"
-                      onClick={() => addOneToCollection(card, card?.id)}
+                      onClick={() => handleAddCard(card)}
+                      // onClick={() => addOneToCollection(card, card.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',
@@ -160,45 +157,42 @@ const CardList = ({ selectedCards, removeCard }) => {
                     >
                       Add
                     </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Divider />
-                  </Grid>
-                </Grid>
-              );
-            })
-        ) : (
-          <Typography variant="h6" color="textSecondary">
-            No cards selected.
-          </Typography>
-        )}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={3} />
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                  colSpan={3}
+                  count={selectedCards.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'rows per page' },
+                    native: true,
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
         <Box
           display="flex"
           justifyContent="flex-end"
           mt={2}
-          sx={{
-            width: '100%', // Ensure the total cost aligns to the right
-          }}
+          sx={{ width: '100%' }}
         >
           <Typography variant="h5">{`Total: $${selectedCollection?.totalPrice}`}</Typography>
-        </Box>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          mt={2}
-          sx={{
-            width: '100%',
-          }}
-        >
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Previous
-          </Button>
-          <Typography variant="subtitle1">
-            Page {currentPage} of {maxPages}
-          </Typography>
-          <Button onClick={nextPage} disabled={currentPage === maxPages}>
-            Next
-          </Button>
         </Box>
       </Paper>
     </Container>
