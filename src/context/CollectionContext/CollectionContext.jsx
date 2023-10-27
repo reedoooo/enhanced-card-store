@@ -216,74 +216,48 @@ export const CollectionProvider = ({ children }) => {
     return isNaN(num) ? defaultValue : num;
   };
 
-  const fetchAndSetCollections = useCallback(async () => {
+  // Function to fetch collections
+  const fetchCollections = useCallback(async (userId) => {
     if (!userId) {
-      console.warn('userId is not set, aborting fetchAndSetCollections.');
-      return;
+      console.warn('userId is not set, aborting fetchCollections.');
+      return null;
     }
 
     try {
       console.log('Fetching collections...');
-      const collections = await fetchWrapper(
+      const response = await fetchWrapper(
         `${BASE_API_URL}/${userId}/collections`,
         'GET'
       );
-
+      const collections = response?.data?.allCollections;
       console.log('Fetched collections:', collections);
-
-      if (!collections) {
-        console.warn('No collections returned from the server.');
-        // Consider setting an empty or error state here
-        return;
-      }
-
-      const uniqueCollections = removeDuplicateCollections(collections);
-      console.log('Unique collections:', uniqueCollections);
-
-      // Filter out invalid collections
-      const validCollections = uniqueCollections.filter(Boolean);
-
-      if (Array.isArray(validCollections)) {
-        console.log('Valid collections:', validCollections);
-        validCollections.forEach((collection) => {
-          if (collection && collection.allCardPrices) {
-            collection.totalPrice = calculateTotalFromAllCardPrices(
-              collection.allCardPrices
-            );
-          } else {
-            console.warn(
-              'Invalid collection or missing allCardPrices:',
-              collection
-            );
-          }
-        });
-      } else {
-        console.error('Valid collections is not an array', collections);
-      }
-
-      setAllCollections(validCollections);
-      setCollectionData(
-        validCollections.length === 0
-          ? initialCollectionState
-          : validCollections[0]
-      );
-      setSelectedCollection(
-        validCollections.length === 0
-          ? initialCollectionState
-          : validCollections[0]
-      );
+      return collections;
     } catch (error) {
-      if (error && error.message) {
-        console.error(`Failed to fetch collections: ${error.message}`);
-        // Consider setting an error state here, for example:
-        // setErrorState(error.message);
-      } else {
-        console.error('An unexpected error occurred.');
-        // Consider setting a generic error state here, for example:
-        // setErrorState('An unexpected error occurred.');
-      }
+      // Your error handling logic here
+      return null;
     }
-  }, [userId]);
+  }, []);
+
+  // Function to set collections
+  const setCollections = useCallback((collections) => {
+    if (!collections || !Array.isArray(collections)) {
+      console.warn('Invalid collections array:', collections);
+      return;
+    }
+
+    const uniqueCollections = removeDuplicateCollections(collections);
+    const validCollections = uniqueCollections.filter(Boolean);
+
+    // Your logic to set collections
+  }, []);
+
+  // Your original fetchAndSetCollections function, now simplified
+  const fetchAndSetCollections = useCallback(async () => {
+    const collections = await fetchCollections(userId);
+    if (collections) {
+      setCollections(collections);
+    }
+  }, [userId, fetchCollections, setCollections]);
 
   const findCollectionIndex = useCallback(
     (collections, id) =>
@@ -751,7 +725,7 @@ export const CollectionProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId) fetchAndSetCollections();
-  }, [fetchAndSetCollections, userId]);
+  }, [userId]);
 
   return (
     <CollectionContext.Provider value={contextValue}>

@@ -122,7 +122,9 @@ export default function AuthProvider({ children }) {
     setLoginState(false, null, {});
   };
 
+  // Add logs to see what is triggering the useEffect
   useEffect(() => {
+    console.log('validateToken or cookies.auth changed, triggering useEffect');
     const token =
       new URLSearchParams(window.location.search).get('token') || cookies.auth;
     if (token) validateToken(token);
@@ -153,7 +155,7 @@ export default function AuthProvider({ children }) {
     login,
     logout,
     signup,
-    setUser,
+    // setUser,
   ]);
 
   return (

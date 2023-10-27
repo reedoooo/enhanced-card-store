@@ -102,7 +102,8 @@ const CardList = ({ selectedCards }) => {
           <Table aria-label="custom pagination table">
             <TableBody>
               {(rowsPerPage > 0
-                ? selectedCards.slice(
+                ? // eslint-disable-next-line no-unsafe-optional-chaining
+                  selectedCards?.slice(
                     page * rowsPerPage,
                     page * rowsPerPage + rowsPerPage
                   )
