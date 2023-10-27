@@ -12,6 +12,7 @@ export const FormWrapper = styled('form')`
 export const StyledTextField = styled(TextField)`
   && {
     margin-bottom: 12px;
+    width: 100%; // Ensures that the text fields take the full width
   }
 `;
 

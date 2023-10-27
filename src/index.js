@@ -19,6 +19,7 @@ import ErrorBoundary from './context/ErrorBoundary';
 import { SocketProvider } from './context/SocketProvider';
 import { SidebarProvider } from './context/SideBarProvider';
 import { ChartProvider } from './context/ChartContext/ChartContext';
+import { UtilityProvider } from './context/UtilityContext/UtilityContext';
 
 const root = document.getElementById('root');
 
@@ -27,36 +28,40 @@ function Main() {
 
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <ColorModeProvider>
-          <SocketProvider>
-            {/* <ApiServiceProvider> */}
-            <UserProvider>
-              <ModalProvider>
-                <CollectionProvider>
-                  <CombinedProvider>
-                    <CardProvider>
-                      <DeckProvider>
-                        <CartProvider>
-                          <GlobalStyles />
-                          <ThemeProvider theme={theme}>
-                            <ChartProvider>
-                              <SidebarProvider>
-                                <App />
-                              </SidebarProvider>
-                            </ChartProvider>
-                          </ThemeProvider>
-                        </CartProvider>
-                      </DeckProvider>
-                    </CardProvider>
-                  </CombinedProvider>
-                </CollectionProvider>
-              </ModalProvider>
-            </UserProvider>
-            {/* </ApiServiceProvider> */}
-          </SocketProvider>
-        </ColorModeProvider>
-      </AuthProvider>
+      <UtilityProvider>
+        <AuthProvider>
+          <ColorModeProvider>
+            <SocketProvider>
+              {/* <UtilityProvider> */}
+              {/* <ApiServiceProvider> */}
+              <UserProvider>
+                <ModalProvider>
+                  <CollectionProvider>
+                    <CombinedProvider>
+                      <CardProvider>
+                        <DeckProvider>
+                          <CartProvider>
+                            <GlobalStyles />
+                            <ThemeProvider theme={theme}>
+                              <ChartProvider>
+                                <SidebarProvider>
+                                  <App />
+                                </SidebarProvider>
+                              </ChartProvider>
+                            </ThemeProvider>
+                          </CartProvider>
+                        </DeckProvider>
+                      </CardProvider>
+                    </CombinedProvider>
+                  </CollectionProvider>
+                </ModalProvider>
+              </UserProvider>
+              {/* </ApiServiceProvider> */}
+              {/* </UtilityProvider> */}
+            </SocketProvider>
+          </ColorModeProvider>
+        </AuthProvider>
+      </UtilityProvider>
     </ErrorBoundary>
   );
 }

@@ -16,8 +16,16 @@ import {
 } from '@mui/material';
 import { useCollectionStore } from '../../../context/hooks/collection';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import TablePaginationActions from './TablePaginationActions'; // Assume the provided pagination component is here
+import TablePaginationActions from './TablePaginationActions';
 import Logger from './Logger';
+
+// Instantiate logger outside of the component
+const cardLogger = new Logger([
+  'Action',
+  'Card Name',
+  'Quantity',
+  'Total Price',
+]);
 
 const CardList = ({ selectedCards }) => {
   const {
@@ -32,21 +40,6 @@ const CardList = ({ selectedCards }) => {
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - selectedCards.length) : 0;
-
-  // const handleChangePage = (event, newPage) => {
-  //   setPage(newPage);
-  // };
-
-  // const handleChangeRowsPerPage = (event) => {
-  //   setRowsPerPage(parseInt(event.target.value, 10));
-  //   setPage(0);
-  // };
-  const cardLogger = new Logger([
-    'Action',
-    'Card Name',
-    'Quantity',
-    'Total Price',
-  ]);
 
   const handleChangePage = (event, newPage) => {
     cardLogger.logCardAction('Change Page', {});
@@ -119,6 +112,7 @@ const CardList = ({ selectedCards }) => {
                   <TableCell component="th" scope="row">
                     {card?.name}
                   </TableCell>
+                  <TableCell align="right">{card?.price}</TableCell>
                   <TableCell align="right">{card?.totalPrice}</TableCell>
                   <TableCell align="right">{card?.quantity}</TableCell>
                   <TableCell align="right">
@@ -134,7 +128,6 @@ const CardList = ({ selectedCards }) => {
                       variant="contained"
                       color="secondary"
                       onClick={() => handleRemoveCard(card)}
-                      // onClick={() => removeOneFromCollection(card, card.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',
@@ -148,7 +141,6 @@ const CardList = ({ selectedCards }) => {
                       variant="contained"
                       color="primary"
                       onClick={() => handleAddCard(card)}
-                      // onClick={() => addOneToCollection(card, card.id)}
                       sx={{
                         fontSize: '0.6rem',
                         minWidth: 'inherit',

@@ -2,6 +2,28 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   // return {
+  banner: {
+    backgroundImage: `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
+    minHeight: '100vh',
+    padding: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselImage: {
+    height: '600px',
+    width: '100%',
+    objectFit: 'cover',
+  },
+  captionBox: {
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.contrastText || 'common.white',
+    width: '100%',
+    padding: 2,
+    textAlign: 'center',
+  },
   arrowStyles: {
     backgroundColor: theme.palette.primary.main,
     borderRadius: '50%',
@@ -10,15 +32,6 @@ const useStyles = makeStyles((theme) => ({
     height: '600px',
     width: '100%',
     objectFit: 'cover',
-  },
-  captionBox: {
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    width: '100%',
-    color: theme.palette.common.white,
-    padding: theme.spacing(2),
-    textAlign: 'center',
   },
   bannerBox: {
     backgroundImage: `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,

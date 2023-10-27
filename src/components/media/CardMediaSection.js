@@ -20,6 +20,7 @@ const useStyles = makeStyles({
 const CardMediaSection = ({
   imgUrl = placeholderImage,
   card,
+  // open,
   openModal,
   cardRef,
   modalIsOpen,
@@ -85,7 +86,7 @@ const CardMediaSection = ({
         id={open ? 'mouse-over-popover' : undefined}
         sx={{ pointerEvents: 'none' }}
         open={open}
-        anchorEl={cardRef?.current}
+        anchorEl={cardRef?.current || undefined}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         onClose={() => onCardHover(null)}

@@ -15,6 +15,7 @@ export const CombinedContext = createContext();
 const initialState = {
   allData: {},
   data: {},
+  messageTest: {},
   chartData: {},
   existingChartData: {},
   collectionData: {},
@@ -22,6 +23,7 @@ const initialState = {
   allCollectionsUpdated: {},
   allCollectionData: {},
   cronData: {},
+  finalUpdateData: {},
   cardPrices: {},
   previousDayTotalPrice: 0,
   dailyPriceChange: 0,
@@ -29,6 +31,7 @@ const initialState = {
   retrievedListOfMonitoredCards: {},
   isLoading: false,
   cronTriggerTimestamps: [],
+  emittedResponses: [],
   error: null,
   isDelaying: false, // Added isDelaying to initialState as it is referred in your code
   isCronJobTriggered: false, // Added isCronJobTriggered to initialState as it is referred in your code
@@ -45,20 +48,20 @@ const initialState = {
 const filterDuplicatePrices = (data) => {
   const seen = {};
 
-  return data.runs.filter((run) => {
+  return data?.runs?.filter((run) => {
     if (
-      !run.valuesUpdated ||
-      !run.valuesUpdated.updatedPrices ||
-      Object.keys(run.valuesUpdated.updatedPrices).length === 0
+      !run?.valuesUpdated ||
+      !run?.valuesUpdated?.updatedPrices ||
+      Object.keys(run?.valuesUpdated?.updatedPrices)?.length === 0
     ) {
       // Remove the item if there's no updatedPrices or it's empty
       return false;
     }
 
     let isDuplicate = false;
-    for (const id in run.valuesUpdated.updatedPrices) {
-      const item = run.valuesUpdated.updatedPrices[id];
-      const key = `${id}-${item.previousPrice}-${item.updatedPrice}`;
+    for (const id in run?.valuesUpdated?.updatedPrices) {
+      const item = run?.valuesUpdated?.updatedPrices[id];
+      const key = `${id}-${item?.previousPrice}-${item?.updatedPrice}`;
 
       if (seen[key]) {
         isDuplicate = true;
@@ -71,6 +74,32 @@ const filterDuplicatePrices = (data) => {
   });
 };
 
+const isEmpty = (obj) => {
+  return (
+    [Object, Array].includes((obj || {}).constructor) &&
+    !Object.entries(obj || {}).length
+  );
+};
+
+const validateData = (data, eventName, functionName) => {
+  const dataType = typeof data;
+  console.log(
+    `[Info] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}`
+  );
+  if (data === null || data === undefined) {
+    console.warn(
+      `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
+    );
+    return false;
+  }
+  if (isEmpty(data)) {
+    console.error(
+      `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
+    );
+    return false;
+  }
+  return true;
+};
 export const CombinedProvider = ({ children }) => {
   const { userCookie } = useCookies(['userCookie']);
   const [state, setState] = useState(initialState);
@@ -83,90 +112,70 @@ export const CombinedProvider = ({ children }) => {
     setUpdatedPricesFromCombinedContext,
   } = useContext(CollectionContext);
   const socket = useSocket();
+  // const createStateUpdaterFunction = (key) =>
+  //   useCallback(
+  //     (data) =>
+  //       setState((prev) => ({ ...prev, [key]: { ...prev[key], ...data } })),
+  //     []
+  //   );
+  const createStateUpdaterFunction = (key) =>
+    useCallback((data) => setState((prev) => ({ ...prev, [key]: data })), []);
 
   // ----------- STATE UPDATER FUNCTIONS -----------
+
+  // State updater functions generated using the higher-order function
   const setDataFunctions = {
-    data: useCallback(
-      (data) => setState((prev) => ({ ...prev, chartData: data })),
-      []
+    data: createStateUpdaterFunction('chartData'),
+    messageTest: createStateUpdaterFunction('messageTest'),
+    finalUpdateData: createStateUpdaterFunction('finalUpdateData'),
+    chartData: createStateUpdaterFunction('chartData'),
+    existingChartData: createStateUpdaterFunction('existingChartData'),
+    // cardStats: createStateUpdaterFunction('cardStats'),
+    cardPrices: createStateUpdaterFunction('cardPrices'),
+    retrievedListOfMonitoredCards: createStateUpdaterFunction(
+      'retrievedListOfMonitoredCards'
     ),
-    chartData: useCallback(
-      (data) => setState((prev) => ({ ...prev, chartData: data })),
-      []
+    // allData: createStateUpdaterFunction('allData'),
+    cronData: createStateUpdaterFunction('cronData'),
+    error: createStateUpdaterFunction('error'),
+    // updatedChartData: createStateUpdaterFunction('updatedChartData'),
+    currentChartData: createStateUpdaterFunction('currentChartData'),
+    checkAndUpdateCardPrice: createStateUpdaterFunction(
+      'checkAndUpdateCardPrice'
     ),
-    existingChartData: useCallback(
-      (data) => setState((prev) => ({ ...prev, existingChartData: data })),
-      []
-    ),
-    // cardStats: useCallback(
-    //   (data) => setState((prev) => ({ ...prev, cardStats: data })),
-    //   []
-    // ),
-    cardPrices: useCallback(
-      (data) => setState((prev) => ({ ...prev, cardPrices: data })),
-      []
-    ),
-    retrievedListOfMonitoredCards: useCallback(
-      (data) =>
-        setState((prev) => ({ ...prev, retrievedListOfMonitoredCards: data })),
-      []
-    ),
-    // allData: useCallback(
-    //   (data) => setState((prev) => ({ ...prev, allData: data })),
-    //   []
-    // ),
-    cronData: useCallback(
-      (data) => setState((prev) => ({ ...prev, cronData: data })),
-      []
-    ),
-    error: useCallback(
-      (data) => setState((prev) => ({ ...prev, error: data })),
-      []
-    ),
-    // updatedChartData: useCallback(
-    //   (data) =>
-    //     setState((prev) => ({
-    //       ...prev,
-    //       updatedChartData: data,
-    //       // allUpdatedPrices2: data,
-    //     })),
-    //   []
-    // ),
-    currentChartData: useCallback(
-      (data) => setState((prev) => ({ ...prev, currentChartData: data })),
-      []
-    ),
-    checkAndUpdateCardPrice: useCallback(
-      (data) =>
-        setState((prev) =>
-          // { ...prev, updatedCollectionsData: data },
-          ({ ...prev, allCollectionsUpdated: data })
-        ),
-      []
-    ),
-    collectionData: useCallback(
-      (data) => setState((prev) => ({ ...prev, collectionData: data })),
-      []
-    ),
-    allCollectionData: useCallback(
-      (data) => setState((prev) => ({ ...prev, allCollectionData: data })),
-      []
-    ),
-    // updatedCollectionData: useCallback(
-    //   (data) => setState((prev) => ({ ...prev, updatedCollectionData: data })),
-    //   []
-    // ),
+    collectionData: createStateUpdaterFunction('collectionData'),
+    allCollectionData: createStateUpdaterFunction('allCollectionData'),
+    emittedResponses: createStateUpdaterFunction('emittedResponses'),
+    // allCollectionsUpdated: createStateUpdaterFunction('allCollectionsUpdated'),
+    // updatedCollectionData: createStateUpdaterFunction('updatedCollectionData'),
+    // allCollectionsUpdated: createStateUpdaterFunction('allCollectionsUpdated'),
+    // allUpdatedPrices: createStateUpdaterFunction('allUpdatedPrices'),
+    // allItemTypeData: createStateUpdaterFunction('allItemTypeData'),
+    // allItemData: createStateUpdaterFunction('allItemData'),
+    // allItemData2: createStateUpdaterFunction('allItemData2'),
+    // cardStatsArray: createStateUpdaterFunction('cardStatsArray'),
+    isDelaying: createStateUpdaterFunction('isDelaying'),
+    isCronJobTriggered: createStateUpdaterFunction('isCronJobTriggered'),
   };
 
-  const setLoader = (isLoading) => setState((prev) => ({ ...prev, isLoading }));
-  const setCronStatus = (cronActive) =>
+  // setLoader with added error handling and documentation
+  const setLoader = (isLoading) => {
+    if (typeof isLoading !== 'boolean') {
+      console.error('Invalid argument type for setLoader: Expected boolean');
+      return;
+    }
+    setState((prev) => ({ ...prev, isLoading }));
+  };
+  // setCronStatus with added error handling and documentation
+  const setCronStatus = (cronActive) => {
+    if (typeof cronActive !== 'boolean') {
+      console.error(
+        'Invalid argument type for setCronStatus: Expected boolean'
+      );
+      return;
+    }
     setState((prev) => ({ ...prev, cronActive }));
-  // useEffect(() => {
-  //   // 3. Modify the state when the selectedCollection changes
-  //   if (selectedCollection) {
-  //     setState((prev) => ({ ...prev, collectionData: selectedCollection }));
-  //   }
-  // }, [selectedCollection]);
+  };
   // ----------- XXX -----------
 
   const listOfMonitoredCards = useMemo(() => {
@@ -213,12 +222,60 @@ export const CombinedProvider = ({ children }) => {
   }, [allCollections]);
 
   // ----------- SOCKET EVENT HANDLERS -----------
+  const safeEmit = useCallback(
+    (event, data) => {
+      try {
+        if (!validateData(data, event, 'safeEmit')) {
+          throw new Error(`Invalid data emitted for event: ${event}`);
+        }
+        if (socket) {
+          socket.emit(event, data);
+        } else {
+          console.warn('Socket is not connected. Cannot emit event:', event);
+        }
+      } catch (error) {
+        console.error(`[Error] Failed to emit event: ${event}`, error);
+        setDataFunctions.error({ message: error.message, source: 'safeEmit' });
+      }
+    },
+    [socket]
+  );
 
+  const safeOn = useCallback(
+    (event, handler) => {
+      const wrapper = (data) => {
+        try {
+          if (!validateData(data, event, handler.name)) {
+            throw new Error(`Invalid data received for event: ${event}`);
+          }
+          handler(data);
+        } catch (error) {
+          console.error(`[Error] Failed to handle event: ${event}`, error);
+          setDataFunctions.error({ message: error.message, source: event });
+        }
+      };
+      if (socket) {
+        socket.on(event, wrapper);
+      } else {
+        console.warn(
+          'Socket is not connected. Cannot subscribe to event:',
+          event
+        );
+      }
+      return () => {
+        if (socket) {
+          socket.off(event, wrapper);
+        }
+      };
+    },
+    [socket]
+  );
   useEffect(() => {
     if (!socket) return;
 
     const handleReceive = (message) => {
       console.log('Received message:', message);
+      setDataFunctions.messageTest(message);
     };
 
     const handleCronJobResponse = (message, collections) => {
@@ -236,11 +293,19 @@ export const CombinedProvider = ({ children }) => {
       setDataFunctions.error(errorData);
     };
 
+    const handleEmittedResponses = (emittedResponses) => {
+      setDataFunctions.emittedResponses([
+        ...state.emittedResponses,
+        emittedResponses,
+      ]);
+    };
+
     const handleCronJobTracker = (message, existingCronData) => {
-      console.log('Automated Message from Server:', message);
+      console.log('[AUTOMATED MESSAGE FROM SERVER]', message);
       const data = existingCronData;
       const filteredRuns = filterDuplicatePrices(data);
-      setDataFunctions.cronData({ ...data, runs: filteredRuns });
+      const runs = filteredRuns;
+      setDataFunctions.cronData({ runs });
     };
 
     const handleExistingCollectionData = (userId, selectedCollection) => {
@@ -257,7 +322,9 @@ export const CombinedProvider = ({ children }) => {
         return;
       }
       const { existingChartData } = data;
-      setDataFunctions.existingChartData({ existingChartData });
+      setDataFunctions.existingChartData({
+        existingChartData: existingChartData,
+      });
     };
 
     const handleChartDatasetsUpdated = ({
@@ -265,13 +332,35 @@ export const CombinedProvider = ({ children }) => {
       collectionId,
       currentChartDatasets,
     }) => {
+      if (message) {
+        console.log('MESSAGE: HANDLING CHART DATA UPDATED ==========]>:', {
+          message,
+        });
+      }
       const currentChartData = {
         [collectionId]: currentChartDatasets,
       };
       setDataFunctions.currentChartData(currentChartData);
     };
 
-    const handleCardPricesUpdated = ({ message, pricingData }) => {
+    const handleCardPricesUpdated = ({ message, data }) => {
+      if (message) {
+        console.log('MESSAGE: HANDLING CARD PRICES UPDATED ==========]>:', {
+          message,
+        });
+      }
+
+      const { pricingData } = data;
+
+      if (
+        !validateData(
+          pricingData,
+          'SEND_PRICING_DATA_TO_CLIENT',
+          'handleCardPricesUpdated'
+        )
+      )
+        return;
+
       if (
         !pricingData ||
         !pricingData.updatedPrices ||
@@ -290,96 +379,151 @@ export const CombinedProvider = ({ children }) => {
       const allPrices = {
         ...updatedPrices,
         ...previousPrices,
-        nestedUpdatedPrices: updatedPrices,
-        nestedPreviousPrices: previousPrices,
+        updatedPrices,
+        previousPrices,
         priceDifferences,
       };
 
       setUpdatedPricesFromCombinedContext(allPrices);
-      setDataFunctions.cardPrices({ allPrices });
+      setDataFunctions.cardPrices({ allPrices }); // Here you are passing an object with 'allPrices' property
+    };
+
+    const handleNoPricesChanged = ({ message }) => {
+      console.log('MESSAGE: NO PRICES CHANGED ==========]>:', {
+        message,
+      });
+      // setUpdatedPricesFromCombinedContext(updatedData);
     };
 
     const handleNewCardDataObject = ({ message, updatedData }) => {
       // setUpdatedPricesFromCombinedContext(updatedData);
-
+      console.log('MESSAGE: NEW CARD DATA OBJECT ==========]>:', {
+        message,
+      });
       setDataFunctions.data(updatedData);
     };
 
-    // Socket event registrations
-    // 2. Handle the initiation of scheduleCheckCardPrices
-    socket.on('INITIATE_SCHEDULE_CHECK_CARD_PRICES', (data) => {
-      console.log('Received INITIATE_SCHEDULE_CHECK_CARD_PRICES');
-      socket.emit('INITIATE_CHECK_CARD_PRICES', data);
-    });
-
-    // 4. Handle the initiation of checkCardPrices and its outcomes
-    socket.on('INITIATE_HANDLE_CHECK_CARD_PRICES', (data) => {
-      console.log('Received INITIATE_HANDLE_CHECK_CARD_PRICES');
-      // socket.emit('SEND_PRICING_DATA_TO_CLIENT', data);
-      socket.emit('HANDLE_CHECK_CARD_PRICES', data);
-    });
-
-    // 6. Handle updating user data based on new pricing data
-    socket.on(
-      'INITIATE_UPDATE_USER_DATA',
-      ({ userId, pricingData, message }) => {
-        console.log('Received INITIATE_UPDATE_USER_DATA message', message);
-        socket.emit('HANDLE_UPDATE_USER_DATA', {
-          userId,
-          pricingData,
-          body: state?.collectionData,
-        });
-      }
-    );
-
-    socket.on(
-      'INITIATE_UPDATE_USER_COLLECTION',
-      ({ userId, updatedData, body }) => {
-        console.log('Received INITIATE_UPDATE_USER_COLLECTION', updatedData);
-        socket.emit('HANDLE_UPDATE_USER_COLLECTION', {
-          userId,
-          pricingData: updatedData, // Here's the correction
-          body: selectedCollection, // You can replace this if you have another variable storing the selected collection
-        });
-      }
-    );
-    socket.on('MESSAGE_TO_CLIENT', handleReceive);
-    socket.on('RESPONSE_EXISTING_CHART_DATA', handleExistingChartData);
-    socket.on('RESPONSE_CRON_DATA', handleCronJobTracker);
-    socket.on(
-      'RESPONSE_EXISTING_COLLECTION_DATA',
-      handleExistingCollectionData
-    );
-    socket.on('SEND_PRICING_DATA_TO_CLIENT', handleCardPricesUpdated);
-    socket.on('SEND_UPDATED_DATA_TO_CLIENT', handleNewCardDataObject);
-    socket.on('CHART_DATASETS_UPDATED', handleChartDatasetsUpdated);
-    socket.on('ERROR', handleError);
-    socket.on('RESPONSE_CRON_UPDATED_ALLCOLLECTIONS', handleCronJobResponse);
-
-    return () => {
-      socket.off('MESSAGE_TO_CLIENT', handleReceive);
-      socket.off('RESPONSE_EXISTING_CHART_DATA', handleExistingChartData);
-      socket.off('RESPONSE_CRON_DATA', handleCronJobTracker);
-      socket.off(
-        'RESPONSE_EXISTING_COLLECTION_DATA',
-        handleExistingCollectionData
-      );
-      socket.off('SEND_PRICING_DATA_TO_CLIENT', handleCardPricesUpdated);
-      socket.off('RESPONSE_CRON_UPDATED_ALLCOLLECTIONS', handleCronJobResponse);
-      socket.off('SEND_UPDATED_DATA_TO_CLIENT', handleNewCardDataObject);
-      socket.off('CHART_DATASETS_UPDATED', handleChartDatasetsUpdated);
-      socket.off('ERROR', handleError);
+    const handleFinalUpdateToClient = ({ userId, message, updatedData }) => {
+      console.log('MESSAGE: FINAL UPDATE TO CLIENT ==========]>:', {
+        message,
+      });
+      console.log('UPDATED DATA: FINAL UPDATE TO CLIENT ==========]>:', {
+        updatedData,
+      });
+      // setUpdatedPricesFromCombinedContext(updatedData);
+      setDataFunctions.finalUpdateData(updatedData);
     };
-  }, [socket]);
+    const handleInitiateScheduleCheckCardPrices = ({ data }) => {
+      safeEmit('INITIATE_CHECK_CARD_PRICES', {
+        userId: data.userId,
+        selectedList: data.selectedList,
+      });
+    };
+
+    const handleInitiateCheckCardPrices = ({ data }) => {
+      safeEmit('HANDLE_CHECK_CARD_PRICES', {
+        userId: data.userId,
+        selectedList: data.selectedList,
+      });
+    };
+
+    const handleUpdateUserData = ({ message, data }) => {
+      console.log('MESSAGE: INITIATING UPDATE OF USER DATA ==========]>:', {
+        message,
+      });
+      safeEmit('HANDLE_UPDATE_USER_DATA', {
+        userId: data.userId,
+        pricingData: data.pricingData,
+      });
+    };
+    const handleUpdateUserCollection = ({ data }) => {
+      safeEmit('HANDLE_UPDATE_USER_COLLECTION', {
+        userId: data.userId,
+        updatedData: data.updatedUserData,
+      });
+    };
+
+    const handleUpdateAndSyncUserCollection = ({ data }) => {
+      safeEmit('HANDLE_UPDATE_AND_SYNC_COLLECTION', {
+        userId: data.userId,
+        collectionId: data.collectionId,
+        body: data.body,
+      });
+    };
+    // const handleUpdateUserCollection = ({ userId, updatedData }) => {
+    //   safeEmit('HANDLE_UPDATE_USER_COLLECTION', { userId, updatedData });
+    // };
+    // const handleUpdateAndSyncUserCollection = ({
+    //   userId,
+    //   collectionId,
+    //   body,
+    // }) => {
+    //   safeEmit('HANDLE_UPDATE_AND_SYNC_COLLECTION', {
+    //     userId,
+    //     collectionId,
+    //     body,
+    //   });
+    // };
+
+    // handleCheckCardPrices(userId, selectedList) {
+    //   socket.emit('HANDLE_CHECK_CARD_PRICES', { userId, selectedList });
+    // },
+    // handleUpdateUserData(userId, pricingData) {
+    //   socket.emit('HANDLE_UPDATE_USER_DATA', { userId, pricingData });
+    // },
+    // handleUpdateUserCollection(userId, updatedData) {
+    //   socket.emit('HANDLE_UPDATE_USER_COLLECTION', { userId, updatedData });
+    // },
+    // handleUpdateAndSyncCollection(userId, collectionId, body) {
+    //   socket.emit('HANDLE_UPDATE_AND_SYNC_COLLECTION', { userId, collectionId, body });
+    // },
+    const unsubscribeFunctions = [
+      ['MESSAGE_TO_CLIENT', handleReceive],
+      ['RESPONSE_CRON_UPDATED_ALLCOLLECTIONS', handleCronJobResponse],
+      ['ERROR', handleError],
+      ['EMITTED_RESPONSES', handleEmittedResponses],
+      ['RESPONSE_CRON_DATA', handleCronJobTracker],
+      ['RESPONSE_EXISTING_COLLECTION_DATA', handleExistingCollectionData],
+      ['RESPONSE_EXISTING_CHART_DATA', handleExistingChartData],
+      ['SEND_PRICING_DATA_TO_CLIENT', handleCardPricesUpdated],
+      ['SEND_UPDATED_DATA_TO_CLIENT', handleNewCardDataObject],
+      ['SEND_FINAL_UPDATE_TO_CLIENT', handleFinalUpdateToClient],
+      ['CHART_DATASETS_UPDATED', handleChartDatasetsUpdated],
+      [
+        'INITIATE_SCHEDULE_CHECK_CARD_PRICES',
+        handleInitiateScheduleCheckCardPrices,
+      ],
+      ['INITIATE_HANDLE_CHECK_CARD_PRICES', handleInitiateCheckCardPrices],
+      ['INITIATE_UPDATE_USER_DATA', handleUpdateUserData],
+      // ['INITIATE_UPDATE_USER_COLLECTION', handleUpdateUserCollection],
+      ['INITIATE_UPDATE_USER_COLLECTIONS_SOCKET', handleUpdateUserCollection],
+      ['NO_PRICE_CHANGES', handleNoPricesChanged],
+      ['COLLECTION_SYNCED', handleUpdateAndSyncUserCollection],
+      ['CRON_JOB_TRIGGERED', () => setDataFunctions.isCronJobTriggered(true)],
+      ['CRON_JOB_COMPLETED', () => setDataFunctions.isCronJobTriggered(false)],
+
+      // ... (other event subscriptions)
+    ].map(([event, handler]) => safeOn(event, handler));
+    return () => unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+  }, [
+    socket,
+    safeEmit,
+    safeOn,
+    setDataFunctions.isCronJobTriggered,
+    setUpdatedPricesFromCombinedContext,
+  ]);
 
   // ----------- DATA PROCESSING & HANDLERS -----------
 
   const handleSocketInteraction = {
     requestData: {
       collection: (userId, selectedCollection) => {
-        if (!userId || !selectedCollection)
-          return console.error('Missing userId or selectedCollection.');
-        // socket.emit('REQUEST_EXISTING_COLLECTION_DATA', userId);
+        if (!userId || !selectedCollection) {
+          logError(
+            'Missing userId or selectedCollection for collection data request'
+          );
+          return;
+        }
         socket.emit('REQUEST_EXISTING_COLLECTION_DATA', {
           userId,
           selectedCollection: selectedCollection,
@@ -497,6 +641,8 @@ export const CombinedProvider = ({ children }) => {
     }
   }, [allCollections]);
 
+  const logError = (message) => console.error(message);
+
   // ----------- CONTEXT VALUE -----------
   // useEffect(() => {
   //   if (listOfMonitoredCards.length)
@@ -511,10 +657,9 @@ export const CombinedProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       ...state,
-      // allData: state.allData,
-      // collectionData: state.collectionData,
       listOfMonitoredCards,
-      // retrievedListOfMonitoredCards: state.retrievedListOfMonitoredCards,
+      // emittedResponses: state.emittedResponses,
+      // messageTest: state.messageTest,
       toast,
       confirm,
       setLoader,
@@ -531,16 +676,21 @@ export const CombinedProvider = ({ children }) => {
       handleSocketInteraction,
       setDataFunctions,
       socket,
+      isDelaying: state.isDelaying,
+      isCronJobTriggered: state.isCronJobTriggered,
+      // setDataFunctions,
     }),
     [state, socket]
   );
 
   const dataValues = {
-    // value: {
     state: state,
     allData: value.allData,
     data: value.data,
+    messageTest: value.messageTest,
+    finalUpdateData: value.finalUpdateData,
     chartData: value.chartData,
+    emittedResponses: value.emittedResponses,
     currentChartData: value.currentChartData,
     existingChartData: value.existingChartData,
     collectionData: value.collectionData,
@@ -551,17 +701,16 @@ export const CombinedProvider = ({ children }) => {
     retrievedListOfMonitoredCards: value.retrievedListOfMonitoredCards,
     listOfMonitoredCards: value.listOfMonitoredCards,
     error: value.error,
-    // isLoading: value.isLoading,
-    // cronTriggerTimestamps: value.cronTriggerTimestamps,
-    // error: value.error,
-    // isDelaying: value.isDelaying,
-    // isCronJobTriggered: value.isCronJobTriggered,
-    // },
   };
 
   useEffect(() => {
     console.log('COMBINED CONTEXT VALUE:', dataValues);
-  }, [dataValues.cronData, dataValues.chartData, dataValues.collectionData]);
+  }, [
+    dataValues.cronData,
+    dataValues.chartData,
+    dataValues.collectionData,
+    dataValues.messageTest,
+  ]);
 
   return (
     <CombinedContext.Provider value={value}>

@@ -121,13 +121,13 @@ const GenericCardModal = ({ open, onClose, card, cardInfo, context }) => {
 
   // console.log('openChooseCollectionDialog', openChooseCollectionDialog);
 
-  useEffect(() => {
-    if (openChooseCollectionDialog === true) {
-      console.log('Fetching collections...', openChooseCollectionDialog);
-      fetchAllCollectionsForUser();
-    }
-  }, [openChooseCollectionDialog]);
-  console.log('open --------> ', open);
+  // useEffect(() => {
+  //   if (openChooseCollectionDialog === true) {
+  //     // console.log('Fetching collections...', openChooseCollectionDialog);
+  //     fetchAllCollectionsForUser();
+  //   }
+  // }, [openChooseCollectionDialog]);
+  // console.log('open --------> ', open);
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>

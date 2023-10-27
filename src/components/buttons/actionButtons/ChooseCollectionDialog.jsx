@@ -59,7 +59,7 @@ const ChooseCollectionDialog = ({ onSave, isOpen, onClose }) => {
   }
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={false} onClose={onClose}>
       <DialogTitle>Select a Collection</DialogTitle>
 
       <List className={classes.list}>

@@ -2,77 +2,76 @@ import React, { useState, useEffect, useCallback } from 'react';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
+import { useUtilityContext } from '../UtilityContext/UtilityContext';
 
 export const AuthContext = React.createContext();
 
-export default function AuthProvider(props) {
+export default function AuthProvider({ children }) {
   const [cookies, setCookie, removeCookie] = useCookies(['auth', 'userCookie']);
   const [isLoading, setIsLoading] = useState(false);
   const [isloggedin, setIsloggedin] = useState(false);
-  const [user, setUser] = useState({ capabilities: ['admin'] });
+  const [user, setUser] = useState({});
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(undefined);
+  const { directedResponses, fetchDirectedResponses } = useUtilityContext();
 
   const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
-  const setLoginState = (loggedIn, token, user, error = null) => {
-    setCookie('auth', token, {
-      secure: true,
-      sameSite: 'strict',
-      capabilities: user.capabilities || ['admin'],
-    });
-    setCookie('userCookie', user, { secure: true, sameSite: 'strict' });
-    setIsloggedin(loggedIn); // Updated here
-    setToken(token);
-    setUser(user);
-    setError(error);
-  };
+  // const updateUser = useCallback((newUser) => {
+  //   setUsers((prevUsers) =>
+  //     prevUsers.map((u) => (u.id === newUser.id ? newUser : u))
+  //   );
+  // }, []);
 
-  const validateToken = useCallback(
-    async (token) => {
-      setIsLoading(true);
-      try {
-        // const options = {
-        //   method: 'GET',
-        //   url: `${REACT_APP_SERVER}/api/users/profile`,
-        //   headers: { Authorization: `Bearer ${token}` },
-        // };
-        const decodedUser = jwt_decode(token);
-        setLoginState(true, token, decodedUser);
-
-        const response = await axios.get(
-          `${REACT_APP_SERVER}/api/users/profile`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          setUser((prevUser) => ({
-            ...prevUser,
-            ...response.data,
-            ...user.capabilities,
-          }));
-        }
-      } catch (e) {
-        setError('Token validation failed');
-        setLoginState(false, null, {}, 'Token validation failed');
-      } finally {
-        setIsLoading(false);
+  const setLoginState = useCallback(
+    (loggedIn, token, user, error = null) => {
+      setCookie('auth', token, { secure: true, sameSite: 'strict' });
+      if (user) {
+        setCookie('userCookie', JSON.stringify(user), {
+          secure: true,
+          sameSite: 'strict',
+        });
       }
+      setIsloggedin(loggedIn);
+      setToken(token);
+      setUser(user);
+      setError(error);
     },
-    [REACT_APP_SERVER]
+    [setCookie]
   );
 
-  const can = (capability) =>
-    user?.login_data?.role_data?.capabilities?.includes(capability);
+  const validateToken = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const latestSignInResponse = directedResponses.find(
+        (res) => res.eventType === 'SIGNIN'
+      );
+
+      if (latestSignInResponse) {
+        const decodedUser = jwt_decode(
+          latestSignInResponse.response.data.token
+        );
+        setLoginState(
+          true,
+          latestSignInResponse.response.data.token,
+          decodedUser
+        );
+      } else {
+        throw new Error('Token validation failed');
+      }
+    } catch (error) {
+      setError('Token validation failed');
+      setLoginState(false, null, {}, 'Token validation failed');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [directedResponses, setLoginState]);
 
   const login = async (username, password) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${REACT_APP_SERVER}/api/users/signin`,
         { username, password },
         {
@@ -82,8 +81,14 @@ export default function AuthProvider(props) {
           },
         }
       );
-      validateToken(response.data.token);
-      return response.data.token;
+
+      await fetchDirectedResponses(); // Update directedResponses in utilityContext
+
+      validateToken();
+      return {
+        loggedIn: true,
+        token,
+      };
     } catch (error) {
       setError('Login failed');
       setLoginState(false, null, {}, 'Login failed');
@@ -98,18 +103,13 @@ export default function AuthProvider(props) {
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/signup`,
         {
-          login_data: {
-            username,
-            password,
-            email,
-            role_data,
-          },
+          login_data: { username, password, email, role_data },
           basic_info,
         }
       );
-      validateToken(response.data.token);
+      await validateToken(response.data.token);
       return response.data.token;
-    } catch (error) {
+    } catch (err) {
       setError('Signup failed');
       setLoginState(false, null, {}, 'Signup failed');
     } finally {
@@ -119,33 +119,44 @@ export default function AuthProvider(props) {
 
   const logout = () => {
     removeCookie('auth');
-    removeCookie('userCookie');
-    localStorage.removeItem('isloggedin');
     setLoginState(false, null, {});
   };
 
   useEffect(() => {
-    const qs = new URLSearchParams(window.location.search);
-    const tokenCheck = qs.get('token') || cookies.auth || null;
-    if (tokenCheck) validateToken(tokenCheck);
+    const token =
+      new URLSearchParams(window.location.search).get('token') || cookies.auth;
+    if (token) validateToken(token);
   }, [validateToken, cookies.auth]);
 
+  const contextValue = {
+    isLoading,
+    isloggedin,
+    user: users.find((u) => u.id === user.id) || user,
+    users,
+    error,
+    login,
+    logout,
+    signup,
+    setUser,
+    setLoginState,
+    validateToken,
+    // updateUser,
+  };
+  useEffect(() => {
+    console.log('AUTH CONTEXT VALUE:', contextValue);
+  }, [
+    // isLoading,
+    // isloggedin,
+    // user,
+    // users,
+    // error,
+    login,
+    logout,
+    signup,
+    setUser,
+  ]);
+
   return (
-    <AuthContext.Provider
-      value={{
-        isLoading,
-        isloggedin,
-        can,
-        login,
-        logout,
-        signup,
-        user,
-        userId: user.id,
-        error,
-        token,
-      }}
-    >
-      {props.children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }

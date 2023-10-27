@@ -24,7 +24,7 @@ export const fetchWrapper = async (url, method, body = null) => {
 // Remove duplicate collections
 export const removeDuplicateCollections = (collections) => {
   const uniqueCollections = {};
-  collections.forEach((collection) => {
+  collections?.forEach((collection) => {
     uniqueCollections[collection._id] = collection;
   });
   return Object.values(uniqueCollections);

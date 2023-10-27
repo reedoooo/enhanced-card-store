@@ -21,10 +21,11 @@ const carouselImages = [
 const HomeBanner = ({ children }) => {
   return (
     <Box
+      className="home-banner"
       sx={{
         backgroundImage: (theme) =>
-          `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-        minHeight: '100vh',
+          `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.secondary.main})`,
+        Height: '100vh',
         padding: 4,
         display: 'flex',
         alignItems: 'center',
@@ -33,16 +34,6 @@ const HomeBanner = ({ children }) => {
     >
       {children}
     </Box>
-  );
-};
-
-const WelcomeMessage = () => {
-  return (
-    <HeaderTitle
-      title="Welcome to Our Application!"
-      size="huge"
-      location={'center'}
-    />
   );
 };
 
@@ -58,9 +49,10 @@ const CarouselImage = ({ image, caption }) => {
         sx={{
           position: 'absolute',
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: (theme) => theme.palette.secondary.main,
+          color: (theme) =>
+            theme.palette.secondary.contrastText || 'common.white',
           width: '100%',
-          color: 'common.white',
           padding: 2,
           textAlign: 'center',
         }}
@@ -96,33 +88,51 @@ const CarouselContainer = ({ isMounted }) => {
 };
 
 const HomePage = () => {
+  const classes = useStyles();
   const theme = useTheme();
-  const isMounted = useRef(true); // Initialize a ref to track if the component is mounted
+  const isMounted = useRef(true);
 
   useEffect(() => {
     return () => {
       isMounted.current = false;
     };
   }, []);
-  return (
-    <>
-      {/* <Hero /> */}
 
-      <HomeBanner>
-        <Container
-          sx={{
-            padding: 3,
-            borderRadius: 2,
-            backgroundColor: 'background.paper',
-            boxShadow: (theme) => theme.shadows[10],
-          }}
-          maxWidth="md"
+  return (
+    <HomeBanner>
+      <Container
+        sx={{
+          padding: 3,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+          boxShadow: theme.shadows[10],
+        }}
+        maxWidth="md"
+      >
+        <HeaderTitle
+          title="Welcome to Our Application!"
+          size="huge"
+          location="center"
+        />
+        <Carousel
+          showThumbs={false}
+          showStatus={false}
+          infiniteLoop
+          useKeyboardArrows
+          autoPlay
+          className={classes.carouselContainer}
         >
-          <WelcomeMessage />
-          <CarouselContainer isMounted={isMounted} />
-        </Container>
-      </HomeBanner>
-    </>
+          {carouselImages.map(({ image, caption }, index) => (
+            <CarouselImage
+              key={index}
+              image={image}
+              caption={caption}
+              classes={classes}
+            />
+          ))}
+        </Carousel>
+      </Container>
+    </HomeBanner>
   );
 };
 
