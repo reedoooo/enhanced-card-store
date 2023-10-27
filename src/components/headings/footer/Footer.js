@@ -44,8 +44,8 @@ const Footer = () => {
   return (
     <FooterWrapper>
       <FooterText>
-        &copy; {new Date().getFullYear()} Reed Vogt | Designed with ❤️ by{' '}
-        <FooterLink href="https://yourportfolio.com">Your Portfolio</FooterLink>
+        &copy; {new Date().getFullYear()} Reed Vogt | Designed with ❤️ by
+        <FooterLink href="https://reedvogt.com">ReedVogt.com</FooterLink>
       </FooterText>
     </FooterWrapper>
   );

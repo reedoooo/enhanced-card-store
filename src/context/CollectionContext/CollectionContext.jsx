@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import React, {
   createContext,
   useState,
@@ -20,9 +22,34 @@ import { useCombinedContext } from '../CombinedProvider.jsx';
 import { useUserContext } from '../UserContext/UserContext.js';
 import moment from 'moment';
 // import { useUserContext } from '../UserContext/UserContext.js';
-export const CollectionContext = createContext(null);
+// 1. Define a default context value
+const defaultContextValue = {
+  allCollections: [],
+  allCardPrices: [],
+  xy: [],
+  selectedCollection: {},
+  collectionData: initialCollectionState,
+  totalCost: 0,
+  openChooseCollectionDialog: false,
+  updatedPricesFromCombinedContext: {},
+  setUpdatedPricesFromCombinedContext: () => {},
+  setOpenChooseCollectionDialog: () => {},
+  calculateTotalPrice: () => {},
+  getTotalCost: () => {},
+  createUserCollection: () => {},
+  removeCollection: () => {},
+  fetchAllCollectionsForUser: () => {},
+  setSelectedCollection: () => {},
+  setAllCollections: () => {},
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+};
+
+// 2. Replace null with the default value when creating the context
+export const CollectionContext = createContext(defaultContextValue);
+
 const filterOutDuplicateYValues = (datasets) => {
-  console.log('DATASETS:', datasets);
+  // console.log('DATASETS:', datasets);
   const seenYValues = new Set();
   return datasets?.filter((data) => {
     const yValue = data?.y;
@@ -40,10 +67,12 @@ const transformChartData = (chartData) => {
   if (Array.isArray(chartData?.datasets)) {
     chartData?.datasets?.forEach((dataset) => {
       dataset.data?.forEach((dataEntry) => {
-        const { x, y } = dataEntry.xy;
-        if (x && y !== undefined) {
-          pointsArray.push(dataEntry.xy);
-        }
+        dataEntry.xys?.forEach((xyEntry) => {
+          const { x, y } = xyEntry.data;
+          if (x && y !== undefined) {
+            pointsArray.push({ x, y });
+          }
+        });
       });
     });
   } else {
@@ -56,11 +85,56 @@ const transformChartData = (chartData) => {
   return pointsArray;
 };
 
-const createDataset = (label, priceData) => ({
-  name: label,
-  color: 'blue',
-  data: priceData?.map(({ x, y }) => ({ x, y })),
-});
+function convertData(originalData) {
+  let finalDataForChart = [];
+
+  const { datasets } = originalData;
+
+  if (Array.isArray(datasets) && datasets.length > 0) {
+    const lastDataset = datasets[datasets.length - 1];
+
+    if (Array.isArray(lastDataset.data) && lastDataset.data.length > 0) {
+      lastDataset.data.forEach((dataEntry) => {
+        dataEntry.xys?.forEach((xyEntry) => {
+          const { x, y } = xyEntry.data;
+          if (x && y !== undefined) {
+            finalDataForChart.push({ x, y });
+          }
+        });
+      });
+    }
+  }
+
+  return {
+    ...originalData,
+    finalDataForChart,
+  };
+}
+const isEmpty = (obj) => {
+  return (
+    [Object, Array].includes((obj || {}).constructor) &&
+    !Object.entries(obj || {}).length
+  );
+};
+const validateData = (data, eventName, functionName) => {
+  const dataType = typeof data;
+  console.log(
+    `[Info] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}`
+  );
+  if (data === null || data === undefined) {
+    console.warn(
+      `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
+    );
+    return false;
+  }
+  if (isEmpty(data)) {
+    console.error(
+      `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
+    );
+    return false;
+  }
+  return true;
+};
 
 const handleCardAddition = (currentCards, cardToAdd) => {
   // Check if the card already exists in the currentCards array
@@ -100,13 +174,27 @@ const handleCardRemoval = (currentCards, cardToRemove) => {
 };
 
 export const CollectionProvider = ({ children }) => {
+  // const { cardPrices } = useCombinedContext();
   const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
   const [cookies] = useCookies(['userCookie']);
   const { triggerCronJob } = useUserContext();
-
   const [collectionData, setCollectionData] = useState(initialCollectionState);
   const [allCollections, setAllCollections] = useState([]);
+  const [allCardPrices, setAllCardPrices] = useState([]);
+  const [xyData, setXyData] = useState([
+    // {
+    //   label: '',
+    //   data: [],
+    // },
+  ]); // New state to hold xy data
+  // const [updatedPrices, setUpdatedPrices] = useState([]);
+  const [
+    updatedPricesFromCombinedContext,
+    setUpdatedPricesFromCombinedContext,
+  ] = useState({});
   const [selectedCollection, setSelectedCollection] = useState({});
+  const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
+    useState(false);
   const chartData = selectedCollection?.chartData || {};
   // const datasets = chartData?.datasets || [];
   const userId = cookies.userCookie?.id;
@@ -129,22 +217,49 @@ export const CollectionProvider = ({ children }) => {
   };
 
   const fetchAndSetCollections = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      console.warn('userId is not set, aborting fetchAndSetCollections.');
+      return;
+    }
 
     try {
+      console.log('Fetching collections...');
       const collections = await fetchWrapper(
         `${BASE_API_URL}/${userId}/collections`,
         'GET'
       );
+
+      console.log('Fetched collections:', collections);
+
+      if (!collections) {
+        console.warn('No collections returned from the server.');
+        // Consider setting an empty or error state here
+        return;
+      }
+
       const uniqueCollections = removeDuplicateCollections(collections);
+      console.log('Unique collections:', uniqueCollections);
+
       // Filter out invalid collections
       const validCollections = uniqueCollections.filter(Boolean);
 
-      validCollections.forEach((collection) => {
-        collection.totalPrice = calculateTotalFromAllCardPrices(
-          collection.allCardPrices
-        );
-      });
+      if (Array.isArray(validCollections)) {
+        console.log('Valid collections:', validCollections);
+        validCollections.forEach((collection) => {
+          if (collection && collection.allCardPrices) {
+            collection.totalPrice = calculateTotalFromAllCardPrices(
+              collection.allCardPrices
+            );
+          } else {
+            console.warn(
+              'Invalid collection or missing allCardPrices:',
+              collection
+            );
+          }
+        });
+      } else {
+        console.error('Valid collections is not an array', collections);
+      }
 
       setAllCollections(validCollections);
       setCollectionData(
@@ -158,8 +273,15 @@ export const CollectionProvider = ({ children }) => {
           : validCollections[0]
       );
     } catch (error) {
-      console.error(`Failed to fetch collections: ${error.message}`);
-      // Consider setting an error state here
+      if (error && error.message) {
+        console.error(`Failed to fetch collections: ${error.message}`);
+        // Consider setting an error state here, for example:
+        // setErrorState(error.message);
+      } else {
+        console.error('An unexpected error occurred.');
+        // Consider setting a generic error state here, for example:
+        // setErrorState('An unexpected error occurred.');
+      }
     }
   }, [userId]);
 
@@ -193,49 +315,66 @@ export const CollectionProvider = ({ children }) => {
     [findCollectionIndex]
   );
 
-  const createUserCollection = async (
-    userId,
-    collection,
-    name,
-    description
-  ) => {
-    if (!selectedCollection || !userId) {
-      console.error(
-        'Selected collection is undefined or missing _id property.'
-      );
+  const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
+
+  const handleApiResponse = (response, method) => {
+    if (method === 'POST' && response.data?.newCollection) {
+      return response.data.newCollection;
+    }
+    if (method === 'PUT' && response.data?.updatedCollection) {
+      return response.data.updatedCollection;
+    }
+    throw new Error('Unexpected response format');
+  };
+
+  const createUserCollection = async (userId, collection) => {
+    if (
+      !validateData(
+        collection,
+        'Create User Collection',
+        'createUserCollection'
+      )
+    ) {
+      console.error('Validation failed for collection data.');
       return;
     }
 
-    console.log('COLLECTION:', collection);
-    console.log('NAME:', name);
-    console.log('DESCRIPTION:', description);
-    console.log('SELECTED COLLECTION:', selectedCollection);
+    if (!userId) {
+      console.error('User ID is undefined.');
+      return;
+    }
+
+    const payload = {
+      name: collection.name,
+      description: collection.description,
+      userId: collection.userId || userId,
+      totalCost: 0,
+      totalPrice: 0,
+      quantity: 0,
+      totalQuantity: 0,
+      xys: xyData || [],
+      allCardPrices: [],
+      cards: [],
+      chartData: {},
+    };
 
     try {
-      const url = `${BASE_API_URL}/${collection.userId}/collections/newCollection/${collection.userId}`;
+      const url = createApiUrl(`${userId}/collections/newCollection/${userId}`);
+      const response = await fetchWrapper(url, 'POST', payload);
 
-      const initialData = {
-        name: collection?.name || '',
-        description: collection?.description || '',
-        userId: collection?.userId,
-        totalCost: 0,
-        totalPrice: 0,
-        quantity: 0,
-        totalQuantity: 0,
-        allCardPrices: [],
-        cards: [],
-      };
-
-      const response = await fetchWrapper(url, 'POST', initialData);
-      if (response.error) {
-        console.error('Failed to create a new collection:', response.error);
+      if (!response) {
+        console.error('Failed to connect to the server.');
         return;
       }
 
-      const { savedCollection } = response;
+      if (response.error) {
+        console.error(
+          `Failed to create a new collection: ${response.error.message}`
+        );
+        return;
+      }
 
-      console.log('SAVED COLLECTION:', savedCollection);
-      // Uncomment the lines below and provide the correct function implementation if necessary
+      const savedCollection = handleApiResponse(response, 'POST');
       updateCollectionData(savedCollection, 'allCollections');
       updateCollectionData(savedCollection, 'collectionData');
     } catch (error) {
@@ -249,25 +388,20 @@ export const CollectionProvider = ({ children }) => {
       return;
     }
 
-    const collectionId = collection._id;
-
-    console.log('COLLECTION ID:', collection);
-
     try {
-      const url = `${BASE_API_URL}/${userId}/collections/${collectionId}`;
+      const url = createApiUrl(`${userId}/collections/${collection._id}`);
       const response = await fetchWrapper(url, 'DELETE');
+
       if (response.error) {
         console.error('Failed to delete the collection:', response.error);
         return;
       }
 
-      // Remove the deleted collection from allCollections
-      setAllCollections((prevCollections) =>
-        prevCollections.filter((collection) => collection._id !== collectionId)
+      setAllCollections((prev) =>
+        prev.filter((item) => item._id !== collection._id)
       );
 
-      // If the deleted collection is the currently selected one, reset selectedCollection
-      if (selectedCollection._id === collectionId) {
+      if (selectedCollection._id === collection._id) {
         setSelectedCollection(initialCollectionState);
         setCollectionData(initialCollectionState);
       }
@@ -285,6 +419,7 @@ export const CollectionProvider = ({ children }) => {
     return cardsToUpdate.map((card) => {
       const cardPrice = card.card_prices?.[0]?.tcgplayer_price;
       const computedPrice = cardPrice * card.quantity;
+      console.log('COMPUTED PRICE:', computedPrice);
       const allDatasets = [
         ...(card?.chart_datasets || []),
         { x: moment().format('YYYY-MM-DD HH:mm'), y: computedPrice },
@@ -296,28 +431,67 @@ export const CollectionProvider = ({ children }) => {
     });
   };
 
-  const getNewChartData = (activeCollection, updatedPrice, newDataSet) => ({
-    name: `Chart for Collection: ${activeCollection?.name}`,
-    userId: userId,
-    updatedPrice: updatedPrice,
-    datasets: [...(selectedCollection?.chartData?.datasets || []), newDataSet],
-    allXYValues: [
+  const getUniqueFilteredXYValues = (allXYValues) => {
+    const uniqueXValues = new Set();
+
+    return allXYValues
+      .filter((entry) => entry.y !== 0)
+      .filter((entry) => {
+        if (!uniqueXValues.has(entry.x)) {
+          uniqueXValues.add(entry.x);
+          return true;
+        }
+        return false;
+      });
+  };
+
+  const getNewChartData = (activeCollection, updatedPrice, newDataSet) => {
+    const combinedXYValues = [
       ...(selectedCollection?.chartData?.datasets?.flatMap(
         (dataset) => dataset.data
       ) || []),
       newDataSet.data[0].xy,
-    ],
-  });
+    ];
+
+    const filteredXYValues = getUniqueFilteredXYValues(combinedXYValues);
+
+    return {
+      name: `Chart for Collection: ${activeCollection?.name}`,
+      userId: userId,
+      updatedPrice: updatedPrice,
+      xys: xyData || [],
+      datasets: [
+        ...(selectedCollection?.chartData?.datasets || []),
+        newDataSet,
+      ],
+      allXYValues: filteredXYValues,
+    };
+  };
 
   const addOrRemoveCard = useCallback(
     async (card, cardInfo, operation) => {
       const collectionId = selectedCollection?._id || allCollections[0]?._id;
       if (!collectionId) {
         console.error('No valid collection selected.');
+        setOpenChooseCollectionDialog(true);
         return;
       }
 
-      const updatedCards = getUpdatedCards(selectedCollection, card, operation);
+      // const updatedCards = getUpdatedCards(selectedCollection, card, operation);
+      let updatedCards;
+      if (operation === 'update') {
+        updatedCards = [...selectedCollection.cards];
+        const cardIndex = updatedCards.findIndex((c) => c.id === card.id);
+        if (cardIndex !== -1) {
+          updatedCards[cardIndex] = {
+            ...updatedCards[cardIndex],
+            ...card, // update card's details from the given card.
+            quantity: updatedCards[cardIndex].quantity, // ensure quantity doesn't change.
+          };
+        }
+      } else {
+        updatedCards = getUpdatedCards(selectedCollection, card, operation);
+      }
       const allCardPrices = updatedCards.flatMap((card) =>
         Array(card.quantity).fill(card.card_prices?.[0]?.tcgplayer_price)
       );
@@ -328,13 +502,15 @@ export const CollectionProvider = ({ children }) => {
       const newDataSet = {
         data: [
           {
-            xy: {
-              label: `Update Number ${
-                selectedCollection?.chartData?.datasets?.length + 1 || 1
-              }`,
-              x: moment().format('YYYY-MM-DD HH:mm'),
-              y: updatedPrice,
-            },
+            xy: [
+              {
+                label: `Update Number ${
+                  selectedCollection?.chartData?.datasets?.length + 1 || 1
+                }`,
+                x: moment().format('YYYY-MM-DD HH:mm'),
+                y: updatedPrice,
+              },
+            ],
             additionalPriceData: {
               priceChanged: priceDifference !== 0,
               initialPrice: initialPrice,
@@ -346,12 +522,16 @@ export const CollectionProvider = ({ children }) => {
           },
         ],
       };
-
+      console.log('XYDATASET-----1:', xyData);
       const updateInfo = {
         ...cardInfo,
+        name: selectedCollection?.name,
+        description: selectedCollection?.description,
         cards: updatedCards,
         userId: userId,
         totalCost: updatedPrice,
+        totalPrice: updatedPrice,
+        xys: xyData,
         quantity: updatedCards.length,
         totalQuantity: updatedCards.reduce(
           (acc, card) => acc + card.quantity,
@@ -367,6 +547,10 @@ export const CollectionProvider = ({ children }) => {
       };
 
       const updatedCollection = { ...selectedCollection, ...updateInfo };
+      console.log(
+        'UPDATED COLLECTION DATA PRIOR TO SERVER UPDATE:',
+        updatedCollection
+      );
       await updateActiveCollection(updatedCollection);
       updateCollectionData(updatedCollection, 'selectedCollection');
       updateCollectionData(updatedCollection, 'allCollections');
@@ -375,36 +559,62 @@ export const CollectionProvider = ({ children }) => {
       selectedCollection,
       allCollections,
       userId,
+      openChooseCollectionDialog,
       handleCardAddition,
       handleCardRemoval,
       updateCollectionData,
+      setOpenChooseCollectionDialog,
     ]
   );
 
   const updateActiveCollection = useCallback(
-    async (updatedCollectionData) => {
-      if (!updatedCollectionData?._id) {
-        console.error('Collection ID or Data is undefined.');
-        return;
-      }
-      const url = `${BASE_API_URL}/${userId}/collections/${updatedCollectionData._id}`;
+    async (collectionData) => {
+      const isCreatingNew = !collectionData?._id;
+      const endpoint = isCreatingNew
+        ? createApiUrl(`${userId}/collections`)
+        : createApiUrl(`${userId}/collections/${collectionData._id}`);
+      const method = isCreatingNew ? 'POST' : 'PUT';
+
       try {
-        const { updatedCollection } = await fetchWrapper(
-          url,
-          'PUT',
-          updatedCollectionData
-        );
+        const response = await fetchWrapper(endpoint, method, collectionData);
+        const updatedCollection = handleApiResponse(response, method);
+
+        if (!isCreatingNew && !updatedCollection) {
+          throw new Error('Failed to update the existing collection');
+        }
         const newChartData = {
           ...updatedCollection.chartData,
+          xys: [
+            {
+              label: `Update Number ${
+                updatedCollection?.chartData?.datasets?.length + 1 || 1
+              }`,
+              data: [
+                {
+                  x: moment().format('YYYY-MM-DD HH:mm'),
+                  y: updatedCollection.totalPrice,
+                },
+              ],
+            },
+          ],
           datasets: [
             ...(updatedCollection.chartData?.datasets || []),
             {
               data: [
                 {
-                  xy: {
-                    x: moment().format('YYYY-MM-DD HH:mm'),
-                    y: updatedCollection.totalPrice,
-                  },
+                  xys: [
+                    {
+                      label: `Update Number ${
+                        updatedCollection?.chartData?.datasets?.length + 1 || 1
+                      }`,
+                      data: [
+                        {
+                          x: moment().format('YYYY-MM-DD HH:mm'),
+                          y: updatedCollection.totalPrice,
+                        },
+                      ],
+                    },
+                  ],
                   additionalPriceData: {
                     priceChanged: false,
                     initialPrice:
@@ -419,7 +629,11 @@ export const CollectionProvider = ({ children }) => {
           ],
         };
         updatedCollection.chartData = newChartData;
-        console.log('UPDATED COLLECTION FROM SERVER:', updatedCollection);
+
+        const convertedData = convertData(newChartData);
+        updatedCollection.xys = convertedData;
+        // setXyData(convertedData.finalDataForChart);
+        xyData.push(convertedData.finalDataForChart);
         updateCollectionData(updatedCollection, 'selectedCollection');
         updateCollectionData(updatedCollection, 'allCollections');
       } catch (error) {
@@ -428,6 +642,60 @@ export const CollectionProvider = ({ children }) => {
     },
     [userId, updateCollectionData]
   );
+  // console.log(
+  //   '<----------$$$$$$$$$CONVERTED DATA FOR CHART$$$$$$$$$---------->',
+  //   xyData
+  // );
+  // useEffect(() => {
+  //   // Check if the prices are updated or new cards are added
+  //   const updatedPricesArray =
+  //     updatedPricesFromCombinedContext?.updatedPrices || [];
+
+  //   if (!Array.isArray(updatedPricesArray)) {
+  //     return; // Exit the useEffect early if not an array
+  //   }
+
+  useEffect(() => {
+    const updatedPricesArray = Object.keys(
+      updatedPricesFromCombinedContext || {}
+    ).map((cardId) => updatedPricesFromCombinedContext[cardId]);
+
+    console.log(
+      '[1][PRICE UPDATE: COMBINED CONTEXT IN COLLECTION][UPDATED PRICES]==========>',
+      updatedPricesArray
+    );
+
+    const updatedCardPrices = [];
+
+    updatedPricesArray.forEach((card) => {
+      const currentCardPrice = selectedCollection?.cards[card?.id]?.price;
+
+      // Check if this is the special tagged card
+      if (card._tag === 'updated') {
+        console.log('Found the special card:', card);
+      }
+
+      if (card?.updatedPrice !== currentCardPrice) {
+        updatedCardPrices.push(card);
+        console.log(
+          '[2][PRICE UPDATE: COMBINED CONTEXT IN COLLECTION][CARD]==========>',
+          card
+        );
+        console.log(
+          'CARD FROM SELECTED COLLECTIONS:',
+          selectedCollection.cards[card.id]
+        );
+      } else {
+        console.log('Price has not been updated for card with ID:', card.id);
+      }
+    });
+
+    if (updatedCardPrices.length > 0) {
+      updatedCardPrices.forEach((card) => {
+        addOrRemoveCard(card, { updated: true }, 'update');
+      });
+    }
+  }, [updatedPricesFromCombinedContext]);
 
   const contextValue = useMemo(
     () => ({
@@ -436,6 +704,16 @@ export const CollectionProvider = ({ children }) => {
       selectedCollection,
       collectionData,
       totalCost,
+
+      allCardPrices: selectedCollection?.allCardPrices || [],
+      xys: xyData || [],
+      openChooseCollectionDialog,
+      updatedPricesFromCombinedContext,
+      setUpdatedPricesFromCombinedContext: (updatedPrices) => {
+        // This is the function that will be passed to the combined context to update the prices
+        setUpdatedPricesFromCombinedContext(updatedPrices);
+      },
+      setOpenChooseCollectionDialog,
       // FUNCTIONS
       calculateTotalPrice: () => getCardPrice(selectedCollection),
       getTotalCost: () => getTotalCost(selectedCollection),
@@ -457,7 +735,8 @@ export const CollectionProvider = ({ children }) => {
     console.log('COLLECTION CONTEXT: ', {
       contextValue,
     });
-  }, [contextValue]);
+  }, [contextValue, updatedPricesFromCombinedContext]);
+  // Assuming updatedPrices is passed as a prop or state
 
   useEffect(() => {
     if (selectedCollection && totalCost) {
@@ -479,4 +758,18 @@ export const CollectionProvider = ({ children }) => {
       {children}
     </CollectionContext.Provider>
   );
+};
+
+// useCollectionStore.js
+// import { useContext } from 'react';
+// import { CollectionContext } from '../CollectionContext/CollectionContext';
+
+export const useCollectionStore = () => {
+  const context = useContext(CollectionContext);
+  if (!context) {
+    throw new Error(
+      'useCollectionStore must be used within a CollectionProvider'
+    );
+  }
+  return context;
 };

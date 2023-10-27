@@ -12,170 +12,20 @@ import {
   TextField,
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
-import placeholder from '../assets/placeholder.jpeg';
+import placeholder from '../assets/images/placeholder.jpeg';
 import UserStats from '../components/other/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
 import { useCombinedContext } from '../context/CombinedProvider';
 import { useCollectionStore } from '../context/hooks/collection';
-
-const AvatarStyled = styled(Avatar)({
-  width: 60,
-  height: 60,
-  marginBottom: 15,
-});
-
-const TypographyStyled = styled(Typography)({
-  marginBottom: 15,
-});
-
-const IconButtonStyled = styled(IconButton)({
-  marginBottom: 20,
-});
-
-const DataBoxStyled = styled(Box)({
-  margin: '10px 0',
-  padding: '10px',
-  border: '1px solid #ddd',
-  borderRadius: '8px',
-  textAlign: 'center',
-  width: '100%',
-});
-
-const ButtonStyled = styled(Button)({
-  margin: '15px 0',
-  padding: '10px',
-  color: '#fff',
-  backgroundColor: '#3f51b5',
-  '&:hover': {
-    backgroundColor: '#303f9f',
-  },
-});
-
-const DataTextStyled = styled(Typography)({
-  margin: '5px 0',
-  fontSize: '0.9rem',
-});
-
-// function convertCardToChartData(cardData, userId) {
-//   const currentDate = new Date();
-
-//   // Extracting values from the card data
-//   const cardName = cardData.name;
-//   const cardPrice = cardData.card_prices[0]?.tcgplayer_price || 0; // Assuming tcgplayer_price is the main price point
-//   const totalQuantity = cardData.quantity;
-//   const totalPrice = cardPrice * totalQuantity;
-
-//   // Constructing the data point
-//   const dataPoint = {
-//     cardName: cardName,
-//     x: currentDate, // Current date for the data point
-//     y: cardPrice, // Single card price
-//     totalQuantity: totalQuantity,
-//     totalPrice: totalPrice, // Total price for this card
-//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the data point
-//   };
-
-//   // Constructing the dataset (assuming you might have more datasets in future)
-//   const dataset = {
-//     label: cardName, // Using card name as label for the dataset
-//     totalquantity: totalQuantity,
-//     data: {
-//       points: [dataPoint], // Initial single data point for the card
-//     },
-//     // You can also define other properties like backgroundColor, borderColor etc.
-//   };
-
-//   // Constructing the entire chart data
-//   const chartData = {
-//     // _id: new mongoose.Types.ObjectId(), // New MongoDB Object ID for the chart data
-//     name: cardName, // Using card name as chart name
-//     userId: userId,
-//     datasets: [dataset], // Initial single dataset for the chart data
-//     // You can also define other properties like collectionId, chartId etc.
-//   };
-
-//   return chartData;
-// }
-
-const ProfileForm = ({ userName, name, age, status, onSave }) => {
-  const [formData, setFormData] = useState({
-    userName: userName || '', // default to empty string if undefined
-    name: name || '',
-    age: age || '',
-    status: status || '',
-  });
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  useEffect(() => {
-    setFormData({
-      userName: userName || '',
-      name: name || '',
-      age: age || '',
-      status: status || '',
-    });
-  }, [userName, name, age, status]);
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        label="Username"
-        id="userName"
-        value={formData?.userName}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Name"
-        id="name"
-        value={formData?.name}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Age"
-        id="age"
-        value={formData?.age}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Status"
-        id="status"
-        value={formData?.status}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      {/* Add more TextField components as needed */}
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Save Changes
-      </Button>
-    </form>
-  );
-};
-
-ProfileForm.propTypes = {
-  userName: PropTypes.string,
-  name: PropTypes.string,
-  age: PropTypes.string,
-  status: PropTypes.string,
-  onSave: PropTypes.func.isRequired,
-};
+import {
+  AvatarStyled,
+  TypographyStyled,
+  IconButtonStyled,
+  ButtonStyled,
+} from './StyledComponents';
+import ProfileForm from '../components/forms/ProfileForm';
 
 const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();
@@ -190,11 +40,7 @@ const ProfilePage = () => {
     handleSend,
     handleRequestChartData,
     handleRequestCollectionData,
-    // handleRequestCollectionData,
-    handleSendData,
-    handleSendChart,
-    handleCronRequest,
-    chartDataToSend,
+    handleRequestCronStop,
     handleSendAllCardsInCollections,
     listOfMonitoredCards,
     handleRetreiveListOfMonitoredCards,
@@ -263,30 +109,14 @@ const ProfilePage = () => {
     }
   };
 
-  // const handleSendCollectionData = () => {
-  //   if (userId && selectedCollection) {
-  //     handleSendData({
-  //       userId,
-  //       collectionId: selectedCollection._id,
-  //       collectionData: selectedCollection.cards,
-  //     });
-  //   }
-  // };
+  const handleStopCronJob = () => {
+    if (userId) {
+      handleRequestCronStop(userId);
+      console.log('STOPPING CRON JOB');
+    }
 
-  // const handleSendChartData = () => {
-  //   if (userId && selectedCollection) {
-  //     const datasets = selectedCollection.cards.map((card) =>
-  //       convertCardToChartData(card, userId)
-  //     );
-  //     handleSendChart({
-  //       userId,
-  //       chartId: selectedCollection.chartId, // Assuming the collection object has a chartId field
-  //       datasets,
-  //       name: selectedCollection.name,
-  //     });
-  //   }
-  // };
-  // const chartData = {};
+    openSnackbar('Cron job stopped.');
+  };
 
   return (
     <Container maxWidth="sm">
@@ -329,39 +159,13 @@ const ProfilePage = () => {
         >
           Trigger Cron Job
         </ButtonStyled>
-
-        {/* <ButtonStyled
+        <ButtonStyled
           variant="contained"
-          color="primary"
-          onClick={handleSendChartData} // directly calling the function without needing to pass chartData
+          color="secondary"
+          onClick={handleStopCronJob}
         >
-          Request Chart Data Update
-        </ButtonStyled> */}
-
-        {/* <ButtonStyled
-          variant="contained"
-          color="primary"
-          onClick={handleSendCollectionData}
-        >
-          Send Collection Data
-        </ButtonStyled> */}
-        {/* {chartDataToSend?.datasets?.map((dataset) =>
-          dataset.data?.points?.map((data) => (
-            <DataBoxStyled key={data.cardId || data._id}>
-              {data?.x && (
-                <>
-                  <DataTextStyled variant="body2">
-                    Date: {new Date(data.x).toLocaleDateString()}
-                  </DataTextStyled>
-                  <DataTextStyled variant="body2">
-                    Time: {new Date(data.x).toLocaleTimeString()}
-                  </DataTextStyled>
-                </>
-              )}
-              <DataTextStyled variant="body2">Value: {data?.y}</DataTextStyled>
-            </DataBoxStyled>
-          ))
-        )} */}
+          Stop Cron Job
+        </ButtonStyled>
       </Box>
       <Box mt={3}>
         <ProfileForm

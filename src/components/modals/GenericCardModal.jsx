@@ -1,10 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   Snackbar,
+  List,
+  ListItem,
+  ButtonBase,
+  ListItemText,
+  Divider,
+  Typography,
 } from '@mui/material';
 import CardMediaSection from '../media/CardMediaSection';
 import CardDetailsContainer from './cardModal/CardDetailsContainer';
@@ -13,6 +19,7 @@ import { DeckContext } from '../../context/DeckContext/DeckContext';
 import { CartContext } from '../../context/CartContext/CartContext';
 import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
 import { makeStyles } from '@mui/styles';
+import { useCollectionStore } from '../../context/hooks/collection';
 
 const useStyles = makeStyles((theme) => ({
   actionButtons: {
@@ -40,15 +47,35 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     padding: '2rem',
   },
+  listItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: theme.spacing(2),
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    marginBottom: theme.spacing(2),
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  listItemText: {
+    flex: 1,
+    textAlign: 'left',
+    marginLeft: theme.spacing(3),
+  },
 }));
 
-const GenericCardModal = ({ isOpen, onClose, card, context }) => {
+const GenericCardModal = ({ open, onClose, card, cardInfo, context }) => {
   const classes = useStyles();
   const deckContext = useContext(DeckContext);
   const cartContext = useContext(CartContext);
   const collectionContext = useContext(CollectionContext);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  if (!collectionContext) {
+    console.error("The component isn't wrapped with CollectionProvider");
+    return null;
+  }
 
   const contextProps =
     {
@@ -58,9 +85,31 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
       Collection: collectionContext,
     }[context] || {};
 
-  const productQuantity = contextProps.getCardQuantity
-    ? contextProps.getCardQuantity(card.id)
-    : 0;
+  const {
+    openChooseCollectionDialog,
+    setOpenChooseCollectionDialog,
+    allCollections,
+    fetchAllCollectionsForUser,
+    setSelectedCollection,
+  } = contextProps;
+  const handleSelectCollection = useCallback(
+    (collectionId) => {
+      const foundCollection = allCollections.find(
+        (collection) => collection._id === collectionId
+      );
+
+      if (foundCollection) {
+        setSelectedCollection(foundCollection);
+        setOpenChooseCollectionDialog(false);
+        setSnackbarMessage('Collection selected successfully!');
+        setOpenSnackbar(true);
+      } else {
+        setSnackbarMessage('Collection not found!');
+        setOpenSnackbar(true);
+      }
+    },
+    [allCollections, setSelectedCollection]
+  );
 
   const handleClose = (event, reason) => {
     if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
@@ -70,10 +119,17 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
     }
   };
 
-  if (!card) return null;
+  // console.log('openChooseCollectionDialog', openChooseCollectionDialog);
 
+  // useEffect(() => {
+  //   if (openChooseCollectionDialog === true) {
+  //     // console.log('Fetching collections...', openChooseCollectionDialog);
+  //     fetchAllCollectionsForUser();
+  //   }
+  // }, [openChooseCollectionDialog]);
+  // console.log('open --------> ', open);
   return (
-    <Dialog open={isOpen} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <Grid container spacing={2}>
@@ -93,21 +149,65 @@ const GenericCardModal = ({ isOpen, onClose, card, context }) => {
         <>
           <GenericActionButtons
             card={card}
+            cardInfo={cardInfo}
             context={context}
+            component={'GenericCardModal'}
             label={`In ${context}`}
-            {...contextProps}
-            productQuantity={productQuantity}
+            productQuantity={contextProps.productQuantity}
           />
           {context === 'Deck' && (
-            <GenericActionButtons
-              card={card}
-              context={'Collection'}
-              label={'In Collection'}
-              {...contextProps}
-              productQuantity={productQuantity}
-            />
+            <>
+              <GenericActionButtons
+                card={card}
+                cardInfo={cardInfo}
+                context={'Collection'}
+                component={'GenericCardModal'}
+                label={'In Collection'}
+                productQuantity={
+                  contextProps.productQuantity || contextProps.totalQuantity
+                }
+              />
+              <button onClick={() => setOpenChooseCollectionDialog(true)}>
+                Open Dialog
+              </button>
+            </>
           )}
         </>
+      )}
+      {openChooseCollectionDialog && (
+        <Dialog
+          open={open}
+          onClose={() => setOpenChooseCollectionDialog(false)}
+        >
+          <DialogTitle>Select a Collection</DialogTitle>
+
+          <List className={classes.list}>
+            {allCollections.map((collection) => (
+              <React.Fragment key={collection._id}>
+                <ListItem className={classes.listItem}>
+                  <ButtonBase
+                    sx={{ width: '100%' }}
+                    onClick={() => handleSelectCollection(collection._id)}
+                  >
+                    <ListItemText
+                      primary={collection.name}
+                      className={classes.listItemText}
+                    />
+                  </ButtonBase>
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+          </List>
+
+          <Snackbar
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            open={openSnackbar}
+            onClose={() => setOpenSnackbar(false)}
+            message={snackbarMessage}
+            autoHideDuration={3000}
+          />
+        </Dialog>
       )}
       <Snackbar
         open={openSnackbar}

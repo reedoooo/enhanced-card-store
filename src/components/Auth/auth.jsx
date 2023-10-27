@@ -1,17 +1,18 @@
 import { useContext, memo } from 'react';
-import { useRoutes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthContext } from '../../context/Auth/authContext';
 
-function Auth({ children, capability }) {
-  const authContext = useContext(AuthContext);
+function Auth({ children }) {
+  const { isloggedin, user, can } = useContext(AuthContext);
 
-  const isLoggedIn = authContext.isLoggedIn;
-  const canDo = capability ? authContext.can(capability) : true;
+  console.log('isloggedin', isloggedin);
+  console.log('user', user);
 
-  const routes = useRoutes(children);
-
-  return isLoggedIn && canDo ? (
-    routes
+  return isloggedin ? (
+    <Routes>
+      {/* {can('admin') && <Route exact path="/admin" element={<AdminPage />} />} */}
+      {children}
+    </Routes>
   ) : (
     <p>You do not have permission to view this page.</p>
   );

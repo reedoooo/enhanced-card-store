@@ -1,80 +1,22 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useCookies } from 'react-cookie';
-import { UtilityContext } from '../UtilityContext/UtilityContext';
+import { createContext, useContext, useState } from 'react';
 
-export const ChartContext = createContext();
+const ChartContext = createContext();
 
-export const ChartDataProvider = ({ children }) => {
-  const [chartData, setChartData] = useState({});
-  const [{ userCookie }] = useCookies(['userCookie']);
-  const userId = userCookie?.id;
-  const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/chart-data`;
-  const { isCronJobTriggered, setIsCronJobTriggered } =
-    useContext(UtilityContext);
+export const useChartContext = () => {
+  const context = useContext(ChartContext);
+  if (!context) {
+    throw new Error('useChartContext must be used within a ChartProvider');
+  }
+  return context;
+};
 
-  const fetchData = async () => {
-    if (!userId) return;
-    try {
-      const response = await axios.get(`${BASE_API_URL}/${userId}`);
-      setChartData(response.data);
-    } catch (error) {
-      console.error('Error fetching updated data:', error);
-      // More informative error handling can be added here
-    }
-  };
-
-  // Effect for initial data fetch or when cron job triggers
-  // useEffect(() => {
-  //   if (isUpdated) {
-  //     fetchData();
-  //     setIsUpdated(false);
-  //   }
-  // }, [isUpdated, userId]);
-
-  const updateServerData = async (updatedData) => {
-    if (!userId) return;
-
-    const reducedData = updatedData?.reduce((accumulator, currentObject) => {
-      if (currentObject?.data && currentObject?.data?.length > 0) {
-        accumulator = [...accumulator, ...currentObject.data];
-      }
-      return accumulator;
-    }, []);
-
-    // Filter out identical data
-    const uniqueData = Array.from(
-      new Set(reducedData?.map(JSON.stringify))
-    ).map(JSON.parse);
-
-    try {
-      await axios.post(`${BASE_API_URL}/updateChart/${userId}`, {
-        data: uniqueData,
-      });
-      setChartData({ uniqueData });
-      setIsCronJobTriggered(true);
-    } catch (error) {
-      console.error('Error updating server data:', error);
-      // More informative error handling can be added here
-    }
-  };
-
-  useEffect(() => {
-    if (isCronJobTriggered) {
-      fetchData();
-      setIsCronJobTriggered(false);
-    }
-  }, [isCronJobTriggered, userId]);
+export const ChartProvider = ({ children }) => {
+  const [latestData, setLatestData] = useState(null);
+  const [timeRange, setTimeRange] = useState(24 * 60 * 60 * 1000); // Default to 24 hours
 
   return (
     <ChartContext.Provider
-      value={{
-        chartData,
-        setChartData,
-        updateServerData,
-        isCronJobTriggered,
-        setIsCronJobTriggered,
-      }}
+      value={{ latestData, setLatestData, timeRange, setTimeRange }}
     >
       {children}
     </ChartContext.Provider>

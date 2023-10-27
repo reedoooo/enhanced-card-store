@@ -1,138 +1,135 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuthContext } from '../../../context/hooks/auth';
+import TopBar from '../navigation/TopBar';
+import SideBar from '../navigation/SideBar';
+import { useSidebarContext } from '../../../context/SideBarProvider';
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Drawer,
-  Container,
-  Menu,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
-import { Link } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import { AuthContext } from '../../../context/Auth/authContext';
-import MenuItems from '../navigation/MenuItems';
-import theme from '../../../assets/styles/themes';
-import logo from '../../../assets/navlogo.png';
-import { Image } from '@mui/icons-material';
+  Home as HomeIcon,
+  Store as StoreIcon,
+  ShoppingCart as CartIcon,
+  Assessment as AssessmentIcon,
+  Deck as DeckOfCardsIcon,
+  Person as LoginIcon,
+} from '@mui/icons-material';
+import { Box } from '@mui/system';
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useContext(AuthContext);
-  const [anchorElNav, setAnchorElNav] = useState(null);
-
-  // Adjusted the breakpoint to 'xs' to switch to Drawer for smaller screens
-  const isXsDown = useMediaQuery(theme.breakpoints.down('xs'));
-
-  const handleDrawerOpen = () => setIsOpen(true);
-  const handleDrawerClose = () => setIsOpen(false);
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 598);
+  const {
+    isOpen,
+    toggleSidebar,
+    sidebarBackgroundColor,
+    sidebarImage,
+    setIsOpen,
+  } = useSidebarContext();
+  const menuItemsData = [
+    {
+      title: 'Store',
+      items: [
+        {
+          name: 'Home',
+          index: 0,
+          icon: <HomeIcon />,
+          to: '/home',
+          requiresLogin: false,
+        },
+        {
+          name: 'Store',
+          index: 1,
+          icon: <StoreIcon />,
+          to: '/store',
+          requiresLogin: true,
+        },
+        {
+          name: 'Deck Builder',
+          index: 2,
+          icon: <DeckOfCardsIcon />,
+          to: '/deckbuilder',
+          requiresLogin: true,
+        },
+        {
+          name: 'Cart',
+          index: 3,
+          icon: <CartIcon />,
+          to: '/cart',
+          requiresLogin: true,
+        },
+        {
+          name: 'Collection',
+          index: 4,
+          icon: <AssessmentIcon />,
+          to: '/collection',
+          requiresLogin: true,
+        },
+        {
+          name: 'Login',
+          index: 5,
+          icon: <LoginIcon />,
+          to: '/login',
+          requiresLogin: false,
+        },
+      ],
+    },
+  ];
+  const handleDrawerOpen = () => {
+    if (isMobileView && !isOpen) {
+      setIsOpen(true);
+    }
   };
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+
+  const handleDrawerClose = () => {
+    setIsOpen(false);
   };
 
-  const currentPage = window.location.pathname;
-  console.log('CURRENT PAGE:', currentPage);
+  const updateView = () => {
+    setIsMobileView(window.innerWidth <= 598);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateView);
+    if (!isMobileView && isOpen) {
+      handleDrawerClose();
+    }
+    if (!isMobileView && !isOpen) {
+      handleDrawerClose();
+    }
+    if (isMobileView && isOpen) {
+      handleDrawerOpen();
+    }
+    if (isMobileView && !isOpen) {
+      handleDrawerClose();
+    }
+    return () => window.removeEventListener('resize', updateView);
+  }, [isMobileView]);
 
   return (
-    <AppBar
-      position="sticky"
-      elevation={4}
-      sx={{ backgroundColor: theme.palette.primary.main, padding: '0 2em' }}
-      // maxWidth="lg"
-    >
-      <Container maxWidth="lg">
-        <Toolbar
+    <>
+      <TopBar
+        handleDrawerOpen={handleDrawerOpen}
+        handleDrawerClose={handleDrawerClose}
+        isOpen={isOpen}
+        isMobileView={isMobileView}
+        menuSections={isMobileView ? [] : menuItemsData} // Adjust menu items based on view
+      />
+      {isMobileView && ( // Only render SideBar in mobile view
+        <Box
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            maxWidth: '100vw',
+            textDecoration: 'none',
+            marginLeft: '1em',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={isXsDown ? handleDrawerOpen : handleOpenNavMenu}
-              sx={{ color: theme.palette.text.primary }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6">
-              <Link
-                to="/home"
-                underline="none"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  textDecoration: 'none',
-                  color: theme.palette.text.primary,
-                }}
-              >
-                <Image
-                  src={logo}
-                  alt="Logo"
-                  sx={{ height: '3em', marginLeft: '1em' }}
-                />
-              </Link>
-            </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 1 }}>
-            {isXsDown ? (
-              <Drawer anchor="right" open={isOpen} onClose={handleDrawerClose}>
-                <MenuItems
-                  isLoggedIn={isLoggedIn}
-                  logout={logout}
-                  handleDrawerClose={handleDrawerClose}
-                />
-              </Drawer>
-            ) : (
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  justifyContent: 'right',
-                  marginLeft: '30%',
-                  display: { xs: 'none', md: 'flex' },
-                }}
-              >
-                <MenuItems
-                  isLoggedIn={isLoggedIn}
-                  logout={logout}
-                  handleCloseNavMenu={handleCloseNavMenu}
-                />
-              </Box>
-            )}
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          <SideBar
+            handleDrawerClose={handleDrawerClose}
+            isOpen={isOpen}
+            isMobileView={isMobileView}
+            toggleSidebar={toggleSidebar}
+            menuSections={menuItemsData}
+          />
+        </Box>
+      )}
+    </>
   );
 };
-
 export default Header;
-
-{
-  /* <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-              > */
-}

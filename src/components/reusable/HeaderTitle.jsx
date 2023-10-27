@@ -1,45 +1,39 @@
-import { Typography } from '@mui/material';
-import { Container } from '@mui/system';
+// components/reusable/HeaderTitle.jsx
+import { Typography, Container } from '@mui/material';
 import React from 'react';
-import theme from '../../assets/styles/themes';
-import { themeSettings } from '../../theme';
 
-const HeaderTitle = ({ title, size, location }) => {
-  const fontSize =
-    {
-      huge: '2.5rem',
-      large: '1.75rem',
-      medium: '1.5rem',
-      small: '1.25rem',
-      tiny: '1rem',
-      extraSmall: '0.75rem',
-    }[size] || '0.75rem'; // Default to 'extraSmall' size
+const HeaderTitle = ({ title, size = 'extraSmall', location = 'left' }) => {
+  const sizes = {
+    huge: '2.5rem',
+    large: '1.75rem',
+    medium: '1.5rem',
+    small: '1.25rem',
+    tiny: '1rem',
+    extraSmall: '0.75rem',
+  };
 
   const textAlign = {
     left: 'left',
     center: 'center',
     right: 'right',
-  }[location]; // Default to 'left' justify
+  };
 
-  // console.log('theme', theme);
-  // console.log('theme', themeSettings);
   return (
     <Container
       sx={{
-        backgroundColor: (theme) => theme.palette.background,
-        padding: (theme) => theme.spacing(2),
+        backgroundColor: (theme) => theme.palette.background.default,
+        padding: 2,
       }}
-      // justifyContent={justifyContent}
     >
       <Typography
+        variant="h4"
         sx={{
-          fontSize: fontSize,
-          textAlign: textAlign,
+          fontSize: sizes[size],
+          textAlign: textAlign[location],
           fontWeight: 700,
           letterSpacing: '0.05em',
           margin: '0 auto',
-          // textAlign: 'center',
-          color: (theme) => theme.palette.contrastText,
+          color: (theme) => theme.palette.text.primary,
         }}
       >
         {title}

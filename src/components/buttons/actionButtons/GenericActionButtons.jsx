@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+// Dependencies
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@mui/styles';
-import CardActionButtons from './CardActionButtons';
-import DeckCardDialog from '../../dialogs/DeckCardDialog';
-import ChooseCollectionDialog from './ChooseCollectionDialog';
+import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
 import { DeckContext } from '../../../context/DeckContext/DeckContext';
 import { CartContext } from '../../../context/CartContext/CartContext';
-import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
+import GenericCardModal from '../../modals/GenericCardModal';
+import CardActionButtons from './CardActionButtons';
+// import ChooseCollectionDialog from './ChooseCollectionDialog';
 
 const useStyles = makeStyles({
   root: {
@@ -16,52 +17,66 @@ const useStyles = makeStyles({
   },
 });
 
-const GenericActionButtons = ({ card, context }) => {
+const GenericActionButtons = ({
+  card,
+  context,
+  open,
+  component,
+  closeModal,
+  // handleOpenDialog,
+}) => {
   const classes = useStyles();
+
+  const collectionContext = useContext(CollectionContext);
+
+  if (!collectionContext) {
+    console.error("The component isn't wrapped with CollectionProvider");
+    return null;
+  }
+
   const contexts = {
     Deck: useContext(DeckContext),
     Cart: useContext(CartContext),
-    Store: useContext(CartContext), // Assuming the Store context is similar to Cart
-    Collection: useContext(CollectionContext),
+    Store: useContext(CartContext),
+    Collection: collectionContext,
   };
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [openCollectionDialog, setOpenCollectionDialog] = useState(false);
 
   const contextProps = contexts[context] || {};
 
-  const toggleDialog = (setState) => () => setState((prevState) => !prevState);
-  // console.log('context', context);
-  // console.log('contextProps', contextProps);
-  // console.log('contexts', contexts);
-  // console.log('card', card);
-  // console.log('openDialog', openDialog);
-  // console.log('openCollectionDialog', openCollectionDialog);
+  // useEffect(() => {
+  //   console.log(`openChooseCollectionDialog is: ${openChooseCollectionDialog}`);
+  // }, [openChooseCollectionDialog]);
+
+  const toggleDialog = (setState) => () => {
+    setState((prevState) => !prevState);
+  };
+
   return (
     <div className={classes.root}>
       <CardActionButtons
         card={card}
         context={context}
         contextProps={contextProps}
+        // handleOpenDialog={handleOpenDialog}
         handleOpenDialog={toggleDialog(setOpenDialog)}
       />
       {context in contexts && (
-        <DeckCardDialog
-          isOpen={openDialog}
-          onClose={toggleDialog(setOpenDialog)}
+        <GenericCardModal
+          open={open}
+          onClose={closeModal}
+          handleCloseDialog={toggleDialog(setOpenDialog)}
           context={context}
           card={card}
         />
       )}
-      {openDialog && (
-        <ChooseCollectionDialog
-          deckDialogIsOpen={openDialog}
-          isOpen={openCollectionDialog} // Corrected the prop value
-          onClose={toggleDialog(setOpenCollectionDialog)}
-          context={context}
-          card={card}
-        />
-      )}
+      {/* <ChooseCollectionDialog
+        isOpen={openChooseCollectionDialog}
+        onClose={toggleDialog(setOpenChooseCollectionDialog)}
+        context={context}
+        card={card}
+      /> */}
     </div>
   );
 };
