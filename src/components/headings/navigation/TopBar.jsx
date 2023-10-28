@@ -89,7 +89,7 @@
 
 // export default TopBar;
 // TopBar.js
-import React from 'react';
+import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Hidden } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -99,10 +99,19 @@ import { useAuthContext } from '../../../context/hooks/auth';
 import getMenuItemsData from '../header/menuItemsData';
 import { StyledToolbar } from './styled';
 
-const TopBar = ({ handleDrawerState, handleLoginDialogState }) => {
+const TopBar = ({
+  handleDrawerState,
+  handleLoginDialogState,
+  handleDrawerClose,
+}) => {
+  const [selected, setSelected] = useState('Dashboard');
   const { isloggedin } = useAuthContext();
   const menuItemsData = getMenuItemsData(isloggedin);
 
+  const handleItemClick = (name) => {
+    setSelected(name);
+    handleDrawerState();
+  };
   return (
     <AppBar position="static">
       <StyledToolbar>
@@ -122,7 +131,7 @@ const TopBar = ({ handleDrawerState, handleLoginDialogState }) => {
             <MenuItemComponent
               key={name}
               name={name}
-              item={}
+              item={item}
               icon={icon}
               to={to}
               onClick={handleDrawerState}
@@ -136,7 +145,12 @@ const TopBar = ({ handleDrawerState, handleLoginDialogState }) => {
           />
         ) : (
           <MenuItemComponent
-            item={{ name: 'Login', icon: <LoginIcon /> }}
+            item={{
+              name: 'Login',
+              icon: <LoginIcon />,
+              to: '',
+              requiresLogin: false,
+            }}
             onClick={handleLoginDialogState}
           />
         )}

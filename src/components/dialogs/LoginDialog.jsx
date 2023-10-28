@@ -53,9 +53,14 @@ function LoginDialog({ open, onClose, onLogin }) {
         response = await authContext.login(username, password);
       }
 
-      // Checking if the login or signup was successful
       if (response?.loggedIn) {
-        onLogin();
+        // Assuming `userId` is available in the `response`.
+        const expires = new Date();
+        expires.setMinutes(expires.getMinutes() + 45);
+        setCookie('isloggedin', true, { expires });
+        setCookie('userId', response.userId, { expires });
+
+        onLogin(true, response.userId); // isloggedin is set to true
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -63,26 +68,22 @@ function LoginDialog({ open, onClose, onLogin }) {
   };
 
   const handleLogout = () => {
-    removeCookie('isloggedin', { path: '/' });
+    // removeCookie('isloggedin', { path: '/' });
+    removeCookie('userId', { path: '/' }); // Remove userId cookie
     authContext.logout();
   };
 
   // UseEffect to handle login state change
   useEffect(() => {
-    let isMounted = true; // Single variable for isMounted
+    if (authContext.isloggedin && window.location.pathname !== '/profile') {
+      const isloggedinFromCookie = cookies['isloggedin'];
+      const userIdFromCookie = cookies['userId']; // Assuming you've set this cookie
 
-    if (
-      isMounted &&
-      authContext.isloggedin &&
-      window.location.pathname !== '/profile'
-    ) {
-      onLogin();
+      if (isloggedinFromCookie && userIdFromCookie) {
+        onLogin(isloggedinFromCookie, userIdFromCookie);
+      }
     }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [authContext.isloggedin, onLogin, navigate]);
+  }, [authContext.isloggedin, onLogin, navigate, cookies]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>

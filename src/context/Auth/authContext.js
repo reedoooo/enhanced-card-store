@@ -402,7 +402,19 @@ export default function AuthProvider({ children, serverUrl }) {
     []
   );
 
-  // Utilities
+  const updateCookies = (names, values) => {
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 45);
+
+    names.forEach((name, index) =>
+      setCookie(name, values[index], {
+        expires,
+        secure: true,
+        sameSite: 'strict',
+      })
+    );
+  };
+
   const setLoginState = useCallback(
     (loggedIn, token, user, error = null) => {
       updateCookies(
@@ -416,12 +428,6 @@ export default function AuthProvider({ children, serverUrl }) {
     },
     [setCookie]
   );
-
-  const updateCookies = (names, values) => {
-    names.forEach((name, index) =>
-      setCookie(name, values[index], { secure: true, sameSite: 'strict' })
-    );
-  };
 
   const resetLoginAttempts = () =>
     loginAttempts >= 2 && setTimeout(() => setLoginAttempts(0), 60000);
@@ -531,7 +537,8 @@ export default function AuthProvider({ children, serverUrl }) {
   };
   // Action: Handle successful login
   const onLogin = (isloggedin, userData) => {
-    setIsloggedin(isloggedin);
+    console.log('onLogin method invoked', isloggedin);
+    setIsloggedin(true);
     setUser(userData);
   };
 
@@ -563,8 +570,11 @@ export default function AuthProvider({ children, serverUrl }) {
     setLoginState(false, null, {});
     console.log('Logout method invoked');
   };
+  // Add this in your Header component
+  useEffect(() => {
+    console.log('Value of isloggedin from context: ', isloggedin);
+  }, [isloggedin]);
 
-  // In AuthProvider
   useEffect(() => {
     if (isMounted.current) {
       const queryToken = new URLSearchParams(window.location.search).get(

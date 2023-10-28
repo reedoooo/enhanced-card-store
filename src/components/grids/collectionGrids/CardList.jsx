@@ -108,7 +108,7 @@ const CardList = ({ selectedCards }) => {
                     page * rowsPerPage + rowsPerPage
                   )
                 : selectedCards
-              ).map((card, index) => (
+              )?.map((card, index) => (
                 <TableRow key={card.id || index}>
                   <TableCell component="th" scope="row">
                     {card?.name}

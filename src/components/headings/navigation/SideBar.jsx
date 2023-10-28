@@ -92,7 +92,7 @@
 // };
 
 // export default SideBar;
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, List, Divider, Hidden } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -101,9 +101,14 @@ import { useAuthContext } from '../../../context/hooks/auth';
 import getMenuItemsData from '../header/menuItemsData';
 
 const SideBar = ({ handleDrawerState, isOpen, handleLoginDialogState }) => {
+  const [selected, setSelected] = useState('Dashboard');
   const { isloggedin } = useAuthContext();
   const menuItemsData = getMenuItemsData(isloggedin);
 
+  const handleItemClick = (name) => {
+    setSelected(name);
+    handleDrawerState();
+  };
   return (
     <Hidden smDown implementation="css">
       <Drawer anchor="right" open={isOpen} onClose={handleDrawerState}>
@@ -130,7 +135,12 @@ const SideBar = ({ handleDrawerState, isOpen, handleLoginDialogState }) => {
             />
           ) : (
             <MenuItemComponent
-              item={{ name: 'Login', icon: <LoginIcon /> }}
+              item={{
+                name: 'Login',
+                icon: <LoginIcon />,
+                to: '',
+                requiresLogin: false,
+              }}
               onClick={handleLoginDialogState}
             />
           )}
