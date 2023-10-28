@@ -91,25 +91,38 @@ function convertData(originalData) {
   const { datasets } = originalData;
 
   if (Array.isArray(datasets) && datasets.length > 0) {
-    const lastDataset = datasets[datasets.length - 1];
+    datasets.forEach((dataset, index) => {
+      // Loop over all datasets, not just the last one
+      if (Array.isArray(dataset.data) && dataset.data.length > 0) {
+        dataset.data.forEach((dataEntry) => {
+          dataEntry.xys?.forEach((xyEntry) => {
+            const { label, data } = xyEntry;
+            // Assume that finalDataForChart has an array for each label
+            finalDataForChart[label] = finalDataForChart[label] || [];
 
-    if (Array.isArray(lastDataset.data) && lastDataset.data.length > 0) {
-      lastDataset.data.forEach((dataEntry) => {
-        dataEntry.xys?.forEach((xyEntry) => {
-          const { x, y } = xyEntry.data;
-          if (x && y !== undefined) {
-            finalDataForChart.push({ x, y });
-          }
+            data.forEach(({ x, y }) => {
+              if (x && y !== undefined) {
+                finalDataForChart[label].push({ x, y });
+              }
+            });
+          });
         });
-      });
-    }
+      }
+    });
   }
+
+  // Convert the data into the format expected by Nivo
+  const nivoData = Object.keys(finalDataForChart).map((label) => ({
+    id: label,
+    data: finalDataForChart[label],
+  }));
 
   return {
     ...originalData,
-    finalDataForChart,
+    finalDataForChart: nivoData, // Replace this line to return Nivo-formatted data
   };
 }
+
 const isEmpty = (obj) => {
   return (
     [Object, Array].includes((obj || {}).constructor) &&
@@ -224,7 +237,7 @@ export const CollectionProvider = ({ children }) => {
     }
 
     try {
-      console.log('Fetching collections...');
+      // console.log('Fetching collections...');
       const response = await fetchWrapper(
         `${BASE_API_URL}/${userId}/collections`,
         'GET'
@@ -248,6 +261,23 @@ export const CollectionProvider = ({ children }) => {
     const uniqueCollections = removeDuplicateCollections(collections);
     const validCollections = uniqueCollections.filter(Boolean);
 
+    validCollections.forEach((collection) => {
+      collection.totalPrice = calculateTotalFromAllCardPrices(
+        collection.allCardPrices
+      );
+    });
+
+    setAllCollections(validCollections);
+    setCollectionData(
+      validCollections.length === 0
+        ? initialCollectionState
+        : validCollections[0]
+    );
+    setSelectedCollection(
+      validCollections.length === 0
+        ? initialCollectionState
+        : validCollections[0]
+    );
     // Your logic to set collections
   }, []);
 
@@ -292,12 +322,16 @@ export const CollectionProvider = ({ children }) => {
   const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
 
   const handleApiResponse = (response, method) => {
+    // Handling POST requests
     if (method === 'POST' && response.data?.newCollection) {
       return response.data.newCollection;
     }
-    if (method === 'PUT' && response.data?.updatedCollection) {
-      return response.data.updatedCollection;
+
+    // Handling PUT requests (updating a collection)
+    if (method === 'PUT' && response.data?.data?.updatedCollection) {
+      return response.data.data.updatedCollection;
     }
+
     throw new Error('Unexpected response format');
   };
 
@@ -542,7 +576,8 @@ export const CollectionProvider = ({ children }) => {
   );
 
   const updateActiveCollection = useCallback(
-    async (collectionData) => {
+    async (collectionData, existingChartData = {}) => {
+      // Added existingChartData as an optional parameter
       const isCreatingNew = !collectionData?._id;
       const endpoint = isCreatingNew
         ? createApiUrl(`${userId}/collections`)
@@ -559,11 +594,13 @@ export const CollectionProvider = ({ children }) => {
         const newChartData = {
           ...updatedCollection.chartData,
           xys: [
+            ...(existingChartData.xys || []), // Spread existing xys data
             {
               label: `Update Number ${
                 updatedCollection?.chartData?.datasets?.length + 1 || 1
               }`,
               data: [
+                ...(existingChartData.data || []), // Spread existing data
                 {
                   x: moment().format('YYYY-MM-DD HH:mm'),
                   y: updatedCollection.totalPrice,
@@ -607,7 +644,7 @@ export const CollectionProvider = ({ children }) => {
         const convertedData = convertData(newChartData);
         updatedCollection.xys = convertedData;
         // setXyData(convertedData.finalDataForChart);
-        xyData.push(convertedData.finalDataForChart);
+        xyData.push(...convertedData.finalDataForChart); // Spread to add to existing array
         updateCollectionData(updatedCollection, 'selectedCollection');
         updateCollectionData(updatedCollection, 'allCollections');
       } catch (error) {

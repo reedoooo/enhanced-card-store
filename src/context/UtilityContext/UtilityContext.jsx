@@ -9,70 +9,70 @@ const UtilityContext = createContext();
 const UtilityProvider = ({ children }) => {
   const [isContextLoading, setIsContextLoading] = useState(true);
   const [directedResponses, setDirectedResponses] = useState([]); // Initialize as an empty array
-  const fetchWrapper = async (url, method, body = null) => {
-    try {
-      const options = {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        ...(body && { body: JSON.stringify(body) }),
-      };
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      if (error.message === 'Failed to fetch') {
-        console.error('Network error: ', error);
-        throw new Error(
-          'Network error. Please check your connection and try again.'
-        );
-      }
-      throw error;
-    }
-  };
+  // const fetchWrapper = async (url, method, body = null) => {
+  //   try {
+  //     const options = {
+  //       method,
+  //       headers: { 'Content-Type': 'application/json' },
+  //       ...(body && { body: JSON.stringify(body) }),
+  //     };
+  //     const response = await fetch(url, options);
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  //     return await response.json();
+  //   } catch (error) {
+  //     if (error.message === 'Failed to fetch') {
+  //       console.error('Network error: ', error);
+  //       throw new Error(
+  //         'Network error. Please check your connection and try again.'
+  //       );
+  //     }
+  //     throw error;
+  //   }
+  // };
 
   const fetchDirectedResponses = async () => {
+    let isMounted = true; // Added this flag
+
     try {
       setIsContextLoading(true);
-      const data = await fetchWrapper(
-        `${BASE_API_URL}/directedResponses`,
-        'GET'
-      );
+      const response = await axios.get(`${BASE_API_URL}/directedResponses`);
+      const data = response.data;
 
-      if (Array.isArray(data)) {
-        setDirectedResponses(data);
-      } else {
-        console.error('Fetched data is not an array:', data);
+      if (isMounted) {
+        // Check if component is still mounted
+        Array.isArray(data)
+          ? setDirectedResponses(data)
+          : setDirectedResponses([]);
+      }
+    } catch (error) {
+      if (isMounted) {
+        // Check if component is still mounted
+        console.error('Error:', error);
         setDirectedResponses([]);
       }
-
-      console.log('Directed Responses:', data);
-    } catch (error) {
-      console.error('Error fetching directed responses:', error);
-      alert(`Failed to fetch directed responses. ${error.message}`);
-      setDirectedResponses([]);
     } finally {
-      setIsContextLoading(false);
+      if (isMounted) {
+        // Check if component is still mounted
+        setIsContextLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch user data, validate token, etc.
-        // ...
-        // Once done, set loading to false
-        setIsContextLoading(false);
-      } catch (error) {
-        console.error('An error occurred:', error);
-      } finally {
-        setIsContextLoading(false);
-      }
-    };
+    let isMounted = true; // Added this flag
 
-    fetchData();
-  }, []);
+    if (isMounted && isContextLoading) {
+      // console.log('Loading...');
+    } else if (isMounted && !isContextLoading) {
+      // console.log('Finished Loading');
+    }
+
+    return () => {
+      isMounted = false; // Cleanup
+    };
+  }, [isContextLoading]);
 
   const contextValue = {
     isLoading: isContextLoading,

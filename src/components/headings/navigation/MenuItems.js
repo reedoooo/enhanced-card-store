@@ -26,8 +26,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/system';
 import LoginDialog from '../../dialogs/LoginDialog';
 import { useAuthContext } from '../../../context/hooks/auth';
-import { AuthContext } from '../../../context/Auth/authContext';
-import { StyledListItem, StyledTypography } from './styled';
+import { useCookies } from 'react-cookie';
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '& .MuiTypography-root': {
@@ -39,24 +38,10 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
 }));
 
-const StyledLink = styled(Link)(({ theme }) => ({
-  color: '#000',
-  textDecoration: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  height: '100%',
-}));
-
 const MenuBox = styled(Box)(({ theme }) => ({
-  padding: (props) => (props.isLoggedIn ? '1em' : '2em'),
+  padding: '1em',
   display: 'flex',
-  flexDirection: 'column',
-  [theme.breakpoints.up('sm')]: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
+  flexDirection: 'row',
 }));
 
 const menuItemsData = [
@@ -67,7 +52,6 @@ const menuItemsData = [
     icon: <DeckOfCardsIcon />,
     to: '/deckbuilder',
     requiresLogin: false,
-    // requiresLogin: true,
   },
   { name: 'Cart', icon: <CartIcon />, to: '/cart', requiresLogin: true },
   {
@@ -78,114 +62,84 @@ const menuItemsData = [
   },
 ];
 
-const MenuItems = ({
-  handleDrawerClose,
-  variant,
-  isMenuOpen,
-  setIsLoginDialogOpen,
-  isLoginDialogOpen,
-  menuSections,
-  handleItemClick,
-  isMobileView,
-  selectedItem,
-  isOpen,
-  sections,
-}) => {
-  const location = useLocation();
-  const previousPageRef = useRef();
-  const isSidebar = variant === 'sidebar';
-  const isDialogOpen = isLoginDialogOpen === true ? true : false;
-  const { isloggedin, logout } = useAuthContext();
-  const navigate = useNavigate(); // Use the useNavigate hook to navigate programmatically
+const MenuItems = ({ handleDrawerClose, onLogin }) => {
+  const { logout } = useAuthContext();
+  const [cookies] = useCookies(['isloggedin']);
+  const isloggedin = cookies.isloggedin === true; // adjust the condition according to how you store the value in the cookie
+
+  const navigate = useNavigate();
+  const isMounted = useRef(true);
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (location.pathname !== previousPageRef.current) {
-      console.log('CURRENT PAGE:', location.pathname);
-      previousPageRef.current = location.pathname;
-    }
-  }, [location.pathname]);
-  // console.log('isloggedin:', isloggedin);
-  // console.log('isDialogOpen:', isDialogOpen);
-  // console.log('isLoginDialogOpen:', isLoginDialogOpen);
-  // console.log('isMenuOpen:', isMenuOpen);
-  // console.log('isSidebar:', isSidebar);
-  // console.log('menuSections:', menuSections);
-  // console.log('sections:', sections);
-  // console.log('selectedItem:', selectedItem);
-  // console.log('isOpen:', isOpen);
-  // console.log('isMobileView:', isMobileView);
-  const handleLoginClick = () => {
-    setIsLoginDialogOpen(true);
-  };
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleLoginDialogClose = () => {
     setIsLoginDialogOpen(false);
   };
 
-  const handleLoginSuccess = () => {
-    setIsLoginDialogOpen(false);
-    // Handle additional logic upon successful login if needed
+  const handleLoginClick = () => {
+    setIsLoginDialogOpen(true);
   };
-  useEffect(() => {
-    if (location.pathname !== previousPageRef.current) {
-      console.log('CURRENT PAGE:', location.pathname);
-      previousPageRef.current = location.pathname;
+
+  const handleLoginSuccess = () => {
+    if (isMounted.current) {
+      setIsLoginDialogOpen(false);
+      if (onLogin) {
+        onLogin();
+      }
     }
-  }, [location.pathname]);
+  };
 
   const handleMenuItemClick = (to) => {
-    // Use history.push to navigate to the desired route
     navigate(to);
   };
 
-  const renderMenuItems = (items) => {
-    return items.map((item) => {
-      // console.log('ITEM:', item);
-      const { name, icon, to, requiresLogin } = item;
-      // console.log('REQUIRES LOGIN:', requiresLogin);
-      // console.log('IS LOGGED IN:', isloggedin);
-      // console.log('NAME:', name);
-      // console.log('TO:', to);
-
-      return isloggedin || !requiresLogin ? ( // Allow non-logged in users to access items marked as not requiring login
-        <StyledMenuItem
-          key={name}
-          component="div"
-          onClick={() => handleMenuItemClick(to)}
-        >
-          {icon} {name}
-        </StyledMenuItem>
-      ) : null;
-    });
-  };
-
+  const filteredMenuItems = menuItemsData.filter(
+    (item) => !item.requiresLogin || isloggedin
+  );
   return (
-    <div
-      style={{
-        display: isMenuOpen ? (isSidebar ? 'block' : 'flex') : 'none',
-        flexDirection: isSidebar ? 'column' : 'row',
+    <Box
+      isloggedin={isloggedin ? 'true' : 'false'}
+      // bgcolor={'primary.main'}
+      sx={{
+        padding: '1em',
+        display: 'flex',
+        flexDirection: 'row',
       }}
     >
-      <MenuBox>
-        {renderMenuItems(menuItemsData)}
-
-        {isloggedin ? (
-          <StyledMenuItem onClick={logout}>
-            <LogoutIcon /> Logout
+      {filteredMenuItems?.map((item) => {
+        const { name, icon, to, requiresLogin } = item;
+        return isloggedin || !requiresLogin ? (
+          <StyledMenuItem
+            key={name}
+            component="div"
+            onClick={() => handleMenuItemClick(to)}
+          >
+            {icon}
+            {name}
           </StyledMenuItem>
-        ) : (
-          <StyledMenuItem onClick={handleLoginClick}>
-            <LoginIcon /> Login
-          </StyledMenuItem>
-        )}
-      </MenuBox>
+        ) : null;
+      })}
+      {isloggedin ? (
+        <StyledMenuItem onClick={logout}>
+          <LogoutIcon /> Logout
+        </StyledMenuItem>
+      ) : (
+        <StyledMenuItem onClick={handleLoginClick}>
+          <LoginIcon /> Login
+        </StyledMenuItem>
+      )}
       <LoginDialog
-        // open={isMenuOpen}
-        open={isDialogOpen}
+        open={isLoginDialogOpen}
         onClose={handleLoginDialogClose}
         onLogin={handleLoginSuccess}
       />
-    </div>
+    </Box>
   );
 };
 

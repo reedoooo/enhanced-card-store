@@ -1,29 +1,18 @@
 import React, { useContext } from 'react';
-import { Route, Navigate } from 'react-router-dom';
-import { AuthContext } from '../../context/Auth/authContext';
+import { Navigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { useAuthContext } from '../../context/hooks/auth';
 
-// function PrivateRoute({ children, capability }) {
-//   const authContext = useContext(AuthContext);
-//   const isloggedin = authContext.isloggedin;
-
-//   if (!isloggedin) {
-//     // Redirect to a login page or another appropriate route
-//     return <Navigate to="/login" />;
-//   }
-
-//   // Check if the user has the required capability (optional)
-//   // if (capability && !authContext.can(capability)) {
-//   //   // Redirect to a forbidden page or another appropriate route
-//   //   return <Navigate to="/forbidden" />;
-//   // }
-
-//   // Render the protected route with children
-//   return children;
-// }
 const PrivateRoute = ({ children }) => {
-  const authContext = useContext(AuthContext);
-  const isloggedin = authContext.isloggedin;
-  return isloggedin ? children : <Navigate to="/profile" />;
+  const authContext = useAuthContext();
+
+  // Use react-cookie's useCookies hook to read the 'isloggedin' cookie
+  const [cookies] = useCookies(['isloggedin']);
+
+  const isloggedin = authContext.isloggedin || cookies.isloggedin;
+
+  // If isloggedin from either cookie or context is true, proceed to the route
+  return isloggedin ? children : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

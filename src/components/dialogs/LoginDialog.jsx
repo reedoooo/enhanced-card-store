@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   Button,
   Dialog,
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 function LoginDialog({ open, onClose, onLogin }) {
-  const authContext = useAuthContext();
+  const authContext = useAuthContext(); // <-- Make sure this line is updated
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -27,26 +27,38 @@ function LoginDialog({ open, onClose, onLogin }) {
   const [roleData, setRoleData] = useState('admin'); // Adjusted to handle string value
   const { toggleColorMode, mode } = useMode();
   const [cookies, setCookie, removeCookie] = useCookies(['isloggedin']);
+  // Flag to track if the component is mounted
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    }; // Cleanup
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      let response = null;
 
-    if (signupMode) {
-      await authContext.signup(username, password, email, name, roleData);
-    } else {
-      try {
-        const loggedIn = await authContext.login(username, password);
-        if (loggedIn) {
-          setCookie('isloggedin', 'true', {
-            path: '/',
-            secure: true, // set to true if using https
-            sameSite: 'strict',
-          });
-          onLogin();
-        }
-      } catch (error) {
-        console.error('Login failed:', error);
+      if (signupMode) {
+        response = await authContext.signup(
+          username,
+          password,
+          email,
+          name,
+          roleData
+        );
+      } else {
+        response = await authContext.login(username, password);
       }
+
+      // Checking if the login or signup was successful
+      if (response?.loggedIn) {
+        onLogin();
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   };
 
@@ -55,10 +67,21 @@ function LoginDialog({ open, onClose, onLogin }) {
     authContext.logout();
   };
 
+  // UseEffect to handle login state change
   useEffect(() => {
-    if (authContext.isloggedin && window.location.pathname !== '/profile') {
+    let isMounted = true; // Single variable for isMounted
+
+    if (
+      isMounted &&
+      authContext.isloggedin &&
+      window.location.pathname !== '/profile'
+    ) {
       onLogin();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [authContext.isloggedin, onLogin, navigate]);
 
   return (

@@ -1,117 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { useAuthContext } from '../../../context/hooks/auth';
+import React, { useEffect, useState } from 'react';
 import TopBar from '../navigation/TopBar';
 import SideBar from '../navigation/SideBar';
 import { useSidebarContext } from '../../../context/SideBarProvider';
-import {
-  Home as HomeIcon,
-  Store as StoreIcon,
-  ShoppingCart as CartIcon,
-  Assessment as AssessmentIcon,
-  Deck as DeckOfCardsIcon,
-  Person as LoginIcon,
-} from '@mui/icons-material';
-import { Box } from '@mui/system';
+import { useAuthContext } from '../../../context/hooks/auth';
+import { getMenuItemsData } from './menuItemsData';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import LoginDialog from '../../dialogs/LoginDialog';
 
 const Header = () => {
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 598);
-  const {
-    isOpen,
-    toggleSidebar,
-    sidebarBackgroundColor,
-    sidebarImage,
-    setIsOpen,
-  } = useSidebarContext();
-  const menuItemsData = [
-    {
-      title: 'Store',
-      items: [
-        {
-          name: 'Home',
-          index: 0,
-          icon: <HomeIcon />,
-          to: '/home',
-          requiresLogin: false,
-        },
-        {
-          name: 'Store',
-          index: 1,
-          icon: <StoreIcon />,
-          to: '/store',
-          requiresLogin: true,
-        },
-        {
-          name: 'Deck Builder',
-          index: 2,
-          icon: <DeckOfCardsIcon />,
-          to: '/deckbuilder',
-          requiresLogin: true,
-        },
-        {
-          name: 'Cart',
-          index: 3,
-          icon: <CartIcon />,
-          to: '/cart',
-          requiresLogin: true,
-        },
-        {
-          name: 'Collection',
-          index: 4,
-          icon: <AssessmentIcon />,
-          to: '/collection',
-          requiresLogin: true,
-        },
-        {
-          name: 'Login',
-          index: 5,
-          icon: <LoginIcon />,
-          to: '/login',
-          requiresLogin: false,
-        },
-      ],
-    },
-  ];
-  const handleDrawerOpen = () => {
-    if (isMobileView && !isOpen) {
-      setIsOpen(true);
-    }
-  };
+  const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
+  const { isloggedin } = useAuthContext();
+  const [isLoginDialogOpen, setLoginDialogOpen] = useState(false);
 
-  const handleDrawerClose = () => {
-    setIsOpen(false);
-  };
+  const theme = useTheme();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const updateView = () => {
-    setIsMobileView(window.innerWidth <= 598);
-  };
+  const filteredMenuItems = getMenuItemsData(isloggedin).filter(
+    (item) => !item.requiresLogin || isloggedin
+  );
 
+  // Combine useEffect hooks to a single one
   useEffect(() => {
-    window.addEventListener('resize', updateView);
-    if (!isMobileView && isOpen) {
-      handleDrawerClose();
+    if (isMobileView) {
+      setIsOpen(false);
     }
-    if (!isMobileView && !isOpen) {
-      handleDrawerClose();
-    }
-    if (isMobileView && isOpen) {
-      handleDrawerOpen();
-    }
-    if (isMobileView && !isOpen) {
-      handleDrawerClose();
-    }
-    return () => window.removeEventListener('resize', updateView);
-  }, [isMobileView]);
+  }, [isMobileView, setIsOpen]);
+
+  const handleDrawerState = () => toggleSidebar();
+
+  const handleLoginDialogState = () => setLoginDialogOpen(!isLoginDialogOpen);
+
+  const handleLoginDialogClose = () => setLoginDialogOpen(false);
+
+  const handleLoginSuccess = () => setLoginDialogOpen(false); // Implement additional logic if required
 
   return (
     <>
       <TopBar
-        handleDrawerOpen={handleDrawerOpen}
-        handleDrawerClose={handleDrawerClose}
+        handleDrawerState={handleDrawerState}
+        handleLoginDialogState={handleLoginDialogState}
         isOpen={isOpen}
         isMobileView={isMobileView}
-        menuSections={isMobileView ? [] : menuItemsData} // Adjust menu items based on view
+        menuSections={filteredMenuItems}
       />
-      {isMobileView && ( // Only render SideBar in mobile view
+      {isMobileView && (
         <Box
           sx={{
             display: 'flex',
@@ -121,15 +53,21 @@ const Header = () => {
           }}
         >
           <SideBar
-            handleDrawerClose={handleDrawerClose}
+            handleDrawerState={handleDrawerState}
+            handleLoginDialogState={handleLoginDialogState}
             isOpen={isOpen}
             isMobileView={isMobileView}
-            toggleSidebar={toggleSidebar}
-            menuSections={menuItemsData}
+            menuSections={filteredMenuItems}
           />
         </Box>
       )}
+      <LoginDialog
+        open={isLoginDialogOpen}
+        onClose={handleLoginDialogClose}
+        onLogin={handleLoginSuccess}
+      />
     </>
   );
 };
+
 export default Header;

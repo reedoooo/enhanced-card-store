@@ -8,17 +8,28 @@ export const initialCollectionState = {
 
 // Fetch wrapper function
 export const fetchWrapper = async (url, method, body = null) => {
-  const options = {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    ...(body && { body: JSON.stringify(body) }),
-  };
-  const response = await fetch(url, options);
-  // console.log('RESPONSE:', response);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  try {
+    const options = {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      ...(body && { body: JSON.stringify(body) }),
+    };
+    const response = await fetch(url, options);
+    // console.log('RESPONSE:', response);
+    if (!response.ok) {
+      const message = `HTTP error! status: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw error;
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
+    // return await response.json();
   }
-  return await response.json();
 };
 
 // Remove duplicate collections

@@ -96,6 +96,17 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
 const App = () => {
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
   const { isLoading, setIsContextLoading } = useUtilityContext();
+  const { user } = useUserContext(); // Assuming 'user' exists and is non-null if the user is logged in
+
+  useEffect(() => {
+    if (user) {
+      console.log('Private routes now available');
+    }
+
+    return () => {
+      console.log('Private routes no longer available');
+    };
+  }, [user]); // useEffect will re-run whenever 'user' changes
 
   useEffect(() => {
     if (!isLoading) {
