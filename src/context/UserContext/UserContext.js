@@ -41,12 +41,12 @@ export const UserProvider = ({ children }) => {
     console.log('User Data Sent to Server and Cookie Updated:', userData);
   };
 
-  const fetchAndSetCollections = useCallback(async () => {
-    const collections = fetchAllCollectionsForUser(user.id);
-    if (collections) {
-      setAllCollections(collections); // This is saved in the context
-    }
-  }, [user.id, fetchCollections]);
+  // const fetchAndSetCollections = useCallback(async () => {
+  //   const collections = fetchAllCollectionsForUser(user.id);
+  //   if (collections) {
+  //     setAllCollections(collections); // This is saved in the context
+  //   }
+  // }, [user.id, fetchCollections]);
 
   return (
     <UserContext.Provider
@@ -54,7 +54,7 @@ export const UserProvider = ({ children }) => {
         user,
         setUser,
         allCollections,
-        fetchAndSetCollections,
+        // fetchAndSetCollections,
         setCookie,
         updateUser,
         triggerCronJob,

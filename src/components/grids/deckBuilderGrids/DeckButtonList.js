@@ -17,14 +17,14 @@ const useDeckButtonListStyles = makeStyles((theme) => ({
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
     margin: theme?.spacing(1),
-    [theme?.breakpoints.down('xs')]: {
+    [theme?.breakpoints?.down('xs')]: {
       fontSize: '0.7rem',
       padding: '5px 8px',
     },
-    [theme?.breakpoints.up('sm')]: {
+    [theme?.breakpoints?.up('sm')]: {
       fontSize: '0.8rem',
     },
-    [theme?.breakpoints.up('md')]: {
+    [theme?.breakpoints?.up('md')]: {
       fontSize: '1rem',
     },
   },
@@ -38,13 +38,13 @@ const useDeckButtonListStyles = makeStyles((theme) => ({
 }));
 const useStyles = makeStyles((theme) => ({
   root: {
-    [theme?.breakpoints.up('md')]: {
+    [theme?.breakpoints?.up('md')]: {
       backgroundColor: 'blue',
     },
-    [theme?.breakpoints.down('sm')]: {
+    [theme?.breakpoints?.down('sm')]: {
       backgroundColor: 'red',
     },
-    [theme?.breakpoints.between('sm', 'md')]: {
+    [theme?.breakpoints?.between('sm', 'md')]: {
       backgroundColor: 'green',
     },
   },

@@ -1,5 +1,5 @@
 // External Imports
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -103,9 +103,9 @@ const App = () => {
   const { fetchAllCollectionsForUser, allCollections } = useCollectionStore();
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
   const { isLoading, setIsContextLoading } = useUtilityContext();
-  const { user } = useUserContext(); // Assuming 'user' exists and is non-null if the user is logged in
-  // const [currentPage, setCurrentPage] = useState(null); // Add this line
-  // const location = useLocation(); // Add this line to get the current location
+  const { user } = useUserContext();
+
+  const hasFetchedCollectionsRef = useRef(false); // This ref is used to indicate whether collections have been fetched.
 
   useEffect(() => {
     if (user) {
@@ -134,15 +134,16 @@ const App = () => {
 
   // Assuming currentPage is a piece of state that changes when the user changes pages
   useEffect(() => {
-    if (user && (!allCollections || allCollections.length === 0)) {
+    if (user && !hasFetchedCollectionsRef.current) {
       try {
         fetchAllCollectionsForUser();
+        hasFetchedCollectionsRef.current = true; // Set the ref to true after fetching
         console.log('Fetched collections because none were present.');
       } catch (err) {
         console.error('Failed to fetch collections:', err);
       }
     }
-  }, [user, allCollections]); // Add location.pathname to the dependency list
+  }, [user, fetchAllCollectionsForUser]); // Removed allCollections from dependency list to prevent re-fetching when they update
 
   return (
     <>

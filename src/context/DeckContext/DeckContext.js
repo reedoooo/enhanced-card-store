@@ -21,7 +21,7 @@ export const DeckContext = createContext({
   updateAndSyncDeck: () => {},
   fetchAllDecksForUser: () => {},
 });
-const apiBase = `${process.env.REACT_APP_SERVER}/api`;
+const apiBase = `${process.env.REACT_APP_SERVER}/api/users`;
 
 const fetchWrapper = async (url, method, body = null) => {
   const options = {
@@ -59,7 +59,7 @@ export const DeckProvider = ({ children }) => {
 
   const fetchDecksForUser = useCallback(async () => {
     try {
-      const url = `${apiBase}/users/${userId}/decks`;
+      const url = `${apiBase}/${userId}/decks`;
       return await fetchWrapper(url, 'GET');
     } catch (error) {
       console.error(`Failed to fetch decks for user: ${error.message}`);
@@ -133,7 +133,7 @@ export const DeckProvider = ({ children }) => {
     });
 
     try {
-      const url = `${apiBase}/users/${userId}/decks/${selectedDeck._id}`; // Removed deckId from the URL
+      const url = `${apiBase}/${userId}/decks/${selectedDeck._id}`; // Removed deckId from the URL
       const bodyData = {
         ...newDeckData,
         deckId: newDeckData._id, // Included deckId in the body
@@ -146,7 +146,7 @@ export const DeckProvider = ({ children }) => {
 
   const createUserDeck = async (userId, newDeckInfo) => {
     try {
-      const url = `${apiBase}/newDeck/${userId}`;
+      const url = `${apiBase}/${userId}/decks`;
       const cards = newDeckInfo.cards
         ? [formatCardData(newDeckInfo.cards)]
         : [];
@@ -158,6 +158,7 @@ export const DeckProvider = ({ children }) => {
         description: newDeckInfo.description || '',
         name: newDeckInfo.name || '',
       });
+      console.log('NEW DECK DATA:', data);
       setDeckData(data);
     } catch (error) {
       console.error(`Failed to create a new deck: ${error.message}`);

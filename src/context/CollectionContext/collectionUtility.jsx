@@ -1,5 +1,10 @@
 const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
-
+const initialCollectionState = {
+  _id: '',
+  cards: [],
+  quantity: 0,
+  totalPrice: 0,
+};
 /**
  * Filters out duplicate Y values from an array of datasets.
  * @param {Array} datasets - An array of dataset objects.
@@ -172,17 +177,40 @@ const handleCardRemoval = (currentCards, cardToRemove) => {
  * @returns {Array} Filtered array of XY value objects.
  */
 const getUniqueFilteredXYValues = (allXYValues) => {
+  // Check if the input is an array and is not null/undefined
+  if (!Array.isArray(allXYValues)) {
+    // You can throw an error, return an empty array, or handle it as needed
+    console.error('Invalid input: allXYValues should be an array');
+    return [];
+  }
+
   const uniqueXValues = new Set();
   return allXYValues
-    .filter((entry) => entry.y !== 0)
     .filter((entry) => {
-      if (!uniqueXValues.has(entry.x)) {
+      // Check if entry is an object and has property y with a number value
+      return (
+        entry &&
+        typeof entry === 'object' &&
+        typeof entry.y === 'number' &&
+        entry.y !== 0
+      );
+    })
+    .filter((entry) => {
+      // Check if entry has property x with a valid value (not null/undefined)
+      const hasValidX =
+        entry && 'x' in entry && entry.x !== null && entry.x !== undefined;
+      if (hasValidX && !uniqueXValues.has(entry.x)) {
         uniqueXValues.add(entry.x);
         return true;
       }
       return false;
     });
 };
+
+// Example usage:
+// console.log(getUniqueFilteredXYValues(null)); // Should return []
+// console.log(getUniqueFilteredXYValues(undefined)); // Should return []
+// console.log(getUniqueFilteredXYValues([{ x: 1, y: 0 }, { x: 2, y: 3 }])); // Should return [{ x: 2, y: 3 }]
 
 /**
  * Calculates the total price from an array of card prices.
@@ -224,23 +252,110 @@ const findCollectionIndex = (collections, id) =>
  */
 const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
 
-/**
- * Handles API responses based on the HTTP method used.
- * @param {Object} response - API response.
- * @param {String} method - HTTP method used (e.g., 'POST', 'PUT').
- * @returns {Object} Processed API response.
- */
-const handleApiResponse = (response, method) => {
-  if (method === 'POST' && response?.data?.newCollection) {
-    return response?.data?.newCollection;
-  }
-  if (method === 'PUT' && response.data?.data?.updatedCollection) {
-    return response?.data?.data?.updatedCollection;
-  }
-  throw new Error('Unexpected response format');
+// To prevent making the same type of request within 10 seconds
+const lastRequestTime = {
+  POST: 0,
+  PUT: 0,
+  DELETE: 0,
+  GET: 0,
+  // Add other methods if needed
 };
 
-// Export the utility functions if needed
+/**
+ * Checks whether a new request can be made based on the last request's timestamp.
+ * @param {String} method - The HTTP method for the request.
+ */
+const canMakeRequest = (method) => {
+  const currentTime = Date.now();
+  // The comment mentioned 10 seconds, but the code was checking for 5 seconds. Adjust as necessary.
+  return currentTime - lastRequestTime[method] > 1000; // Now it's 10 seconds
+};
+
+/**
+ * Updates the last request timestamp for a given method.
+ * @param {String} method - The HTTP method for the request.
+ */
+const updateLastRequestTime = (method) => {
+  lastRequestTime[method] = Date.now();
+};
+/**
+ * Wraps fetch API calls and implements a rate limit for each HTTP method type.
+ * @param {String} url - The API URL to make the request to.
+ * @param {String} method - The HTTP method for the request.
+ * @param {Object} [body=null] - The request payload if needed.
+ * @returns {Promise<Object>} - The response from the API call.
+ */
+const fetchWrapper = async (url, method, body = null) => {
+  // if (!canMakeRequest(method)) {
+  //   throw new Error(
+  //     `A ${method} request was made recently. Please wait before trying again.`
+  //   );
+  // }
+
+  const options = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    ...(body && { body: JSON.stringify(body) }),
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      // We handle non-ok responses immediately
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    updateLastRequestTime(method);
+    // Assuming handleApiResponse is expecting a Response object
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error(`Fetch failed: ${error}`);
+    // It's useful to log the stack trace in development
+    console.trace();
+    throw error; // Re-throwing the error for upstream catch blocks to handle
+  }
+};
+
+const handleApiResponse = async (response) => {
+  if (!(response instanceof Response)) {
+    const error = new Error(
+      "The response object is not an instance of the Fetch API's Response class."
+    );
+    console.error(error.message, response);
+    throw error;
+  }
+
+  try {
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  } catch (e) {
+    const error = new Error(`Failed to parse JSON from the response: ${e}`);
+    console.error(error.message);
+    throw error;
+  }
+};
+
+const getTotalCost = (selectedCollection) => {
+  if (!selectedCollection || !Array.isArray(selectedCollection.cards)) return 0;
+
+  return selectedCollection.cards.reduce((total, card) => {
+    const cardPrice =
+      (card.card_prices && card.card_prices[0]?.tcgplayer_price) || 0;
+    return total + cardPrice * card.quantity;
+  }, 0);
+};
+
+const removeDuplicateCollections = (collections) => {
+  const uniqueCollections = {};
+  collections?.forEach((collection) => {
+    uniqueCollections[collection._id] = collection;
+  });
+  return Object.values(uniqueCollections);
+};
+
+const getCardPrice = (collection) =>
+  console.log('CARD:', collection) ||
+  parseFloat(collection?.cards?.card_prices?.[0]?.tcgplayer_price || 0);
+
 module.exports = {
   filterOutDuplicateYValues,
   transformChartData,
@@ -254,6 +369,11 @@ module.exports = {
   ensureNumber,
   findCollectionIndex,
   createApiUrl,
-  handleApiResponse,
   BASE_API_URL,
+  handleApiResponse,
+  fetchWrapper,
+  getTotalCost,
+  getCardPrice,
+  removeDuplicateCollections,
+  initialCollectionState,
 };
