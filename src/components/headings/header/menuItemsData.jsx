@@ -7,10 +7,10 @@ import {
   Deck as DeckOfCardsIcon,
 } from '@mui/icons-material';
 
-export const getMenuItemsData = (isloggedin) => {
-  // Error handling: Check if 'isloggedin' is a boolean
-  if (typeof isloggedin !== 'boolean') {
-    console.error("Invalid argument: 'isloggedin' should be a boolean");
+export const getMenuItemsData = (isLoggedIn) => {
+  // Error handling: Check if 'isLoggedIn' is a boolean
+  if (typeof isLoggedIn !== 'boolean') {
+    console.error("Invalid argument: 'isLoggedIn' should be a boolean");
     return [];
   }
 
@@ -21,7 +21,7 @@ export const getMenuItemsData = (isloggedin) => {
         name: 'Store',
         icon: <StoreIcon />,
         to: '/store',
-        requiresLogin: !isloggedin,
+        requiresLogin: !isLoggedIn,
       },
       {
         name: 'Deck Builder',
@@ -33,19 +33,19 @@ export const getMenuItemsData = (isloggedin) => {
         name: 'Cart',
         icon: <CartIcon />,
         to: '/cart',
-        requiresLogin: !isloggedin,
+        requiresLogin: !isLoggedIn,
       },
       {
         name: 'Collection',
         icon: <AssessmentIcon />,
         to: '/collection',
-        requiresLogin: !isloggedin,
+        requiresLogin: !isLoggedIn,
       },
     ];
 
     // If the user is logged in, set all requiresLogin fields to false
-    if (isloggedin) {
-      console.log('isloggedin is true', isloggedin);
+    if (isLoggedIn) {
+      console.log('isLoggedIn is true', isLoggedIn);
       return baseMenuItems.map((item) => ({
         ...item,
         requiresLogin: false,

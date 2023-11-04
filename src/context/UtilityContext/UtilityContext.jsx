@@ -33,46 +33,46 @@ const UtilityProvider = ({ children }) => {
   // };
 
   const fetchDirectedResponses = async () => {
-    let isMounted = true; // Added this flag
+    // let isMounted = true; // Added this flag
 
     try {
       setIsContextLoading(true);
       const response = await axios.get(`${BASE_API_URL}/directedResponses`);
       const data = response.data;
 
-      if (isMounted) {
-        // Check if component is still mounted
-        Array.isArray(data)
-          ? setDirectedResponses(data)
-          : setDirectedResponses([]);
-      }
+      // if (isMounted) {
+      // Check if component is still mounted
+      Array.isArray(data)
+        ? setDirectedResponses(data)
+        : setDirectedResponses([]);
+      // }
     } catch (error) {
-      if (isMounted) {
-        // Check if component is still mounted
-        console.error('Error:', error);
-        setDirectedResponses([]);
-      }
+      // if (isMounted) {
+      // Check if component is still mounted
+      console.error('Error:', error);
+      setDirectedResponses([]);
+      // }
     } finally {
-      if (isMounted) {
-        // Check if component is still mounted
-        setIsContextLoading(false);
-      }
+      // if (isMounted) {
+      // Check if component is still mounted
+      setIsContextLoading(false);
+      // }
     }
   };
 
-  useEffect(() => {
-    let isMounted = true; // Added this flag
+  // useEffect(() => {
+  //   let isMounted = true; // Added this flag
 
-    if (isMounted && isContextLoading) {
-      // console.log('Loading...');
-    } else if (isMounted && !isContextLoading) {
-      // console.log('Finished Loading');
-    }
+  //   if (isMounted && isContextLoading) {
+  //     // console.log('Loading...');
+  //   } else if (isMounted && !isContextLoading) {
+  //     // console.log('Finished Loading');
+  //   }
 
-    return () => {
-      isMounted = false; // Cleanup
-    };
-  }, [isContextLoading]);
+  //   return () => {
+  //     isMounted = false; // Cleanup
+  //   };
+  // }, [isContextLoading]);
 
   const contextValue = {
     isLoading: isContextLoading,

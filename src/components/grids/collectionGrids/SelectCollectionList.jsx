@@ -11,6 +11,7 @@ import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import { useCollectionStore } from '../../../context/hooks/collection';
+import LoadingIndicator from '../../indicators/LoadingIndicator';
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     textAlign: 'left',
     marginLeft: theme.spacing(3),
+  },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
   },
   editButton: {
     marginLeft: theme.spacing(2),
@@ -47,6 +54,7 @@ const SelectCollectionList = ({
   const { allCollections, setSelectedCollection, selectedCollection } =
     useCollectionStore();
   const [cookies] = useCookies(['userCookie']);
+  const [isLoading, setIsLoading] = useState(false);
   // const userId = cookies.userCookie?.id;
   // const [collections, setCollections] = useState([]);
 
@@ -81,32 +89,38 @@ const SelectCollectionList = ({
   // );
   // The rendering part of the component
   return (
-    <List className={classes.list}>
-      {allCollections
-        ?.filter((collection) => !!collection?._id)
-        .map((collection) => (
-          <React.Fragment key={collection?._id}>
-            <ListItem className={classes.listItem}>
-              <ButtonBase
-                sx={{ width: '100%' }}
-                onClick={() => handleSelect(collection?._id)}
-              >
-                <ListItemText
-                  primary={collection?.name}
-                  className={classes.listItemText}
-                />
-              </ButtonBase>
-              <Button
-                className={classes.editButton}
-                onClick={() => handleOpenDialog(collection)} // Pass the collection object here
-              >
-                Edit
-              </Button>
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        ))}
-    </List>
+    <>
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <List className={classes.list}>
+          {allCollections
+            ?.filter((collection) => !!collection?._id)
+            .map((collection) => (
+              <React.Fragment key={collection?._id}>
+                <ListItem className={classes.listItem}>
+                  <ButtonBase
+                    sx={{ width: '100%' }}
+                    onClick={() => handleSelect(collection?._id)}
+                  >
+                    <ListItemText
+                      primary={collection?.name}
+                      className={classes.listItemText}
+                    />
+                  </ButtonBase>
+                  <Button
+                    className={classes.editButton}
+                    onClick={() => handleOpenDialog(collection)} // Pass the collection object here
+                  >
+                    Edit
+                  </Button>
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+        </List>
+      )}
+    </>
   );
 };
 

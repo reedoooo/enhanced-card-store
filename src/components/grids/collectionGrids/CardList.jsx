@@ -13,11 +13,13 @@ import {
   TablePagination,
   TableRow,
   Button,
+  TableHead,
 } from '@mui/material';
 import { useCollectionStore } from '../../../context/hooks/collection';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import TablePaginationActions from './TablePaginationActions';
 import Logger from './Logger';
+import PropTypes from 'prop-types';
 
 // Instantiate logger outside of the component
 const cardLogger = new Logger([
@@ -37,9 +39,13 @@ const CardList = ({ selectedCards }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const chartContainerRef = useRef(null);
-
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - selectedCards.length) : 0;
+  const count = selectedCards?.length || 0;
+  const emptyRows = useMemo(() => {
+    // <-- Use useMemo for better performance
+    return page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - (selectedCards?.length || 0))
+      : 0;
+  }, [page, rowsPerPage, selectedCards]); // <-- Dependencies for useMemo
 
   const handleChangePage = (event, newPage) => {
     cardLogger.logCardAction('Change Page', {});
@@ -100,6 +106,17 @@ const CardList = ({ selectedCards }) => {
         {/* Include the CronTrigger button */}
         <TableContainer component={Paper} dimensions={chartDimensions}>
           <Table aria-label="custom pagination table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell align="right">Price</TableCell>
+                <TableCell align="right">Total Price</TableCell>
+                <TableCell align="right">Quantity</TableCell>
+                <TableCell align="right">TCGPlayer Price</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+
             <TableBody>
               {(rowsPerPage > 0
                 ? // eslint-disable-next-line no-unsafe-optional-chaining
@@ -153,6 +170,7 @@ const CardList = ({ selectedCards }) => {
                   </TableCell>
                 </TableRow>
               ))}
+
               {emptyRows > 0 && (
                 <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={3} />
@@ -164,7 +182,7 @@ const CardList = ({ selectedCards }) => {
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                   colSpan={3}
-                  count={selectedCards.length}
+                  count={count}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   SelectProps={{

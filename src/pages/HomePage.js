@@ -67,9 +67,9 @@ const CarouselImage = ({ image, caption }) => {
 };
 
 const CarouselContainer = ({ isMounted }) => {
-  if (!isMounted.current) {
-    return;
-  }
+  // if (!isMounted.current) {
+  //   return;
+  // }
   const classes = useStyles();
   return (
     <Carousel
@@ -92,11 +92,11 @@ const HomePage = () => {
   const theme = useTheme();
   const isMounted = useRef(true);
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, []);
 
   return (
     <HomeBanner>

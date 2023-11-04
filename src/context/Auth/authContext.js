@@ -1,3 +1,156 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import { useCookies } from 'react-cookie';
+
+const LOGGED_IN_COOKIE = 'loggedIn';
+const AUTH_COOKIE = 'authToken';
+const USER_COOKIE = 'user';
+
+// Validator function
+const validateData = (data, eventName, functionName) => {
+  if (!data || Object.keys(data).length === 0) {
+    console.warn(`Invalid data in ${functionName} for ${eventName}`);
+    return false;
+  }
+  return true;
+};
+
+// Process the server response based on the action type (Login/Signup)
+const processResponseData = (data, type) => {
+  if (!validateData(data, `${type} Response`, `process${type}Data`))
+    return null;
+
+  if (type === 'Login') {
+    const token = data?.data?.token;
+    if (!token) return null;
+    const user = jwt_decode(token);
+    return { token, user };
+  }
+
+  if (type === 'Signup') {
+    const { success, newUser } = data;
+    if (success && newUser) return { success, newUser };
+  }
+
+  return null;
+};
+
+// Main AuthContext Provider
+export const AuthContext = React.createContext();
+
+export default function AuthProvider({ children, serverUrl }) {
+  const [cookies, setCookie, removeCookie] = useCookies([
+    LOGGED_IN_COOKIE,
+    AUTH_COOKIE,
+    USER_COOKIE,
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const [user, setUser] = useState({});
+  const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
+  // const isMounted = useRef(true);
+
+  const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
+
+  // Execute authentication actions like login, signup
+  const executeAuthAction = async (actionType, url, requestData) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${REACT_APP_SERVER}/api/users/${url}`,
+        requestData
+      );
+      const processedData = processResponseData(response.data, actionType);
+      if (processedData) {
+        const { token, user, newUser } = processedData;
+        setCookie(AUTH_COOKIE, token, { path: '/' });
+        setCookie(USER_COOKIE, user || newUser, { path: '/' });
+        setCookie(LOGGED_IN_COOKIE, true, { path: '/' });
+        setisLoggedIn(true);
+        setToken(token);
+        setUser(user || newUser);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // In App.js or inside AuthProvider component
+  axios.interceptors.request.use(
+    (config) => {
+      const token = cookies[AUTH_COOKIE];
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  // Login function
+  const login = async (username, password) => {
+    await executeAuthAction('Login', 'signin', { username, password });
+  };
+
+  // Signup function
+  const signup = async (loginData, basicInfo, otherInfo) => {
+    await executeAuthAction('Signup', 'signup', {
+      login_data: loginData,
+      basic_info: basicInfo,
+      ...otherInfo,
+    });
+  };
+
+  // Logout function
+  const logout = () => {
+    removeCookie(AUTH_COOKIE);
+    setisLoggedIn(false);
+    setToken(null);
+    setUser({});
+  };
+
+  // Validate token
+  const validateToken = useCallback(async () => {
+    // Validation logic here
+  }, []);
+
+  // Initialization logic to set user and token from cookies
+  useEffect(() => {
+    // if (!isMounted.current) return;
+
+    const storedToken = cookies[AUTH_COOKIE];
+    const storedUser = cookies[USER_COOKIE];
+
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(storedUser);
+      setisLoggedIn(true);
+    }
+
+    // isMounted.current = false;
+  }, [cookies]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isLoading,
+        isLoggedIn,
+        user,
+        error,
+        login,
+        signup,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
 // import React, { useState, useEffect, useCallback, useRef } from 'react';
 // import jwt_decode from 'jwt-decode';
 // import axios from 'axios';
@@ -15,7 +168,7 @@
 //   const { directedResponses, fetchDirectedResponses } = useUtilityContext();
 //   const [cookies, setCookie, removeCookie] = useCookies(['auth', 'userCookie']);
 //   const [isLoading, setIsLoading] = useState(false);
-//   const [isloggedin, setIsloggedin] = useState(false);
+//   const [isLoggedIn, setisLoggedIn] = useState(false);
 //   const [user, setUser] = useState({});
 //   const [users, setUsers] = useState([]);
 //   const [error, setError] = useState(null);
@@ -58,7 +211,7 @@
 //   const setLoginState = useCallback(
 //     (loggedIn, token, user, error = null) => {
 //       setCookie('auth', token, { secure: true, sameSite: 'strict' });
-//       setCookie('isloggedin', String(loggedIn), {
+//       setCookie('isLoggedIn', String(loggedIn), {
 //         secure: true,
 //         sameSite: 'strict',
 //       });
@@ -70,7 +223,7 @@
 //           sameSite: 'strict',
 //         });
 //       }
-//       setIsloggedin(loggedIn);
+//       setisLoggedIn(loggedIn);
 //       setToken(token);
 //       setUser(user);
 //       setError(error);
@@ -97,7 +250,7 @@
 //             onLogin(); // Call the passed down function when login is successful
 //           }
 //         }
-//         setIsloggedin(loginResult?.loggedIn);
+//         setisLoggedIn(loginResult?.loggedIn);
 //         return loginResult;
 //       } catch (error) {
 //         console.error('Login failed:', error);
@@ -140,7 +293,7 @@
 //       await fetchDirectedResponses();
 
 //       // Do not call validateToken here.
-//       return { loggedIn: isloggedin, token };
+//       return { loggedIn: isLoggedIn, token };
 //     } catch (error) {
 //       console.error(`Error during login: ${error}`);
 //       setError('Login failed');
@@ -223,7 +376,7 @@
 
 //   const contextValue = {
 //     isLoading: isLoading,
-//     isloggedin: isloggedin,
+//     isLoggedIn: isLoggedIn,
 //     user: users.find((u) => u.id === user.id) || user,
 //     users,
 //     error,
@@ -291,320 +444,292 @@
 //     console.error('Missing essential fields in signup data.');
 //   }
 // }
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import jwt_decode from 'jwt-decode';
-import axios from 'axios';
-import { useCookies } from 'react-cookie';
-import { useUtilityContext } from '../UtilityContext/UtilityContext';
 
-const ONE_MINUTE = 60000;
-const AUTH_COOKIE = 'auth';
-const USER_COOKIE = 'userCookie';
-const LOGGED_IN_COOKIE = 'isloggedin';
-const processLoginData = (data) => {
-  // Validate the data before processing
-  if (!validateData(data, 'Login Response', 'processLoginData')) {
-    console.warn('Invalid login data. Aborting processLoginData.');
-    return;
-  }
+// import React, { useState, useEffect, useCallback, useRef } from 'react';
+// import jwt_decode from 'jwt-decode';
+// import axios from 'axios';
+// import { useCookies } from 'react-cookie';
+// import { useUtilityContext } from '../UtilityContext/UtilityContext';
 
-  // Extract relevant fields from the received data
-  const token = data?.data?.token; // Navigate through nested object
+// const LOGGED_IN_COOKIE = 'loggedIn';
+// const AUTH_COOKIE = 'authToken';
+// const USER_COOKIE = 'user';
 
-  if (token) {
-    // Save token to local storage
-    localStorage.setItem('authToken', token);
-    // Decode user information if it's included in the token
-    const decodedUser = jwt_decode(token);
-    // Perform other login success logic here
-    return { token, user: decodedUser };
-  } else {
-    console.error('Missing essential fields in login data.');
-    return null;
-  }
-};
+// const processResponseData = (data, type) => {
+//   if (!validateData(data, `${type} Response`, `process${type}Data`)) {
+//     console.warn(
+//       `Invalid ${type.toLowerCase()} data. Aborting process${type}Data.`
+//     );
+//     return;
+//   }
 
-const isEmpty = (obj) => {
-  return (
-    [Object, Array].includes((obj || {}).constructor) &&
-    !Object.entries(obj || {}).length
-  );
-};
-const processSignupData = (data) => {
-  // Validate the data before processing
-  if (!validateData(data, 'Signup Response', 'processSignupData')) {
-    console.warn('Invalid signup data. Aborting processSignupData.');
-    return;
-  }
+//   if (type === 'Login') {
+//     const token = data?.data?.token;
+//     if (token) {
+//       localStorage.setItem('authToken', token);
+//       const decodedUser = jwt_decode(token);
+//       return { token, user: decodedUser };
+//     }
+//   } else if (type === 'Signup') {
+//     const { success, newUser } = data;
+//     if (success && newUser) {
+//       return { success, newUser };
+//     }
+//   }
 
-  // Extract relevant fields from the received data
-  const { success, newUser } = data;
+//   console.error(`Missing essential fields in ${type.toLowerCase()} data.`);
+//   return null;
+// };
+// const isEmpty = (obj) => {
+//   return (
+//     [Object, Array].includes((obj || {}).constructor) &&
+//     !Object.entries(obj || {}).length
+//   );
+// };
+// // Validator function
+// const validateData = (data, eventName, functionName) => {
+//   const dataType = typeof data;
+//   console.log(
+//     `[Info] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}`
+//   );
 
-  if (success && newUser) {
-    // Assume `newUser` contains essential user info
-    const { id, username } = newUser;
+//   if (data === null || data === undefined) {
+//     console.warn(
+//       `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
+//     );
+//     return false;
+//   }
 
-    // Save the new user ID or perform other signup success logic here
-    // For example, redirect to login or a welcome page
-  } else {
-    console.error('Missing essential fields in signup data.');
-  }
-};
-// Validator function
-const validateData = (data, eventName, functionName) => {
-  const dataType = typeof data;
-  console.log(
-    `[Info] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}`
-  );
+//   if (isEmpty(data)) {
+//     console.error(
+//       `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
+//     );
+//     return false;
+//   }
 
-  if (data === null || data === undefined) {
-    console.warn(
-      `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
-    );
-    return false;
-  }
+//   return true;
+// };
 
-  if (isEmpty(data)) {
-    console.error(
-      `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
-    );
-    return false;
-  }
+// export const AuthContext = React.createContext();
 
-  return true;
-};
+// const setCookies = (
+//   setCookieFunc,
+//   authCookie,
+//   userCookie,
+//   loggedInCookie,
+//   loggedIn,
+//   token,
+//   user
+// ) => {
+//   setCookieFunc(authCookie, token);
+//   setCookieFunc(userCookie, JSON.stringify(user));
+//   setCookieFunc(loggedInCookie, String(loggedIn));
+// };
+// export default function AuthProvider({ children, serverUrl }) {
+//   const { directedResponses, fetchDirectedResponses } = useUtilityContext();
+//   const [cookies, setCookie, removeCookie] = useCookies([
+//     LOGGED_IN_COOKIE,
+//     AUTH_COOKIE,
+//     USER_COOKIE,
+//   ]);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [isLoggedIn, setisLoggedIn] = useState(false);
+//   const [user, setUser] = useState({});
+//   const [error, setError] = useState(null);
+//   const [token, setToken] = useState(undefined);
+//   const isMounted = useRef(true);
+//   const [loginAttempts, setLoginAttempts] = useState(0);
 
-export const AuthContext = React.createContext();
+//   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
 
-export default function AuthProvider({ children, serverUrl }) {
-  const { directedResponses, fetchDirectedResponses } = useUtilityContext();
-  const [cookies, setCookie, removeCookie] = useCookies([
-    LOGGED_IN_COOKIE,
-    AUTH_COOKIE,
-    USER_COOKIE,
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isloggedin, setIsloggedin] = useState(false);
-  const [user, setUser] = useState({});
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState(null);
-  const [token, setToken] = useState(undefined);
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [lastAttemptTime, setLastAttemptTime] = useState(null);
+//   useEffect(
+//     () => () => {
+//       isMounted.current = false;
+//     },
+//     []
+//   );
 
-  const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
-  const isMounted = useRef(true);
+//   const setLoginState = useCallback(
+//     (loggedIn, token, user, error = null) => {
+//       setCookie(AUTH_COOKIE, token);
+//       setCookie(USER_COOKIE, JSON.stringify(user));
+//       setCookie(LOGGED_IN_COOKIE, String(loggedIn));
+//       setisLoggedIn(loggedIn);
+//       setToken(token);
+//       setUser(user);
+//       setError(error);
+//     },
+//     [setCookie]
+//   );
 
-  useEffect(
-    () => () => {
-      isMounted.current = false;
-    },
-    []
-  );
+//   const resetLoginAttempts = () =>
+//     loginAttempts >= 2 && setTimeout(() => setLoginAttempts(0), 60000);
+//   useEffect(resetLoginAttempts, [loginAttempts]);
 
-  const updateCookies = (names, values) => {
-    const expires = new Date();
-    expires.setMinutes(expires.getMinutes() + 45);
+//   const updateLoginState = useCallback(
+//     (loggedIn, token, user, error = null) => {
+//       setCookies(
+//         setCookie,
+//         AUTH_COOKIE,
+//         USER_COOKIE,
+//         LOGGED_IN_COOKIE,
+//         loggedIn,
+//         token,
+//         user
+//       );
+//       setisLoggedIn(loggedIn);
+//       setToken(token);
+//       setUser(user);
+//       setError(error);
+//     },
+//     [setCookie]
+//   );
 
-    names.forEach((name, index) =>
-      setCookie(name, values[index], {
-        expires,
-        secure: true,
-        sameSite: 'strict',
-      })
-    );
-  };
+//   const validateToken = useCallback(async () => {
+//     if (!isMounted.current) return;
 
-  const setLoginState = useCallback(
-    (loggedIn, token, user, error = null) => {
-      updateCookies(
-        [AUTH_COOKIE, USER_COOKIE, LOGGED_IN_COOKIE],
-        [token, JSON.stringify(user), String(loggedIn)]
-      );
-      setIsloggedin(loggedIn);
-      setToken(token);
-      setUser(user);
-      setError(error);
-    },
-    [setCookie]
-  );
+//     setIsLoading(true);
+//     try {
+//       const latestSignInResponse = directedResponses.find(
+//         (res) => res.eventType === 'SIGNIN'
+//       );
 
-  const resetLoginAttempts = () =>
-    loginAttempts >= 2 && setTimeout(() => setLoginAttempts(0), 60000);
-  useEffect(resetLoginAttempts, [loginAttempts]);
+//       if (
+//         latestSignInResponse &&
+//         latestSignInResponse.response.data.token !== token
+//       ) {
+//         const newToken = latestSignInResponse.response.data.token;
+//         const decodedUser = jwt_decode(newToken);
+//         setLoginState(true, newToken, decodedUser);
+//       } else {
+//         throw new Error('Token validation failed');
+//       }
+//     } catch (error) {
+//       setError('Token validation failed');
+//       setLoginState(false, null, {}, 'Token validation failed');
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, [directedResponses, setLoginState, token]);
+//   useEffect(() => {
+//     const queryToken = new URLSearchParams(window.location.search).get('token');
+//     const cookieToken = cookies[AUTH_COOKIE];
+//     const activeToken = queryToken || cookieToken;
+//     if (activeToken && activeToken !== token) {
+//       validateToken(activeToken);
+//     }
+//   }, [validateToken, cookies[AUTH_COOKIE]]);
 
-  // useEffect(() => {
-  //   if (loginAttempts >= 2) {
-  //     const timerId = setTimeout(() => {
-  //       setLoginAttempts(0);
-  //     }, 60000); // Reset after 1 minute
-  //     return () => clearTimeout(timerId);
-  //   }
-  // }, [loginAttempts]);
+//   const safeRequest = useCallback(async (apiEndpoint, data, methodName) => {
+//     try {
+//       if (!validateData(data, apiEndpoint, methodName)) {
+//         throw new Error(`Invalid data sent to API endpoint: ${apiEndpoint}`);
+//       }
+//       const response = await axios.post(apiEndpoint, data);
+//       if (!validateData(response, apiEndpoint, methodName)) {
+//         throw new Error(
+//           `Invalid data received from API endpoint: ${apiEndpoint}`
+//         );
+//       }
+//       return response.data;
+//     } catch (error) {
+//       console.error(`[Error] Failed to send request to: ${apiEndpoint}`, error);
+//       setError({ message: error.message, source: methodName });
+//       return null;
+//     }
+//   }, []);
 
-  // Validate the token
-  const validateToken = useCallback(async () => {
-    if (!isMounted.current) return;
+//   const safeResponse = useCallback((data, eventName, handler) => {
+//     try {
+//       if (!validateData(data, eventName, handler.name)) {
+//         throw new Error(`Invalid data received for event: ${eventName}`);
+//       }
+//       return handler(data);
+//     } catch (error) {
+//       console.error(`[Error] Failed to handle event: ${eventName}`, error);
+//       setError({ message: error.message, source: eventName });
+//       return null;
+//     }
+//   }, []);
 
-    setIsLoading(true);
-    try {
-      const latestSignInResponse = directedResponses.find(
-        (res) => res.eventType === 'SIGNIN'
-      );
+//   const executeAuthAction = async (actionType, url, requestData) => {
+//     const response = await safeRequest(
+//       `${REACT_APP_SERVER}/api/users/${url}`,
+//       requestData,
+//       actionType.toLowerCase()
+//     );
 
-      if (
-        latestSignInResponse &&
-        latestSignInResponse.response.data.token !== token
-      ) {
-        const newToken = latestSignInResponse.response.data.token;
-        const decodedUser = jwt_decode(newToken);
-        setLoginState(true, newToken, decodedUser);
-      } else {
-        throw new Error('Token validation failed');
-      }
-    } catch (error) {
-      setError('Token validation failed');
-      setLoginState(false, null, {}, 'Token validation failed');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [directedResponses, setLoginState, token]);
+//     if (response) {
+//       const processedData = safeResponse(
+//         response,
+//         actionType.toLowerCase(),
+//         (data) => processResponseData(data, actionType)
+//       );
+//       if (processedData) {
+//         setLoginState(
+//           true,
+//           processedData.token || null,
+//           processedData.user || processedData.newUser || {}
+//         );
+//       }
+//     }
+//   };
 
-  // Initialize and Validate Token
-  const initializeAndValidateToken = useCallback(() => {
-    if (isMounted.current) {
-      const queryToken = new URLSearchParams(window.location.search).get(
-        'token'
-      );
-      const cookieToken = cookies[AUTH_COOKIE];
-      const activeToken = queryToken || cookieToken;
+//   const login = async (username, password) => {
+//     const requestData = { username, password };
+//     await executeAuthAction('Login', 'signin', requestData);
+//   };
 
-      if (activeToken && activeToken !== token) {
-        validateToken(activeToken);
-      }
-    }
-  }, [validateToken, cookies[AUTH_COOKIE]]);
+//   const signup = async (loginData, basicInfo, otherInfo) => {
+//     const requestData = {
+//       login_data: loginData,
+//       basic_info: basicInfo,
+//       ...otherInfo,
+//     };
+//     await executeAuthAction('Signup', 'signup', requestData);
+//   };
 
-  useEffect(initializeAndValidateToken, [cookies[AUTH_COOKIE]]);
+//   const logout = () => {
+//     removeCookie('auth');
+//     removeCookie(AUTH_COOKIE);
+//     setLoginState(false, null, {});
+//     console.log('Logout method invoked');
+//   };
+//   // Add this in your Header component
+//   useEffect(() => {
+//     console.log('Value of isLoggedIn from context: ', isLoggedIn);
+//   }, [isLoggedIn]);
 
-  // Utility functions
-  const safeRequest = useCallback(async (apiEndpoint, data, methodName) => {
-    try {
-      if (!validateData(data, apiEndpoint, methodName)) {
-        throw new Error(`Invalid data sent to API endpoint: ${apiEndpoint}`);
-      }
-      const response = await axios.post(apiEndpoint, data);
-      if (!validateData(response, apiEndpoint, methodName)) {
-        throw new Error(
-          `Invalid data received from API endpoint: ${apiEndpoint}`
-        );
-      }
-      return response.data;
-    } catch (error) {
-      console.error(`[Error] Failed to send request to: ${apiEndpoint}`, error);
-      setError({ message: error.message, source: methodName });
-      return null;
-    }
-  }, []);
-  const safeResponse = useCallback((data, eventName, handler) => {
-    try {
-      if (!validateData(data, eventName, handler.name)) {
-        throw new Error(`Invalid data received for event: ${eventName}`);
-      }
-      return handler(data);
-    } catch (error) {
-      console.error(`[Error] Failed to handle event: ${eventName}`, error);
-      setError({ message: error.message, source: eventName });
-      return null;
-    }
-  }, []);
-  const login = async (username, password) => {
-    const requestData = { username, password };
+//   useEffect(() => {
+//     if (isMounted.current) {
+//       const queryToken = new URLSearchParams(window.location.search).get(
+//         'token'
+//       );
+//       const cookieToken = cookies[AUTH_COOKIE];
+//       const activeToken = queryToken || cookieToken;
 
-    const response = await safeRequest(
-      `${REACT_APP_SERVER}/api/users/signin`,
-      requestData,
-      'login'
-    );
+//       if (activeToken && activeToken !== token) {
+//         validateToken(activeToken);
+//       }
+//     }
+//   }, [validateToken, cookies[AUTH_COOKIE]]);
 
-    if (response) {
-      const processedData = safeResponse(response, 'login', processLoginData);
-      console.log('PROCESSED DATA:', processedData);
-      if (processedData) {
-        setLoginState(true, processedData.token, processedData.user);
-      }
-    }
-  };
-  // Action: Handle successful login
-  const onLogin = (isloggedin, userData) => {
-    console.log('onLogin method invoked', isloggedin);
-    setIsloggedin(true);
-    setUser(userData);
-  };
+//   const contextValue = {
+//     isLoading,
+//     isLoggedIn,
+//     user,
+//     // users,
+//     error,
+//     login,
+//     // onLogin,
+//     logout,
+//     signup,
+//     setUser,
+//     setLoginState,
+//     validateToken,
+//   };
 
-  const signup = async (loginData, basicInfo, otherInfo) => {
-    const requestData = {
-      login_data: loginData,
-      basic_info: basicInfo,
-      ...otherInfo,
-    };
-
-    const response = await safeRequest(
-      `${REACT_APP_SERVER}/api/signup`,
-      requestData,
-      'signup'
-    );
-
-    if (response) {
-      const processedData = safeResponse(response, 'signup', processSignupData);
-      if (processedData) {
-        // Logic to set the login state here
-        setLoginState(true, processedData.token, processedData.user);
-      }
-    }
-  };
-
-  const logout = () => {
-    removeCookie('auth');
-    removeCookie(AUTH_COOKIE);
-    setLoginState(false, null, {});
-    console.log('Logout method invoked');
-  };
-  // Add this in your Header component
-  useEffect(() => {
-    console.log('Value of isloggedin from context: ', isloggedin);
-  }, [isloggedin]);
-
-  useEffect(() => {
-    if (isMounted.current) {
-      const queryToken = new URLSearchParams(window.location.search).get(
-        'token'
-      );
-      const cookieToken = cookies[AUTH_COOKIE];
-      const activeToken = queryToken || cookieToken;
-
-      if (activeToken && activeToken !== token) {
-        validateToken(activeToken);
-      }
-    }
-  }, [validateToken, cookies[AUTH_COOKIE]]);
-
-  const contextValue = {
-    isLoading,
-    isloggedin,
-    user,
-    users,
-    error,
-    login,
-    onLogin,
-    logout,
-    signup,
-    setUser,
-    setLoginState,
-    validateToken,
-  };
-
-  return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
-  );
-}
+//   return (
+//     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+//   );
+// }

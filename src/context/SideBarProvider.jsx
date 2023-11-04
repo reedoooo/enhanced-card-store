@@ -4,7 +4,7 @@ const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setisLoggedIn] = useState(false);
   const [sidebarBackgroundColor, setSidebarBackgroundColor] =
     useState('#FFFFFF');
   const [sidebarImage, setSidebarImage] = useState(null);
@@ -14,11 +14,11 @@ export const SidebarProvider = ({ children }) => {
   };
 
   const login = () => {
-    setIsLoggedIn(true);
+    setisLoggedIn(true);
   };
 
   const logout = () => {
-    setIsLoggedIn(false);
+    setisLoggedIn(false);
   };
 
   return (

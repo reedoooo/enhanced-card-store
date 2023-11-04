@@ -27,8 +27,8 @@ const SelectCollectionDialog = ({
     removeCollection,
     selectedCollection,
   } = useCollectionStore();
-  const [cookies] = useCookies(['userCookie']);
-  const userId = cookies.userCookie?.id;
+  const [cookies] = useCookies(['user']);
+  const userId = cookies.user?.id;
 
   const handleSave = () => {
     const newCollectionInfo = {
@@ -38,7 +38,7 @@ const SelectCollectionDialog = ({
     };
 
     if (isNew) {
-      createUserCollection(newCollectionInfo);
+      createUserCollection(userId, newCollectionInfo);
     } else if (editedName && editedDescription) {
       addOneToCollection(newCollectionInfo);
     } else {

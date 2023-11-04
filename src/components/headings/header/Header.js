@@ -9,14 +9,14 @@ import LoginDialog from '../../dialogs/LoginDialog';
 
 const Header = () => {
   const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
-  const { isloggedin } = useAuthContext();
+  const { isLoggedIn } = useAuthContext();
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const filteredMenuItems = getMenuItemsData(isloggedin).filter(
-    (item) => !item.requiresLogin || isloggedin
+  const filteredMenuItems = getMenuItemsData(isLoggedIn).filter(
+    (item) => !item.requiresLogin || isLoggedIn
   );
 
   // Combine useEffect hooks to a single one

@@ -26,15 +26,24 @@ function LoginDialog({ open, onClose, onLogin }) {
   const [name, setName] = useState('');
   const [roleData, setRoleData] = useState('admin'); // Adjusted to handle string value
   const { toggleColorMode, mode } = useMode();
-  const [cookies, setCookie, removeCookie] = useCookies(['isloggedin']);
+  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
   // Flag to track if the component is mounted
-  const isMounted = useRef(true);
+  // const isMounted = useRef(true);
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    }; // Cleanup
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     isMounted.current = false;
+  //   }; // Cleanup
+  // }, []);
+
+  // New function to set cookies and call onLogin
+  const setLoginState = (isLoggedIn, userId) => {
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 45);
+    setCookie('isLoggedIn', isLoggedIn, { expires });
+    setCookie('userId', userId, { expires });
+    onLogin(isLoggedIn, userId);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,10 +66,10 @@ function LoginDialog({ open, onClose, onLogin }) {
         // Assuming `userId` is available in the `response`.
         const expires = new Date();
         expires.setMinutes(expires.getMinutes() + 45);
-        setCookie('isloggedin', true, { expires });
+        setCookie('isLoggedIn', true, { expires });
         setCookie('userId', response.userId, { expires });
 
-        onLogin(true, response.userId); // isloggedin is set to true
+        setLoginState(true, response.userId);
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -68,22 +77,21 @@ function LoginDialog({ open, onClose, onLogin }) {
   };
 
   const handleLogout = () => {
-    // removeCookie('isloggedin', { path: '/' });
+    // removeCookie('isLoggedIn', { path: '/' });
     removeCookie('userId', { path: '/' }); // Remove userId cookie
     authContext.logout();
   };
 
   // UseEffect to handle login state change
   useEffect(() => {
-    if (authContext.isloggedin && window.location.pathname !== '/profile') {
-      const isloggedinFromCookie = cookies['isloggedin'];
-      const userIdFromCookie = cookies['userId']; // Assuming you've set this cookie
-
-      if (isloggedinFromCookie && userIdFromCookie) {
-        onLogin(isloggedinFromCookie, userIdFromCookie);
+    if (authContext.isLoggedIn && window.location.pathname !== '/profile') {
+      const isLoggedInFromCookie = cookies['isLoggedIn'];
+      const userIdFromCookie = cookies['userId'];
+      if (isLoggedInFromCookie && userIdFromCookie) {
+        setLoginState(isLoggedInFromCookie, userIdFromCookie);
       }
     }
-  }, [authContext.isloggedin, onLogin, navigate, cookies]);
+  }, [authContext.isLoggedIn, onLogin, navigate, cookies]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -95,7 +103,7 @@ function LoginDialog({ open, onClose, onLogin }) {
         {!mode ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>
       <DialogContent>
-        {authContext.isloggedin ? (
+        {authContext.isLoggedIn ? (
           <Button color="primary" variant="outlined" onClick={handleLogout}>
             Log Out
           </Button>

@@ -1,6 +1,11 @@
 // External Imports
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -23,6 +28,7 @@ import CardDeckAnimation from './pages/CardDeckAnimation';
 // Context Hooks Imports
 import { useCombinedContext } from './context/CombinedProvider';
 import { useUserContext } from './context/UserContext/UserContext';
+import { useCollectionStore } from './context/hooks/collection';
 import { useUtilityContext } from './context/UtilityContext/UtilityContext';
 
 // Styled Components
@@ -46,7 +52,7 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
     retrievedListOfMonitoredCards,
     allCollectionsUpdated,
   } = useCombinedContext();
-
+  // const { fetchAllCollectionsForUser } = useCollectionStore();
   const { user } = useUserContext();
   const userId = user?.userID;
 
@@ -94,9 +100,12 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
 
 // Main Component
 const App = () => {
+  const { fetchAllCollectionsForUser, allCollections } = useCollectionStore();
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
   const { isLoading, setIsContextLoading } = useUtilityContext();
   const { user } = useUserContext(); // Assuming 'user' exists and is non-null if the user is logged in
+  // const [currentPage, setCurrentPage] = useState(null); // Add this line
+  // const location = useLocation(); // Add this line to get the current location
 
   useEffect(() => {
     if (user) {
@@ -123,6 +132,18 @@ const App = () => {
 
   useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
 
+  // Assuming currentPage is a piece of state that changes when the user changes pages
+  useEffect(() => {
+    if (user && (!allCollections || allCollections.length === 0)) {
+      try {
+        fetchAllCollectionsForUser();
+        console.log('Fetched collections because none were present.');
+      } catch (err) {
+        console.error('Failed to fetch collections:', err);
+      }
+    }
+  }, [user, allCollections]); // Add location.pathname to the dependency list
+
   return (
     <>
       <GlobalStyle />
@@ -145,6 +166,8 @@ const App = () => {
           <AppContainer>
             <Header />
             <Routes>
+              {/* {setCurrentPage(useLocation())} */}
+
               <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/store" element={<StorePage />} />

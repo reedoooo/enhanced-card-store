@@ -41,11 +41,11 @@ const removeDuplicateDecks = (decks) => {
 };
 export const DeckProvider = ({ children }) => {
   const { getCardData } = useCardStore();
-  const [cookies, setCookie] = useCookies(['userCookie']);
+  const [cookies, setCookie] = useCookies(['user']);
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
-  const userId = cookies.userCookie?.id;
+  const userId = cookies.user?.id;
 
   const calculateAndUpdateTotalPrice = (deck) => {
     let totalPrice = 0;

@@ -3,12 +3,12 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthContext } from '../../context/Auth/authContext';
 
 function Auth({ children }) {
-  const { isloggedin, user, can } = useContext(AuthContext);
+  const { isLoggedIn, user, can } = useContext(AuthContext);
 
-  console.log('isloggedin', isloggedin);
+  console.log('isLoggedIn', isLoggedIn);
   console.log('user', user);
 
-  return isloggedin ? (
+  return isLoggedIn ? (
     <Routes>
       {/* {can('admin') && <Route exact path="/admin" element={<AdminPage />} />} */}
       {children}

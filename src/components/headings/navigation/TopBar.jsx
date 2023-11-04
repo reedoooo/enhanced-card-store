@@ -105,8 +105,8 @@ const TopBar = ({
   handleDrawerClose,
 }) => {
   const [selected, setSelected] = useState('Dashboard');
-  const { isloggedin } = useAuthContext();
-  const menuItemsData = getMenuItemsData(isloggedin);
+  const { isLoggedIn } = useAuthContext();
+  const menuItemsData = getMenuItemsData(isLoggedIn);
 
   const handleItemClick = (name) => {
     setSelected(name);
@@ -127,7 +127,7 @@ const TopBar = ({
         </Hidden>
         {menuItemsData.map((item) => {
           const { name, icon, to, requiresLogin } = item;
-          return isloggedin || !requiresLogin ? (
+          return isLoggedIn || !requiresLogin ? (
             <MenuItemComponent
               key={name}
               name={name}
@@ -138,7 +138,7 @@ const TopBar = ({
             />
           ) : null;
         })}
-        {isloggedin ? (
+        {isLoggedIn ? (
           <MenuItemComponent
             item={{ name: 'Logout', icon: <LogoutIcon /> }}
             onClick={handleLoginDialogState}

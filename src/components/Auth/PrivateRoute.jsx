@@ -6,13 +6,13 @@ import { useAuthContext } from '../../context/hooks/auth';
 const PrivateRoute = ({ children }) => {
   const authContext = useAuthContext();
 
-  // Use react-cookie's useCookies hook to read the 'isloggedin' cookie
-  const [cookies] = useCookies(['isloggedin']);
+  // Use react-cookie's useCookies hook to read the 'isLoggedIn' cookie
+  const [cookies] = useCookies(['isLoggedIn']);
 
-  const isloggedin = authContext.isloggedin || cookies.isloggedin;
+  const isLoggedIn = authContext.isLoggedIn || cookies.isLoggedIn;
 
-  // If isloggedin from either cookie or context is true, proceed to the route
-  return isloggedin ? children : <Navigate to="/login" />;
+  // If isLoggedIn from either cookie or context is true, proceed to the route
+  return isLoggedIn ? children : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

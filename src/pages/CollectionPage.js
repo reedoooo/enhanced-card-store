@@ -13,7 +13,6 @@ const CollectionPage = () => {
   // const [defaultCollection, setDefaultCollection] = useState([]);
   const { userCookie } = useCookies(['userCookie'])[0];
   const {
-    fetchAllCollectionsForUser,
     allCollections = [],
     setAllCollections,
     selectedCollection,
@@ -23,16 +22,6 @@ const CollectionPage = () => {
     error,
   } = useCollectionStore();
   const userId = userCookie?.id;
-
-  useEffect(() => {
-    fetchAllCollectionsForUser()
-      .then(() => {
-        console.log('Fetched collections successfully');
-      })
-      .catch((err) => {
-        console.error('Failed to get all collections:', err);
-      });
-  }, [fetchAllCollectionsForUser]);
 
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;

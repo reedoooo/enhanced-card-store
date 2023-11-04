@@ -20,14 +20,14 @@ const CardPortfolio = ({ allCollections }) => {
     // allCollections,
     selectedCollection,
     setSelectedCollection,
-    fetchAllCollectionsForUser,
+    // fetchAllCollectionsForUser,
     addOneToCollection,
     removeOneFromCollection,
   } = useCollectionStore();
 
-  useEffect(() => {
-    fetchAllCollectionsForUser();
-  }, []);
+  // useEffect(() => {
+  //   fetchAllCollectionsForUser();
+  // }, []);
 
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
