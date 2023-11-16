@@ -1,7 +1,7 @@
 // Import necessary modules from MUI or other libraries
 import React from 'react';
 import { Typography, Grid } from '@mui/material';
-import { useStyles } from './cardStyles';
+import { useStyles } from '../components/cards/cardStyles';
 
 const CardDetailsContainer = ({ card }) => {
   const classes = useStyles();

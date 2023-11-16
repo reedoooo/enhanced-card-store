@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import CardMediaSection from './CardMediaSection'; // Ensure correct import
-import CardDetailsContainer from '../cards/CardDetailsContainer';
+import CardDetailsContainer from '../../containers/CardDetailsContainer';
 // import { useStyles } from './detailsStyles'; // Assuming there are styles, uncomment if needed
 
 // This component doesn't need to maintain state or use hooks, hence it's a simple functional component

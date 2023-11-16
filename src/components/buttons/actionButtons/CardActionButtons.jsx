@@ -12,8 +12,6 @@ const CardActionButtons = ({ card, quantity, context, closeModal }) => {
     return null; // Consider rendering an error boundary or a user-friendly error message instead.
   }
 
-  // console.log('CARD TO ADD', card);
-  // Action types
   const ADD = 'add';
   const REMOVE_ONE = 'removeOne';
   const REMOVE_ALL = 'removeAll';

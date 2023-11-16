@@ -5,7 +5,15 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import ChartErrorBoundary from './ChartErrorBoundary';
-import CustomLogger from '../../context/CutstomLogger';
+// import CustomLogger from '../../context/CutstomLogger';
+import {
+  formatDateToString,
+  useEventHandlers,
+  getFilteredData,
+  getTickValues,
+  getAveragedData,
+  CustomTooltip,
+} from './chartUtils';
 
 const useStyles = makeStyles((theme) => ({
   chartContainer: {
@@ -75,149 +83,10 @@ const useStyles = makeStyles((theme) => ({
 //   console.log('[5][LATEST DATA]:', JSON.stringify(latestData, null, 2));
 // }
 
-const CustomTooltip = ({ point }) => {
-  const theme = useTheme();
-  const { serieId, data } = point;
-  const { label, xFormatted, yFormatted } = data || {};
-  const series = {
-    type: {
-      Collection: 'Collection',
-      Card: 'Card',
-      Deck: 'Deck',
-    },
-  };
-  return (
-    <Box
-      p={2}
-      boxShadow={3}
-      bgcolor={theme.palette.background.paper}
-      borderRadius={2}
-      borderColor={theme.palette.divider}
-      border={1}
-    >
-      <Typography variant="subtitle1" color="textPrimary">
-        {`Series: ${serieId}`}
-      </Typography>
-      {series.type[label] === 'Card' && (
-        <Typography variant="body1" color="textPrimary">
-          {`Card: ${label}`}
-        </Typography>
-      )}
-      <Typography variant="body2">
-        {`Time: ${new Date(xFormatted).toLocaleString()}`}
-      </Typography>
-      <Typography variant="h6" color="textSecondary">
-        {`Value: $${parseFloat(yFormatted).toFixed(2)}`}
-      </Typography>
-    </Box>
-  );
-};
-
-const roundToNearestTenth = (value) => {
-  return Math.round(value * 10) / 10;
-};
-
-const getFilteredData = (data, timeRange) => {
-  const cutOffTime = new Date().getTime() - timeRange;
-  return data
-    .filter((d) => {
-      const date = new Date(d.x);
-      if (isNaN(date.getTime())) {
-        console.error('Invalid date:', d.x);
-        return false;
-      }
-      return date.getTime() >= cutOffTime;
-    })
-    .map((d) => ({ ...d, y: roundToNearestTenth(d.y) }));
-};
-
-const getAveragedData = (data) => {
-  // Use a regular function instead of a hook
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  return data.map((row, index, total) => {
-    const start = Math.max(0, index - 6);
-    const end = index;
-    const subset = total.slice(start, end + 1);
-    const sum = subset.reduce((a, b) => a + b.y, 0);
-    return {
-      x: row.x,
-      y: sum / subset.length || 0,
-    };
-  });
-};
-
-const getTickValues = (timeRange) => {
-  const mapping = {
-    '15m': 'every 15 minutes',
-    '2h': 'every 2 hours',
-    '1d': 'every day',
-    '1w': 'every week',
-  };
-  return mapping[timeRange] || 'every week'; // Default to 'every week' if no match
-};
-
-const useMovingAverage = (data, numberOfPricePoints) => {
-  return useMemo(() => {
-    if (!Array.isArray(data)) {
-      return [];
-    }
-    console.log('[1][Data]----------> [', data + ']');
-    console.log(
-      '[2][NUMBER OF POINTS]----------> [',
-      numberOfPricePoints + ']'
-    );
-
-    return data.map((row, index, total) => {
-      const start = Math.max(0, index - numberOfPricePoints);
-      const end = index;
-      const subset = total.slice(start, end + 1);
-      const sum = subset.reduce((a, b) => a + b.y, 0);
-      return {
-        // x: String(row.x),
-        x: row.x,
-        y: sum / subset.length || 0,
-      };
-    });
-  }, [data, numberOfPricePoints]);
-};
-
-const useEventHandlers = () => {
-  const [hoveredData, setHoveredData] = useState(null);
-
-  const handleMouseMove = useCallback((point) => {
-    if (point) {
-      setHoveredData({
-        x: point.data.x,
-        y: point.data.y,
-      });
-    }
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredData(null);
-  }, []);
-
-  return { hoveredData, handleMouseMove, handleMouseLeave };
-};
-
-const formatDateToString = (date) => {
-  if (!(date instanceof Date) || isNaN(date.getTime())) {
-    console.error('Invalid date:', date);
-    return '';
-  }
-  return `${date.getFullYear()}-${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
-    .getHours()
-    .toString()
-    .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-};
-
 const LinearChart = ({
   filteredChartData,
   datesTimesValues,
+  nivoReadyData,
   latestData,
   dimensions,
   timeRanges,
@@ -227,23 +96,24 @@ const LinearChart = ({
   const [isZoomed, setIsZoomed] = useState(false);
   const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
 
-  const filteredData = useMemo(
-    () => getFilteredData(filteredChartData, timeRange),
-    [filteredChartData, timeRange]
-  );
+  // const filteredData = useMemo(
+  //   () => getFilteredData(filteredChartData, timeRange),
+  //   [filteredChartData, timeRange]
+  // );
+  // console.log('filteredData', filteredData);
 
-  const dataForChart = useMemo(() => {
-    return datesTimesValues.dates.map((date, index) => ({
-      x: formatDateToString(
-        new Date(`${date} ${datesTimesValues.times[index]}`)
-      ),
-      y: datesTimesValues.values[index],
-    }));
-  }, [datesTimesValues]);
-  CustomLogger('LinearChart', 'info', {
-    filteredChartData,
-    datesTimesValues,
-  });
+  // const dataForChart = useMemo(() => {
+  //   return datesTimesValues.dates.map((date, index) => ({
+  //     x: formatDateToString(
+  //       new Date(`${date} ${datesTimesValues.times[index]}`)
+  //     ),
+  //     y: datesTimesValues.values[index],
+  //   }));
+  // }, [datesTimesValues]);
+  // CustomLogger('LinearChart', 'info', {
+  //   filteredChartData,
+  //   datesTimesValues,
+  // });
   const tickValues = useMemo(() => getTickValues(timeRange), [timeRange]);
 
   if (
@@ -338,7 +208,8 @@ const LinearChart = ({
 
   const chartProps = {
     margin: { top: 50, right: 110, bottom: 50, left: 60 },
-    data: [{ id: 'Data', data: dataForChart }],
+    // data: [{ id: 'Data', data: dataForChart }],
+    data: nivoReadyData,
     animate: true,
     motionStiffness: 90,
     motionDamping: 15,

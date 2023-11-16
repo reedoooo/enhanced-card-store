@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Popover from '@mui/material/Popover';
-import CardToolTip from './CardToolTip';
+import CardToolTip from '../cards/CardToolTip';
 import { makeStyles } from '@mui/styles';
-import GenericCard from './GenericCard';
+import GenericCard from '../cards/GenericCard';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

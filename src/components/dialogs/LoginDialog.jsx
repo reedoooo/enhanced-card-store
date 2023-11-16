@@ -27,16 +27,6 @@ function LoginDialog({ open, onClose, onLogin }) {
   const [roleData, setRoleData] = useState('admin'); // Adjusted to handle string value
   const { toggleColorMode, mode } = useMode();
   const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
-  // Flag to track if the component is mounted
-  // const isMounted = useRef(true);
-
-  // useEffect(() => {
-  //   return () => {
-  //     isMounted.current = false;
-  //   }; // Cleanup
-  // }, []);
-
-  // New function to set cookies and call onLogin
   const setLoginState = (isLoggedIn, userId) => {
     const expires = new Date();
     expires.setMinutes(expires.getMinutes() + 45);
@@ -63,7 +53,6 @@ function LoginDialog({ open, onClose, onLogin }) {
       }
 
       if (response?.loggedIn) {
-        // Assuming `userId` is available in the `response`.
         const expires = new Date();
         expires.setMinutes(expires.getMinutes() + 45);
         setCookie('isLoggedIn', true, { expires });
@@ -77,12 +66,10 @@ function LoginDialog({ open, onClose, onLogin }) {
   };
 
   const handleLogout = () => {
-    // removeCookie('isLoggedIn', { path: '/' });
     removeCookie('userId', { path: '/' }); // Remove userId cookie
     authContext.logout();
   };
 
-  // UseEffect to handle login state change
   useEffect(() => {
     if (authContext.isLoggedIn && window.location.pathname !== '/profile') {
       const isLoggedInFromCookie = cookies['isLoggedIn'];

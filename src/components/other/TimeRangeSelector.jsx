@@ -6,8 +6,13 @@ import { useChartContext } from '../../context/ChartContext/ChartContext';
 const TimeRangeSelector = ({ onChange }) => {
   const { timeRanges, timeRange, setTimeRange, handleChange, currentValue } =
     useChartContext();
-  const isInRange = timeRanges.some((option) => option.value === timeRange);
-  const safeTimeRange = isInRange ? timeRange : timeRanges[0].value;
+  console.log('timeRanges: ', timeRanges);
+  console.log('timeRange: ', timeRange);
+  console.log('currentValue: ', currentValue);
+  const isInRange = timeRanges.some((option) => option.value === currentValue);
+  console.log('isInRange: ', isInRange);
+  const safeTimeRange = isInRange ? timeRange : timeRanges[1].value;
+  console.log('safeTimeRange: ', safeTimeRange);
 
   return (
     <Select
@@ -18,6 +23,31 @@ const TimeRangeSelector = ({ onChange }) => {
       {timeRanges.map((option) => (
         <MenuItem key={option.label} value={option.value}>
           {option.label}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
+
+export default TimeRangeSelector;
+import React from 'react';
+import { Select, MenuItem } from '@mui/material';
+import { useChartContext } from './ChartContext'; // adjust the import path as necessary
+
+const TimeRangeSelector = () => {
+  const { timeRange, timeRanges, handleChange } = useChartContext();
+
+  return (
+    <Select
+      value={timeRange}
+      onChange={handleChange}
+      displayEmpty
+      variant="outlined"
+      sx={{ minWidth: 120 }}
+    >
+      {timeRanges.map((range) => (
+        <MenuItem key={range.label} value={range.value}>
+          {range.label}
         </MenuItem>
       ))}
     </Select>

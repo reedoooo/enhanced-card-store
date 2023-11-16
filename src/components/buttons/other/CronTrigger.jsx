@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import { useCombinedContext } from '../../context/CombinedProvider';
-import { useUserContext } from '../../context/UserContext/UserContext';
+import { useCombinedContext } from '../../../context/CombinedProvider';
+import { useUserContext } from '../../../context/UserContext/UserContext';
 
 const CronTrigger = () => {
   const { stopCronJob, handleSendAllCardsInCollections, listOfMonitoredCards } =

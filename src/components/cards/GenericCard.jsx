@@ -22,13 +22,12 @@ const GenericCard = React.forwardRef((props, ref) => {
   const requiresDoubleButtons = context === 'Deck' || context === 'Collection'; // Added this line
   const checkCardInCollection = () => {
     if (selectedCollection) {
-      const cardIds = selectedCollection.cards.map((card) => card.id);
-      return cardIds.includes(card.id);
+      const cardIds = selectedCollection?.cards?.map((card) => card.id);
+      return cardIds?.includes(card.id);
     }
     return false;
   };
-  // Function to handle click on the card, opening the modal and updating state
-  // Function to handle click on the card, opening the modal and updating state
+
   const handleClick = () => {
     const cardIsInCollection = checkCardInCollection();
     console.log('Modal opened with card:', card);

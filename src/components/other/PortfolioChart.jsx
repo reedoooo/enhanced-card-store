@@ -11,18 +11,16 @@ import {
   // debounce,
 } from '@mui/material';
 import LinearChart from './LinearChart';
-import TimeRangeSelector from './TimeRangeSelector';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import CollectionStatisticsSelector from './CollectionStatisticsSelector';
-import UpdateStatusBox from './UpdateStatusBox';
 import { useCombinedContext } from '../../context/CombinedProvider';
 import debounce from 'lodash/debounce';
 import {
   convertDataForNivo,
-  getUniqueFilteredXYValues,
+  getUniqueValidData,
   groupAndAverageData,
+  convertDataForNivo2,
 } from './chartUtils';
 
 // const ChartPaper = styled(Paper)(({ theme }) => ({
@@ -53,7 +51,7 @@ const ChartPaper = styled(Paper)(({ theme }) => ({
 }));
 const PortfolioChart = () => {
   const theme = useTheme();
-  const { latestData, setLatestData, timeRange, timeRanges } =
+  const { latestData, setLatestData, timeRange, timeRanges, currentValue } =
     useChartContext();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
@@ -62,31 +60,66 @@ const PortfolioChart = () => {
     height: 0,
   });
   const { selectedCollection } = useCollectionStore();
+  let nivoReadyData = null;
+  let nivoReadyData2 = null;
   const { socket } = useCombinedContext();
-
-  const filteredChartData = useMemo(() => {
-    const allXYValues = selectedCollection?.chartData?.allXYValues;
-    return allXYValues ? getUniqueFilteredXYValues(allXYValues) : [];
-  }, [selectedCollection]);
-
-  const threshold = useMemo(() => timeRange * 0.1, [timeRange]);
-  const rawData = useMemo(
-    () => groupAndAverageData(filteredChartData, threshold),
-    [filteredChartData, threshold]
-  );
-  const nivoReadyData = useMemo(() => convertDataForNivo(rawData), [rawData]);
-
-  // Now use this threshold when calling your data grouping function
-
-  // Now use this threshold when calling your data grouping function
-  const updateLastTime = () => {
+  const updateLastTimeAndGetThreshold = () => {
     const currentTime = new Date().getTime();
     if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
+      // 10 minutes
       setLastUpdateTime(currentTime);
-      const lastDataset = filteredChartData[filteredChartData.length - 1];
-      lastDataset && setLatestData(lastDataset);
+      // setLatestData(filteredChartData[filteredChartData.length - 1]);
+      setLatestData(filteredChartData2[filteredChartData2.length - 1]);
     }
+    return currentTime;
   };
+  // const filteredChartData = useMemo(() => {
+  //   const allXYValues = selectedCollection?.chartData?.allXYValues;
+  //   return allXYValues ? getUniqueFilteredXYValues(allXYValues) : [];
+  // }, [selectedCollection]);
+  // Filtered chart data based on unique valid data
+  // const filteredChartData = useMemo(() => {
+  //   const currentChartData = selectedCollection?.currentChartDataSets;
+  //   return currentChartData ? getUniqueValidData(currentChartData) : [];
+  // }, [selectedCollection]);
+  const filteredChartData2 = useMemo(() => {
+    const allXYValues2 = selectedCollection?.currentChartDataSets2;
+    console.log('ALL XY VALUES:', allXYValues2);
+    return allXYValues2 ? getUniqueValidData(allXYValues2) : [];
+  }, [selectedCollection]);
+
+  // Calculate threshold based on the last update time
+  const threshold = updateLastTimeAndGetThreshold();
+
+  // Group and average data using the calculated threshold
+  // const rawData = useMemo(
+  //   () => groupAndAverageData(filteredChartData, threshold),
+  //   [filteredChartData, threshold]
+  // );
+  const rawData2 = useMemo(
+    () => groupAndAverageData(filteredChartData2, threshold),
+    [filteredChartData2, threshold]
+  );
+  // console.log('FILTERED CHART DATA:', filteredChartData);
+  // console.log('FILTERED CHART DATA 2:', filteredChartData2);
+  // const threshold = useMemo(() => timeRange * 0.1, [timeRange]);
+
+  console.log('THRESHOLD:', threshold);
+  // if (!rawData) {
+  //   console.log('NO RAW DATA!');
+  // }
+  // if (rawData) {
+  //   console.log('RAW DATA:', rawData);
+  //   nivoReadyData = useMemo(() => convertDataForNivo(rawData), [rawData]);
+  // }
+  if (rawData2) {
+    console.log('RAW DATA 2:', rawData2);
+    const nivoReady = useMemo(() => convertDataForNivo2(rawData2), [rawData2]);
+    nivoReadyData2 = nivoReady;
+    console.log('NIVO READY DATA 2:', nivoReadyData2);
+  }
+
+  // Now use this threshold when calling your data grouping function
 
   useEffect(() => {
     const handleResize = debounce(() => {
@@ -153,11 +186,13 @@ const PortfolioChart = () => {
             }}
           >
             <ChartPaper elevation={3} ref={chartContainerRef}>
-              {filteredChartData.length > 0 ? (
+              {filteredChartData2.length > 0 ? (
                 <LinearChart
-                  datesTimesValues={rawData}
-                  nivoReadyData={nivoReadyData}
-                  filteredChartData={filteredChartData}
+                  // datesTimesValues={rawData}
+                  // nivoReadyData={nivoReadyData}
+                  nivoReadyData={nivoReadyData2}
+                  // filteredChartData={filteredChartData}
+                  filteredChartData={filteredChartData2}
                   latestData={latestData}
                   dimensions={chartDimensions}
                   timeRanges={timeRanges}

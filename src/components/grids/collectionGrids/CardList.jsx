@@ -33,6 +33,9 @@ const CardList = ({ selectedCards }) => {
   const {
     getTotalCost,
     selectedCollection,
+    getTotalPrice,
+    totalCost,
+    // totalPrice,
     removeOneFromCollection,
     addOneToCollection,
   } = useCollectionStore();
@@ -67,6 +70,9 @@ const CardList = ({ selectedCards }) => {
     addOneToCollection(card, card.id);
     cardLogger.logCardAction('Add Card', card);
   };
+  // let totalPrice = getTotalPrice();
+
+  // console.log('TOTAL PRICE:', totalPrice);
 
   const chartDimensions = useMemo(
     () =>
@@ -203,7 +209,7 @@ const CardList = ({ selectedCards }) => {
           mt={2}
           sx={{ width: '100%' }}
         >
-          <Typography variant="h5">{`Total: $${selectedCollection?.totalPrice}`}</Typography>
+          <Typography variant="h5">{`Total: $${totalCost}`}</Typography>
         </Box>
       </Paper>
     </Container>

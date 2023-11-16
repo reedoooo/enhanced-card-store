@@ -24,6 +24,7 @@ export const ChartProvider = ({ children }) => {
 
   const currentValue = timeRanges.find((option) => option.value === timeRange);
 
+  console.log('currentValue: ', currentValue);
   const handleChange = (e) => {
     setTimeRange(e.target.value);
   };

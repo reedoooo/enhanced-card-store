@@ -16,7 +16,7 @@ import placeholder from '../assets/images/placeholder.jpeg';
 import UserStats from '../components/other/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
-import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
+import ThemeToggleButton from '../components/buttons/other/ThemeToggleButton';
 import { useCombinedContext } from '../context/CombinedProvider';
 import {
   AvatarStyled,

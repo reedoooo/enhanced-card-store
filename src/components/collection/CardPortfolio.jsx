@@ -59,29 +59,11 @@ const CardPortfolio = ({ allCollections }) => {
     hasRun.current = true; // Set the ref to true after the function has been run
   };
 
-  // console.log('ALL COLLECTIONS:', allCollections);
-  // console.log('SELECTED COLLECTION:', selectedCollection);
-  // console.log('SELECTED CARDS:', selectedCards);
-  // console.log('SELECTED COLLECTION (CARD PORT):', selectedCollection);
   return (
     <CollectionContainer>
       {showCollections ? (
         <SelectCollection
-          allCollections={allCollections}
           handleSelectCollection={handleSelectCollection}
-          // userCollection={userCollection}
-          error={error}
-          newCard={newCard}
-          setNewCard={setNewCard}
-          newCardPrice={newCardPrice}
-          setNewCardPrice={setNewCardPrice}
-          newCardCondition={newCardCondition}
-          setSelectedCards={setSelectedCards}
-          selectedCollection={selectedCollection}
-          setSelectedCollection={setSelectedCollection}
-          selectedCards={selectedCards}
-          setNewCardCondition={setNewCardCondition}
-          addCard={addOneToCollection}
           setShowCollections={setShowCollections}
           setShowPortfolio={setShowPortfolio}
         />
@@ -101,14 +83,6 @@ const CardPortfolio = ({ allCollections }) => {
           selectedCollection={selectedCollection}
           setSelectedCollection={setSelectedCollection}
           removeCard={removeOneFromCollection}
-
-          // allCollections={allCollections}
-          // selectedCollection={selectedCollection}
-          // setSelectedCollection={setSelectedCollection}
-          // selectedCards={selectedCards}
-          // setSelectedCards={setSelectedCards}
-          // removeCard={removeOneFromCollection}
-          // chartData={UpdateChartData()}
         />
       ) : (
         <Box

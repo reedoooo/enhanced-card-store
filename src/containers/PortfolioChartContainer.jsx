@@ -53,8 +53,8 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
   const { allCollections, selectedCollection } = useCollectionStore();
   const data = allCollections.map((collection) => {
     return {
-      name: collection.name,
-      data: collection.chartData.allXYValues,
+      name: collection?.name,
+      data: collection?.chartData?.allXYValues,
     };
   });
   return (

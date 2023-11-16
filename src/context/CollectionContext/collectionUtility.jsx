@@ -14,7 +14,7 @@ const initialCollectionState = {
   priceChange: 0, // Initialize as 0 if not provided
   allCardPrices: [], // Initialize as empty array if not provided
   cards: [], // Initialize as empty array if not provided
-  currentChartDatasets: [], // Initialize as empty array if not provided
+  currentChartDataSets: [], // Initialize as empty array if not provided
   xys: [], // Use defaultXyData or initialize as empty if not provided
   chartData: {
     name: '', // Initialize as empty string if not provided
@@ -430,31 +430,108 @@ const determineHttpMethod = (isCreatingNew, endpoint) => {
 };
 
 // Abstracted payload creation to reduce repetition
-const createPayload = (info, data, defaultXyData) => ({
-  userId: info.userId || data.userId, // Assuming this is an ObjectId string
-  name: info.name || data.name,
-  description: info.description || data.description,
-  totalCost: '', // Initialize as empty string if not provided
-  totalPrice: 0, // Initialize as 0 if not provided
-  quantity: 0, // Initialize as 0 if not provided
-  totalQuantity: 0, // Initialize as 0 if not provided
-  previousDayTotalPrice: 0, // Initialize as 0 if not provided
-  dailyPriceChange: 0, // Initialize as 0 if not provided
-  priceDifference: 0, // Initialize as 0 if not provided
-  priceChange: 0, // Initialize as 0 if not provided
-  collectionPriceHistory: [], // Initialize as empty array if not provided
-  allCardPrices: [], // Initialize as empty array if not provided
-  cards: [], // Initialize as empty array if not provided
-  currentChartDatasets: [], // Initialize as empty array if not provided
-  xys: defaultXyData || [], // Use defaultXyData or initialize as empty if not provided
-  chartData: {
-    name: '', // Initialize as empty string if not provided
-    userId: info.userId || data.userId, // Assuming this is an ObjectId string
-    datasets: [], // Initialize as empty array if not provided
-    xys: [], // Initialize as empty array if not provided
-    allXYValues: [], // Initialize as empty array if not provided
-  },
-});
+// const createPayload = (info, data, defaultXyData) => ({
+//   userId: info.userId || data.userId, // Assuming this is an ObjectId string
+//   name: info.name || data.name || '',
+//   description: info.description || data.description || '',
+//   totalCost: info.totalCost || data.totalCost || '',
+//   totalPrice: info.totalPrice || data.totalPrice || 0,
+//   quantity: info.quantity || data.quantity || 0,
+//   totalQuantity: info.totalQuantity || data.totalQuantity || 0,
+//   previousDayTotalPrice:
+//     info.previousDayTotalPrice || data.previousDayTotalPrice || 0,
+//   dailyPriceChange: info.dailyPriceChange || data.dailyPriceChange || '',
+//   priceDifference: info.priceDifference || data.priceDifference || 0,
+//   priceChange: info.priceChange || data.priceChange || 0,
+//   collectionPriceHistory: Array.isArray(info.collectionPriceHistory)
+//     ? info.collectionPriceHistory
+//     : Array.isArray(data.collectionPriceHistory)
+//     ? data.collectionPriceHistory
+//     : [],
+//   allCardPrices: Array.isArray(info.allCardPrices)
+//     ? info.allCardPrices
+//     : Array.isArray(data.allCardPrices)
+//     ? data.allCardPrices
+//     : [],
+//   cards: Array.isArray(info.cards)
+//     ? info.cards
+//     : Array.isArray(data.cards)
+//     ? data.cards
+//     : [],
+//   currentChartDatasets: Array.isArray(info.currentChartDatasets)
+//     ? info.currentChartDatasets
+//     : Array.isArray(data.currentChartDatasets)
+//     ? data.currentChartDatasets
+//     : [],
+//   xys:
+//     defaultXyData ||
+//     (Array.isArray(info.xys)
+//       ? info.xys
+//       : Array.isArray(data.xys)
+//       ? data.xys
+//       : []),
+//   chartData: {
+//     name:
+//       info.chartData?.name ||
+//       data.chartData?.name ||
+//       `Chart for ${info.name || data.name || 'Collection'}`,
+//     userId:
+//       info.chartData?.userId ||
+//       data.chartData?.userId ||
+//       info.userId ||
+//       data.userId,
+//     datasets: Array.isArray(info.chartData?.datasets)
+//       ? info.chartData.datasets
+//       : Array.isArray(data.chartData?.datasets)
+//       ? data.chartData.datasets
+//       : [],
+//     allXYValues: Array.isArray(info.chartData?.allXYValues)
+//       ? info.chartData.allXYValues
+//       : Array.isArray(data.chartData?.allXYValues)
+//       ? data.chartData.allXYValues
+//       : [],
+//     xys: Array.isArray(info.chartData?.xys)
+//       ? info.chartData.xys
+//       : Array.isArray(data.chartData?.xys)
+//       ? data.chartData.xys
+//       : [],
+//   },
+// });
+
+const createPayload = (info) => {
+  // Merge the 'info' and 'data' objects
+  // const mergedData = { ...data, ...info };
+
+  // console.log('MERGED DATA:', mergedData);
+  console.log('INFO:', info);
+  // console.log('DATA:', data);
+  return {
+    ...info,
+    userId: info.userId,
+    name: info.name,
+    description: info.description,
+    totalCost: info.totalCost || '',
+    totalPrice: info.totalPrice || 0,
+    quantity: info.quantity || 0,
+    totalQuantity: info.totalQuantity || 0,
+    previousDayTotalPrice: info.previousDayTotalPrice || 0,
+    dailyPriceChange: info.dailyPriceChange || 0,
+    priceDifference: info.priceDifference || 0,
+    priceChange: info.priceChange || 0,
+    collectionPriceHistory: info.collectionPriceHistory || [],
+    allCardPrices: info.allCardPrices || [],
+    cards: info.cards || [],
+    currentChartDataSets: info.currentChartDataSets || [],
+    xys: info.xys || [],
+    chartData: {
+      name: info.chartData?.name || `Chart for ${info.name || 'Collection'}`,
+      userId: info.chartData?.userId || info.userId,
+      datasets: info.chartData?.datasets || [],
+      allXYValues: info.chartData?.allXYValues || [],
+      xys: info.chartData?.xys || [],
+    },
+  };
+};
 
 const removeDuplicateCollections = (collections) => {
   const uniqueCollections = {};
@@ -462,6 +539,177 @@ const removeDuplicateCollections = (collections) => {
     uniqueCollections[collection._id] = collection;
   });
   return Object.values(uniqueCollections);
+};
+
+const constructPayloadWithDifferences = (
+  existingData,
+  newData,
+  debug = false
+) => {
+  const payload = {};
+  let logContent = '[constructPayloadWithDifferences] Differences in data:\n';
+  let typeMismatchContent = ''; // String to store type mismatch messages
+  let nonMatchingKeys = []; // List to store non-matching keys
+
+  Object.keys(newData).forEach((key) => {
+    const isTypeDifferent = typeof newData[key] !== typeof existingData[key];
+    const isValueDifferent = newData[key] !== existingData[key];
+
+    if (isValueDifferent || isTypeDifferent) {
+      payload[key] = newData[key];
+      nonMatchingKeys.push(key); // Add the non-matching key to the list
+
+      if (debug) {
+        if (isTypeDifferent) {
+          typeMismatchContent += `  - Field "${key}": Expected Type: ${typeof existingData[
+            key
+          ]}, Received Type: ${typeof newData[key]}\n`;
+        }
+        if (isValueDifferent) {
+          logContent += `  - Field "${key}": Old Value: ${JSON.stringify(
+            existingData[key]
+          )}, New Value: ${JSON.stringify(newData[key])}\n`;
+        }
+      }
+    }
+  });
+
+  if (debug) {
+    console.log('1. Constructing payload with differences:', logContent);
+    if (typeMismatchContent) {
+      console.log('2. Type mismatches found:', typeMismatchContent);
+    }
+  }
+  return { payload, nonMatchingKeys, typeMismatchContent }; // Return both the payload, the list of non-matching keys, and type mismatch messages
+};
+
+function getCurrentChartDataSets(chartData) {
+  if (!chartData || !chartData.datasets) {
+    console.error('Invalid or missing chart data');
+    return [];
+  }
+
+  const currentChartDataSets = [];
+
+  // Iterate over each dataset
+  chartData.datasets.forEach((dataset) => {
+    // Check if dataset has 'data' array
+    if (dataset.data && dataset.data.length > 0) {
+      dataset.data.forEach((dataEntry) => {
+        // Check if dataEntry has 'xys' array
+        if (dataEntry.xys && dataEntry.xys.length > 0) {
+          // Add both 'data' and 'label' from each 'xys' entry
+          currentChartDataSets.push(
+            ...dataEntry.xys.map((xy) => ({
+              ...xy.data, // Spread the 'data' object
+              label: xy.label, // Include the 'label'
+            }))
+          );
+        }
+      });
+    }
+  });
+
+  return currentChartDataSets;
+}
+
+const getPriceChange = (collectionPriceHistory) => {
+  if (
+    !Array.isArray(collectionPriceHistory) ||
+    collectionPriceHistory.length === 0
+  ) {
+    console.warn('Invalid or empty price history', collectionPriceHistory);
+    return 'n/a';
+  }
+
+  const mostRecentPrice =
+    collectionPriceHistory[collectionPriceHistory.length - 1]?.num;
+  const currentDate = new Date();
+
+  // Get the first price from the last 24 hours
+  const firstPriceFromLastDay = collectionPriceHistory
+    .slice()
+    .reverse()
+    .find((priceHistory) => {
+      const historyDate = new Date(priceHistory.timestamp);
+      return currentDate - historyDate <= 24 * 60 * 60 * 1000; // less than 24 hours
+    })?.num;
+
+  if (mostRecentPrice && firstPriceFromLastDay) {
+    const priceChange =
+      ((mostRecentPrice - firstPriceFromLastDay) / firstPriceFromLastDay) * 100;
+    console.log(
+      `Price change over the last 24 hours is: ${priceChange.toFixed(2)}%`
+    );
+    return priceChange.toFixed(2);
+  } else {
+    console.error('Could not calculate price change due to missing data');
+    return null;
+  }
+};
+
+const getUpdatedChartData = (collection, newPrice) => {
+  const newXYValue = {
+    label: `Update - ${new Date().toISOString()}`,
+    x: new Date().toISOString(),
+    y: newPrice,
+  };
+  console.log('Updating chart data with:', collection?.chartData?.allXYValues);
+  const allXYValues = collection?.chartData?.allXYValues || [];
+  console.log('ALL XY VALUES:', allXYValues);
+  return {
+    ...collection,
+    chartData: {
+      ...collection?.chartData,
+      allXYValues: [...(collection?.chartData?.allXYValues ?? []), newXYValue],
+    },
+    totalPrice: newPrice,
+  };
+};
+
+const mergeCards = (existingCards, updatedCards) => {
+  const updatedCardMap = new Map(updatedCards.map((card) => [card.id, card]));
+  return existingCards.map((card) => {
+    if (updatedCardMap.has(card.id)) {
+      return {
+        ...card,
+        ...updatedCardMap.get(card.id),
+        price: updatedCardMap.get(card.id).price || card.price,
+        quantity: updatedCardMap.get(card.id).quantity || card.quantity,
+      };
+    }
+    return card;
+  });
+};
+
+const updateCardInCollection = (cards, cardToUpdate) => {
+  // Validate that cards is an array
+  if (!Array.isArray(cards)) {
+    throw new TypeError('The first argument must be an array of cards.');
+  }
+
+  // Validate that cardToUpdate is an object
+  if (typeof cardToUpdate !== 'object' || cardToUpdate === null) {
+    throw new TypeError('The card to update must be an object.');
+  }
+
+  // Validate that cardToUpdate has an id property
+  if (!('id' in cardToUpdate)) {
+    throw new Error('The card to update must have an "id" property.');
+  }
+
+  try {
+    // Attempt to update the card within the collection
+    const updatedCards = cards.map(
+      (card) =>
+        card.id === cardToUpdate.id ? { ...card, ...cardToUpdate } : card // Update the card if the id matches
+    );
+    console.log('3. Updated cards in collection:', updatedCards);
+    return updatedCards;
+  } catch (error) {
+    console.error('3. Failed to update card in collection:', error);
+    throw error;
+  }
 };
 
 const getCardPrice = (collection) =>
@@ -493,4 +741,12 @@ module.exports = {
   determineHttpMethod,
   createPayload,
   logError,
+  constructPayloadWithDifferences,
+  getCurrentChartDataSets,
+  getPriceChange,
+  getUpdatedChartData,
+  mergeCards,
+  updateCardInCollection,
+  canMakeRequest,
+  updateLastRequestTime,
 };

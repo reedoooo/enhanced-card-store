@@ -10,7 +10,7 @@ import {
 import { useCookies } from 'react-cookie';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
-const SelectCollectionDialog = ({
+const CreateOrEditCollectionDialog = ({
   isDialogOpen,
   closeDialog,
   onSave,
@@ -38,7 +38,13 @@ const SelectCollectionDialog = ({
     };
 
     if (isNew) {
-      createUserCollection(userId, newCollectionInfo);
+      createUserCollection(
+        userId,
+        newCollectionInfo,
+        editedName,
+        editedDescription,
+        userId
+      );
     } else if (editedName && editedDescription) {
       addOneToCollection(newCollectionInfo);
     } else {
@@ -112,7 +118,7 @@ const SelectCollectionDialog = ({
   );
 };
 
-SelectCollectionDialog.propTypes = {
+CreateOrEditCollectionDialog.propTypes = {
   isDialogOpen: PropTypes.bool.isRequired,
   closeDialog: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
@@ -124,4 +130,4 @@ SelectCollectionDialog.propTypes = {
   setEditedDescription: PropTypes.func.isRequired,
 };
 
-export default SelectCollectionDialog;
+export default CreateOrEditCollectionDialog;
