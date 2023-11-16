@@ -1,22 +1,16 @@
 import React from 'react';
-import { Box } from '@mui/system';
+import { Box, Paper } from '@mui/material';
 import PortfolioHeader from '../headings/PortfolioHeader';
 import PortfolioListContainer from '../../containers/PortfolioListContainer';
-import { useCollectionStore } from '../../context/hooks/collection';
 import PortfolioChartContainer from '../../containers/PortfolioChartContainer';
 
 const PortfolioContent = ({ error, selectedCards, removeCard }) => {
-  const { selectedCollection } = useCollectionStore();
-
   return (
     <Box
       sx={{
-        height: '100vh',
-        width: '100vw',
         display: 'flex',
-        m: 'auto',
-        justifyContent: 'center',
         flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
         p: 2,
       }}
@@ -27,40 +21,39 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between',
-          alignItems: 'stretch', // Make child elements stretch to maximum available height
+          alignItems: 'start', // Align items to the start of the container
           width: '100%',
-          mt: 2,
-          height: '100%',
+          gap: 2, // Adds space between the components
         }}
       >
-        <Box
+        <Paper
           sx={{
-            flex: { md: 1, lg: 7 },
-            mb: { xs: 1, md: 0 },
-            mr: { md: 1 },
-            width: '100%',
-            height: '100%',
+            flex: 1, // Allows the paper to grow
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'auto', // The height will be determined by the content
+            mb: 2, // Adds margin at the bottom
           }}
         >
           <PortfolioChartContainer
             selectedCards={selectedCards}
             removeCard={removeCard}
           />
-        </Box>
-        <Box
+        </Paper>
+        <Paper
           sx={{
-            flex: { md: 1, lg: 3 },
-            mt: { xs: 1, md: 0 },
-            ml: { md: 1 },
-            width: '100%',
-            height: '100%',
+            flex: 1, // Allows the paper to grow
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'auto', // The height will be determined by the content
+            overflow: 'auto', // Adds scrollbar if content overflows
           }}
         >
           <PortfolioListContainer
             selectedCards={selectedCards}
             removeCard={removeCard}
           />
-        </Box>
+        </Paper>
       </Box>
     </Box>
   );

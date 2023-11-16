@@ -1,12 +1,8 @@
-// Dependencies
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
-import { DeckContext } from '../../../context/DeckContext/DeckContext';
-import { CartContext } from '../../../context/CartContext/CartContext';
 import GenericCardModal from '../../modals/GenericCardModal';
 import CardActionButtons from './CardActionButtons';
-// import ChooseCollectionDialog from './ChooseCollectionDialog';
+import useAppContext from '../../../context/hooks/useAppContext';
 
 const useStyles = makeStyles({
   root: {
@@ -21,59 +17,42 @@ const GenericActionButtons = ({
   card,
   context,
   open,
-  component,
+  openModal,
   closeModal,
-  // handleOpenDialog,
+  isModalOpen,
+  setModalOpen,
 }) => {
   const classes = useStyles();
+  const [contextProps, isContextAvailable] = useAppContext(context);
 
-  const collectionContext = useContext(CollectionContext);
-
-  if (!collectionContext) {
-    console.error("The component isn't wrapped with CollectionProvider");
-    return null;
+  if (!isContextAvailable) {
+    console.error(`The component isn't wrapped with the ${context}Provider`);
+    return null; // Consider rendering an error boundary or user-friendly error message instead.
   }
 
-  const contexts = {
-    Deck: useContext(DeckContext),
-    Cart: useContext(CartContext),
-    Store: useContext(CartContext),
-    Collection: collectionContext,
-  };
-
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const contextProps = contexts[context] || {};
-
-  // useEffect(() => {
-  //   console.log(`openChooseCollectionDialog is: ${openChooseCollectionDialog}`);
-  // }, [openChooseCollectionDialog]);
-
-  const toggleDialog = (setState) => () => {
-    setState((prevState) => !prevState);
-  };
+  // Ensure contextProps is an object with the expected methods before using them
+  if (
+    typeof contextProps !== 'object' ||
+    typeof contextProps[context] !== 'object'
+  ) {
+    console.error(`Invalid contextProps provided for the context: ${context}`);
+    return null; // Consider rendering an error boundary or user-friendly error message instead.
+  }
 
   return (
     <div className={classes.root}>
       <CardActionButtons
         card={card}
+        quantity={0}
         context={context}
         contextProps={contextProps}
-        // handleOpenDialog={handleOpenDialog}
-        handleOpenDialog={toggleDialog(setOpenDialog)}
+        openModal={openModal}
+        closeModal={() => setModalOpen(false)}
+        open={open}
       />
-      {context in contexts && (
-        <GenericCardModal
-          open={open}
-          onClose={closeModal}
-          handleCloseDialog={toggleDialog(setOpenDialog)}
-          context={context}
-          card={card}
-        />
-      )}
-      {/* <ChooseCollectionDialog
-        isOpen={openChooseCollectionDialog}
-        onClose={toggleDialog(setOpenChooseCollectionDialog)}
+      {/* <GenericCardModal
+        open={isModalOpen}
+        closeModal={closeModal}
         context={context}
         card={card}
       /> */}

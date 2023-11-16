@@ -1,74 +1,81 @@
 import React, { useCallback } from 'react';
 import { Button, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useModal } from '../../../context/hooks/modal';
+import { useStyles } from '../buttonStyles';
+import useAppContext from '../../../context/hooks/useAppContext';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexGrow: 1,
-    background: '#f1f1f1',
-    borderRadius: '8px',
-  },
-  buttonGrid: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '8px',
-  },
-  fullWidthButton: {
-    width: '100%',
-    height: '100%',
-    borderRadius: '4px',
-  },
-}));
-
-const CardActionButtons = ({
-  card,
-  quantity,
-  context,
-  contextProps,
-  handleOpenDialog,
-}) => {
+const CardActionButtons = ({ card, quantity, context, closeModal }) => {
   const classes = useStyles();
+  const [contextProps, isContextAvailable] = useAppContext(context);
 
-  const handleAddToContext = useCallback(() => {
-    console.log(`Context is: ${context}`);
-    const addMethod = contextProps[`addOneTo${context}`];
-    if (typeof addMethod === 'function') {
-      addMethod(card);
-    } else if (context === 'Collection') {
-      console.log(
-        "Opening ChooseCollectionDialog because the context is 'Collection'"
-      );
-      handleOpenDialog();
-    } else {
-      console.error(`Method addOneTo${context} not found in contextProps`);
+  if (!isContextAvailable) {
+    console.error(`The component isn't wrapped with the ${context}Provider`);
+    return null; // Consider rendering an error boundary or a user-friendly error message instead.
+  }
+
+  // console.log('CARD TO ADD', card);
+  // Action types
+  const ADD = 'add';
+  const REMOVE_ONE = 'removeOne';
+  const REMOVE_ALL = 'removeAll';
+
+  // Action handler
+  const performAction = useCallback(
+    (action, payload) => {
+      console.log(`action --> ${action}`, `payload --> ${payload}`);
+      try {
+        switch (action) {
+          case ADD:
+            contextProps[context][`addOneTo${context}`](payload);
+            break;
+          case REMOVE_ONE:
+            contextProps[context].removeOne(payload);
+            break;
+          case REMOVE_ALL:
+            contextProps[context].removeAll(payload);
+            break;
+          default:
+            console.error(`Unhandled action type: ${action}`);
+        }
+      } catch (error) {
+        console.error(
+          `Error performing action '${action}' with payload`,
+          payload,
+          error
+        );
+      }
+    },
+    [context, contextProps]
+  );
+
+  const handleAddClick = () => {
+    performAction(ADD, card);
+    closeModal();
+  };
+
+  const handleClickOutside = () => {
+    if (quantity === 0) {
+      closeModal();
     }
-  }, [context, contextProps, card, handleOpenDialog]);
+  };
 
   return (
-    <div className={classes.root}>
-      {quantity > 0 ? (
+    <div className={classes.root} onClick={handleClickOutside}>
+      {card.quantity > 0 ? (
         <>
           <Grid container>
             <Grid item xs={6}>
-              {`In ${context}: `} {quantity}
+              {`In ${context}: `} {card.quantity}
             </Grid>
             <Grid item xs={6} className={classes.buttonGrid}>
-              <Button onClick={() => contextProps.addOne(card)}>+</Button>
-              <Button onClick={() => contextProps.removeOne(card)}>-</Button>
+              <Button onClick={() => performAction(ADD, card)}>+</Button>
+              <Button onClick={() => performAction(REMOVE_ONE, card)}>-</Button>
             </Grid>
           </Grid>
           <Button
             variant="contained"
             color="secondary"
             className={classes.fullWidthButton}
-            onClick={() => contextProps.removeAll(card)}
+            onClick={() => performAction(REMOVE_ALL, card)}
           >
             {`Remove from ${context}`}
           </Button>
@@ -77,8 +84,11 @@ const CardActionButtons = ({
         <Button
           variant="contained"
           color="primary"
-          className={classes.fullWidthButton}
-          onClick={handleAddToContext}
+          className={classes.fitWidthButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddClick();
+          }}
         >
           {`Add To ${context}`}
         </Button>

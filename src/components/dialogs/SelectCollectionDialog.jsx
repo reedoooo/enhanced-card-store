@@ -7,8 +7,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useCollectionStore } from '../../context/hooks/collection';
 import { useCookies } from 'react-cookie';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const SelectCollectionDialog = ({
   isDialogOpen,

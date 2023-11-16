@@ -28,7 +28,7 @@ import CardDeckAnimation from './pages/CardDeckAnimation';
 // Context Hooks Imports
 import { useCombinedContext } from './context/CombinedProvider';
 import { useUserContext } from './context/UserContext/UserContext';
-import { useCollectionStore } from './context/hooks/collection';
+import { useCollectionStore } from './context/CollectionContext/CollectionContext';
 import { useUtilityContext } from './context/UtilityContext/UtilityContext';
 
 // Styled Components
@@ -48,37 +48,76 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
     cronData,
     handleSendAllCardsInCollections,
     listOfMonitoredCards,
-    handleRetreiveListOfMonitoredCards,
-    retrievedListOfMonitoredCards,
+    // handleRetreiveListOfMonitoredCards,
+    // retrievedListOfMonitoredCards,
     allCollectionsUpdated,
   } = useCombinedContext();
-  // const { fetchAllCollectionsForUser } = useCollectionStore();
-  const { user } = useUserContext();
-  const userId = user?.userID;
+  const { allCollections } = useCollectionStore();
+  const [priceHistory, setPriceHistory] = useState([]);
 
+  const { handlePricesActivateCron, cardsWithChangedPrice } =
+    useCombinedContext();
+  const { user } = useUserContext();
+  const [priceFlux, setPriceFlux] = useState(null);
+  const userId = user?.userID;
   useEffect(() => {
     setLastCronJobTriggerTime(new Date().getTime());
   }, [setLastCronJobTriggerTime]);
+  // ---------------------------------------------------------------
+  // useEffect(() => {
+  //   handlePricesActivateCron(
+  //     userId,
+  //     listOfMonitoredCards,
+  //     allCollections,
+  //     cardsWithChangedPrice
+  //   );
+  // }, [
+  //   userId,
+  //   listOfMonitoredCards,
+  //   allCollections,
+  //   cardsWithChangedPrice,
+  //   priceFlux,
+  // ]);
 
   useEffect(() => {
     const handleTriggerCronJob = () => {
       const currentTime = new Date().getTime();
+      const timeDifference = currentTime - lastCronJobTriggerTime;
+      const previousTotalPrice = allCollections?.totalPrice;
+      if (!priceHistory.includes(previousTotalPrice)) {
+        priceHistory.push(previousTotalPrice);
+      }
+      const minutes = Math.floor(timeDifference / 60000); // 1 minute = 60000 milliseconds
+      const seconds = Math.floor((timeDifference % 60000) / 1000); // remainder in milliseconds converted to seconds
+
+      // Output the remaining time in minutes and seconds
+      console.log(
+        `REMAINING TIME: ${minutes} minute(s) and ${seconds} second(s)`
+      );
+
+      for (const collection of allCollections) {
+        if (
+          collection?.cards &&
+          collection?.cards?.length > 0 &&
+          collection.totalPrice !== previousTotalPrice // Implement your logic here
+        ) {
+          setPriceFlux(new Date().getTime()); // Trigger a re-render
+          console.log('PRICE FLUX:', priceFlux);
+        }
+      }
+      // if (collection.totalPrice !== previousTotalPrice) {
+      //   // Update dependencies of useEffect
+      //   setPriceFlux(new Date().getTime()); // Trigger a re-render
+      // }
       if (currentTime - lastCronJobTriggerTime >= 60000) {
         setLastCronJobTriggerTime(currentTime);
-        if (userId && listOfMonitoredCards && retrievedListOfMonitoredCards) {
-          handleSendAllCardsInCollections(
-            userId,
-            listOfMonitoredCards,
-            retrievedListOfMonitoredCards
-          );
-          console.log('SENDING ALL CARDS IN COLLECTIONS');
-        } else if (userId && listOfMonitoredCards) {
-          console.log('RETRIEVING LIST OF MONITORED CARDS');
-          handleSendAllCardsInCollections(
-            userId,
-            listOfMonitoredCards,
-            handleRetreiveListOfMonitoredCards()
-          );
+        if (userId && listOfMonitoredCards) {
+          console.log('RETRIEVING LIST OF MONITORED CARDS (paused)');
+          // handleSendAllCardsInCollections(
+          //   userId,
+          //   listOfMonitoredCards
+          //   // handleRetrieveListOfMonitoredCards()
+          // );
           console.log('Triggered the cron job.');
         }
       }
@@ -90,22 +129,21 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
     cronData,
     lastCronJobTriggerTime,
     allCollectionsUpdated,
-    handleRetreiveListOfMonitoredCards,
+    // handleRetrieveListOfMonitoredCards,
     handleSendAllCardsInCollections,
     listOfMonitoredCards,
-    retrievedListOfMonitoredCards,
     userId,
   ]);
 };
 
 // Main Component
 const App = () => {
-  const { fetchAllCollectionsForUser, allCollections } = useCollectionStore();
-  const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
-  const { isLoading, setIsContextLoading } = useUtilityContext();
   const { user } = useUserContext();
+  const { isLoading, setIsContextLoading } = useUtilityContext();
+  const { fetchAllCollectionsForUser } = useCollectionStore();
+  const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
 
-  const hasFetchedCollectionsRef = useRef(false); // This ref is used to indicate whether collections have been fetched.
+  useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
 
   useEffect(() => {
     if (user) {
@@ -115,7 +153,7 @@ const App = () => {
     return () => {
       console.log('Private routes no longer available');
     };
-  }, [user]); // useEffect will re-run whenever 'user' changes
+  }, [user]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -130,20 +168,31 @@ const App = () => {
     return () => clearTimeout(timer);
   }, [setIsContextLoading]);
 
-  useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
-
-  // Assuming currentPage is a piece of state that changes when the user changes pages
   useEffect(() => {
-    if (user && !hasFetchedCollectionsRef.current) {
-      try {
-        fetchAllCollectionsForUser();
-        hasFetchedCollectionsRef.current = true; // Set the ref to true after fetching
-        console.log('Fetched collections because none were present.');
-      } catch (err) {
-        console.error('Failed to fetch collections:', err);
+    let isMounted = true; // Add a flag to track if the component is mounted
+    const fetchCollections = async () => {
+      if (user && isMounted) {
+        try {
+          // const response = fet
+          if (isMounted) {
+            console.log('Fetched collections because none were present.');
+            // Update state only if the component is still mounted
+            console.log('RESPONSE:', isMounted);
+            // setOfficialCollectionDatasets(response.data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch collections:', err);
+        }
       }
-    }
-  }, [user, fetchAllCollectionsForUser]); // Removed allCollections from dependency list to prevent re-fetching when they update
+    };
+
+    fetchCollections();
+
+    // Cleanup function to cancel any ongoing tasks when the component unmounts
+    return () => {
+      isMounted = false;
+    };
+  }, [user, fetchAllCollectionsForUser]);
 
   return (
     <>

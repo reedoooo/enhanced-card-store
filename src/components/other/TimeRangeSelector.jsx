@@ -1,21 +1,27 @@
 import React from 'react';
 import { MenuItem, Select } from '@mui/material';
+import { useChartContext } from '../../context/ChartContext/ChartContext';
 
-export const timeRanges = [
-  { label: '2 hours', value: 2 * 60 * 60 * 1000 },
-  { label: '24 hours', value: 24 * 60 * 60 * 1000 },
-  { label: '7 days', value: 7 * 24 * 60 * 60 * 1000 },
-  { label: '1 month', value: 30 * 24 * 60 * 60 * 1000 },
-];
+// Remove setTimeRange(value); from here
+const TimeRangeSelector = ({ onChange }) => {
+  const { timeRanges, timeRange, setTimeRange, handleChange, currentValue } =
+    useChartContext();
+  const isInRange = timeRanges.some((option) => option.value === timeRange);
+  const safeTimeRange = isInRange ? timeRange : timeRanges[0].value;
 
-const TimeRangeSelector = ({ value, onChange }) => (
-  <Select value={value} onChange={(e) => onChange(Number(e.target.value))}>
-    {timeRanges.map((option) => (
-      <MenuItem key={option.label} value={option.value}>
-        {option.label}
-      </MenuItem>
-    ))}
-  </Select>
-);
+  return (
+    <Select
+      value={safeTimeRange}
+      onChange={handleChange}
+      sx={{ flex: '1', width: '100%', height: '45' }} // Adjust width and height here
+    >
+      {timeRanges.map((option) => (
+        <MenuItem key={option.label} value={option.value}>
+          {option.label}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
 
 export default TimeRangeSelector;

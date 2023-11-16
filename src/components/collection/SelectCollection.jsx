@@ -5,8 +5,8 @@ import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import SimpleReusableButton from '../reusable/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
-import { useCollectionStore } from '../../context/hooks/collection';
 import SelectCollectionDialog from '../dialogs/SelectCollectionDialog';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {

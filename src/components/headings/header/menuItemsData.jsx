@@ -45,7 +45,7 @@ export const getMenuItemsData = (isLoggedIn) => {
 
     // If the user is logged in, set all requiresLogin fields to false
     if (isLoggedIn) {
-      console.log('isLoggedIn is true', isLoggedIn);
+      // console.log('isLoggedIn is true', isLoggedIn);
       return baseMenuItems.map((item) => ({
         ...item,
         requiresLogin: false,

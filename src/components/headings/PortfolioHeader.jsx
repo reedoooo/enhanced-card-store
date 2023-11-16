@@ -3,8 +3,8 @@
 import React from 'react';
 import { AlertTitle, Box, Typography } from '@mui/material';
 import Alert from '@mui/material/Alert';
-import { useCollectionStore } from '../../context/hooks/collection';
 import HeaderTitle from '../reusable/HeaderTitle';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 export const PortfolioHeader = ({ error }) => {
   const { allCollections, selectedCollection } = useCollectionStore();

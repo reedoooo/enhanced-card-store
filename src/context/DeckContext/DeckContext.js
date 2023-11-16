@@ -233,6 +233,10 @@ export const DeckProvider = ({ children }) => {
     const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
     return foundCard?.quantity || 0;
   };
+  const getCardQuantity = (cardId) => {
+    const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
+    return foundCard?.quantity || 0;
+  };
 
   const contextValue = {
     deckData,
@@ -245,10 +249,7 @@ export const DeckProvider = ({ children }) => {
     getTotalCost: () =>
       selectedDeck?.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) ||
       0,
-    getCardQuantity: (cardId) => {
-      const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
-      return foundCard?.quantity || 0;
-    },
+    getCardQuantity: getCardQuantity,
     updateAndSyncDeck,
     fetchAllDecksForUser: fetchAndSetDecks,
   };

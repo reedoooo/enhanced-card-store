@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useDeckStore } from '../../context/DeckContext/DeckContext';
-import { useCollectionStore } from '../../context/hooks/collection';
 import { useCartStore } from '../../context/CartContext/CartContext';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const UserStats = () => {
   const { allDecks } = useDeckStore();

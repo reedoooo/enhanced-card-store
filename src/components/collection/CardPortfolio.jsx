@@ -3,7 +3,7 @@ import SelectCollection from './SelectCollection';
 import PortfolioContent from '../content/PortfolioContent';
 import { Box, Typography } from '@mui/material';
 import CollectionContainer from '../../containers/collectionPageContainers/CollectionContainer';
-import { useCollectionStore } from '../../context/hooks/collection';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 // import UpdateChartData from './UpdateChartData';
 
 const CardPortfolio = ({ allCollections }) => {

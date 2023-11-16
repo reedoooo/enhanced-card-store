@@ -229,6 +229,10 @@ export const CartProvider = ({ children }) => {
   const value = {
     cartData,
     getCardQuantity,
+    // getCardQuantity: (cardId) => {
+    //   const card = cartData?.cart?.find((c) => c?.id === cardId);
+    //   return card?.quantity || 0;
+    // },
     cartCardQuantity: cartData.cart?.reduce(
       (acc, card) => acc + card.quantity,
       0

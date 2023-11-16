@@ -11,7 +11,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useCollectionStore } from '../../../context/hooks/collection';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   listItem: {

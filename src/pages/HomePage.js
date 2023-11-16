@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Stack, Button } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
 import { ColorModeContext } from '../context/ColorModeProvider';
 import { useMode } from '../context/hooks/colormode';
@@ -109,11 +109,49 @@ const HomePage = () => {
         }}
         maxWidth="md"
       >
-        <HeaderTitle
+        {/* <HeaderTitle
           title="Welcome to Our Application!"
           size="huge"
           location="center"
-        />
+        /> */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            pt: 8,
+            pb: 6,
+          }}
+        >
+          <Container maxWidth="sm">
+            <Typography
+              component="h1"
+              variant="h2"
+              align="center"
+              color="text.primary"
+              gutterBottom
+            >
+              Album layout
+            </Typography>
+            <Typography
+              variant="h5"
+              align="center"
+              color="text.secondary"
+              paragraph
+            >
+              Something short and leading about the collection below—its
+              contents, the creator, etc. Make it short and sweet, but not too
+              short so folks don&apos;t simply skip over it entirely.
+            </Typography>
+            <Stack
+              sx={{ pt: 4 }}
+              direction="row"
+              spacing={2}
+              justifyContent="center"
+            >
+              <Button variant="contained">Main call to action</Button>
+              <Button variant="outlined">Secondary action</Button>
+            </Stack>
+          </Container>
+        </Box>
         <Carousel
           showThumbs={false}
           showStatus={false}

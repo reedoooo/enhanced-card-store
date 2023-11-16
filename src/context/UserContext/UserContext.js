@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
   const [allCollections, setAllCollections] = useState([]);
 
   const { user, setUser } = useAuthContext(); // Use the useAuthContext hook
-  const { fetchCollections, fetchAllCollectionsForUser } = useCollectionStore();
+  // const { fetchCollections, fetchAllCollectionsForUser } = useCollectionStore();
 
   const triggerCronJob = async () => {
     // Add your code here

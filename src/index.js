@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './assets/styles/index.css';
 import App from './App';
 import GlobalStyles from './assets/GlobalStyles';
 import AuthProvider from './context/Auth/authContext';
@@ -20,12 +19,19 @@ import { SocketProvider } from './context/SocketProvider';
 import { SidebarProvider } from './context/SideBarProvider';
 import { ChartProvider } from './context/ChartContext/ChartContext';
 import { UtilityProvider } from './context/UtilityContext/UtilityContext';
+import { AppContextProvider } from './context/AppContextProvider';
+import { createTheme } from '@mui/material';
 
 const root = document.getElementById('root');
 
 function Main() {
-  const { theme } = useMode();
-
+  // const { theme } = useMode();
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
+  });
+  const theme = darkTheme;
   return (
     <ErrorBoundary>
       <UtilityProvider>
@@ -45,7 +51,9 @@ function Main() {
                             <ThemeProvider theme={theme}>
                               <ChartProvider>
                                 <SidebarProvider>
-                                  <App />
+                                  <AppContextProvider>
+                                    <App />
+                                  </AppContextProvider>
                                 </SidebarProvider>
                               </ChartProvider>
                             </ThemeProvider>

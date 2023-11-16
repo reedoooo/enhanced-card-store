@@ -4,7 +4,7 @@ import CardList from '../components/grids/collectionGrids/CardList';
 
 const PortfolioListContainer = ({ selectedCards, removeCard }) => {
   return (
-    <Grid item xs={12} sx={{ height: '100%', width: '100%' }}>
+    <Grid item xs={12} sx={{ height: '150vh', width: '100%' }}>
       <Paper
         elevation={3}
         sx={{

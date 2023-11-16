@@ -1,9 +1,28 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
 const initialCollectionState = {
-  _id: '',
-  cards: [],
-  quantity: 0,
-  totalPrice: 0,
+  userId: '', // Assuming this is an ObjectId string
+  name: '', // Initialize as empty string if not provided
+  description: '', // Initialize as empty string if not provided
+  totalCost: '', // Initialize as empty string if not provided
+  totalPrice: 0, // Initialize as 0 if not provided
+  quantity: 0, // Initialize as 0 if not provided
+  totalQuantity: 0, // Initialize as 0 if not provided
+  previousDayTotalPrice: 0, // Initialize as 0 if not provided
+  dailyPriceChange: 0, // Initialize as 0 if not provided
+  priceDifference: 0, // Initialize as 0 if not provided
+  priceChange: 0, // Initialize as 0 if not provided
+  allCardPrices: [], // Initialize as empty array if not provided
+  cards: [], // Initialize as empty array if not provided
+  currentChartDatasets: [], // Initialize as empty array if not provided
+  xys: [], // Use defaultXyData or initialize as empty if not provided
+  chartData: {
+    name: '', // Initialize as empty string if not provided
+    userId: '', // Assuming this is an ObjectId string
+    datasets: [], // Initialize as empty array if not provided
+    xys: [], // Initialize as empty array if not provided
+    allXYValues: [], // Initialize as empty array if not provided
+  },
 };
 /**
  * Filters out duplicate Y values from an array of datasets.
@@ -130,6 +149,8 @@ const handleCardAddition = (currentCards, cardToAdd) => {
   // Initialize currentCards to an empty array if it's not defined
   currentCards = currentCards || [];
 
+  console.log('CURRENT CARDS:', currentCards);
+  console.log('CARD TO ADD:', cardToAdd);
   const cardToAddId =
     typeof cardToAdd.id === 'number' ? String(cardToAdd.id) : cardToAdd.id;
   const matchingCard = currentCards.find((c) => c.id === cardToAddId);
@@ -152,21 +173,30 @@ const handleCardRemoval = (currentCards, cardToRemove) => {
   // Initialize currentCards to an empty array if it's not defined
   currentCards = currentCards || [];
 
+  console.log('CURRENT CARDS:', currentCards);
+  console.log('CARD TO REMOVE:', cardToRemove);
+
   const cardToRemoveId =
     typeof cardToRemove.id === 'number'
       ? String(cardToRemove.id)
       : cardToRemove.id;
-  const matchingCard = currentCards.find((c) => c.id === cardToRemoveId);
 
-  if (!matchingCard) {
+  // Find the card to remove in the current cards array
+  const cardIndex = currentCards.findIndex((c) => c.id === cardToRemoveId);
+
+  if (cardIndex === -1) {
     console.error('Card not found in the collection.');
     return [...currentCards];
   }
 
+  const matchingCard = currentCards[cardIndex];
+
+  // If the card has a quantity greater than 1, decrement it
   if (matchingCard.quantity > 1) {
     matchingCard.quantity--;
     return [...currentCards];
   } else {
+    // Remove the card from the collection if quantity is 1 or less
     return currentCards.filter((card) => card.id !== cardToRemoveId);
   }
 };
@@ -286,12 +316,6 @@ const updateLastRequestTime = (method) => {
  * @returns {Promise<Object>} - The response from the API call.
  */
 const fetchWrapper = async (url, method, body = null) => {
-  // if (!canMakeRequest(method)) {
-  //   throw new Error(
-  //     `A ${method} request was made recently. Please wait before trying again.`
-  //   );
-  // }
-
   const options = {
     method,
     headers: { 'Content-Type': 'application/json' },
@@ -304,12 +328,10 @@ const fetchWrapper = async (url, method, body = null) => {
       // We handle non-ok responses immediately
       throw new Error(`API request failed with status ${response.status}`);
     }
-    updateLastRequestTime(method);
-    // Assuming handleApiResponse is expecting a Response object
-    return handleApiResponse(response);
+    updateLastRequestTime(method); // Assumed to be a function that updates some kind of state
+    return await response.json(); // Directly returning the JSON response
   } catch (error) {
     console.error(`Fetch failed: ${error}`);
-    // It's useful to log the stack trace in development
     console.trace();
     throw error; // Re-throwing the error for upstream catch blocks to handle
   }
@@ -322,6 +344,10 @@ const handleApiResponse = async (response) => {
     );
     console.error(error.message, response);
     throw error;
+  }
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   try {
@@ -343,6 +369,92 @@ const getTotalCost = (selectedCollection) => {
     return total + cardPrice * card.quantity;
   }, 0);
 };
+// const getCardQuantity = (cardId) => {
+//   const card = selectedCollection?.cards?.find((c) => c.id === cardId);
+//   return card?.quantity || 0;
+// }
+
+const defaultContextValue = {
+  allCollections: [],
+  allCardPrices: [],
+  xy: [],
+  selectedCollection: {},
+  collectionData: initialCollectionState,
+  officialCollectionDatasets: [],
+  totalCost: 0,
+  openChooseCollectionDialog: false,
+  updatedPricesFromCombinedContext: {},
+  setUpdatedPricesFromCombinedContext: () => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setOpenChooseCollectionDialog: () => {},
+  calculateTotalPrice: () => {},
+  getTotalCost: () => {},
+  createUserCollection: () => {},
+  removeCollection: () => {},
+  fetchAllCollectionsForUser: () => {},
+  setSelectedCollection: () => {},
+  setAllCollections: () => {},
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+};
+
+const logError = (source, action, error) => {
+  console.error(
+    `[${source.toUpperCase()}] Failed to ${action}: ${error.message}`
+  );
+};
+
+// Reusable validation and error logging
+const validateUserIdAndData = (userId, data, actionDescription) => {
+  if (!userId) {
+    logError(
+      'validateUserIdAndData',
+      actionDescription,
+      new Error('User ID is undefined.')
+    );
+    return false;
+  }
+  if (!validateData(data, actionDescription, actionDescription)) {
+    logError(
+      'validateUserIdAndData',
+      actionDescription,
+      new Error('Validation failed for collection data.')
+    );
+    return false;
+  }
+  return true;
+};
+
+const determineHttpMethod = (isCreatingNew, endpoint) => {
+  return isCreatingNew ? 'POST' : 'PUT';
+};
+
+// Abstracted payload creation to reduce repetition
+const createPayload = (info, data, defaultXyData) => ({
+  userId: info.userId || data.userId, // Assuming this is an ObjectId string
+  name: info.name || data.name,
+  description: info.description || data.description,
+  totalCost: '', // Initialize as empty string if not provided
+  totalPrice: 0, // Initialize as 0 if not provided
+  quantity: 0, // Initialize as 0 if not provided
+  totalQuantity: 0, // Initialize as 0 if not provided
+  previousDayTotalPrice: 0, // Initialize as 0 if not provided
+  dailyPriceChange: 0, // Initialize as 0 if not provided
+  priceDifference: 0, // Initialize as 0 if not provided
+  priceChange: 0, // Initialize as 0 if not provided
+  collectionPriceHistory: [], // Initialize as empty array if not provided
+  allCardPrices: [], // Initialize as empty array if not provided
+  cards: [], // Initialize as empty array if not provided
+  currentChartDatasets: [], // Initialize as empty array if not provided
+  xys: defaultXyData || [], // Use defaultXyData or initialize as empty if not provided
+  chartData: {
+    name: '', // Initialize as empty string if not provided
+    userId: info.userId || data.userId, // Assuming this is an ObjectId string
+    datasets: [], // Initialize as empty array if not provided
+    xys: [], // Initialize as empty array if not provided
+    allXYValues: [], // Initialize as empty array if not provided
+  },
+});
 
 const removeDuplicateCollections = (collections) => {
   const uniqueCollections = {};
@@ -376,4 +488,9 @@ module.exports = {
   getCardPrice,
   removeDuplicateCollections,
   initialCollectionState,
+  defaultContextValue,
+  validateUserIdAndData,
+  determineHttpMethod,
+  createPayload,
+  logError,
 };

@@ -1,112 +1,112 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Box,
   Container,
   Grid,
   MenuItem,
   Paper,
   Select,
-  debounce,
+  styled,
+  useTheme,
+  // debounce,
 } from '@mui/material';
-import { styled } from '@mui/system';
 import LinearChart from './LinearChart';
-import { useCollectionStore } from '../../context/hooks/collection';
-import TimeRangeSelector, { timeRanges } from './TimeRangeSelector';
+import TimeRangeSelector from './TimeRangeSelector';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import CollectionStatisticsSelector from './CollectionStatisticsSelector';
+import UpdateStatusBox from './UpdateStatusBox';
+import { useCombinedContext } from '../../context/CombinedProvider';
+import debounce from 'lodash/debounce';
+import {
+  convertDataForNivo,
+  getUniqueFilteredXYValues,
+  groupAndAverageData,
+} from './chartUtils';
 
-const ChartPaper = styled('div')(({ theme }) => ({
-  borderRadius: '12px',
-  // width: '100%',
-  height: '100%',
-  minWidth: '500px',
-  maxWidth: '800px',
-  boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
-  backgroundColor: '#ffffff',
-  color: '#333',
-  position: 'relative',
-  [theme.breakpoints.down('sm')]: {
-    minWidth: '300px',
-  },
-  [theme.breakpoints.up('md')]: {
-    minWidth: '500px',
-  },
-  [theme.breakpoints.up('lg')]: {
-    minWidth: '700px',
-  },
+// const ChartPaper = styled(Paper)(({ theme }) => ({
+//   borderRadius: theme.shape.borderRadius,
+//   boxShadow: theme.shadows[5],
+//   backgroundColor: theme.palette.background.default,
+//   color: theme.palette.text.secondary,
+//   padding: theme.spacing(3),
+//   [theme.breakpoints.down('sm')]: { minWidth: '300px' },
+//   [theme.breakpoints.up('md')]: { minWidth: '500px' },
+//   [theme.breakpoints.up('lg')]: { minWidth: '700px' },
+// }));
+const ChartPaper = styled(Paper)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
+  padding: theme.spacing(3),
+  minHeight: '400px',
+  width: '100%',
+  display: 'flex',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  overflow: 'hidden',
 }));
-
-const groupAndAverageData = (data, threshold = 1) => {
-  if (!data || data.length === 0) return [];
-
-  // 1. Create the clusters
-  const clusters = [];
-  let currentCluster = [data[0]];
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i].x - data[i - 1].x <= threshold) {
-      currentCluster.push(data[i]);
-    } else {
-      clusters.push(currentCluster);
-      currentCluster = [data[i]];
-    }
-  }
-  clusters.push(currentCluster); // Push the last cluster
-
-  // 2. For each cluster, find the middlemost x-value and average y-values
-  const averagedData = clusters.map((cluster) => {
-    const middleIndex = Math.floor(cluster.length / 2);
-    const avgY =
-      cluster.reduce((sum, point) => sum + point.y, 0) / cluster.length;
-
-    return {
-      x: cluster[middleIndex].x,
-      y: avgY,
-    };
-  });
-
-  return averagedData;
-};
-
 const PortfolioChart = () => {
-  const { latestData, setLatestData, timeRange, setTimeRange } =
+  const theme = useTheme();
+  const { latestData, setLatestData, timeRange, timeRanges } =
     useChartContext();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
+  const [chartDimensions, setChartDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const { selectedCollection } = useCollectionStore();
-  const datasets = selectedCollection?.chartData?.allXYValues || [];
-  const datasets2 = useMemo(() => groupAndAverageData(datasets), [datasets]);
+  const { socket } = useCombinedContext();
 
-  // Debounced function for setting the last update time
-  const debouncedSetLastUpdateTime = useMemo(
-    () =>
-      debounce(() => {
-        const currentTime = new Date().getTime();
+  const filteredChartData = useMemo(() => {
+    const allXYValues = selectedCollection?.chartData?.allXYValues;
+    return allXYValues ? getUniqueFilteredXYValues(allXYValues) : [];
+  }, [selectedCollection]);
 
-        if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
-          setLastUpdateTime(currentTime);
-
-          const lastDatasetIndex = datasets.length - 1;
-          const lastDataset = datasets[lastDatasetIndex];
-          lastDataset && setLatestData(lastDataset);
-        }
-      }, 100),
-    [datasets, lastUpdateTime]
+  const threshold = useMemo(() => timeRange * 0.1, [timeRange]);
+  const rawData = useMemo(
+    () => groupAndAverageData(filteredChartData, threshold),
+    [filteredChartData, threshold]
   );
+  const nivoReadyData = useMemo(() => convertDataForNivo(rawData), [rawData]);
+
+  // Now use this threshold when calling your data grouping function
+
+  // Now use this threshold when calling your data grouping function
+  const updateLastTime = () => {
+    const currentTime = new Date().getTime();
+    if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
+      setLastUpdateTime(currentTime);
+      const lastDataset = filteredChartData[filteredChartData.length - 1];
+      lastDataset && setLatestData(lastDataset);
+    }
+  };
 
   useEffect(() => {
-    if (!datasets) return;
-    debouncedSetLastUpdateTime();
-  }, [datasets, debouncedSetLastUpdateTime]);
+    const handleResize = debounce(() => {
+      if (chartContainerRef.current) {
+        setChartDimensions({
+          width: chartContainerRef.current.offsetWidth,
+          height: chartContainerRef.current.offsetHeight,
+        });
+      }
+    }, 100);
 
-  const chartDimensions = useMemo(
-    () =>
-      chartContainerRef.current?.getBoundingClientRect() || {
-        width: 400,
-        height: 600,
-      },
-    [chartContainerRef.current]
-  );
+    window.addEventListener('resize', handleResize);
 
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      handleResize.cancel();
+    };
+  }, []);
   return (
     <Container
       maxWidth="lg"
@@ -114,48 +114,229 @@ const PortfolioChart = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // width: '100%',
-        // height: '100%',
+        padding: theme.spacing(2),
+        gap: theme.spacing(2),
+        backgroundColor: theme.palette.background.paper, // Dark background for the container
+        color: theme.palette.text.primary, // Text color for better contrast
       }}
     >
       <ErrorBoundary>
-        {/* <Paper
-        elevation={8}
-        sx={{ padding: 2, borderRadius: 2, width: '100%', height: '100%' }}
-      > */}
-        <TimeRangeSelector
-          value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value)}
-        />
-        <Grid
-          item
-          xs={12}
+        <Grid container spacing={2}>
+          {/* <Box
           sx={{
-            height: '100%',
-            m: '10px',
-            padding: 2,
-            borderRadius: 2,
             width: '100%',
+            mb: 2, // Margin bottom for spacing
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: theme.palette.background.dark, // Dark background for the Box
+            p: 2, // Padding for the inner content
+            borderRadius: 2,
           }}
         >
-          <ChartPaper elevation={3} ref={chartContainerRef}>
-            {datasets2.length > 0 ? (
-              <LinearChart
-                data={datasets2}
-                latestData={latestData}
-                dimensions={chartDimensions}
-                timeRanges={timeRanges}
-                timeRange={timeRange}
-              />
-            ) : (
-              <div>No data available</div>
-            )}
-          </ChartPaper>
+          <TimeRangeSelector value={timeRange} />
+          <CollectionStatisticsSelector
+            data={filteredChartData}
+            timeRange={timeRange}
+          />
+          <UpdateStatusBox socket={socket} />
+        </Box> */}
+          <Grid
+            item
+            xs={12}
+            sx={{
+              height: '100%',
+              m: '10px',
+              padding: 2,
+              borderRadius: 2,
+              width: '100%',
+            }}
+          >
+            <ChartPaper elevation={3} ref={chartContainerRef}>
+              {filteredChartData.length > 0 ? (
+                <LinearChart
+                  datesTimesValues={rawData}
+                  nivoReadyData={nivoReadyData}
+                  filteredChartData={filteredChartData}
+                  latestData={latestData}
+                  dimensions={chartDimensions}
+                  timeRanges={timeRanges}
+                  timeRange={timeRange}
+                />
+              ) : (
+                <div>No data available</div>
+              )}
+            </ChartPaper>
+          </Grid>
         </Grid>
-        {/* </Paper> */}
       </ErrorBoundary>
     </Container>
   );
 };
 
 export default PortfolioChart;
+
+// import React, { useEffect, useMemo, useRef, useState } from 'react';
+// import {
+//   Box,
+//   Container,
+//   Grid,
+//   MenuItem,
+//   Paper,
+//   Select,
+//   styled,
+//   useTheme,
+//   // debounce,
+// } from '@mui/material';
+// import LinearChart from './LinearChart';
+// import TimeRangeSelector from './TimeRangeSelector';
+// import { useChartContext } from '../../context/ChartContext/ChartContext';
+// import ErrorBoundary from '../../context/ErrorBoundary';
+// import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+// import CollectionStatisticsSelector from './CollectionStatisticsSelector';
+// import UpdateStatusBox from './UpdateStatusBox';
+// import { useCombinedContext } from '../../context/CombinedProvider';
+// import debounce from 'lodash/debounce';
+// import {
+//   convertDataForNivo,
+//   getUniqueFilteredXYValues,
+//   groupAndAverageData,
+// } from './chartUtils';
+
+// const ChartPaper = styled(Paper)(({ theme }) => ({
+//   borderRadius: theme.shape.borderRadius,
+//   boxShadow: theme.shadows[5],
+//   backgroundColor: theme.palette.background.default,
+//   color: theme.palette.text.secondary,
+//   padding: theme.spacing(3),
+//   [theme.breakpoints.down('sm')]: { minWidth: '300px' },
+//   [theme.breakpoints.up('md')]: { minWidth: '500px' },
+//   [theme.breakpoints.up('lg')]: { minWidth: '700px' },
+// }));
+
+// const PortfolioChart = () => {
+//   const theme = useTheme();
+//   const { selectedCollection } = useCollectionStore();
+//   const { timeRange } = useChartContext();
+//   const chartContainerRef = useRef(null);
+//   const [chartDimensions, setChartDimensions] = useState({
+//     width: 400,
+//     height: 400,
+//   });
+//   // const { latestData, setLatestData, timeRange, timeRanges } =
+//   useChartContext();
+//   const [lastUpdateTime, setLastUpdateTime] = useState(null);
+//   const { socket } = useCombinedContext();
+
+//   const filteredChartData = useMemo(() => {
+//     const allXYValues = selectedCollection?.chartData?.allXYValues;
+//     return allXYValues ? getUniqueFilteredXYValues(allXYValues) : [];
+//   }, [selectedCollection]);
+
+//   // const threshold = useMemo(() => timeRange * 0.1, [timeRange]);
+//   // const rawData = useMemo(
+//   //   () => groupAndAverageData(filteredChartData, threshold),
+//   //   [filteredChartData, threshold]
+//   // );
+//   // const nivoReadyData = useMemo(() => convertDataForNivo(rawData), [rawData]);
+
+//   // Now use this threshold when calling your data grouping function
+
+//   // Now use this threshold when calling your data grouping function
+//   const updateLastTime = () => {
+//     const currentTime = new Date().getTime();
+//     if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
+//       setLastUpdateTime(currentTime);
+//       const lastDataset = filteredChartData[filteredChartData.length - 1];
+//       lastDataset && setLatestData(lastDataset);
+//     }
+//   };
+//   const filteredChartData = useMemo(() => {
+//     // Process data for the chart here using selectedCollection
+//     return selectedCollection?.chartData?.allXYValues || [];
+//   }, [selectedCollection]);
+
+//   useEffect(() => {
+//     const handleResize = debounce(() => {
+//       if (chartContainerRef.current) {
+//         setChartDimensions({
+//           width: chartContainerRef.current.offsetWidth,
+//           height: chartContainerRef.current.offsetHeight,
+//         });
+//       }
+//     }, 100);
+
+//     const resizeObserver = new ResizeObserver(handleResize);
+//     if (chartContainerRef.current) {
+//       resizeObserver.observe(chartContainerRef.current);
+//     }
+
+//     return () => {
+//       resizeObserver.disconnect();
+//       handleResize.cancel();
+//     };
+//   }, []);
+//   return (
+//     <Container
+//       maxWidth="lg"
+//       sx={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         backgroundColor: theme.palette.background.paper, // Dark background for the container
+//         color: theme.palette.text.primary, // Text color for better contrast
+//       }}
+//     >
+//       <ErrorBoundary>
+//         {/* <Box
+//           sx={{
+//             width: '100%',
+//             mb: 2, // Margin bottom for spacing
+//             display: 'flex',
+//             justifyContent: 'space-between',
+//             alignItems: 'center',
+//             backgroundColor: theme.palette.background.dark, // Dark background for the Box
+//             p: 2, // Padding for the inner content
+//             borderRadius: 2,
+//           }}
+//         >
+//           <TimeRangeSelector value={timeRange} />
+//           <CollectionStatisticsSelector
+//             data={filteredChartData}
+//             timeRange={timeRange}
+//           />
+//           <UpdateStatusBox socket={socket} />
+//         </Box> */}
+//         <Grid
+//           item
+//           xs={12}
+//           sx={{
+//             height: '100%',
+//             m: '10px',
+//             padding: 2,
+//             borderRadius: 2,
+//             width: '100%',
+//           }}
+//         >
+//           <ChartPaper elevation={3} ref={chartContainerRef}>
+//             {filteredChartData.length > 0 ? (
+//               <LinearChart
+//                 datesTimesValues={rawData}
+//                 nivoReadyData={nivoReadyData}
+//                 filteredChartData={filteredChartData}
+//                 latestData={latestData}
+//                 dimensions={chartDimensions}
+//                 timeRanges={timeRanges}
+//                 timeRange={timeRange}
+//               />
+//             ) : (
+//               <div>No data available</div>
+//             )}
+//           </ChartPaper>
+//         </Grid>
+//       </ErrorBoundary>
+//     </Container>
+//   );
+// };
+
+// export default PortfolioChart;

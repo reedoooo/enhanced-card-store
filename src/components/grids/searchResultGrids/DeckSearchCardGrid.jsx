@@ -1,162 +1,114 @@
-import React, { useEffect, useRef, useState } from 'react';
+// DeckSearchCardGrid.jsx
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
-import GenericCard from '../../cards/GenericCard';
-import { makeStyles } from '@mui/styles';
-import CustomPopover from '../../cards/CustomPopover';
+import { useStyles } from '../gridStyles';
 import LoadingIndicator from '../../indicators/LoadingIndicator';
-
-const useStyles = makeStyles((theme) => ({
-  cardContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    maxHeight: '300px', // or any desired max height
-    minHeight: '300px', // make sure it matches max height
-    overflow: 'hidden', // ensures content doesn't spill out
-  },
-  card: {
-    width: '100%',
-    // transform: 'scale(0.9)', // scales down to 90% of the original size
-  },
-  loading: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-  },
-}));
+import GenericCard from '../../cards/GenericCard';
+import GenericCardModal from '../../modals/GenericCardModal';
 
 const DeckSearchCardGrid = ({ cards, userDecks }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme?.breakpoints?.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [clickedCard, setClickedCard] = useState(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
   const cardRef = useRef(null);
 
   useEffect(() => {
-    // Mock fetching data or some asynchronous action
-    // Remove this if you have actual data fetching logic
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    // Simulated data fetching delay
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
+  // Using useMemo to prevent unnecessary recalculations of uniqueCards
+  const uniqueCards = useMemo(() => {
+    const cardMap = new Map(cards.map((card) => [card.id, card]));
+    return Array.from(cardMap.values());
+  }, [cards]);
+
+  // If data is loading, show loading indicator
   if (isLoading) {
-    return (
-      <Box className={classes.loading}>
-        <LoadingIndicator
-          // className={classes.loading}
-          size={100}
-          thickness={4}
-        />
-      </Box>
-    );
+    return <LoadingIndicator className={classes.loading} />;
   }
 
+  // closeModal function to pass to GenericCardModal and action buttons
+  const closeModal = () => setModalOpen(false);
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 1 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {cards?.map((card, i) => (
-          <Grid key={i} item xs={4} sm={4} md={4} marginTop={1}>
-            <div className={classes.cardContainer}>
-              <GenericCard
-                card={card}
-                userDecks={userDecks}
-                context={'Deck'}
-                className={classes.card}
-                cardRef={cardRef}
-                hoveredCard={hoveredCard}
-                setHoveredCard={setHoveredCard}
-                isPopoverOpen={isPopoverOpen}
-                setIsPopoverOpen={setIsPopoverOpen}
-              />
-            </div>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <>
+      <GenericCardModal // Rendered here, modal management lifted to the parent component
+        open={isModalOpen}
+        closeModal={closeModal}
+        card={clickedCard} // Passed the clicked card
+        context={'Deck'} // Passed the context
+        setModalOpen={setModalOpen}
+      />
+      <GridContainer
+        classes={classes}
+        cards={uniqueCards}
+        userDecks={userDecks}
+        hoveredCard={hoveredCard}
+        setHoveredCard={setHoveredCard}
+        isModalOpen={isModalOpen}
+        setModalOpen={setModalOpen}
+        isPopoverOpen={isPopoverOpen}
+        setIsPopoverOpen={setIsPopoverOpen}
+        clickedCard={clickedCard}
+        setClickedCard={setClickedCard}
+        context={'Deck'}
+        cardRef={cardRef}
+      />
+    </>
   );
 };
 
 export default DeckSearchCardGrid;
 
-// const DeckSearchCardGrid = ({ cards, userDecks }) => {
-//   const theme = useTheme();
-//   const isSmallScreen = useMediaQuery(theme?.breakpoints?.down('sm'));
-//   const classes = useStyles();
-//   // const [anchorEl, setAnchorEl] = useState(null);
-//   const [isHovering, setHovering] = useState(false);
-//   const cardRef = useRef(null);
-//   const [hoveredCard, setHoveredCard] = useState(null);
-//   const [anchorEl, setAnchorEl] = React.useState(null);
-
-//   const handlePopoverOpen = (event) => {
-//     setAnchorEl(event.currentTarget);
-//   };
-
-//   const handlePopoverClose = () => {
-//     setAnchorEl(null);
-//   };
-//   // const handlePopoverOpen = (card) => {
-//   //   setHoveredCard(card);
-//   // };
-
-//   // const handlePopoverClose = () => {
-//   //   setHoveredCard(null);
-//   // };
-
-//   const open = Boolean(anchorEl);
-
-//   return (
-//     <Grid container spacing={1}>
-//       {cards?.map((card, i) => (
-//         <Grid
-//           key={i}
-//           item
-//           xs={isSmallScreen ? 6 : 4}
-//           marginTop={1}
-//           // onMouseEnter={handleMouseEnter}
-//           // onMouseLeave={handleMouseLeave}
-//         >
-//           {/* <CustomPopover
-//             card={card}
-//             // anchorEl={hoveredCard === card ? cardRef.current : null}
-//             // setAnchorEl={setHoveredCard}
-//             open={open}
-//             anchorEl={anchorEl}
-//             handlePopoverClose={handlePopoverClose}
-//             // handleMouseEnter={() => handlePopoverOpen(card)}
-//             // handleMouseLeave={handlePopoverClose} */}
-//           {/* > */}
-//           <div className={classes.cardContainer}>
-//             <GenericCard
-//               card={card}
-//               item
-//               cardInfo={card}
-//               userDecks={userDecks}
-//               context={'Deck'}
-//               className={classes.card}
-//               cardRef={cardRef}
-//               open={open}
-//               anchorEl={anchorEl}
-//               handlePopoverClose={handlePopoverClose}
-//               // handlePopoverOpen={() => handlePopoverOpen(card)}
-//               handlePopoverOpen={handlePopoverOpen}
-//               isHovering={hoveredCard === card}
-//               setHovering={setHoveredCard}
-//             />
-//           </div>
-//           {/* </CustomPopover> */}
-//         </Grid>
-//       ))}
-//     </Grid>
-//   );
-// };
-
-// export default DeckSearchCardGrid;
+// Separating Grid logic for better readability and reusability
+const GridContainer = ({
+  classes,
+  cards,
+  userDecks,
+  hoveredCard,
+  setHoveredCard,
+  isPopoverOpen,
+  setIsPopoverOpen,
+  cardRef,
+  isModalOpen,
+  setModalOpen,
+  clickedCard,
+  setClickedCard,
+  context,
+}) => (
+  <Box sx={{ flexGrow: 1 }}>
+    <Grid
+      container
+      spacing={{ xs: 2, md: 1 }}
+      columns={{ xs: 4, sm: 8, md: 12 }}
+    >
+      {cards?.map((card, index) => (
+        <Grid key={card.id || index} item xs={4} sm={4} md={4} marginTop={1}>
+          <div className={classes.cardContainer}>
+            <GenericCard
+              card={card}
+              userDecks={userDecks}
+              context={context}
+              isModalOpen={isModalOpen}
+              setModalOpen={setModalOpen}
+              clickedCard={clickedCard}
+              setClickedCard={setClickedCard}
+              hoveredCard={hoveredCard}
+              setHoveredCard={setHoveredCard}
+              isPopoverOpen={isPopoverOpen}
+              setIsPopoverOpen={setIsPopoverOpen}
+              ref={cardRef} // Use ref forwarding if necessary in GenericCard
+            />
+          </div>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+);

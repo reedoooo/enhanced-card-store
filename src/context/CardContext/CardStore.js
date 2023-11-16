@@ -104,6 +104,11 @@ export const CardProvider = ({ children }) => {
         initialStore,
         cookies,
         currentCart,
+        // getCardQuantity: (cardId) => {
+        //   if
+        //   const card = cartData?.cart?.find((c) => c?.id === cardId);
+        //   return card?.quantity || 0;
+        // },
         setSearchData,
         setDeckSearchData,
         setSavedDeckData,

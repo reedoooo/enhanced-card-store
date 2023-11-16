@@ -4,6 +4,8 @@ import { makeStyles, useTheme } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
+import ChartErrorBoundary from './ChartErrorBoundary';
+import CustomLogger from '../../context/CutstomLogger';
 
 const useStyles = makeStyles((theme) => ({
   chartContainer: {
@@ -25,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     marginTop: theme.spacing(2),
     fontSize: '1rem',
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(4),
     color: theme.palette.text.primary,
   },
   yAxisLabel: {
@@ -35,6 +39,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     marginTop: theme.spacing(2),
     fontSize: '1rem',
+    fontWeight: 'bold', // Make the label text bold
+    marginLeft: theme.spacing(4), // Increase spacing from the chart
     color: theme.palette.text.primary,
   },
   customTooltip: {
@@ -43,7 +49,31 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[3],
   },
+  customGridLine: {
+    stroke: theme.palette.text.secondary,
+    strokeWidth: 2,
+    strokeDasharray: 'none',
+  },
 }));
+
+// function logReadableChartInfo(
+//   // chartDimensions,
+//   dataForChart,
+//   datesTimesValues,
+//   filteredChartData,
+//   latestData
+// ) {
+//   console.log('[7][DATA FOR CHART]:', JSON.stringify(dataForChart, null, 2));
+//   console.log(
+//     '[8][DATES TIMES VALUES]:',
+//     JSON.stringify(datesTimesValues, null, 2)
+//   );
+//   console.log(
+//     '[4][FILTERED CHART DATA]:',
+//     JSON.stringify(filteredChartData, null, 2)
+//   );
+//   console.log('[5][LATEST DATA]:', JSON.stringify(latestData, null, 2));
+// }
 
 const CustomTooltip = ({ point }) => {
   const theme = useTheme();
@@ -90,8 +120,42 @@ const roundToNearestTenth = (value) => {
 const getFilteredData = (data, timeRange) => {
   const cutOffTime = new Date().getTime() - timeRange;
   return data
-    .filter((d) => new Date(d.x).getTime() >= cutOffTime)
+    .filter((d) => {
+      const date = new Date(d.x);
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', d.x);
+        return false;
+      }
+      return date.getTime() >= cutOffTime;
+    })
     .map((d) => ({ ...d, y: roundToNearestTenth(d.y) }));
+};
+
+const getAveragedData = (data) => {
+  // Use a regular function instead of a hook
+  if (!Array.isArray(data)) {
+    return [];
+  }
+  return data.map((row, index, total) => {
+    const start = Math.max(0, index - 6);
+    const end = index;
+    const subset = total.slice(start, end + 1);
+    const sum = subset.reduce((a, b) => a + b.y, 0);
+    return {
+      x: row.x,
+      y: sum / subset.length || 0,
+    };
+  });
+};
+
+const getTickValues = (timeRange) => {
+  const mapping = {
+    '15m': 'every 15 minutes',
+    '2h': 'every 2 hours',
+    '1d': 'every day',
+    '1w': 'every week',
+  };
+  return mapping[timeRange] || 'every week'; // Default to 'every week' if no match
 };
 
 const useMovingAverage = (data, numberOfPricePoints) => {
@@ -99,6 +163,11 @@ const useMovingAverage = (data, numberOfPricePoints) => {
     if (!Array.isArray(data)) {
       return [];
     }
+    console.log('[1][Data]----------> [', data + ']');
+    console.log(
+      '[2][NUMBER OF POINTS]----------> [',
+      numberOfPricePoints + ']'
+    );
 
     return data.map((row, index, total) => {
       const start = Math.max(0, index - numberOfPricePoints);
@@ -106,18 +175,12 @@ const useMovingAverage = (data, numberOfPricePoints) => {
       const subset = total.slice(start, end + 1);
       const sum = subset.reduce((a, b) => a + b.y, 0);
       return {
+        // x: String(row.x),
         x: row.x,
         y: sum / subset.length || 0,
       };
     });
   }, [data, numberOfPricePoints]);
-};
-
-const getAveragedData = (filteredData) => {
-  const averaged = useMovingAverage(filteredData, 6);
-  return useMemo(() => {
-    return averaged;
-  }, [averaged]);
 };
 
 const useEventHandlers = () => {
@@ -139,180 +202,197 @@ const useEventHandlers = () => {
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
 
-const getTickValues = (timeRange, timeRanges) => {
-  switch (timeRange) {
-    case timeRanges[0].value:
-      return 'every 15 minutes';
-    case timeRanges[1].value:
-      return 'every 2 hours';
-    case timeRanges[2].value:
-      return 'every day';
-    default:
-      return 'every week';
+const formatDateToString = (date) => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    console.error('Invalid date:', date);
+    return '';
   }
+  return `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
+    .getHours()
+    .toString()
+    .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 };
 
 const LinearChart = ({
-  data,
+  filteredChartData,
+  datesTimesValues,
   latestData,
   dimensions,
   timeRanges,
   timeRange,
 }) => {
-  const classes = useStyles();
   const theme = useTheme();
   const [isZoomed, setIsZoomed] = useState(false);
   const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
 
-  const isValidDataPoint = (d) => d && 'x' in d && 'y' in d;
-  if (!Array.isArray(data) || !data.every(isValidDataPoint)) {
-    return <Typography variant="body1">No valid data available</Typography>;
-  }
-
   const filteredData = useMemo(
-    () => getFilteredData(data, timeRange),
-    [data, timeRange]
-  );
-  const averagedData = getAveragedData(filteredData);
-  // console.log('averagedData', averagedData);
-  const tickValues = useMemo(
-    () => getTickValues(timeRange, timeRanges),
-    [timeRange]
+    () => getFilteredData(filteredChartData, timeRange),
+    [filteredChartData, timeRange]
   );
 
-  const lastData = useMemo(() => {
-    if (data && data.length) {
-      return {
-        x: data[data.length - 1].x,
-        y: data[data.length - 1].y,
-      };
-    }
-    return {};
-  }, [data]);
+  const dataForChart = useMemo(() => {
+    return datesTimesValues.dates.map((date, index) => ({
+      x: formatDateToString(
+        new Date(`${date} ${datesTimesValues.times[index]}`)
+      ),
+      y: datesTimesValues.values[index],
+    }));
+  }, [datesTimesValues]);
+  CustomLogger('LinearChart', 'info', {
+    filteredChartData,
+    datesTimesValues,
+  });
+  const tickValues = useMemo(() => getTickValues(timeRange), [timeRange]);
+
+  if (
+    !Array.isArray(filteredChartData) ||
+    filteredChartData.some((d) => !d.x || !d.y)
+  ) {
+    return (
+      <Typography variant="body1" color="textSecondary">
+        No valid data available
+      </Typography>
+    );
+  }
+  // const classes = useStyles();
+  // const theme = useTheme();
+
+  // // Hooks should be at the top level of your component
+  // const [isZoomed, setIsZoomed] = useState(false);
+  // const filteredData = useMemo(
+  //   () => getFilteredData(filteredChartData, timeRange),
+  //   [filteredChartData, timeRange]
+  // );
+  // // const averagedData = useMemo(
+  // //   () => getAveragedData(filteredData),
+  // //   [filteredData]
+  // // );
+  // const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
+
+  // if (!Array.isArray(filteredChartData)) {
+  //   return <Typography variant="body1">No valid data available</Typography>;
+  // }
+
+  // if (
+  //   !datesTimesValues ||
+  //   !datesTimesValues.dates ||
+  //   !datesTimesValues.times ||
+  //   !datesTimesValues.values
+  // ) {
+  //   console.error('Invalid averaged chart data:', datesTimesValues);
+  //   return <Typography variant="body1">Invalid data for the chart</Typography>;
+  // }
+
+  // const dataForChart = useMemo(() => {
+  //   return [
+  //     {
+  //       id: 'Averaged Data',
+  //       data: datesTimesValues.dates.map((date, index) => ({
+  //         x: formatDateToString(
+  //           new Date(`${date} ${datesTimesValues.times[index]}`)
+  //         ),
+  //         y: datesTimesValues.values[index],
+  //       })),
+  //     },
+  //   ];
+  // }, [datesTimesValues]);
+
+  // if (dataForChart[0].data.length === 0) {
+  //   return <Typography variant="body1">No valid data available</Typography>;
+  // }
+  // const tickValues = useMemo(() => getTickValues(timeRange), [timeRange]);
+
+  // if (
+  //   !Array.isArray(filteredChartData) ||
+  //   filteredChartData.some((d) => !d.x || !d.y)
+  // ) {
+  //   return <Typography variant="body1">No valid data available</Typography>;
+  // }
+  // // logReadableChartInfo(
+  // //   dataForChart,
+  // //   datesTimesValues,
+  // //   filteredChartData,
+  // //   latestData
+  // // );
+  // try {
+  //   const filteredData = useMemo(
+  //     () => getFilteredData(filteredChartData, timeRange),
+  //     [filteredChartData, timeRange]
+  //   );
+  //   getAveragedData(filteredData);
+  // } catch (error) {
+  //   console.error('Error processing data for chart:', error);
+  // } // console.log('averagedData', averagedData);
+
+  // const lastData = useMemo(() => {
+  //   if (filteredChartData && filteredChartData.length) {
+  //     return {
+  //       x: filteredChartData[filteredChartData.length - 1].x,
+  //       y: filteredChartData[filteredChartData.length - 1].y,
+  //     };
+  //   }
+  //   return {};
+  // }, [filteredChartData]);
+
+  const chartProps = {
+    margin: { top: 50, right: 110, bottom: 50, left: 60 },
+    data: [{ id: 'Data', data: dataForChart }],
+    animate: true,
+    motionStiffness: 90,
+    motionDamping: 15,
+    xScale: {
+      type: 'time',
+      format: '%Y-%m-%d %H:%M',
+      useUTC: false,
+      precision: 'minute',
+    },
+    yScale: { type: 'linear', min: 'auto', max: 'auto' },
+    axisBottom: {
+      tickRotation: 0,
+      legendOffset: -12,
+      legend: 'Time',
+      tickPadding: 10,
+      tickSize: 10,
+      format: '%b %d',
+      tickValues: tickValues,
+    },
+    axisLeft: {
+      orient: 'left',
+      legend: 'Value ($)',
+      legendOffset: 12,
+      legendPosition: 'middle',
+      format: (value) => `$${value}`,
+      tickPadding: 10,
+      tickSize: 10,
+    },
+    pointSize: 6,
+    pointBorderWidth: 1,
+    pointColor: theme.palette.primary.main,
+    colors: theme.palette.chartColors,
+    theme: theme.chart,
+    lineWidth: 3,
+    curve: 'monotoneX',
+    useMesh: true,
+    onMouseMove: handleMouseMove,
+    onMouseLeave: handleMouseLeave,
+    onClick: () => setIsZoomed(!isZoomed),
+    tooltip: CustomTooltip,
+    sliceTooltip: ({ slice }) => {
+      const point = slice.points.find(
+        (p) => p.id === 'Data' && p.data.x === latestData.x
+      );
+      return point ? <CustomTooltip point={point} /> : null;
+    },
+  };
 
   return (
-    <div
-      className={classes.chartContainer}
-      style={{
-        width: '100%',
-        height: dimensions?.height ?? '100%',
-      }}
-    >
-      <ResponsiveLine
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-        xScale={{
-          type: 'time',
-          format: '%Y-%m-%d %H:%M',
-          useUTC: false,
-          precision: 'minute',
-        }}
-        yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
-        axisBottom={{
-          tickValues: tickValues,
-
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legendOffset: -12,
-          legend: 'Time',
-          format: '%H:%M',
-        }}
-        axisLeft={{
-          orient: 'left',
-          legend: 'Value ($)',
-          legendOffset: 12,
-          legendPosition: 'middle',
-          legendTextColor: theme.palette.text.primary,
-          legendTextSize: 14,
-          format: (value) => `$${value}`,
-        }}
-        enablePointLabel
-        pointLabel="y"
-        pointLabelYOffset={-12}
-        pointSize={6}
-        pointBorderWidth={1}
-        // pointBorderColor={{ from: 'color', modifiers: [['darker', 0.7]] }}
-        pointColor={theme.palette.primary.main}
-        // pointBorderColor={theme.palette.secondary.main}
-        colors={[theme.palette.primary.light]}
-        theme={{
-          points: {
-            dot: {
-              ...classes.customPoint, // Added for improved style
-              border: '1px solid ' + theme.palette.secondary.main,
-            },
-            tooltip: {
-              container: {
-                borderRadius: theme.shape.borderRadius,
-              },
-            },
-          },
-          grid: {
-            line: {
-              stroke: theme.palette.divider,
-              strokeWidth: 1,
-              strokeDasharray: '4 4',
-            },
-          },
-        }}
-        lineWidth={3}
-        curve="monotoneX"
-        useMesh={true}
-        data={[
-          {
-            id: 'Dataset',
-            data: averagedData?.map((d) => ({
-              x: new Date(d.x),
-              y: parseFloat(d.y),
-            })),
-          },
-        ]}
-        // data={[
-        //   {
-        //     id: 'Dataset',
-        //     data: averagedData.map((d) => ({
-        //       x: new Date(d.x).getTime(),
-        //       y: parseFloat(d.y),
-        //     })),
-        //   },
-        // ]}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => setIsZoomed(!isZoomed)}
-        tooltip={({ point }) => <CustomTooltip point={point} />}
-        sliceTooltip={({ slice }) => {
-          const point = slice.points.find(
-            (p) => p.id === 'Dataset' && p.data.x === lastData.x
-          );
-          if (point) {
-            return <CustomTooltip point={point} />;
-          }
-          return null;
-        }}
-      />
-      <Tooltip
-        title={`Time: ${
-          hoveredData
-            ? new Date(hoveredData.x).toLocaleString()
-            : new Date(lastData.x).toLocaleString()
-        }`}
-        arrow
-      >
-        <Typography className={classes.xAxisLabel}>
-          {hoveredData
-            ? new Date(hoveredData.x).toLocaleString()
-            : latestData?.x}
-        </Typography>
-      </Tooltip>
-      <Tooltip
-        title={`Value: $${hoveredData ? hoveredData.y : latestData?.y}`}
-        arrow
-      >
-        <Typography className={classes.yAxisLabel}>
-          {`$${hoveredData ? hoveredData.y : latestData?.y}`}
-        </Typography>
-      </Tooltip>
-    </div>
+    <ChartErrorBoundary>
+      <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}>
+        <ResponsiveLine {...chartProps} />
+      </div>
+    </ChartErrorBoundary>
   );
 };
 

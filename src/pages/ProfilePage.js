@@ -18,7 +18,6 @@ import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
 import { useCombinedContext } from '../context/CombinedProvider';
-import { useCollectionStore } from '../context/hooks/collection';
 import {
   AvatarStyled,
   TypographyStyled,
@@ -26,11 +25,37 @@ import {
   ButtonStyled,
 } from './StyledComponents';
 import ProfileForm from '../components/forms/ProfileForm';
+import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
+
+const CustomButton = styled(Button)({
+  margin: '10px', // Add margin around each button
+  width: '100%', // Make all buttons take full width of their parent
+  padding: '10px 0', // Add vertical padding
+  fontSize: '16px', // Set a consistent font size
+  // Any other styling you want to apply to all buttons
+});
+
+const ButtonsContainer = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  margin: '10px 0',
+  // Add additional styles as needed
+});
+
+const ProfileFormContainer = styled(Box)({
+  marginTop: '20px',
+  padding: '20px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Example shadow
+  borderRadius: '8px',
+  // Add additional styles as needed
+});
 
 const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();
   const { user, updateUser } = useUserContext();
-  const [cookies] = useCookies(['userCookie']);
+  const [cookies] = useCookies(['user']);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     message: '',
@@ -50,8 +75,8 @@ const ProfilePage = () => {
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };
-  const userId = user?.userID;
-  // console.log('USER ID:', userId);
+  const userId = user?.id;
+  console.log('USER ID:', userId);
   // console.log('USER:', user);
   const handleSaveChanges = useCallback(
     (data) => {
@@ -82,29 +107,9 @@ const ProfilePage = () => {
   };
 
   const handleTriggerCronJob = () => {
-    // if (userId) {
-    //   handleCronRequest(userId);
-    //   console.log('TRIGGERING CRON JOB');
-    // }
-    if (userId && listOfMonitoredCards && retrievedListOfMonitoredCards) {
-      handleSendAllCardsInCollections(
-        userId,
-        listOfMonitoredCards,
-        retrievedListOfMonitoredCards
-      );
+    if (userId && listOfMonitoredCards) {
+      handleSendAllCardsInCollections(userId, listOfMonitoredCards);
       console.log('SENDING ALL CARDS IN COLLECTIONS');
-      openSnackbar('Triggered the cron job.');
-    } else if (
-      userId &&
-      listOfMonitoredCards &&
-      !retrievedListOfMonitoredCards
-    ) {
-      console.log('RETRIEVING LIST OF MONITORED CARDS');
-      handleSendAllCardsInCollections(
-        userId,
-        listOfMonitoredCards,
-        handleRetreiveListOfMonitoredCards()
-      );
       openSnackbar('Triggered the cron job.');
     }
   };
@@ -128,52 +133,57 @@ const ProfilePage = () => {
         <IconButtonStyled>
           <EditIcon />
         </IconButtonStyled>
-        <ButtonStyled
+      </Box>
+
+      <ButtonsContainer>
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleSendMessage}
         >
           Send Message to Server
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleRequestCollectionDataFunction}
         >
           Request Collection Data
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleRequestChartDataFunction}
         >
           Request Chart Data
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleTriggerCronJob}
         >
           Trigger Cron Job
-        </ButtonStyled>
-        <ButtonStyled
+        </CustomButton>
+        <CustomButton
           variant="contained"
           color="secondary"
           onClick={handleStopCronJob}
         >
           Stop Cron Job
-        </ButtonStyled>
-      </Box>
-      <Box mt={3}>
+        </CustomButton>
+      </ButtonsContainer>
+
+      <ProfileFormContainer>
         <ProfileForm
           {...user}
           userName={cookies.userCookie?.username}
           onSave={handleSaveChanges}
         />
-      </Box>
+      </ProfileFormContainer>
+
       <UserStats />
       <ThemeToggleButton />
       <Snackbar

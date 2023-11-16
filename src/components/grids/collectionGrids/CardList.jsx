@@ -15,11 +15,11 @@ import {
   Button,
   TableHead,
 } from '@mui/material';
-import { useCollectionStore } from '../../../context/hooks/collection';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import TablePaginationActions from './TablePaginationActions';
 import Logger from './Logger';
 import PropTypes from 'prop-types';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 // Instantiate logger outside of the component
 const cardLogger = new Logger([

@@ -1,220 +1,135 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
-  DialogContent,
   DialogTitle,
-  Grid,
+  DialogContent,
   Snackbar,
-  List,
-  ListItem,
-  ButtonBase,
-  ListItemText,
-  Divider,
-  Typography,
+  Alert,
 } from '@mui/material';
-import CardMediaSection from '../media/CardMediaSection';
-import CardDetailsContainer from './cardModal/CardDetailsContainer';
+import { useStyles } from './modalStyles';
+import useAppContext from '../../context/hooks/useAppContext';
+import useSnackbar from '../../context/hooks/useSnackBar';
+import CardMediaAndDetails from '../media/CardMediaAndDetails';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
-import { CartContext } from '../../context/CartContext/CartContext';
-import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
-import { makeStyles } from '@mui/styles';
-import { useCollectionStore } from '../../context/hooks/collection';
 
-const useStyles = makeStyles((theme) => ({
-  actionButtons: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '1.5rem',
-  },
-  media: {
-    objectFit: 'cover',
-    borderRadius: '4px',
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-  },
-  details: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.5rem',
-    marginBottom: '1.5rem',
-  },
-  dialogTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    color: theme.palette.primary.dark,
-  },
-  dialogContent: {
-    padding: '2rem',
-  },
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2),
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    marginBottom: theme.spacing(2),
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  listItemText: {
-    flex: 1,
-    textAlign: 'left',
-    marginLeft: theme.spacing(3),
-  },
-}));
-
-const GenericCardModal = ({ open, onClose, card, cardInfo, context }) => {
+const GenericCardModal = ({
+  open,
+  card,
+  context,
+  closeModal,
+  setModalOpen,
+}) => {
   const classes = useStyles();
-  const deckContext = useContext(DeckContext);
-  const cartContext = useContext(CartContext);
-  const collectionContext = useContext(CollectionContext);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [contextProps, isContextAvailable] = useAppContext(context);
+  const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
+  // const [isOpen, setIsOpen] = useState(false);
+  const [hasLoggedCard, setHasLoggedCard] = useState(false);
 
-  if (!collectionContext) {
-    console.error("The component isn't wrapped with CollectionProvider");
-    return null;
+  if (!isContextAvailable) {
+    handleSnackbar(
+      `The component isn't wrapped with the ${context}Provider`,
+      'error'
+    );
+    console.error(`The component isn't wrapped with the ${context}Provider`);
+    return null; // Consider rendering an error boundary or user-friendly error message instead.
   }
 
-  const contextProps =
-    {
-      Deck: deckContext,
-      Cart: cartContext,
-      Store: cartContext,
-      Collection: collectionContext,
-    }[context] || {};
-
-  const {
-    openChooseCollectionDialog,
-    setOpenChooseCollectionDialog,
-    allCollections,
-    fetchAllCollectionsForUser,
-    setSelectedCollection,
-  } = contextProps;
-  const handleSelectCollection = useCallback(
-    (collectionId) => {
-      const foundCollection = allCollections.find(
-        (collection) => collection._id === collectionId
-      );
-
-      if (foundCollection) {
-        setSelectedCollection(foundCollection);
-        setOpenChooseCollectionDialog(false);
-        setSnackbarMessage('Collection selected successfully!');
-        setOpenSnackbar(true);
-      } else {
-        setSnackbarMessage('Collection not found!');
-        setOpenSnackbar(true);
-      }
-    },
-    [allCollections, setSelectedCollection]
-  );
-
-  const handleClose = (event, reason) => {
-    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-      setSnackbarMessage(`${context} successfully updated`);
-      setOpenSnackbar(true);
-      onClose();
-    }
-  };
-
-  // console.log('openChooseCollectionDialog', openChooseCollectionDialog);
+  const requiresDoubleButtons = context === 'Deck' || context === 'Collection';
 
   // useEffect(() => {
-  //   if (openChooseCollectionDialog === true) {
-  //     // console.log('Fetching collections...', openChooseCollectionDialog);
-  //     fetchAllCollectionsForUser();
+  //   setIsOpen(open);
+  // }, [open]);
+
+  useEffect(() => {
+    if (open && card && !hasLoggedCard) {
+      console.log('Modal opened with card:', card);
+      handleSnackbar('Card details loaded successfully.', 'success');
+      setHasLoggedCard(true);
+    }
+  }, [open, card, hasLoggedCard, handleSnackbar]);
+
+  // useEffect(() => {
+  //   if (!open && hasLoggedCard) {
+  //     setHasLoggedCard(false);
   //   }
-  // }, [openChooseCollectionDialog]);
-  // console.log('open --------> ', open);
+  // }, [open, hasLoggedCard]);
+  useEffect(() => {
+    if (!open) {
+      setHasLoggedCard(false); // Reset hasLoggedCard when modal closes
+    }
+  }, [open]); // Removed hasLoggedCard from dependency array
+
+  useEffect(() => {
+    if (context) {
+      // console.log('CONTEXT:', context);
+    }
+  }, [context]); // Removed hasLoggedCard from dependency array
+  useEffect(() => {
+    if (contextProps) {
+      // console.log('CONTEXT_PROPS:', contextProps);
+    }
+  }, [contextProps]); // Removed hasLoggedCard from dependency array
+
+  // Example function to be called when an action is successful
+  const handleActionSuccess = () => {
+    handleSnackbar('Action was successful!', 'success');
+  };
+
+  // Example function to be called when an action fails
+  const handleActionFailure = (error) => {
+    console.error('Action failed:', error);
+    handleSnackbar('Action failed. Please try again.', 'error');
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog
+      open={open} // Use 'open' prop directly
+      onClose={() => {
+        closeModal(); // Call closeModal directly
+      }}
+      // open={isOpen}
+      // onClose={() => {
+      //   setIsOpen(false);
+      //   if (closeModal) closeModal();
+      // }}
+      fullWidth
+      maxWidth="md"
+    >
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <CardMediaSection
+        <CardMediaAndDetails card={card} />
+        {requiresDoubleButtons && (
+          <>
+            <GenericActionButtons
               card={card}
-              imgUrl={card?.card_images[0].image_url}
+              context="Deck"
+              onSuccess={handleActionSuccess}
+              onFailure={handleActionFailure}
+              setModalOpen={setModalOpen}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CardDetailsContainer card={card} />
-          </Grid>
-        </Grid>
+            <GenericActionButtons
+              card={card}
+              context="Collection"
+              onSuccess={handleActionSuccess}
+              onFailure={handleActionFailure}
+              setModalOpen={setModalOpen}
+            />
+          </>
+        )}
       </DialogContent>
-
-      {['Deck', 'Cart', 'Store', 'Collection'].includes(context) && (
-        <>
-          <GenericActionButtons
-            card={card}
-            cardInfo={cardInfo}
-            context={context}
-            component={'GenericCardModal'}
-            label={`In ${context}`}
-            productQuantity={contextProps.productQuantity}
-          />
-          {context === 'Deck' && (
-            <>
-              <GenericActionButtons
-                card={card}
-                cardInfo={cardInfo}
-                context={'Collection'}
-                component={'GenericCardModal'}
-                label={'In Collection'}
-                productQuantity={
-                  contextProps.productQuantity || contextProps.totalQuantity
-                }
-              />
-              <button onClick={() => setOpenChooseCollectionDialog(true)}>
-                Open Dialog
-              </button>
-            </>
-          )}
-        </>
-      )}
-      {openChooseCollectionDialog && (
-        <Dialog
-          open={open}
-          onClose={() => setOpenChooseCollectionDialog(false)}
-        >
-          <DialogTitle>Select a Collection</DialogTitle>
-
-          <List className={classes.list}>
-            {allCollections.map((collection) => (
-              <React.Fragment key={collection._id}>
-                <ListItem className={classes.listItem}>
-                  <ButtonBase
-                    sx={{ width: '100%' }}
-                    onClick={() => handleSelectCollection(collection._id)}
-                  >
-                    <ListItemText
-                      primary={collection.name}
-                      className={classes.listItemText}
-                    />
-                  </ButtonBase>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
-          </List>
-
-          <Snackbar
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            open={openSnackbar}
-            onClose={() => setOpenSnackbar(false)}
-            message={snackbarMessage}
-            autoHideDuration={3000}
-          />
-        </Dialog>
-      )}
       <Snackbar
-        open={openSnackbar}
+        open={snackbar.open}
         autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        message={snackbarMessage}
-      />
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };

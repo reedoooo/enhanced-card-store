@@ -10,8 +10,8 @@ import {
 import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
-import { useCollectionStore } from '../../../context/hooks/collection';
 import LoadingIndicator from '../../indicators/LoadingIndicator';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
