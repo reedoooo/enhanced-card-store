@@ -25,13 +25,13 @@ import { createTheme } from '@mui/material';
 const root = document.getElementById('root');
 
 function Main() {
-  // const { theme } = useMode();
-  const darkTheme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  });
-  const theme = darkTheme;
+  const { theme } = useMode();
+  // const darkTheme = createTheme({
+  //   palette: {
+  //     mode: 'dark',
+  //   },
+  // });
+  // const theme = darkTheme;
   return (
     <ErrorBoundary>
       <UtilityProvider>

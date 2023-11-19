@@ -1,25 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Grid, Paper } from '@mui/material';
-import PortfolioChart from '../components/other/PortfolioChart';
-import TimeRangeSelector from '../components/other/TimeRangeSelector';
-import CollectionStatisticsSelector from '../components/other/CollectionStatisticsSelector';
-import UpdateStatusBox from '../components/other/UpdateStatusBox';
+import PortfolioChart from '../components/chart/PortfolioChart';
+import TimeRangeSelector from '../components/other/InputComponents/TimeRangeSelector';
+import CollectionStatisticsSelector, {
+  calculateStatistics,
+} from '../components/other/InputComponents/CollectionStatisticsSelector';
+import UpdateStatusBox from '../components/other/InputComponents/UpdateStatusBox';
 import { useTheme } from '@mui/material/styles';
 import { useSocketContext } from '../context/SocketProvider';
 import { useChartContext } from '../context/ChartContext/ChartContext';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
 import CollectionValueTracker from '../components/other/CollectionValueTracker';
-const paperStyle = {
-  elevation: 3,
-  borderRadius: 2,
-  p: 2,
-  height: '25vh', // Set the container height to 25vh
-  display: 'flex',
-  flexDirection: 'row', // Change to 'row' to fit selectors horizontally
-  justifyContent: 'space-between', // Distribute space evenly between selectors
-  alignItems: 'center', // Align items vertically in the center
-  gap: 2, // Set a gap between the selectors
-};
+import { useCombinedContext } from '../context/CombinedProvider';
+import UpdateStatusBox2 from '../components/other/InputComponents/UpdateStatusBox2';
 const paperChartStyle = {
   elevation: 3,
   borderRadius: 2,
@@ -41,55 +34,70 @@ const selectorStyle = {
 
 const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
   const theme = useTheme();
-  const selectorStyle = {
-    // width: '100%',
-    // maxWidth: '100vw',
-    // maxWidth: '250px', // Match the width of the update box if needed
-    mb: theme.spacing(2),
-  };
-
-  const { socket } = useSocketContext();
+  // const { socket } = useSocketContext();
+  const { socket } = useCombinedContext();
   const { timeRange } = useChartContext();
   const { allCollections, selectedCollection } = useCollectionStore();
-  const data = allCollections.map((collection) => {
-    return {
-      name: collection?.name,
-      data: collection?.chartData?.allXYValues,
-    };
-  });
+  const data = allCollections.map((collection) => ({
+    data: collection?.currentChartDataSets2,
+  }));
+  const dataForStats = data[0];
+  const stats = useMemo(
+    () => calculateStatistics(dataForStats, timeRange),
+    [dataForStats, timeRange]
+  );
+
+  const containerStyle = {
+    maxWidth: '100%',
+    // margin: 'auto',
+    padding: theme.spacing(2),
+    overflow: 'hidden',
+  };
+
+  const paperStyle = {
+    padding: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 'auto',
+    boxShadow: theme.shadows[3],
+    borderRadius: theme.shape.borderRadius,
+  };
+
+  const gridItemStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  };
+
   return (
-    <Box
-      sx={{
-        maxWidth: '100vw',
-        margin: 'auto',
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={containerStyle}>
       {/* Updaters Row */}
-      <Grid item xs={12} container spacing={1}>
-        <Grid item xs={4}>
-          {/* <UpdateStatusBox socket={socket} /> */}
+      {/* <Grid container spacing={2} marginBottom={2}> */}
+      <Grid container spacing={2} marginBottom={2}>
+        <Grid item xs={4} md={4} sx={gridItemStyle}>
+          <UpdateStatusBox2 socket={socket} />
         </Grid>
-        <Grid item xs={4}>
-          {/* <TimeRangeSelector sx={selectorStyle} data={data} /> */}
+        <Grid item xs={4} md={4} sx={gridItemStyle}>
+          {/* <TimeRangeSelector data={data} /> */}
         </Grid>
-        <Grid item xs={4}>
-          <CollectionValueTracker data={selectedCollection} />
+        <Grid item xs={4} md={4} sx={gridItemStyle}>
+          <CollectionValueTracker
+            data={selectedCollection}
+            filteredData={data}
+            stats={stats}
+          />
         </Grid>
       </Grid>
 
       {/* Main Grid Container */}
-      <Grid container spacing={1} direction="column">
+      <Grid container spacing={2}>
         {/* Portfolio Chart Row */}
         <Grid item xs={12}>
-          <Paper
-            sx={{
-              p: 2,
-              height: 'auto', // Adjust height as needed
-              maxWidth: '100vw',
-              marginBottom: '8px', // Space between chart and selectors
-            }}
-          >
+          <Paper sx={paperStyle}>
             <PortfolioChart
               selectedCards={selectedCards}
               removeCard={removeCard}
@@ -98,7 +106,7 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
         </Grid>
 
         {/* Selectors Row */}
-        <Grid item xs={12} container spacing={1}>
+        <Grid container spacing={2} marginBottom={2}>
           <Grid item xs={4}>
             <UpdateStatusBox socket={socket} />
           </Grid>
@@ -110,6 +118,7 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
               sx={selectorStyle}
               timeRange={timeRange}
               data={data}
+              stats={stats}
             />{' '}
           </Grid>
         </Grid>

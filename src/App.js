@@ -113,11 +113,11 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
         setLastCronJobTriggerTime(currentTime);
         if (userId && listOfMonitoredCards) {
           console.log('RETRIEVING LIST OF MONITORED CARDS (paused)');
-          // handleSendAllCardsInCollections(
-          //   userId,
-          //   listOfMonitoredCards
-          //   // handleRetrieveListOfMonitoredCards()
-          // );
+          handleSendAllCardsInCollections(
+            userId,
+            listOfMonitoredCards
+            // handleRetrieveListOfMonitoredCards()
+          );
           console.log('Triggered the cron job.');
         }
       }
@@ -140,7 +140,7 @@ const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
 const App = () => {
   const { user } = useUserContext();
   const { isLoading, setIsContextLoading } = useUtilityContext();
-  const { fetchAllCollectionsForUser } = useCollectionStore();
+  const { fetchAllCollectionsForUser, allCollections } = useCollectionStore();
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
 
   useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
@@ -174,6 +174,7 @@ const App = () => {
       if (user && isMounted) {
         try {
           // const response = fet
+          await fetchAllCollectionsForUser(user.userID);
           if (isMounted) {
             console.log('Fetched collections because none were present.');
             // Update state only if the component is still mounted
@@ -192,7 +193,7 @@ const App = () => {
     return () => {
       isMounted = false;
     };
-  }, [user, fetchAllCollectionsForUser]);
+  }, [user, fetchAllCollectionsForUser, allCollections]);
 
   return (
     <>

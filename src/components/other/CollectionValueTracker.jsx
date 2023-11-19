@@ -1,70 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, Box, useTheme } from '@mui/material';
-import { useCombinedContext } from '../../context/CombinedProvider';
+import React from 'react';
+import { Typography, Box, useTheme, Grid } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { styled } from '@mui/styles';
 
-const CollectionValueTracker = ({ data }) => {
+const StatBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  boxShadow: theme.shadows[2],
+}));
+
+const StatItem = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(1),
+}));
+
+const CollectionValueTracker = ({ stats }) => {
   const theme = useTheme();
-  const { allCardPrices } = useCombinedContext();
-  const { totalCost } = useCollectionStore();
-  const [totalValue, setTotalValue] = useState(0);
-  const [changeOverTime, setChangeOverTime] = useState(0);
-  console.log('allCardPrices', data.allCardPrices);
-  // useEffect(() => {
-  //   const allPrices = data?.cards?.map((card) => card?.price);
-  //   console.log('[1]allPrices', allPrices);
-  //   const newValue = data?cards?.reduce((acc, card) => acc + (card?.price, 0));
-  //   console.log('[2]newValue', newValue);
-  //   const change = data?cards?.reduce(
-  //     (acc, card) => acc + (card?.latestPrice?.num - card?.lastSavedPrice?.num),
-  //   	0
-  //   );
-  // 	console.log('[3]change', change);
+  const {
+    totalCost,
+    selectedCollection,
+    getTotalPrice,
+    getTotalPrice2,
+    totalPrice,
+    allCardPrices,
+  } = useCollectionStore();
+  const twentyFourHourChange = stats.twentyFourHourAverage;
+  const newTotal = getTotalPrice();
 
-  //   setTotalValue(newValue);
-  //   setChangeOverTime(change);
-  // }, [data]);
+  console.log('newTotal:', newTotal);
 
-  // useEffect(() => {
-  //   // Update total value based on allCardPrices
-  //   if (Array.isArray(allCardPrices) && allCardPrices?.length > 0) {
-  //     const total = allCardPrices
-  //       .map((price) => parseFloat(price)) // Convert each price to a number
-  //       .filter((price) => !isNaN(price)) // Filter out non-numeric values
-  //       .reduce((acc, price) => acc + price, 0); // Sum up all prices
-  //     console.log('total', total);
-  //     setTotalValue(total);
-  //   }
-  // }, [allCardPrices]);
+  const statsArray = [
+    {
+      label: 'Total Collection Value',
+      value: `$${newTotal}`,
+    },
+    {
+      label: '24 Hour Change',
+      value: `${twentyFourHourChange?.percentageChange}`,
+      isIncrease: twentyFourHourChange?.priceIncreased,
+    },
+    // Additional stats
+    { label: 'Last Price', value: `${twentyFourHourChange?.lastPrice}` },
+    { label: 'Average Price', value: `${twentyFourHourChange?.averagePrice}` },
+    { label: 'Volume', value: `${twentyFourHourChange?.volume}` },
+    { label: 'Volatility', value: `${twentyFourHourChange?.volatility}` },
+    { label: 'High Point', value: `${twentyFourHourChange?.highPoint}` },
+    { label: 'Low Point', value: `${twentyFourHourChange?.lowPoint}` },
+  ];
 
-  const trend = changeOverTime > 0 ? 'increased' : 'decreased';
-  const trendColor = changeOverTime > 0 ? 'success.main' : 'error.main';
-
-  console.log('totalValue', totalValue);
   return (
-    <Box
-      sx={{
-        p: 2,
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: theme.shape.borderRadius,
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}
-      >
-        Total Collection Value: ${totalCost?.toFixed(2)}
-      </Typography>
-      <Typography
-        variant="subtitle1"
-        sx={{
-          fontWeight: 'medium',
-          color: theme.palette[trendColor],
-        }}
-      >
-        Value {trend} in the last 24h: ${Math.abs(changeOverTime)?.toFixed(2)}
-      </Typography>
-    </Box>
+    <StatBox>
+      {statsArray.map((stat, index) => {
+        const IconComponent =
+          stat?.isIncrease !== undefined
+            ? stat?.isIncrease
+              ? ArrowUpwardIcon
+              : ArrowDownwardIcon
+            : null;
+        const iconColor = stat?.isIncrease
+          ? theme.palette.success.main
+          : theme.palette.error.main;
+
+        return (
+          <StatItem key={index}>
+            {IconComponent && (
+              <IconComponent sx={{ color: iconColor, marginRight: 1 }} />
+            )}
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 'medium', color: theme.palette.text.primary }}
+            >
+              {stat?.label}: {stat?.value}
+            </Typography>
+          </StatItem>
+        );
+      })}
+    </StatBox>
   );
 };
 

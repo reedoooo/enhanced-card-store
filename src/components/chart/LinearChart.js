@@ -95,26 +95,33 @@ const LinearChart = ({
   const theme = useTheme();
   const [isZoomed, setIsZoomed] = useState(false);
   const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
-
-  // const filteredData = useMemo(
-  //   () => getFilteredData(filteredChartData, timeRange),
-  //   [filteredChartData, timeRange]
-  // );
-  // console.log('filteredData', filteredData);
-
-  // const dataForChart = useMemo(() => {
-  //   return datesTimesValues.dates.map((date, index) => ({
-  //     x: formatDateToString(
-  //       new Date(`${date} ${datesTimesValues.times[index]}`)
-  //     ),
-  //     y: datesTimesValues.values[index],
-  //   }));
-  // }, [datesTimesValues]);
-  // CustomLogger('LinearChart', 'info', {
-  //   filteredChartData,
-  //   datesTimesValues,
-  // });
-  const tickValues = useMemo(() => getTickValues(timeRange), [timeRange]);
+  const [format, setFormat] = useState('0,0');
+  // Calculate tickValues and xFormat based on timeRange
+  const { tickValues, xFormat } = useMemo(() => {
+    let format, ticks;
+    switch (timeRange) {
+      case '2 hours':
+        format = '%H:%M';
+        ticks = 'every 15 minutes';
+        break;
+      case '24 hours':
+        format = '%H:%M';
+        ticks = 'every 1 hour';
+        break;
+      case '7 days':
+        format = '%b %d';
+        ticks = 'every 1 day';
+        break;
+      case '1 month':
+        format = '%b %d';
+        ticks = 'every 3 days';
+        break;
+      default:
+        format = '%b %d';
+        ticks = 'every 1 day';
+    }
+    return { tickValues: ticks, xFormat: `time:${format}` };
+  }, [timeRange]);
 
   if (
     !Array.isArray(filteredChartData) ||
@@ -126,86 +133,6 @@ const LinearChart = ({
       </Typography>
     );
   }
-  // const classes = useStyles();
-  // const theme = useTheme();
-
-  // // Hooks should be at the top level of your component
-  // const [isZoomed, setIsZoomed] = useState(false);
-  // const filteredData = useMemo(
-  //   () => getFilteredData(filteredChartData, timeRange),
-  //   [filteredChartData, timeRange]
-  // );
-  // // const averagedData = useMemo(
-  // //   () => getAveragedData(filteredData),
-  // //   [filteredData]
-  // // );
-  // const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
-
-  // if (!Array.isArray(filteredChartData)) {
-  //   return <Typography variant="body1">No valid data available</Typography>;
-  // }
-
-  // if (
-  //   !datesTimesValues ||
-  //   !datesTimesValues.dates ||
-  //   !datesTimesValues.times ||
-  //   !datesTimesValues.values
-  // ) {
-  //   console.error('Invalid averaged chart data:', datesTimesValues);
-  //   return <Typography variant="body1">Invalid data for the chart</Typography>;
-  // }
-
-  // const dataForChart = useMemo(() => {
-  //   return [
-  //     {
-  //       id: 'Averaged Data',
-  //       data: datesTimesValues.dates.map((date, index) => ({
-  //         x: formatDateToString(
-  //           new Date(`${date} ${datesTimesValues.times[index]}`)
-  //         ),
-  //         y: datesTimesValues.values[index],
-  //       })),
-  //     },
-  //   ];
-  // }, [datesTimesValues]);
-
-  // if (dataForChart[0].data.length === 0) {
-  //   return <Typography variant="body1">No valid data available</Typography>;
-  // }
-  // const tickValues = useMemo(() => getTickValues(timeRange), [timeRange]);
-
-  // if (
-  //   !Array.isArray(filteredChartData) ||
-  //   filteredChartData.some((d) => !d.x || !d.y)
-  // ) {
-  //   return <Typography variant="body1">No valid data available</Typography>;
-  // }
-  // // logReadableChartInfo(
-  // //   dataForChart,
-  // //   datesTimesValues,
-  // //   filteredChartData,
-  // //   latestData
-  // // );
-  // try {
-  //   const filteredData = useMemo(
-  //     () => getFilteredData(filteredChartData, timeRange),
-  //     [filteredChartData, timeRange]
-  //   );
-  //   getAveragedData(filteredData);
-  // } catch (error) {
-  //   console.error('Error processing data for chart:', error);
-  // } // console.log('averagedData', averagedData);
-
-  // const lastData = useMemo(() => {
-  //   if (filteredChartData && filteredChartData.length) {
-  //     return {
-  //       x: filteredChartData[filteredChartData.length - 1].x,
-  //       y: filteredChartData[filteredChartData.length - 1].y,
-  //     };
-  //   }
-  //   return {};
-  // }, [filteredChartData]);
-
   const chartProps = {
     margin: { top: 50, right: 110, bottom: 50, left: 60 },
     // data: [{ id: 'Data', data: dataForChart }],
@@ -215,20 +142,26 @@ const LinearChart = ({
     motionDamping: 15,
     xScale: {
       type: 'time',
-      format: '%Y-%m-%d %H:%M',
+      // format: '%Y-%m-%d %H:%M:%S',
+      format: '%Y-%m-%dT%H:%M:%S.%LZ',
       useUTC: false,
-      precision: 'minute',
+      precision: 'second',
     },
-    yScale: { type: 'linear', min: 'auto', max: 'auto' },
+    xFormat: 'time:%Y-%m-%d %H:%M:%S',
     axisBottom: {
       tickRotation: 0,
       legendOffset: -12,
       legend: 'Time',
       tickPadding: 10,
       tickSize: 10,
-      format: '%b %d',
+      // format: '%b %d',
+      // tickValues: 'every 2 days',
+      format: xFormat,
       tickValues: tickValues,
+      // tickValues: tickValues,
     },
+    yScale: { type: 'linear', min: 'auto', max: 'auto' },
+
     axisLeft: {
       orient: 'left',
       legend: 'Value ($)',
@@ -250,12 +183,12 @@ const LinearChart = ({
     onMouseLeave: handleMouseLeave,
     onClick: () => setIsZoomed(!isZoomed),
     tooltip: CustomTooltip,
-    sliceTooltip: ({ slice }) => {
-      const point = slice.points.find(
-        (p) => p.id === 'Data' && p.data.x === latestData.x
-      );
-      return point ? <CustomTooltip point={point} /> : null;
-    },
+    // sliceTooltip: ({ slice }) => {
+    //   const point = slice.points.find(
+    //     (p) => p.id === 'Data' && p.data.x === latestData.x
+    //   );
+    //   return point ? <CustomTooltip point={point} /> : null;
+    // },
   };
 
   return (

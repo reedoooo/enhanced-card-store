@@ -1,3 +1,4 @@
+import { grey } from '@mui/material/colors';
 import { tokens } from './tokens';
 
 export const themeSettings = (mode) => {
@@ -30,7 +31,8 @@ export const themeSettings = (mode) => {
         light: colors.grey[100],
       },
       background: {
-        default: mode === 'dark' ? colors.primary[500] : '#fcfcfc',
+        default: mode === 'dark' ? '#121212' : '#ffffff',
+        paper: mode === 'dark' ? colors.grey[300] : '#ffffff',
       },
       error: {
         main: colors.redAccent[500],

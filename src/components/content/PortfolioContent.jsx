@@ -12,7 +12,7 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        p: 2,
+        // p: 2,
       }}
     >
       <PortfolioHeader error={error} />

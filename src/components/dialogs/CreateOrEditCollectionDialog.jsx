@@ -26,6 +26,7 @@ const CreateOrEditCollectionDialog = ({
     addOneToCollection,
     removeCollection,
     selectedCollection,
+    updateCollectionDetails,
   } = useCollectionStore();
   const [cookies] = useCookies(['user']);
   const userId = cookies.user?.id;
@@ -35,6 +36,7 @@ const CreateOrEditCollectionDialog = ({
       name: editedName,
       description: editedDescription,
       userId: userId,
+      tag: 'new',
     };
 
     if (isNew) {
@@ -46,7 +48,12 @@ const CreateOrEditCollectionDialog = ({
         userId
       );
     } else if (editedName && editedDescription) {
-      addOneToCollection(newCollectionInfo);
+      // addOneToCollection(newCollectionInfo);
+      updateCollectionDetails(
+        newCollectionInfo,
+        userId,
+        selectedCollection._id
+      );
     } else {
       console.error('No card to add to the collection');
     }

@@ -12,7 +12,7 @@ import { useCardStore } from '../../context/CardContext/CardStore';
 import { useTheme } from '@emotion/react';
 import SearchForm from './SearchForm';
 import DeckSearchCardGrid from '../grids/searchResultGrids/DeckSearchCardGrid';
-import CustomPagination from '../other/CustomPagination';
+import CustomPagination from '../reusable/CustomPagination';
 
 const DeckSearch = ({ userDecks }) => {
   const [searchTerm, setSearchTerm] = useState('');

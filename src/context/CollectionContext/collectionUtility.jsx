@@ -387,8 +387,11 @@ const defaultContextValue = {
   setUpdatedPricesFromCombinedContext: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setOpenChooseCollectionDialog: () => {},
+  updateCollection: () => {},
   calculateTotalPrice: () => {},
   getTotalCost: () => {},
+  getNewTotalPrice: () => {},
+  getTotalPrice: () => {},
   createUserCollection: () => {},
   removeCollection: () => {},
   fetchAllCollectionsForUser: () => {},
@@ -613,40 +616,119 @@ function getCurrentChartDataSets(chartData) {
   return currentChartDataSets;
 }
 
-const getPriceChange = (collectionPriceHistory) => {
-  if (
-    !Array.isArray(collectionPriceHistory) ||
-    collectionPriceHistory.length === 0
-  ) {
-    console.warn('Invalid or empty price history', collectionPriceHistory);
-    return 'n/a';
+const calculateCollectionValue = (cards) => {
+  if (!cards?.cards && !Array.isArray(cards) && !cards?.name) {
+    console.warn('Invalid or missing collection', cards);
+    return 0;
+  }
+  if (cards?.tag === 'new') {
+    return 0;
+  }
+  if (cards?.cards && Array.isArray(cards?.cards)) {
+    return cards?.cards.reduce((totalValue, card) => {
+      const cardPrice = card?.price || 0;
+      const cardQuantity = card?.quantity || 0;
+      return totalValue + cardPrice * cardQuantity;
+    }, 0);
   }
 
-  const mostRecentPrice =
-    collectionPriceHistory[collectionPriceHistory.length - 1]?.num;
-  const currentDate = new Date();
-
-  // Get the first price from the last 24 hours
-  const firstPriceFromLastDay = collectionPriceHistory
-    .slice()
-    .reverse()
-    .find((priceHistory) => {
-      const historyDate = new Date(priceHistory.timestamp);
-      return currentDate - historyDate <= 24 * 60 * 60 * 1000; // less than 24 hours
-    })?.num;
-
-  if (mostRecentPrice && firstPriceFromLastDay) {
-    const priceChange =
-      ((mostRecentPrice - firstPriceFromLastDay) / firstPriceFromLastDay) * 100;
-    console.log(
-      `Price change over the last 24 hours is: ${priceChange.toFixed(2)}%`
-    );
-    return priceChange.toFixed(2);
-  } else {
-    console.error('Could not calculate price change due to missing data');
-    return null;
-  }
+  return cards.reduce((totalValue, card) => {
+    const cardPrice = card.price || 0;
+    const cardQuantity = card.quantity || 0;
+    return totalValue + cardPrice * cardQuantity;
+  }, 0);
 };
+
+// const getPriceChange = (collectionPriceHistory) => {
+//   if (
+//     !Array.isArray(collectionPriceHistory) ||
+//     collectionPriceHistory.length === 0
+//   ) {
+//     console.warn('Invalid or empty price history', collectionPriceHistory);
+//     return 'n/a';
+//   }
+
+//   const mostRecentPrice =
+//     collectionPriceHistory[collectionPriceHistory.length - 1]?.num;
+//   const currentDate = new Date();
+
+//   // Get the first price from the last 24 hours
+//   const firstPriceFromLastDay = collectionPriceHistory
+//     .slice()
+//     .reverse()
+//     .find((priceHistory) => {
+//       const historyDate = new Date(priceHistory.timestamp);
+//       return currentDate - historyDate <= 24 * 60 * 60 * 1000; // less than 24 hours
+//     })?.num;
+
+//   if (mostRecentPrice && firstPriceFromLastDay) {
+//     const priceChange =
+//       ((mostRecentPrice - firstPriceFromLastDay) / firstPriceFromLastDay) * 100;
+//     console.log(
+//       `Price change over the last 24 hours is: ${priceChange.toFixed(2)}%`
+//     );
+//     return priceChange.toFixed(2);
+//   } else {
+//     console.error('Could not calculate price change due to missing data');
+//     return null;
+//   }
+// };
+
+function getPriceChange(currentChartDataSets2) {
+  if (
+    !Array.isArray(currentChartDataSets2) ||
+    currentChartDataSets2.length === 0
+  ) {
+    console.warn('Invalid or empty chart data sets provided');
+    return [];
+  }
+
+  const sortedData = currentChartDataSets2
+    .filter((dataPoint) => dataPoint && dataPoint.x && dataPoint.y != null) // Filter out invalid data points
+    .sort((a, b) => new Date(a.x) - new Date(b.x));
+
+  if (sortedData.length === 0) {
+    console.error('No valid chart data points after filtering');
+    return [];
+  }
+
+  const latestDataPoint = sortedData[sortedData.length - 1];
+  const latestTime = new Date(latestDataPoint.x).getTime();
+  const twentyFourHoursAgo = latestTime - 24 * 60 * 60 * 1000;
+
+  let closestIndex = -1;
+  let closestTimeDifference = Number.MAX_SAFE_INTEGER;
+
+  for (let i = 0; i < sortedData.length - 1; i++) {
+    const time = new Date(sortedData[i].x).getTime();
+    const timeDifference = Math.abs(time - twentyFourHoursAgo);
+
+    if (timeDifference < closestTimeDifference) {
+      closestTimeDifference = timeDifference;
+      closestIndex = i;
+    }
+  }
+
+  if (closestIndex !== -1) {
+    const pastPrice = sortedData[closestIndex].y;
+    const priceChange = latestDataPoint.y - pastPrice;
+    const percentageChange = ((priceChange / pastPrice) * 100).toFixed(2);
+
+    return [
+      {
+        startDate: sortedData[closestIndex].x,
+        lowPoint: pastPrice.toFixed(2),
+        highPoint: latestDataPoint?.y?.toFixed(2),
+        endDate: latestDataPoint?.x,
+        priceChange: priceChange.toFixed(2),
+        percentageChange: `${percentageChange}%`,
+        priceIncreased: priceChange > 0,
+      },
+    ];
+  }
+
+  return [];
+}
 
 const getUpdatedChartData = (collection, newPrice) => {
   const newXYValue = {
@@ -713,7 +795,6 @@ const updateCardInCollection = (cards, cardToUpdate) => {
 };
 
 const getCardPrice = (collection) =>
-  console.log('CARD:', collection) ||
   parseFloat(collection?.cards?.card_prices?.[0]?.tcgplayer_price || 0);
 
 module.exports = {
@@ -749,4 +830,5 @@ module.exports = {
   updateCardInCollection,
   canMakeRequest,
   updateLastRequestTime,
+  calculateCollectionValue,
 };

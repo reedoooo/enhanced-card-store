@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
-import { useCombinedContext } from '../../context/CombinedProvider';
+import { useCombinedContext } from '../../../context/CombinedProvider';
 import { useCookies } from 'react-cookie';
 
 const UpdateStatusBox = ({ socket }) => {
@@ -36,7 +36,7 @@ const UpdateStatusBox = ({ socket }) => {
     if (socket) {
       socket.emit('STATUS_UPDATE_REQUEST', {
         message: 'Requesting status update...',
-        data: listOfSimulatedCards,
+        data: listOfMonitoredCards,
       });
     }
   };

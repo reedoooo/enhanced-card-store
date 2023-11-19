@@ -7,6 +7,7 @@
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import { useCallback, useMemo, useState } from 'react';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 export const getUniqueValidData = (currentChartData) => {
   if (!Array.isArray(currentChartData)) {
@@ -48,7 +49,16 @@ export const getUniqueValidData = (currentChartData) => {
       y: entry.y,
     }));
 };
+export const getFilteredData2 = (selectedCollection) => {
+  const filteredChartData2 = useMemo(() => {
+    // const { selectedCollection } = useCollectionStore();
+    const allXYValues2 = selectedCollection?.currentChartDataSets2;
+    // console.log('ALL XY VALUES:', allXYValues2);
+    return allXYValues2 ? getUniqueValidData(allXYValues2) : [];
+  }, [selectedCollection]);
 
+  return filteredChartData2;
+};
 // export const groupAndAverageData = (data, threshold = 600000) => {
 //   // 10 minutes in milliseconds
 //   if (!data || data.length === 0) return { dates: [], times: [], values: [] };
@@ -111,16 +121,16 @@ export const groupAndAverageData = (data, threshold = 600000) => {
   const clusters = [];
   let currentCluster = [data[0]];
 
-  console.log('Initial cluster with first data point: ', currentCluster);
+  // console.log('Initial cluster with first data point: ', currentCluster);
 
   for (let i = 1; i < data.length; i++) {
     const prevTime = new Date(data[i - 1].x).getTime();
     const currentTime = new Date(data[i].x).getTime();
     const timeDiff = currentTime - prevTime;
 
-    console.log(
-      `Time difference between points ${i - 1} and ${i}: ${timeDiff}ms`
-    );
+    // console.log(
+    //   `Time difference between points ${i - 1} and ${i}: ${timeDiff}ms`
+    // );
 
     if (timeDiff <= threshold) {
       currentCluster.push(data[i]);
@@ -130,7 +140,7 @@ export const groupAndAverageData = (data, threshold = 600000) => {
     }
   }
   clusters.push(currentCluster); // Push the last cluster
-  console.log('Final cluster: ', currentCluster);
+  // console.log('Final cluster: ', currentCluster);
 
   // Process each cluster to create the desired output format
   clusters.map((cluster) => {
@@ -149,7 +159,7 @@ export const groupAndAverageData = (data, threshold = 600000) => {
     };
   });
 
-  console.log('Processed clusters: ', clusters);
+  // console.log('Processed clusters: ', clusters);
   return clusters;
 };
 
@@ -173,10 +183,13 @@ export const getAveragedData = (data) => {
 export const getTickValues = (timeRange) => {
   console.log('timeRange: ', timeRange);
   const mapping = {
-    '15m': 'every 15 minutes',
-    '2h': 'every 2 hours',
-    '1d': 'every day',
-    '1w': 'every week',
+    600000: 'every 10 minutes',
+    900000: 'every 15 minutes',
+    3600000: 'every hour',
+    7200000: 'every 2 hours',
+    86400000: 'every day',
+    604800000: 'every week',
+    2592000000: 'every month',
   };
   return mapping[timeRange] || 'every day'; // Default to 'every week' if no match
 };
@@ -243,8 +256,8 @@ export const convertDataForNivo2 = (rawData2) => {
     return [];
   }
 
-  console.log('rawData2: ', rawData2);
-  console.log('rawData2.data: ', rawData2[0]);
+  // console.log('rawData2: ', rawData2);
+  // console.log('rawData2.data: ', rawData2[0]);
   // rawData is assumed to be an array of objects with 'label', 'x', and 'y' properties
   const nivoData = rawData2[0].map((dataPoint) => ({
     x: dataPoint.x, // x value is already an ISO date string

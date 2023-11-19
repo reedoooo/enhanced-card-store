@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Paper, Button } from '@mui/material';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
-import DeckButtonList from '../grids/deckBuilderGrids/DeckButtonList';
-import CardsGrid from '../grids/deckBuilderGrids/CardsGrid';
-import DeckEditPanel from './DeckEditPanel';
+import DeckButtonList from './deckBuilderGrids/DeckButtonList';
+import CardsGrid from './deckBuilderGrids/CardsGrid';
+import DeckEditPanel from '../other/DeckEditPanel';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({

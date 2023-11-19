@@ -9,25 +9,7 @@ import {
   ListItemText,
   Divider,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme) => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2),
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    marginBottom: theme.spacing(2),
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  listItemText: {
-    flex: 1,
-    textAlign: 'left',
-    marginLeft: theme.spacing(3),
-  },
-}));
+import { useStyles } from './dialogStyles';
 
 const CollectionSelectorDialog = ({
   open,

@@ -2,8 +2,8 @@ import React from 'react';
 import { Grid, Box, Typography, Container } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/other/SearchButton';
-import CardNameInput from '../other/CardNameInput';
-import CustomSelector from '../other/CustomSelector';
+import CardNameInput from '../other/InputComponents/CardNameInput';
+import CustomSelector from '../other/InputComponents/CustomSelector';
 import { useCombinedContext } from '../../context/CombinedProvider';
 
 const initialState = {

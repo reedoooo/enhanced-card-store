@@ -106,13 +106,13 @@ const ProfilePage = () => {
     }
   };
 
-  const handleTriggerCronJob = () => {
-    if (userId && listOfMonitoredCards) {
-      handleSendAllCardsInCollections(userId, listOfMonitoredCards);
-      console.log('SENDING ALL CARDS IN COLLECTIONS');
-      openSnackbar('Triggered the cron job.');
-    }
-  };
+  // const handleTriggerCronJob = () => {
+  //   if (userId && listOfMonitoredCards) {
+  //     handleSendAllCardsInCollections(userId, listOfMonitoredCards);
+  //     console.log('SENDING ALL CARDS IN COLLECTIONS');
+  //     openSnackbar('Triggered the cron job.');
+  //   }
+  // };
 
   const handleStopCronJob = () => {
     if (userId) {
@@ -160,13 +160,13 @@ const ProfilePage = () => {
           Request Chart Data
         </CustomButton>
 
-        <CustomButton
+        {/* <CustomButton
           variant="contained"
           color="primary"
           onClick={handleTriggerCronJob}
         >
           Trigger Cron Job
-        </CustomButton>
+        </CustomButton> */}
         <CustomButton
           variant="contained"
           color="secondary"
