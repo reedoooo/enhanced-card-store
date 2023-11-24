@@ -13,35 +13,21 @@ import {
   useTheme,
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useMode } from '../../context/hooks/colormode';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import { useMode } from '../../../context/hooks/colormode';
 import { makeStyles } from '@mui/styles';
-import { ModalContext } from '../../context/ModalContext/ModalContext';
-import GenericCard from '../cards/GenericCard';
-
+import { ModalContext } from '../../../context/ModalContext/ModalContext';
+import GenericCard from '../../cards/GenericCard';
+import {
+  MainContainer2,
+  MainContainer,
+} from '../../../pages/pageStyles/StyledComponents';
 const useStyles = makeStyles((theme) => ({
-  cardContainer: {
-    display: 'flex',
-    justifyContent: 'center', // Center the card horizontally
-    alignItems: 'center', // Center the card vertically
-    padding: theme.spacing(2),
-    width: '100%', // Use full width of the container
-  },
   stepper: {
     // backgroundColor: theme.palette.success.main,
-    backgroundColor: theme.palette.primary.light,
+    background: theme.palette.primary.light,
     color: 'white',
     marginTop: 'auto',
-  },
-  paperContainer: {
-    padding: '10px',
-    backgroundColor: '#555',
-    width: '100%', // Use full width of the container
-    // height: '40vh', // Set the container height to 25vh
-    color: theme.palette.text.primary,
-    // padding: theme.spacing(2),
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[3],
   },
 }));
 
@@ -58,7 +44,7 @@ const CarouselCard = ({ card }) => {
     openModalWithCard(card);
   };
   return (
-    <Paper className={classes.paperContainer}>
+    <MainContainer2>
       <Grid container>
         <Grid item xs={4} md={4}>
           <GenericCard
@@ -75,13 +61,13 @@ const CarouselCard = ({ card }) => {
           <Typography variant="body2" color="text.secondary">
             {card.description}
           </Typography>
-          <Typography variant="subtitle2">
+          <Typography variant="subtitle2" color={'white'}>
             Price: ${card?.latestPrice?.num ?? 'N/A'}
           </Typography>
           {/* Additional statistics */}
         </Grid>
       </Grid>
-    </Paper>
+    </MainContainer2>
   );
 };
 
@@ -139,9 +125,9 @@ const TopCardsDisplay = () => {
         }}
       >
         {top5Cards.map((card, index) => (
-          <Box key={index} className={classes.cardContainer}>
+          <MainContainer key={index}>
             <CarouselCard card={card} />
-          </Box>
+          </MainContainer>
         ))}
       </SwipeableViews>
       <MobileStepper

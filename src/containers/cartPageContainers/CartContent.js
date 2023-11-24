@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { useCartStore } from '../../context/CartContext/CartContext';
 import CartContainer from './CartContainer';
 import CartItem from '../../components/grids/CartItem';
-import CartTotal from '../../components/other/CartTotal';
+import CartTotal from '../../components/other/dataDisplay/CartTotal';
 
 const CartContent = () => {
   const { cartData, getTotalCost } = useCartStore();

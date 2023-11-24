@@ -17,7 +17,6 @@ const CartPage = () => {
   const [cookies] = useCookies(['user']);
   const user = cookies.user;
   const userId = user?.id;
-  // useUpdateAppContext(); // This will set the context to 'Deck' when this page is rendered
 
   const {
     cartData,

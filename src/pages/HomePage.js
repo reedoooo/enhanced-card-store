@@ -17,15 +17,15 @@ import {
 } from '@mui/material';
 import { useMode } from '../context/hooks/colormode';
 import useStyles from './pageStyles/styles';
-import DeckOfCardsIcon from '../components/icons/DeckOfCardsIcon';
+import DeckOfCardsIcon from '../components/reusable/icons/DeckOfCardsIcon';
 import { ModalContext } from '../context/ModalContext/ModalContext';
-import GenericCardModal from '../components/modals/GenericCardModal';
+import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
 import {
   TertiaryContainer,
   SecondaryContainer,
 } from './pageStyles/StyledComponents';
-import LoadingIndicator2 from '../components/reusable/indicators/LoadingIndicator2';
-import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
+// import LoadingIndicator2 from '../components/reusable/indicators/LoadingIndicator2';
+// import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import pages from './pages.json';
 const CarouselImage = ({ image, caption }) => {
   return (
@@ -86,7 +86,7 @@ const HomePage = () => {
             color="text.primary"
             gutterBottom
           >
-            Album layout
+            Enhanced Cardstore
           </Typography>
           <Typography
             variant="h5"
@@ -94,29 +94,18 @@ const HomePage = () => {
             color="text.secondary"
             paragraph
           >
-            Something short and leading about the collection below—its contents,
-            the creator, etc. Make it short and sweet, but not too short so
-            folks don&apos;t simply skip over it entirely.
+            The purpose of this site is to provide an enhanced user experience
+            for competitive and novice card collectors alike. We provide an
+            advanced collection tracker and deck builder which allows users to
+            build decks and track the prices of the cards they need so they can
+            make the best financial decisions when buying and selling cards.
           </Typography>
           <Stack
             sx={{ pt: 4 }}
             direction="row"
             spacing={2}
             justifyContent="center"
-          >
-            <Button
-              variant="contained"
-              sx={{ background: theme.palette.success.main }}
-            >
-              Main call to action
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ background: theme.palette.success.main, color: 'white' }}
-            >
-              Secondary action
-            </Button>
-          </Stack>
+          ></Stack>
           {/* </Container> */}
         </Box>
         <SecondaryContainer>
@@ -175,7 +164,9 @@ const HomePage = () => {
                   title={tier.title}
                   subheader={tier.subheader}
                   titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Pro' ? <DeckOfCardsIcon /> : null}
+                  action={
+                    tier.title === 'Deck Builder' ? <DeckOfCardsIcon /> : null
+                  }
                   subheaderTypographyProps={{
                     align: 'center',
                   }}
@@ -195,18 +186,7 @@ const HomePage = () => {
                       alignItems: 'baseline',
                       mb: 2,
                     }}
-                  >
-                    <Typography
-                      component="h2"
-                      variant="h3"
-                      color="text.primary"
-                    >
-                      ${tier.price}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      /mo
-                    </Typography>
-                  </Box>
+                  ></Box>
                   <ul>
                     {tier.description.map((line) => (
                       <Typography

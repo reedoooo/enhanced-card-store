@@ -10,7 +10,7 @@ import {
   convertDataForNivo2,
   getUniqueValidData,
   groupAndAverageData,
-} from './chartUtils';
+} from '../reusable/chartUtils';
 
 const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,

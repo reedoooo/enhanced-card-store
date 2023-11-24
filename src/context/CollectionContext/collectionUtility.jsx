@@ -654,6 +654,58 @@ const constructPayloadWithDifferences = (
 //   return currentChartDataSets;
 // }
 
+const getAllCardPrices = (cards) =>
+  cards.flatMap((card) => Array(card.quantity).fill(card.price));
+
+function filterUniqueDataPoints(dataArray) {
+  const uniqueRecords = new Map();
+
+  dataArray?.forEach((item) => {
+    const key = `${item?.label}-${item?.x}-${item?.y}`;
+    if (!uniqueRecords.has(key)) {
+      uniqueRecords.set(key, item);
+    }
+  });
+
+  return Array.from(uniqueRecords.values());
+}
+
+function filterCollectionData(collection) {
+  if (!collection) return null;
+
+  if (!collection?.chartData) {
+    console.warn('Collection data is missing chart data.');
+    return collection;
+  }
+  collection.chartData.allXYValues = filterUniqueDataPoints(
+    collection?.chartData?.allXYValues
+  );
+  collection.currentChartDataSets = filterUniqueDataPoints(
+    collection?.currentChartDataSets
+  );
+  collection.currentChartDataSets2 = filterUniqueDataPoints(
+    collection?.currentChartDataSets2
+  );
+
+  collection?.chartData?.datasets.forEach((dataset) => {
+    dataset?.data?.forEach((dataEntry) => {
+      dataEntry.xys = filterUniqueDataPoints(dataEntry?.xys);
+    });
+  });
+
+  // Apply the filter function to 'xys' in 'chartData'
+  collection.chartData.xys = filterUniqueDataPoints(collection.chartData.xys);
+
+  // If the 'cards' array contains structures with 'label', 'x', and 'y' properties
+  collection.cards.forEach((card) => {
+    if (card.chart_datasets) {
+      card.chart_datasets = filterUniqueDataPoints(card.chart_datasets);
+    }
+  });
+
+  return collection;
+}
+
 const calculateCollectionValue = (cards) => {
   if (
     !cards?.cards &&

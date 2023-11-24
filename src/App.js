@@ -26,6 +26,8 @@ import { useUtilityContext } from './context/UtilityContext/UtilityContext';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
 import { useCardImages } from './context/CardImagesContext/CardImagesContext';
 import { useCookies } from 'react-cookie';
+import { useDeckStore } from './context/DeckContext/DeckContext';
+import { useCartStore } from './context/CartContext/CartContext';
 const App = () => {
   const [cookies] = useCookies(['user']);
 
@@ -34,6 +36,8 @@ const App = () => {
   // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
   const { fetchAllCollectionsForUser, selectedCollection } =
     useCollectionStore();
+  const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
+  const { fetchUserCart, cartData } = useCartStore();
   const { isLoading, setIsLoading } = useUtilityContext();
 
   // const { getRandomCardImages } = useCardImages(); // Add this line
@@ -44,7 +48,7 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      fetchAllCollectionsForUser(user.id)
+      fetchAllCollectionsForUser()
         .then(() => {
           setIsLoading(false);
         })
@@ -54,6 +58,20 @@ const App = () => {
         });
     }
   }, [user, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchAllDecksForUser(user?.id).catch((err) =>
+  //       console.error('Failed to get all decks:', err)
+  //     );
+  //   }
+  // }, [fetchAllDecksForUser]);
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchUserCart(user?.id).catch((err) =>
+  //       console.error('Failed to get cart:', err)
+  //     );
+  //   }
+  // }, [fetchUserCart]);
 
   // Handle initial loading state
   useEffect(() => {
@@ -79,7 +97,7 @@ const App = () => {
       {isLoading ? (
         <SplashPage />
       ) : (
-        <Router>
+        <React.Fragment>
           <AppContainer>
             <Header />
             <Routes>
@@ -127,7 +145,7 @@ const App = () => {
             </Routes>
             <Footer />
           </AppContainer>
-        </Router>
+        </React.Fragment>
       )}
     </>
   );

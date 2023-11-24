@@ -22,6 +22,7 @@ import { useMode } from './context/hooks/colormode';
 import { PopoverProvider } from './context/PopoverContext/PopoverContext';
 import { CronJobProvider } from './context/CronJobContext/CronJobContext';
 import { CardImagesProvider } from './context/CardImagesContext/CardImagesContext';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const root = document.getElementById('root');
 
@@ -31,19 +32,20 @@ function Main() {
   return (
     <ErrorBoundary>
       <UtilityProvider>
-        <AuthProvider>
-          <ColorModeProvider>
-            <SocketProvider>
-              <UserProvider>
-                <ModalProvider>
-                  <PopoverProvider>
-                    <CollectionProvider>
-                      <CombinedProvider>
-                        <CardProvider>
-                          <CronJobProvider>
-                            <DeckProvider>
-                              <CartProvider>
-                                <CardImagesProvider>
+        <Router>
+          <AuthProvider>
+            <ColorModeProvider>
+              <SocketProvider>
+                <UserProvider>
+                  <ModalProvider>
+                    <PopoverProvider>
+                      <CollectionProvider>
+                        <CombinedProvider>
+                          <CardProvider>
+                            <CronJobProvider>
+                              <DeckProvider>
+                                <CartProvider>
+                                  {/* <CardImagesProvider> */}
                                   <GlobalStyles />
                                   <ThemeProvider theme={theme}>
                                     <ChartProvider>
@@ -54,19 +56,20 @@ function Main() {
                                       </SidebarProvider>
                                     </ChartProvider>
                                   </ThemeProvider>
-                                </CardImagesProvider>
-                              </CartProvider>
-                            </DeckProvider>
-                          </CronJobProvider>
-                        </CardProvider>
-                      </CombinedProvider>
-                    </CollectionProvider>
-                  </PopoverProvider>
-                </ModalProvider>
-              </UserProvider>
-            </SocketProvider>
-          </ColorModeProvider>
-        </AuthProvider>
+                                  {/* </CardImagesProvider> */}
+                                </CartProvider>
+                              </DeckProvider>
+                            </CronJobProvider>
+                          </CardProvider>
+                        </CombinedProvider>
+                      </CollectionProvider>
+                    </PopoverProvider>
+                  </ModalProvider>
+                </UserProvider>
+              </SocketProvider>
+            </ColorModeProvider>
+          </AuthProvider>
+        </Router>
       </UtilityProvider>
     </ErrorBoundary>
   );

@@ -9,6 +9,8 @@ const DeckButtonList = ({ userDecks, handleSelectDeck }) => {
   const { selectedDeck } = useContext(DeckContext);
   // console.log('SELECTED DECK:', selectedDeck.name);
   // console.log('userDecks', userDecks);
+  console.log('userDecks', userDecks);
+  console.log('selectedDeck', selectedDeck);
   return (
     <Grid container spacing={1} className={classes.grid}>
       {userDecks?.map((deck) => (

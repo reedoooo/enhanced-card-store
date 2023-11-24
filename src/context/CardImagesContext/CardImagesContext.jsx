@@ -36,7 +36,8 @@ export const CardImagesProvider = ({ children }) => {
   const [randomCardImage, setRandomCardImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const BASE_API_URL = 'http://localhost:3001/api/card-image';
+  // const BASE_API_URL = 'http://localhost:3001/api/card-image';
+  const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/card-image`;
 
   const downloadCardImages = async () => {
     setIsLoading(true);

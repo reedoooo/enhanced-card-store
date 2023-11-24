@@ -8,17 +8,14 @@ import CardPortfolio from '../components/collection/CardPortfolio';
 import Subheader from '../components/reusable/Subheader';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
 import { ModalContext } from '../context/ModalContext/ModalContext';
-import GenericCardModal from '../components/modals/GenericCardModal';
+import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
 import { CollectionBanner } from './pageStyles/StyledComponents';
-import useUpdateAppContext from '../context/hooks/useUpdateContext';
 
-// Hero section with customizable props
 const HeroCenter = ({ decorative, title, subtitle }) => (
   <Box
     sx={{
       flex: 1,
       height: '50vh',
-      // maxWidth: '90%',
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
@@ -71,16 +68,13 @@ HeroCenter.defaultProps = {
 
 // Main collection page component
 const CollectionPage = () => {
-  // Destructuring the first element directly from the useCookies hook for cleaner code
   const [{ user }] = useCookies(['user']);
   const { allCollections, selectedCollection, loading, error } =
     useCollectionStore();
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
   const userId = user?.id;
-  // useUpdateAppContext(); // This will set the context to 'Deck' when this page is rendered
 
-  // Handling loading and error states upfront for better user experience
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
 
@@ -94,9 +88,7 @@ const CollectionPage = () => {
       </CollectionBanner>
       <Box
         sx={{
-          // maxWidth: '100vw',
           maxHeight: '200vh',
-          // overflow: 'hidden',
         }}
       >
         <CardPortfolio allCollections={allCollections} />

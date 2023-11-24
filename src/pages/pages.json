@@ -10,39 +10,36 @@
   "tiers": [
     {
       "title": "Deck Builder",
-      "price": "0",
       "description": [
-        "10 users included",
-        "2 GB of storage",
-        "Help center access",
-        "Email support"
+        "Build and test decks digitally",
+        "Access to a wide library of cards",
+        "Deck performance analytics",
+        "Community deck sharing and rating"
       ],
-      "buttonText": "Sign up for free",
+      "buttonText": "Get Started",
       "buttonVariant": "outlined"
     },
     {
       "title": "Store",
       "subheader": "Most popular",
-      "price": "15",
       "description": [
-        "20 users included",
-        "10 GB of storage",
-        "Help center access",
-        "Priority email support"
+        "Sell and buy cards with ease",
+        "Secure transaction platform",
+        "Real-time market price tracking",
+        "Exclusive member discounts"
       ],
-      "buttonText": "Get started",
+      "buttonText": "Shop now",
       "buttonVariant": "contained"
     },
     {
       "title": "Collection Tracker",
-      "price": "30",
       "description": [
-        "50 users included",
-        "30 GB of storage",
-        "Help center access",
-        "Phone & email support"
+        "Track and manage your card collection",
+        "Value estimation based on market trends",
+        "Automatic collection organization",
+        "Trade and wishlist creation tools"
       ],
-      "buttonText": "Contact us",
+      "buttonText": "Track Collection",
       "buttonVariant": "outlined"
     }
   ]

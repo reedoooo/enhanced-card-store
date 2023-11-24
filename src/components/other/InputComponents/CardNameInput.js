@@ -2,24 +2,23 @@ import React from 'react';
 import { Input } from '@mui/material';
 import { useCardStore } from '../../../context/CardContext/CardStore';
 
-const CardNameInput = ({ value, setValue }) => {
+const CardNameInput = ({ value, setValue, handleChange }) => {
   const { handleRequest } = useCardStore();
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleRequest(); // Use handleRequest from context
-    }
-  };
-
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
+  // const handleChange = (event) => {
+  //   setValue(event.target.value);
+  // };
   return (
     <Input
       fullWidth
       placeholder="Type card name"
       onChange={handleChange}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          handleRequest(value);
+        }
+      }}
+      value={value}
     />
   );
 };

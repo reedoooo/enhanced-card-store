@@ -54,42 +54,6 @@ function filterUniqueDataPoints(dataArray) {
   return Array.from(uniqueRecords.values());
 }
 
-function filterCollectionData(collection) {
-  if (!collection) return null;
-
-  if (!collection?.chartData) {
-    console.warn('Collection data is missing chart data.');
-    return collection;
-  }
-  collection.chartData.allXYValues = filterUniqueDataPoints(
-    collection?.chartData?.allXYValues
-  );
-  collection.currentChartDataSets = filterUniqueDataPoints(
-    collection?.currentChartDataSets
-  );
-  collection.currentChartDataSets2 = filterUniqueDataPoints(
-    collection?.currentChartDataSets2
-  );
-
-  collection?.chartData?.datasets.forEach((dataset) => {
-    dataset?.data?.forEach((dataEntry) => {
-      dataEntry.xys = filterUniqueDataPoints(dataEntry?.xys);
-    });
-  });
-
-  // Apply the filter function to 'xys' in 'chartData'
-  collection.chartData.xys = filterUniqueDataPoints(collection.chartData.xys);
-
-  // If the 'cards' array contains structures with 'label', 'x', and 'y' properties
-  collection.cards.forEach((card) => {
-    if (card.chart_datasets) {
-      card.chart_datasets = filterUniqueDataPoints(card.chart_datasets);
-    }
-  });
-
-  return collection;
-}
-
 export const CollectionProvider = ({ children }) => {
   const [cookies] = useCookies(['user']);
   const [selectedCollection, setSelectedCollection] = useState(
@@ -104,11 +68,10 @@ export const CollectionProvider = ({ children }) => {
     setUpdatedPricesFromCombinedContext,
   ] = useState([]);
   const [xyData, setXyData] = useState([]);
-  const [currentChartDataSets, setCurrentChartDataSets] = useState([]);
   const [currentChartDataSets2, setCurrentChartDataSets2] = useState([]);
   const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
     useState(false);
-  const userId = cookies.user?.id;
+  const userId = cookies?.user?.id;
   const lastFetchedTime = useRef(null);
 
   const fetchAndSetCollections = useCallback(async () => {
@@ -653,7 +616,6 @@ export const CollectionProvider = ({ children }) => {
         // Optionally handle the response here, e.g., update the state with the response data if necessary
       } catch (error) {
         console.error('Error updating collection details:', error);
-        // Handle error, e.g., revert state changes or display error message to the user
       }
     } else {
       console.error('Selected collection or collection ID is missing.');
@@ -766,21 +728,9 @@ export const CollectionProvider = ({ children }) => {
     });
   }, [allCollections, selectedCollection, totalCost, totalPrice, xyData]);
 
-  // useEffect(() => {
-  //   console.log('UPDATED COLLECTION DATA POST SERVER:', collectionData);
-  // }, [collectionData]);
-
   useEffect(() => {
     if (userId) fetchAndSetCollections();
   }, [userId]);
-
-  // useEffect(() => {
-  //   if (selectedCollection?.chartData)
-  //     // setCurrentChartDataSets(
-  //     //   getCurrentChartDataSets(selectedCollection?.chartData)
-  //     // );
-  //   console.log('CURRENT CHART DATASETS:', currentChartDataSets);
-  // }, [selectedCollection]);
 
   useEffect(() => {
     if (selectedCollection?.cards) {

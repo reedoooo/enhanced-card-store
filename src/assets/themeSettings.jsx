@@ -62,6 +62,7 @@ export const themeSettings = (mode) => {
       error: {
         main: colors.redAccent[500],
         dark: colors.redAccent[700],
+        contrastText: '#fff',
       },
       warning: {
         main: colors.redAccent[500],
@@ -70,6 +71,7 @@ export const themeSettings = (mode) => {
         light: colors.greenAccent[100],
         main: colors.greenAccent[500],
         dark: colors.greenAccent[200],
+        contrastText: '#fff',
       },
       info: {
         main: colors.blueAccent[500],

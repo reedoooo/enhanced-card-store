@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { ResponsiveLine } from '@nivo/line';
 import { Typography, Box, Tooltip, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ChartErrorBoundary from './ChartErrorBoundary';
+import ChartErrorBoundary from '../reusable/ChartErrorBoundary';
 import { tokens } from '../../assets/tokens';
 import { useMode } from '../../context/hooks/colormode';
 

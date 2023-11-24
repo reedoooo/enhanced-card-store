@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie';
-import { DeckContext } from '../context/DeckContext/DeckContext';
+import { DeckContext, useDeckStore } from '../context/DeckContext/DeckContext';
 import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import DeckBuilderContainer from '../containers/deckBuilderPageContainers/DeckBuilderContainer';
 import { Box, Grid, Typography } from '@mui/material';
 import { ModalContext } from '../context/ModalContext/ModalContext';
-import GenericCardModal from '../components/modals/GenericCardModal';
+import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
 import HeaderTitle from '../components/reusable/HeaderTitle';
 import { useMode } from '../context/hooks/colormode';
 import { DeckBuilderBanner } from './pageStyles/StyledComponents';
@@ -54,8 +54,7 @@ const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
   const { user } = useCookies(['user'])[0];
   const { theme } = useMode();
-  const { fetchAllDecksForUser, allDecks, loading, error } =
-    useContext(DeckContext);
+  const { fetchAllDecksForUser, allDecks, loading, error } = useDeckStore();
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
   const userId = user?.id;
@@ -70,7 +69,8 @@ const DeckBuilderPage = () => {
 
   useEffect(() => {
     if (allDecks && userId) {
-      const filteredDecks = allDecks.filter((deck) => deck.userId === userId);
+      const filteredDecks = allDecks?.filter((deck) => deck?.userId === userId);
+      console.log('filteredDecks', filteredDecks);
       setUserDecks(filteredDecks);
     }
   }, [allDecks, userId]);

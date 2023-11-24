@@ -8,7 +8,7 @@ import {
   CardContent,
   Card,
 } from '@mui/material';
-import { getFilteredData2 } from '../../chart/chartUtils';
+import { getFilteredData2 } from '../../reusable/chartUtils';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 function calculatePriceChanges(data) {

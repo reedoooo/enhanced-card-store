@@ -6,12 +6,12 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { useStyles } from './modalStyles';
-import useAppContext from '../../context/hooks/useAppContext';
-import useSnackbar from '../../context/hooks/useSnackBar';
-import CardMediaAndDetails from '../media/CardMediaAndDetails';
-import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
-import { ModalContext } from '../../context/ModalContext/ModalContext';
+import { useStyles } from '../modalStyles';
+import useAppContext from '../../../context/hooks/useAppContext';
+import useSnackbar from '../../../context/hooks/useSnackBar';
+import CardMediaAndDetails from '../../media/CardMediaAndDetails';
+import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
+import { ModalContext } from '../../../context/ModalContext/ModalContext';
 
 const GenericCardModal = ({ open, card, context }) => {
   const classes = useStyles();
@@ -21,15 +21,6 @@ const GenericCardModal = ({ open, card, context }) => {
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
-
-  // if (!isContextAvailable) {
-  //   handleSnackbar(
-  //     `The component isn't wrapped with the ${context}Provider`,
-  //     'error'
-  //   );
-  //   console.error(`The component isn't wrapped with the ${context}Provider`);
-  //   return null; // Consider rendering an error boundary or user-friendly error message instead.
-  // }
 
   const requiresDoubleButtons = context === 'Deck' || context === 'Collection';
 

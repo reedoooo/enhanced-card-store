@@ -3,47 +3,11 @@ import { Paper, Button, Typography, Box } from '@mui/material';
 import { DeckContext } from '../../context/DeckContext/DeckContext';
 import DeckButtonList from './deckBuilderGrids/DeckButtonList';
 import CardsGrid from './deckBuilderGrids/CardsGrid';
-import DeckEditPanel from '../other/DeckEditPanel';
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(3),
-    backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.shape.borderRadius,
-    margin: 'auto', // Centering the form
-  },
-  paper: {
-    padding: theme.spacing(2),
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[4],
-    backgroundColor: theme.palette.background.paper,
-  },
-  button: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-    },
-  },
-  noCardsText: {
-    marginTop: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    fontStyle: 'italic',
-  },
-  title: {
-    fontWeight: 'bold',
-    color: theme.palette.text.primary,
-    marginBottom: theme.spacing(2),
-  },
-  // Other styles...
-}));
+import DeckEditPanel from '../other/InputComponents/DeckEditPanel';
+import { useMode } from '../../context/hooks/colormode';
 
 const DeckDisplay = ({ userDecks = [] }) => {
-  const classes = useStyles();
+  const { theme } = useMode();
   const { setSelectedDeck, selectedDeck, updateAndSyncDeck } =
     useContext(DeckContext);
   const [selectedCards, setSelectedCards] = useState([]);
@@ -61,14 +25,43 @@ const DeckDisplay = ({ userDecks = [] }) => {
   };
 
   return (
-    <Box className={classes.root}>
-      <Paper className={classes.paper}>
-        <Typography variant="h5" className={classes.title}>
+    <Box
+      sx={{
+        padding: theme.spacing(3),
+        backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: theme.shape.borderRadius,
+        margin: 'auto', // Centering the form
+      }}
+    >
+      <Paper
+        sx={{
+          padding: theme.spacing(2),
+          borderRadius: theme.shape.borderRadius,
+          boxShadow: theme.shadows[4],
+          backgroundColor: theme.palette.background.paper,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 'bold',
+            color: theme.palette.text.primary,
+            marginBottom: theme.spacing(2),
+          }}
+        >
           Your Decks
         </Typography>
         <Button
           onClick={() => setShowAllDecks(!showAllDecks)}
-          className={classes.button}
+          sx={{
+            margin: theme.spacing(1),
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          }}
         >
           {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
         </Button>
@@ -87,7 +80,14 @@ const DeckDisplay = ({ userDecks = [] }) => {
         {selectedCards.length > 0 ? (
           <CardsGrid selectedCards={selectedCards} />
         ) : (
-          <Typography className={classes.noCardsText}>
+          <Typography
+            sx={{
+              marginTop: theme.spacing(2),
+              textAlign: 'center',
+              color: theme.palette.text.secondary,
+              fontStyle: 'italic',
+            }}
+          >
             No cards to display
           </Typography>
         )}

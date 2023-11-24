@@ -1,81 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Box, Typography, Container, Paper } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/InputComponents/CardNameInput';
 import CustomSelector from '../other/InputComponents/CustomSelector';
-import { useCombinedContext } from '../../context/CombinedProvider';
-import { makeStyles } from '@mui/styles';
 import search from './search.json';
-const useStyles = makeStyles((theme) => ({
-  searchContainer: {
-    padding: theme.spacing(3),
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
-    margin: theme.spacing(2, 'auto'),
-    width: '100%',
-    maxWidth: 'md',
-  },
-  title: {
-    marginBottom: theme.spacing(3),
-    fontWeight: 600,
-    color: theme.palette.primary.main,
-  },
-  searchGrid: {
-    gap: theme.spacing(2),
-  },
-  searchButtonContainer: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'center',
-    marginTop: theme.spacing(2),
-  },
-}));
+import { useMode } from '../../context/hooks/colormode';
 
 const SearchBar = () => {
-  const { searchParams, setSearchParams } = useCombinedContext();
-  const { handleRequest } = useCardStore();
-  const classes = useStyles();
-  const { initialState, filters } = search; // Destructure the data from JSON
+  const { theme } = useMode();
+  const { initialState, filters } = search;
 
+  const [searchParams, setSearchParams] = useState({
+    name: '',
+    type: '',
+    attribute: '',
+    race: '',
+  });
+  const { handleRequest } = useCardStore();
+  // const handleChange = (name, newValue) => {
+  //   setSearchParams((prev) => ({ ...prev, [name]: newValue }));
+  // };
+  const handleChange = (name, newValue) => {
+    setSearchParams((prev) => ({ ...prev, [name]: newValue }));
+  };
+  // Correct handleSubmit to use handleRequest with searchParams
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   handleRequest(searchParams);
+  // };
+  const handleSubmit = () => {
+    handleRequest(searchParams);
+  };
   return (
-    <Paper className={classes.searchContainer}>
+    <Paper
+      sx={{
+        padding: 3,
+        borderRadius: 2,
+        backgroundColor: 'background.paper',
+        boxShadow: 3,
+        margin: 'auto',
+        width: '100%',
+        maxWidth: 'md',
+        '&:hover': {
+          boxShadow: 6,
+        },
+      }}
+    >
       <Container>
-        <Typography variant="h4" align="center" className={classes.title}>
+        <Typography
+          variant="h4"
+          align="center"
+          sx={{
+            mb: 3,
+            fontWeight: 'bold',
+            color: theme.palette.primary.main,
+            textTransform: 'uppercase',
+          }}
+        >
           Search Cards
         </Typography>
-        <Grid container spacing={2} className={classes.searchGrid}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <CardNameInput
-              value={searchParams?.name}
-              setValue={(newValue) =>
-                setSearchParams((prevState) => ({
-                  ...prevState,
-                  name: newValue,
-                }))
-              }
-              handleRequest={() => handleRequest(searchParams)}
+              value={searchParams.name}
+              handleChange={(event) => handleChange('name', event.target.value)}
             />
           </Grid>
           {filters?.map((filter) => (
-            <Grid item xs={12} sm={6} md={3} key={filter?.name}>
+            <Grid item xs={12} sm={6} md={3} key={filter?.label}>
               <CustomSelector
                 label={filter?.label}
                 name={filter?.name}
-                value={searchParams?.[filter?.name]}
-                setValue={(newValue) =>
-                  setSearchParams((prevState) => ({
-                    ...prevState,
-                    [filter?.name]: newValue,
-                  }))
+                value={searchParams?.[filter?.label]}
+                handleChange={(event) =>
+                  handleChange(filter.label, event.target.value)
                 }
+                // handleChange={(event) =>
+                //   handleChange(filter.name, event.target.value)
+                // }
+                // setValue={(newValue) =>
+                //   handleChange({ target: { value: newValue } })
+                // }
+                // handleChange={handleChange}
+                // setValue={(newValue) =>
+                //   setSearchParams((prevState) => ({
+                //     ...prevState,
+                //     [filter?.name]: newValue,
+                //   }))
+                // }
+                setSearchParams={setSearchParams}
                 values={filter?.values}
               />
             </Grid>
           ))}
-          <Grid item xs={12} className={classes.searchButtonContainer}>
-            <SearchButton searchParams={searchParams} />
+          <Grid
+            item
+            xs={12}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mt: 2,
+            }}
+          >
+            <SearchButton handleSubmit={handleSubmit} />
           </Grid>
         </Grid>
       </Container>

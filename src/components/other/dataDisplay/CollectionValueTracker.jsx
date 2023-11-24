@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import { styled } from '@mui/styles';
 import { GridExpandMoreIcon } from '@mui/x-data-grid';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';

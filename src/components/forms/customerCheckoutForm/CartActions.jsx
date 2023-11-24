@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import CartSummary from '../../other/CartSummary';
+import CartSummary from '../../other/dataDisplay/CartSummary';
 import OrderSubmitButton from '../../buttons/other/OrderSubmitButton';
 
 const CartActions = ({ quantity, getTotalCost, handleModalOpen }) => {

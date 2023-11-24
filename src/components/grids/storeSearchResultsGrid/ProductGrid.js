@@ -1,26 +1,13 @@
 import React, { useMemo } from 'react';
 import { Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import GenericCard from '../../cards/GenericCard';
 import { useCardStore } from '../../../context/CardContext/CardStore';
-
-const useStyles = makeStyles((theme) => ({
-  productGrid: {
-    maxWidth: '90%',
-    justifyContent: 'center',
-    margin: '0 auto',
-  },
-  productGridItem: {
-    padding: theme.spacing(2),
-    height: 'auto', // Set a specific value if required
-    width: '100%',
-  },
-}));
+import StoreItem from '../StoreItem';
+import { useCartStore } from '../../../context/CartContext/CartContext';
 
 const ProductGrid = () => {
   const { searchData } = useCardStore();
-
-  const classes = useStyles();
+  const { addOneToCart, removeOneFromCart } = useCartStore();
 
   const isCardDataValid = searchData && Array.isArray(searchData);
 
@@ -29,8 +16,28 @@ const ProductGrid = () => {
     [searchData]
   );
 
+  const handleModifyItemInCart = async (cardId, operation) => {
+    try {
+      if (operation === 'add') {
+        addOneToCart(cardId);
+      } else if (operation === 'remove') {
+        removeOneFromCart(cardId);
+      }
+    } catch (error) {
+      console.error('Failed to adjust quantity in cart: ', error);
+    }
+  };
+
   return (
-    <Grid container spacing={3} className={classes.productGrid}>
+    <Grid
+      container
+      spacing={3}
+      sx={{
+        maxWidth: '90%',
+        justifyContent: 'center',
+        margin: '0 auto',
+      }}
+    >
       {isCardDataValid &&
         limitedCardsToRender.map((card, index) => (
           <Grid
@@ -40,9 +47,22 @@ const ProductGrid = () => {
             md={4}
             lg={3}
             key={`${card.id}-${index}`}
-            className={classes.productGridItem}
+            sx={{
+              padding: (theme) => theme.spacing(2),
+              height: 'auto', // Set a specific value if required
+              width: '100%',
+            }}
           >
-            <GenericCard card={card} context="Cart" page="storepage" />
+            {/* <GenericCard card={card} context="Cart" page="storepage" /> */}
+            <StoreItem
+              card={card}
+              context={'Cart'}
+              page={'storepage'}
+              // onAddToCart={(cardId) => handleAddToCart(cardId)}
+              onQuantityChange={(cardId, operation) =>
+                handleModifyItemInCart(cardId, operation)
+              }
+            />
           </Grid>
         ))}
     </Grid>
