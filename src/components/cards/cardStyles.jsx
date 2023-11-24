@@ -41,6 +41,22 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: 'center', // centers the buttons
     width: '100%',
   },
+  tooltip: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    overflow: 'hidden',
+  },
+  tooltipTitle: {
+    marginBottom: theme.spacing(1),
+  },
+  attributeSpan: {
+    display: 'block',
+    marginBottom: theme.spacing(0.5),
+  },
+  descriptionSpan: {
+    marginTop: theme.spacing(1),
+  },
 }));
 // import { makeStyles } from '@mui/styles';
 

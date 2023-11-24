@@ -35,7 +35,7 @@ function calculatePriceChanges(data) {
     const pastPrice = sortedData[closestIndex].y;
     // console.log('pastPrice', pastPrice);
     const priceChange = latestDataPoint.y - pastPrice;
-    // console.log('priceChange', priceChange);
+    console.log('priceChange', priceChange);
     const percentageChange = ((priceChange / pastPrice) * 100).toFixed(2);
     // console.log('percentageChange', percentageChange);
 
@@ -87,23 +87,6 @@ export const calculateStatistics = (data, timeRange) => {
     });
     volatility = Math.sqrt(squaredDiffs.reduce((a, b) => a + b, 0) / volume);
   }
-  // const highPoint = Math.max(...filteredData.map((item) => item.y));
-  // const lowPoint = Math.min(...filteredData.map((item) => item.y));
-  // const sum = filteredData.reduce((acc, curr) => acc + curr.y, 0);
-  // const averageData = calculatePriceChanges(filteredData);
-  // console.log('averageData', averageData);
-  // const average = sum / filteredData.length || 0;
-  // const volume = filteredData.length;
-  // const mean = sum / volume;
-
-  // const squaredDiffs = filteredData.map((item) => {
-  //   const diff = item.y - mean;
-  //   return diff * diff;
-  // });
-
-  // const volatility = Math.sqrt(
-  //   squaredDiffs.reduce((a, b) => a + b, 0) / volume
-  // );
 
   return {
     highPoint: highPoint.toFixed(2),

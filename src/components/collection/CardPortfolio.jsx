@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
-import PortfolioContent from '../content/PortfolioContent';
+import PortfolioContent from '../../containers/collectionPageContainers/PortfolioContent';
 import { Box, Typography } from '@mui/material';
 import CollectionContainer from '../../containers/collectionPageContainers/CollectionContainer';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
@@ -89,7 +89,7 @@ const CardPortfolio = ({ allCollections }) => {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          minHeight="100vh"
+          // minHeight="100vh"
           backgroundColor="#f1f1f1"
         >
           <Typography variant="h6">No Collection Selected</Typography>

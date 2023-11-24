@@ -23,34 +23,12 @@ import {
   TypographyStyled,
   IconButtonStyled,
   ButtonStyled,
-} from './StyledComponents';
+  ButtonsContainer,
+  CustomButton,
+  ProfileFormContainer,
+} from './pageStyles/StyledComponents';
 import ProfileForm from '../components/forms/ProfileForm';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
-
-const CustomButton = styled(Button)({
-  margin: '10px', // Add margin around each button
-  width: '100%', // Make all buttons take full width of their parent
-  padding: '10px 0', // Add vertical padding
-  fontSize: '16px', // Set a consistent font size
-  // Any other styling you want to apply to all buttons
-});
-
-const ButtonsContainer = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  padding: '20px',
-  margin: '10px 0',
-  // Add additional styles as needed
-});
-
-const ProfileFormContainer = styled(Box)({
-  marginTop: '20px',
-  padding: '20px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Example shadow
-  borderRadius: '8px',
-  // Add additional styles as needed
-});
 
 const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();
@@ -75,7 +53,8 @@ const ProfilePage = () => {
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };
-  const userId = user?.id;
+  // const userId = user?.id;
+  const userId = cookies.user?.id;
   console.log('USER ID:', userId);
   // console.log('USER:', user);
   const handleSaveChanges = useCallback(

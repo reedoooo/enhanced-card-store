@@ -8,7 +8,7 @@ import { useCombinedContext } from '../../context/CombinedProvider';
 import debounce from 'lodash/debounce';
 import {
   convertDataForNivo2,
-  getFilteredData2,
+  getUniqueValidData,
   groupAndAverageData,
 } from './chartUtils';
 
@@ -28,48 +28,55 @@ const ChartPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
+  const currentTime = new Date().getTime();
+  if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
+    // 10 minutes
+    setLastUpdateTime(currentTime);
+    return currentTime;
+  }
+  return lastUpdateTime;
+}
+const getFilteredData2 = (collection) => {
+  if (!collection) {
+    console.error('Invalid input: selectedCollection should not be null');
+    return [];
+  }
+  return getUniqueValidData(collection.currentChartDataSets2 || []);
+};
 const PortfolioChart = () => {
   const theme = useTheme();
   const { latestData, setLatestData, timeRange } = useChartContext();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
-  // const [nivoReadyData2, setNivoReadyData2] = useState(null); // Declare state for nivoReadyData2
-
   const [chartDimensions, setChartDimensions] = useState({
     width: 0,
     height: 0,
   });
   const { selectedCollection } = useCollectionStore();
 
-  const filteredChartData2 = getFilteredData2(selectedCollection);
-  // let nivoReadyData2 = [];
-  // const rawData2 = useMemo(
-  //   () => groupAndAverageData(filteredChartData2, threshold),
-  //   [filteredChartData2, threshold]
-  // );
-
-  const handleThresholdUpdate = () => {
-    const currentTime = new Date().getTime();
-    if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
-      // 10 minutes
-      setLastUpdateTime(currentTime);
-      return currentTime;
-    }
-    return lastUpdateTime;
-  };
-
-  const threshold = handleThresholdUpdate();
+  const threshold = useMemo(
+    () => handleThresholdUpdate(lastUpdateTime, setLastUpdateTime),
+    [lastUpdateTime]
+  );
+  const filteredChartData2 = useMemo(
+    () => getFilteredData2(selectedCollection),
+    [selectedCollection]
+  );
   const rawData2 = useMemo(
     () => groupAndAverageData(filteredChartData2, threshold),
     [filteredChartData2, threshold]
   );
-
   const nivoReadyData2 = useMemo(
     () => convertDataForNivo2(rawData2),
     [rawData2]
   );
 
-  const HEIGHT_TO_WIDTH_RATIO = 2 / 3;
+  console.log('Selected Collection:', selectedCollection);
+  console.log('Filtered Chart Data:', filteredChartData2);
+  console.log('Raw Data:', rawData2);
+  console.log('Nivo Ready Data:', nivoReadyData2);
+  const HEIGHT_TO_WIDTH_RATIO = 7 / 10;
 
   useEffect(() => {
     const handleResize = debounce(() => {
@@ -98,19 +105,32 @@ const PortfolioChart = () => {
         alignItems: 'center',
         padding: theme.spacing(2),
         gap: theme.spacing(2),
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
+        // backgroundColor: theme.palette.background.paper,
+        background: '#333', // Darker background for Paper
+
+        color: '#fff', // White text color
+        border: '1px solid #555',
+        borderRadius: 2,
+        // color: theme.palette.text.primary,
       }}
     >
       <ErrorBoundary>
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={2}
+          sx={
+            {
+              // background: '#333', // Darker background for Paper
+            }
+          }
+        >
           <Grid
             item
             xs={12}
             sx={{ height: '100%', borderRadius: 2, width: '100%' }}
           >
             <ChartPaper elevation={3} ref={chartContainerRef}>
-              {filteredChartData2.length > 0 ? (
+              {filteredChartData2?.length > 0 && rawData2?.length > 0 ? (
                 <LinearChart
                   nivoReadyData={nivoReadyData2}
                   filteredChartData={filteredChartData2}

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 export const StyledDrawer = styled(Drawer)(({ theme, bgColor }) => ({
   '.MuiPaper-root': {
-    backgroundColor: bgColor || theme.palette.background.paper,
+    backgroundColor: theme.palette.primary.dark,
   },
 }));
 
@@ -35,6 +35,7 @@ export const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
   maxWidth: '100vw',
+  backgroundColor: theme.palette.primary.dark,
 }));
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({

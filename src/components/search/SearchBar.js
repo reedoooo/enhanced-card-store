@@ -1,72 +1,51 @@
 import React from 'react';
-import { Grid, Box, Typography, Container } from '@mui/material';
+import { Grid, Box, Typography, Container, Paper } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchButton from '../buttons/other/SearchButton';
 import CardNameInput from '../other/InputComponents/CardNameInput';
 import CustomSelector from '../other/InputComponents/CustomSelector';
 import { useCombinedContext } from '../../context/CombinedProvider';
-
-const initialState = {
-  name: '',
-  race: '',
-  type: '',
-  attribute: '',
-  level: '',
-};
+import { makeStyles } from '@mui/styles';
+import search from './search.json';
+const useStyles = makeStyles((theme) => ({
+  searchContainer: {
+    padding: theme.spacing(3),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+    margin: theme.spacing(2, 'auto'),
+    width: '100%',
+    maxWidth: 'md',
+  },
+  title: {
+    marginBottom: theme.spacing(3),
+    fontWeight: 600,
+    color: theme.palette.primary.main,
+  },
+  searchGrid: {
+    gap: theme.spacing(2),
+  },
+  searchButtonContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
+  },
+}));
 
 const SearchBar = () => {
-  const { searchParams, setSearchParams } = useCombinedContext(initialState);
+  const { searchParams, setSearchParams } = useCombinedContext();
   const { handleRequest } = useCardStore();
-
-  const filters = [
-    {
-      label: 'Level',
-      name: 'level',
-      values: [
-        'Unset',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        '10',
-        '11',
-        '12',
-      ],
-    },
-    { label: 'Race', name: 'race', values: ['Unset', 'Aqua', 'Beast'] },
-    {
-      label: 'Type',
-      name: 'type',
-      values: ['Unset', 'Effect Monster', 'Flip Effect Monster'],
-    },
-    {
-      label: 'Attribute',
-      name: 'attribute',
-      values: [
-        'Unset',
-        'Dark',
-        'Divine',
-        'Earth',
-        'Fire',
-        'Light',
-        'Water',
-        'Wind',
-      ],
-    },
-  ];
+  const classes = useStyles();
+  const { initialState, filters } = search; // Destructure the data from JSON
 
   return (
-    <Box sx={{ padding: 2, borderRadius: 2 }}>
-      <Container maxWidth="md">
-        <Typography variant="h4" align="center" gutterBottom>
+    <Paper className={classes.searchContainer}>
+      <Container>
+        <Typography variant="h4" align="center" className={classes.title}>
           Search Cards
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className={classes.searchGrid}>
           <Grid item xs={12}>
             <CardNameInput
               value={searchParams?.name}
@@ -80,24 +59,27 @@ const SearchBar = () => {
             />
           </Grid>
           {filters?.map((filter) => (
-            <CustomSelector
-              key={filter?.name}
-              label={filter?.label}
-              name={filter?.name}
-              value={searchParams?.[filter?.name]}
-              setValue={(newValue) =>
-                setSearchParams((prevState) => ({
-                  ...prevState,
-                  [filter?.name]: newValue,
-                }))
-              }
-              values={filter?.values}
-            />
+            <Grid item xs={12} sm={6} md={3} key={filter?.name}>
+              <CustomSelector
+                label={filter?.label}
+                name={filter?.name}
+                value={searchParams?.[filter?.name]}
+                setValue={(newValue) =>
+                  setSearchParams((prevState) => ({
+                    ...prevState,
+                    [filter?.name]: newValue,
+                  }))
+                }
+                values={filter?.values}
+              />
+            </Grid>
           ))}
-          <SearchButton searchParams={searchParams} />
+          <Grid item xs={12} className={classes.searchButtonContainer}>
+            <SearchButton searchParams={searchParams} />
+          </Grid>
         </Grid>
       </Container>
-    </Box>
+    </Paper>
   );
 };
 

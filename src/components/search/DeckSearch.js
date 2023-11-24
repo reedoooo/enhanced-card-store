@@ -9,8 +9,7 @@ import {
   Pagination,
 } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
-import { useTheme } from '@emotion/react';
-import SearchForm from './SearchForm';
+import SearchForm from '../forms/SearchForm';
 import DeckSearchCardGrid from '../grids/searchResultGrids/DeckSearchCardGrid';
 import CustomPagination from '../reusable/CustomPagination';
 

@@ -10,6 +10,9 @@ const useStyles = makeStyles({
   mediaContainer: {
     position: 'relative',
   },
+  popover: {
+    pointerEvents: 'none', // Ensure popover doesn't block mouse events
+  },
 });
 
 const anchorOrigin = {
@@ -60,24 +63,17 @@ const CardMediaSection = React.forwardRef(
           },
         }
       : {};
-
     return (
-      <div className={classes.mediaContainer} ref={ref}>
-        <ReusableCardMedia
-          imgUrl={imgUrl}
-          {...eventHandlers} // Spread event handlers conditionally
-        />
-        {isRequired && isHovered && ref.current && (
+      <div className={classes.mediaContainer} ref={ref} {...eventHandlers}>
+        <ReusableCardMedia imgUrl={imgUrl} />
+        {isRequired && isHovered && (
           <Popover
+            className={classes.popover}
             open={isHovered}
             anchorEl={ref?.current}
+            onClose={() => handleInteraction(false)}
             anchorOrigin={anchorOrigin}
             transformOrigin={transformOrigin}
-            onClose={() => {
-              if (typeof handleInteraction === 'function') {
-                handleInteraction(false);
-              }
-            }}
             disableRestoreFocus
           >
             <CardToolTip card={card} />
@@ -87,6 +83,32 @@ const CardMediaSection = React.forwardRef(
     );
   }
 );
+//     return (
+//       <div className={classes.mediaContainer} ref={ref}>
+//         <ReusableCardMedia
+//           imgUrl={imgUrl}
+//           {...eventHandlers} // Spread event handlers conditionally
+//         />
+//         {isRequired && isHovered && ref.current && (
+//           <Popover
+//             open={isHovered}
+//             anchorEl={ref?.current}
+//             anchorOrigin={anchorOrigin}
+//             transformOrigin={transformOrigin}
+//             onClose={() => {
+//               if (typeof handleInteraction === 'function') {
+//                 handleInteraction(false);
+//               }
+//             }}
+//             disableRestoreFocus
+//           >
+//             <CardToolTip card={card} />
+//           </Popover>
+//         )}
+//       </div>
+//     );
+//   }
+// );
 
 CardMediaSection.displayName = 'CardMediaSection';
 

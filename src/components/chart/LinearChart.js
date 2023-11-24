@@ -1,102 +1,93 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import { makeStyles, useTheme } from '@mui/styles';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
+import { Typography, Box, Tooltip, useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import ChartErrorBoundary from './ChartErrorBoundary';
-// import CustomLogger from '../../context/CutstomLogger';
-import {
-  formatDateToString,
-  useEventHandlers,
-  getFilteredData,
-  getTickValues,
-  getAveragedData,
-  CustomTooltip,
-} from './chartUtils';
+import { tokens } from '../../assets/tokens';
+import { useMode } from '../../context/hooks/colormode';
 
-const useStyles = makeStyles((theme) => ({
-  chartContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-  },
-  loadingContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-  },
-  xAxisLabel: {
-    position: 'absolute',
-    bottom: 0,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    marginBottom: theme.spacing(4),
-    color: theme.palette.text.primary,
-  },
-  yAxisLabel: {
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    transform: 'translateY(-50%) rotate(-90deg)',
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
-    fontSize: '1rem',
-    fontWeight: 'bold', // Make the label text bold
-    marginLeft: theme.spacing(4), // Increase spacing from the chart
-    color: theme.palette.text.primary,
-  },
-  customTooltip: {
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(1),
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[3],
-  },
-  customGridLine: {
-    stroke: theme.palette.text.secondary,
-    strokeWidth: 2,
-    strokeDasharray: 'none',
-  },
+const AxisLabel = styled(Typography)(({ theme, axis }) => ({
+  position: 'absolute',
+  [axis === 'x' ? 'bottom' : 'top']: 0,
+  [axis === 'x' ? 'left' : 'right']: '50%',
+  transform:
+    axis === 'x' ? 'translateX(-50%)' : 'translateY(-50%) rotate(-90deg)',
+  textAlign: 'center',
+  margin: theme.spacing(2),
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  color: theme.palette.text.primary,
 }));
 
-// function logReadableChartInfo(
-//   // chartDimensions,
-//   dataForChart,
-//   datesTimesValues,
-//   filteredChartData,
-//   latestData
-// ) {
-//   console.log('[7][DATA FOR CHART]:', JSON.stringify(dataForChart, null, 2));
-//   console.log(
-//     '[8][DATES TIMES VALUES]:',
-//     JSON.stringify(datesTimesValues, null, 2)
-//   );
-//   console.log(
-//     '[4][FILTERED CHART DATA]:',
-//     JSON.stringify(filteredChartData, null, 2)
-//   );
-//   console.log('[5][LATEST DATA]:', JSON.stringify(latestData, null, 2));
-// }
+const CustomTooltip = ({ point }) => {
+  const theme = useTheme();
+  const { serieId, data: { label, xFormatted, yFormatted } = {} } = point;
+  return (
+    <Tooltip title={`Series: ${serieId}`}>
+      <Box
+        p={2}
+        boxShadow={3}
+        bgcolor={theme.palette.background.paper}
+        borderRadius={2}
+        borderColor={theme.palette.divider}
+        border={1}
+      >
+        <Typography variant="subtitle1" color="textPrimary">
+          {`Card: ${label}`}
+        </Typography>
+        <Typography variant="body2">
+          {`Time: ${new Date(xFormatted).toLocaleString()}`}
+        </Typography>
+        <Typography variant="h6" color="textSecondary">
+          {`Value: $${parseFloat(yFormatted).toFixed(2)}`}
+        </Typography>
+      </Box>
+    </Tooltip>
+  );
+};
+
+export const useEventHandlers = () => {
+  const [hoveredData, setHoveredData] = useState(null);
+  const handleMouseMove = useCallback((point) => {
+    setHoveredData(point ? { x: point.data.x, y: point.data.y } : null);
+  }, []);
+  const handleMouseLeave = useCallback(() => setHoveredData(null), []);
+  return { hoveredData, handleMouseMove, handleMouseLeave };
+};
 
 const LinearChart = ({
   filteredChartData,
-  datesTimesValues,
   nivoReadyData,
-  latestData,
   dimensions,
-  timeRanges,
   timeRange,
 }) => {
-  const theme = useTheme();
+  const { theme } = useMode();
+  // const colors = tokens(theme.palette.mode);
+  const greenAccent = {
+    100: '#dbf5ee',
+    200: '#b7ebde',
+    300: '#94e2cd',
+    400: '#70d8bd',
+    500: '#4cceac',
+    600: '#3da58a',
+    700: '#2e7c67',
+    800: '#1e5245',
+    900: '#0f2922',
+  };
   const [isZoomed, setIsZoomed] = useState(false);
-  const { hoveredData, handleMouseMove, handleMouseLeave } = useEventHandlers();
-  const [format, setFormat] = useState('0,0');
-  // Calculate tickValues and xFormat based on timeRange
+  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
+
+  // const { tickValues, xFormat } = useMemo(() => {
+  //   const timeFormats = {
+  //     '2 hours': { format: '%H:%M', ticks: 'every 15 minutes' },
+  //     '24 hours': { format: '%H:%M', ticks: 'every 1 hour' },
+  //     '7 days': { format: '%b %d', ticks: 'every 1 day' },
+  //     '1 month': { format: '%b %d', ticks: 'every 3 days' },
+  //     default: { format: '%b %d', ticks: 'every 1 day' },
+  //   };
+  //   return timeFormats[timeRange] || timeFormats.default;
+  // }, [timeRange]);
+
   const { tickValues, xFormat } = useMemo(() => {
     let format, ticks;
     switch (timeRange) {
@@ -133,16 +124,18 @@ const LinearChart = ({
       </Typography>
     );
   }
+
   const chartProps = {
+    // theme: theme.chart,
     margin: { top: 50, right: 110, bottom: 50, left: 60 },
-    // data: [{ id: 'Data', data: dataForChart }],
     data: nivoReadyData,
     animate: true,
     motionStiffness: 90,
     motionDamping: 15,
+    background: '#2c2121',
+
     xScale: {
       type: 'time',
-      // format: '%Y-%m-%d %H:%M:%S',
       format: '%Y-%m-%dT%H:%M:%S.%LZ',
       useUTC: false,
       precision: 'second',
@@ -150,15 +143,12 @@ const LinearChart = ({
     xFormat: 'time:%Y-%m-%d %H:%M:%S',
     axisBottom: {
       tickRotation: 0,
-      legendOffset: -12,
+      legendOffset: -24,
       legend: 'Time',
       tickPadding: 10,
-      tickSize: 10,
-      // format: '%b %d',
-      // tickValues: 'every 2 days',
+      tickSize: 1,
       format: xFormat,
       tickValues: tickValues,
-      // tickValues: tickValues,
     },
     yScale: { type: 'linear', min: 'auto', max: 'auto' },
 
@@ -171,14 +161,60 @@ const LinearChart = ({
       tickPadding: 10,
       tickSize: 10,
     },
-    pointSize: 6,
-    pointBorderWidth: 1,
-    pointColor: theme.palette.primary.main,
-    colors: theme.palette.chartColors,
-    theme: theme.chart,
+    pointSize: 8,
+    pointBorderWidth: 2,
+
+    pointColor: theme.palette.success.light,
+    colors: theme.palette.primaryDark.main,
     lineWidth: 3,
     curve: 'monotoneX',
     useMesh: true,
+    theme: {
+      chart: {
+        axis: {
+          domain: {
+            line: {
+              stroke: greenAccent[800],
+              strokeWidth: 1,
+            },
+          },
+          ticks: {
+            line: {
+              stroke: greenAccent[700],
+              strokeWidth: 1,
+            },
+            text: {
+              fill: greenAccent[900],
+              fontSize: 12,
+            },
+          },
+        },
+        grid: {
+          line: {
+            stroke: greenAccent[200],
+            strokeWidth: 1,
+          },
+        },
+        legends: {
+          text: {
+            fill: greenAccent[800],
+            fontSize: 12,
+          },
+        },
+        tooltip: {
+          container: {
+            background: greenAccent[100],
+            color: greenAccent[800],
+            fontSize: 12,
+            borderRadius: 4,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+          },
+        },
+        points: {
+          borderColor: greenAccent[800],
+        },
+      },
+    },
     onMouseMove: handleMouseMove,
     onMouseLeave: handleMouseLeave,
     onClick: () => setIsZoomed(!isZoomed),
@@ -187,14 +223,16 @@ const LinearChart = ({
     //   const point = slice.points.find(
     //     (p) => p.id === 'Data' && p.data.x === latestData.x
     //   );
-    //   return point ? <CustomTooltip point={point} /> : null;
-    // },
+    // xFormat,
+    // tickValues,
   };
 
   return (
     <ChartErrorBoundary>
       <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}>
         <ResponsiveLine {...chartProps} />
+        {/* <AxisLabel axis="x">Time</AxisLabel>
+        <AxisLabel axis="y">Value ($)</AxisLabel> */}
       </div>
     </ChartErrorBoundary>
   );

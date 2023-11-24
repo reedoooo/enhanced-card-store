@@ -2,25 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
 import { Tooltip } from '@mui/material';
-
-const useStyles = makeStyles((theme) => ({
-  tooltip: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-    overflow: 'hidden',
-  },
-  tooltipTitle: {
-    marginBottom: theme.spacing(1),
-  },
-  attributeSpan: {
-    display: 'block',
-    marginBottom: theme.spacing(0.5),
-  },
-  descriptionSpan: {
-    marginTop: theme.spacing(1),
-  },
-}));
+import { useStyles } from './cardStyles';
 
 const formatKey = (key) => {
   return key

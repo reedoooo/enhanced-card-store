@@ -5,7 +5,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import StripeForm from '../../forms/customerCheckoutForm/StripeForm';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid recreating the `Stripe` object on every render.
-console.log('Stripe key: ', process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+// console.log('Stripe key: ', process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const StripeCheckoutModal = ({ open, onClose, onToken, purchases, total }) => {

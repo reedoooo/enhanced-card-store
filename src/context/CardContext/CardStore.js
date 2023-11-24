@@ -8,10 +8,7 @@ const CardContext = createContext();
 export const CardProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['cart'], ['deckData']);
   const initialStore = cookies.store || [];
-  // const initialCart = cookies.cart || [];
-  // console.log('Initial cart:', initialCart);
   const [cardsArray, setCardsArray] = useState(initialStore);
-  // console.log('Initial store:', initialStore);
   const currentCart = cookies.cart || [];
   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
   const [searchData, setSearchData] = useState([]);
@@ -19,7 +16,6 @@ export const CardProvider = ({ children }) => {
   const [savedDeckData, setSavedDeckData] = useState(currentDeckData);
   const [deckSearchData, setDeckSearchData] = useState([]);
 
-  // console.log('Current cart:', currentCart);
   if (!currenCartArray || !savedDeckData) {
     return <div>Loading...</div>;
   }
@@ -82,7 +78,6 @@ export const CardProvider = ({ children }) => {
       searchData,
       deckSearchData,
       savedDeckData,
-
       setSearchData,
       setDeckSearchData,
       setSavedDeckData,

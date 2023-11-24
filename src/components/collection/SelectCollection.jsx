@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     height: '100%',
-    width: '50vw',
+    // width: '50vw',
     padding: theme.spacing(2),
   },
   button: {

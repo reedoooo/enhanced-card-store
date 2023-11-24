@@ -1,0 +1,54 @@
+{
+  "initialState": {
+    "name": "",
+    "race": "",
+    "type": "",
+    "attribute": "",
+    "level": ""
+  },
+  "filters": [
+    {
+      "label": "Level",
+      "name": "level",
+      "values": [
+        "Unset",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "label": "Race",
+      "name": "race",
+      "values": ["Unset", "Aqua", "Beast"]
+    },
+    {
+      "label": "Type",
+      "name": "type",
+      "values": ["Unset", "Effect Monster", "Flip Effect Monster"]
+    },
+    {
+      "label": "Attribute",
+      "name": "attribute",
+      "values": [
+        "Unset",
+        "Dark",
+        "Divine",
+        "Earth",
+        "Fire",
+        "Light",
+        "Water",
+        "Wind"
+      ]
+    }
+  ]
+}

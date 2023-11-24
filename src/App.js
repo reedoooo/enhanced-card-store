@@ -1,18 +1,12 @@
 // External Imports
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import styled, { createGlobalStyle } from 'styled-components';
 
 // Component Imports
 import Header from './components/headings/header/Header';
 import Footer from './components/headings/footer/Footer';
-import PrivateRoute from './components/Auth/PrivateRoute';
+import PrivateRoute from './components/reusable/PrivateRoute';
 
 // Page Imports
 import SplashPage from './pages/SplashPage';
@@ -22,182 +16,54 @@ import CartPage from './pages/CartPage';
 import ProfilePage from './pages/ProfilePage';
 import CollectionPage from './pages/CollectionPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
-import ThreeJsCube from './pages/ThreeJsCube';
-import CardDeckAnimation from './pages/CardDeckAnimation';
+import ThreeJsCube from './assets/animations/ThreeJsCube';
+import CardDeckAnimation from './assets/animations/CardDeckAnimation';
 
 // Context Hooks Imports
-import { useCombinedContext } from './context/CombinedProvider';
 import { useUserContext } from './context/UserContext/UserContext';
 import { useCollectionStore } from './context/CollectionContext/CollectionContext';
 import { useUtilityContext } from './context/UtilityContext/UtilityContext';
-
-// Styled Components
-const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`;
-
-const GlobalStyle = createGlobalStyle`
-  /* Your global styles here */
-`;
-
-// Custom Hook for Cron Job
-const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
-  const {
-    cronData,
-    handleSendAllCardsInCollections,
-    listOfMonitoredCards,
-    // handleRetreiveListOfMonitoredCards,
-    // retrievedListOfMonitoredCards,
-    allCollectionsUpdated,
-  } = useCombinedContext();
-  const { allCollections } = useCollectionStore();
-  const [priceHistory, setPriceHistory] = useState([]);
-
-  const { handlePricesActivateCron, cardsWithChangedPrice } =
-    useCombinedContext();
-  const { user } = useUserContext();
-  const [priceFlux, setPriceFlux] = useState(null);
-  const userId = user?.userID;
-  useEffect(() => {
-    setLastCronJobTriggerTime(new Date().getTime());
-  }, [setLastCronJobTriggerTime]);
-  // ---------------------------------------------------------------
-  // useEffect(() => {
-  //   handlePricesActivateCron(
-  //     userId,
-  //     listOfMonitoredCards,
-  //     allCollections,
-  //     cardsWithChangedPrice
-  //   );
-  // }, [
-  //   userId,
-  //   listOfMonitoredCards,
-  //   allCollections,
-  //   cardsWithChangedPrice,
-  //   priceFlux,
-  // ]);
-
-  useEffect(() => {
-    const handleTriggerCronJob = () => {
-      const currentTime = new Date().getTime();
-      const timeDifference = currentTime - lastCronJobTriggerTime;
-      const previousTotalPrice = allCollections?.totalPrice;
-      if (!priceHistory.includes(previousTotalPrice)) {
-        priceHistory.push(previousTotalPrice);
-      }
-      const minutes = Math.floor(timeDifference / 60000); // 1 minute = 60000 milliseconds
-      const seconds = Math.floor((timeDifference % 60000) / 1000); // remainder in milliseconds converted to seconds
-
-      // Output the remaining time in minutes and seconds
-      console.log(
-        `REMAINING TIME: ${minutes} minute(s) and ${seconds} second(s)`
-      );
-
-      for (const collection of allCollections) {
-        if (
-          collection?.cards &&
-          collection?.cards?.length > 0 &&
-          collection.totalPrice !== previousTotalPrice // Implement your logic here
-        ) {
-          setPriceFlux(new Date().getTime()); // Trigger a re-render
-          console.log('PRICE FLUX:', priceFlux);
-        }
-      }
-      // if (collection.totalPrice !== previousTotalPrice) {
-      //   // Update dependencies of useEffect
-      //   setPriceFlux(new Date().getTime()); // Trigger a re-render
-      // }
-      if (currentTime - lastCronJobTriggerTime >= 60000) {
-        setLastCronJobTriggerTime(currentTime);
-        if (userId && listOfMonitoredCards) {
-          console.log('RETRIEVING LIST OF MONITORED CARDS (paused)');
-          handleSendAllCardsInCollections(
-            userId,
-            listOfMonitoredCards
-            // handleRetrieveListOfMonitoredCards()
-          );
-          console.log('Triggered the cron job.');
-        }
-      }
-    };
-
-    const interval = setInterval(handleTriggerCronJob, 60000);
-    return () => clearInterval(interval);
-  }, [
-    cronData,
-    lastCronJobTriggerTime,
-    allCollectionsUpdated,
-    // handleRetrieveListOfMonitoredCards,
-    handleSendAllCardsInCollections,
-    listOfMonitoredCards,
-    userId,
-  ]);
-};
-
-// Main Component
+import { AppContainer } from './pages/pageStyles/StyledComponents';
+import { useCardImages } from './context/CardImagesContext/CardImagesContext';
+import { useCookies } from 'react-cookie';
 const App = () => {
-  const { user } = useUserContext();
-  const { isLoading, setIsContextLoading } = useUtilityContext();
-  const { fetchAllCollectionsForUser, allCollections } = useCollectionStore();
-  const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
+  const [cookies] = useCookies(['user']);
 
-  useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
+  const user = cookies.user;
+  const [currentPage, setCurrentPage] = useState('');
+  // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
+  const { fetchAllCollectionsForUser, selectedCollection } =
+    useCollectionStore();
+  const { isLoading, setIsLoading } = useUtilityContext();
+
+  // const { getRandomCardImages } = useCardImages(); // Add this line
+
+  // useEffect(() => {
+  //   getRandomCardImages(10); // Fetch 10 random images on app start
+  // }, []); // Add this useEffect
 
   useEffect(() => {
     if (user) {
-      console.log('Private routes now available');
+      fetchAllCollectionsForUser(user.id)
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching collections:', error);
+          setIsLoading(false);
+        });
     }
+  }, [user, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
 
-    return () => {
-      console.log('Private routes no longer available');
-    };
-  }, [user]);
-
+  // Handle initial loading state
   useEffect(() => {
     if (!isLoading) {
-      setIsContextLoading(false);
+      setIsLoading(false);
     }
-  }, [isLoading, setIsContextLoading]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsContextLoading(false);
-    }, 5500);
-    return () => clearTimeout(timer);
-  }, [setIsContextLoading]);
-
-  useEffect(() => {
-    let isMounted = true; // Add a flag to track if the component is mounted
-    const fetchCollections = async () => {
-      if (user && isMounted) {
-        try {
-          // const response = fet
-          await fetchAllCollectionsForUser(user.userID);
-          if (isMounted) {
-            console.log('Fetched collections because none were present.');
-            // Update state only if the component is still mounted
-            console.log('RESPONSE:', isMounted);
-            // setOfficialCollectionDatasets(response.data);
-          }
-        } catch (err) {
-          console.error('Failed to fetch collections:', err);
-        }
-      }
-    };
-
-    fetchCollections();
-
-    // Cleanup function to cancel any ongoing tasks when the component unmounts
-    return () => {
-      isMounted = false;
-    };
-  }, [user, fetchAllCollectionsForUser, allCollections]);
+  }, [isLoading, setIsLoading]);
 
   return (
     <>
-      <GlobalStyle />
       <Helmet>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

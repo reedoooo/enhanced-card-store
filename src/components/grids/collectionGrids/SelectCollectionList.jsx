@@ -6,11 +6,13 @@ import {
   ListItemText,
   Divider,
   Button,
+  Grid,
+  Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
-import LoadingIndicator from '../../indicators/LoadingIndicator';
+import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+  },
+  gridItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    padding: theme.spacing(1),
+  },
+  gridItemText: {
+    fontWeight: 'bold',
   },
 }));
 
@@ -83,11 +95,6 @@ const SelectCollectionList = ({
     [openDialog, setSelectedCollection]
   );
 
-  // console.log(
-  //   'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
-  //   selectedCollection
-  // );
-  // The rendering part of the component
   return (
     <>
       {isLoading ? (
@@ -103,10 +110,35 @@ const SelectCollectionList = ({
                     sx={{ width: '100%' }}
                     onClick={() => handleSelect(collection?._id)}
                   >
-                    <ListItemText
-                      primary={collection?.name}
-                      className={classes.listItemText}
-                    />
+                    <Grid container>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Name:
+                        </Typography>
+                        <Typography>{collection?.name}</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Value:
+                        </Typography>
+                        {/* Replace with actual value */}
+                        <Typography>${collection?.currentValue}</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Performance:
+                        </Typography>
+                        {/* Replace with actual data */}
+                        <Typography>{collection?.performance} %</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Cards:
+                        </Typography>
+                        {/* Replace with actual count */}
+                        <Typography>{collection?.numberOfCards}</Typography>
+                      </Grid>
+                    </Grid>
                   </ButtonBase>
                   <Button
                     className={classes.editButton}

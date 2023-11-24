@@ -1,17 +1,25 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 import CustomerInfoFields from './CustomerInfoFields';
 import CartActions from './CartActions';
 import StripeCheckoutModal from '../../modals/stripeModal/StripeCheckoutModal';
+import { ModalContext } from '../../../context/ModalContext/ModalContext';
 
 const CustomerForm = () => {
   const { getTotalCost, cartData } = useCartStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleModalOpen = useCallback(() => setIsModalOpen(true), []);
-  const handleModalClose = useCallback(() => setIsModalOpen(false), []);
-
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    openModalWithCard,
+    closeModal,
+    isModalOpen,
+    setModalOpen,
+    modalContent,
+  } = useContext(ModalContext);
+  // const handleModalOpen = useCallback(() => setIsModalOpen(true), []);
+  // const handleModalClose = useCallback(() => setIsModalOpen(false), []);
+  const handleModalOpen = useCallback(() => setModalOpen(true), []);
+  const handleModalClose = useCallback(() => setModalOpen(false), []);
   const onToken = useCallback(
     (token) => {
       console.log(token);

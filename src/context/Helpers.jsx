@@ -5,7 +5,10 @@ import { useCookies } from 'react-cookie';
 export const fetchWrapper = async (url, method, body = null) => {
   const options = {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 
   if (body) {
@@ -24,26 +27,6 @@ export const fetchWrapper = async (url, method, body = null) => {
   }
 };
 
-// const fetchWrapper = async (url, method, body = null) => {
-//   const options = {
-//     method,
-//     headers: { 'Content-Type': 'application/json' },
-//     ...(body && { body: JSON.stringify(body) }),
-//   };
-//   const response = await fetch(url, options);
-//   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-//   return await response.json();
-// };
-
-// const removeDuplicateCollections = (collections) => {
-//   const uniqueCollections = {};
-//   collections.forEach((collection) => {
-//     uniqueCollections[collection._id] = collection;
-//   });
-//   return Object.values(uniqueCollections);
-// };
-
-// Function to remove duplicate collections
 export const removeDuplicateCollections = (collections) => {
   const seen = new Set();
   return collections.filter((collection) => {
@@ -86,4 +69,49 @@ export const useUserId = () => {
   }, [cookies]);
 
   return userId;
+};
+
+const isEmpty = (obj) => {
+  return (
+    [Object, Array].includes((obj || {}).constructor) &&
+    !Object.entries(obj || {}).length
+  );
+};
+
+export const validateData = (data, eventName, functionName) => {
+  const dataType = typeof data || data.data || data.data.data || data.message;
+  console.log(
+    '----------------------------------------------------------------------------------------------------'
+  );
+  console.log(
+    `| [SUCCESS] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}] |`
+  );
+  console.log(
+    '----------------------------------------------------------------------------------------------------'
+  );
+  if (data === null || data === undefined) {
+    console.log(
+      '----------------------------------------------------------------------------------------------------'
+    );
+    console.warn(
+      `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
+    );
+    console.log(
+      '----------------------------------------------------------------------------------------------------'
+    );
+    return false;
+  }
+  if (isEmpty(data) && isEmpty(data?.data) && isEmpty(data?.data?.data)) {
+    console.log(
+      '----------------------------------------------------------------------------------------------------'
+    );
+    console.error(
+      `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
+    );
+    console.log(
+      '----------------------------------------------------------------------------------------------------'
+    );
+    return false;
+  }
+  return true;
 };

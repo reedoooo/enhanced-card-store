@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 
 // import { Link } from 'react-router-dom';
 
-// Create a StyledMenuItem component with extensive styling
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   cursor: 'pointer',
   '&:hover': {
@@ -48,19 +47,5 @@ const MenuItemComponent = ({ item, onClick }) => {
     </StyledMenuItem>
   );
 };
-
-// const MenuItemComponent = ({ item, onClick }) => {
-//   const { icon, to, name } = item;
-
-//   return (
-//     <StyledMenuItem component={Link} to={to} onClick={() => onClick(to)}>
-//       <ListItemIcon>{icon}</ListItemIcon>
-//       <ListItemText
-//         disableTypography
-//         primary={<Typography variant="body1">{name}</Typography>}
-//       />
-//     </StyledMenuItem>
-//   );
-// };
 
 export default MenuItemComponent;

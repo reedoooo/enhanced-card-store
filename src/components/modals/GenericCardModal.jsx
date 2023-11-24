@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,34 +11,27 @@ import useAppContext from '../../context/hooks/useAppContext';
 import useSnackbar from '../../context/hooks/useSnackBar';
 import CardMediaAndDetails from '../media/CardMediaAndDetails';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
+import { ModalContext } from '../../context/ModalContext/ModalContext';
 
-const GenericCardModal = ({
-  open,
-  card,
-  context,
-  closeModal,
-  setModalOpen,
-}) => {
+const GenericCardModal = ({ open, card, context }) => {
   const classes = useStyles();
-  const [contextProps, isContextAvailable] = useAppContext(context);
+  const { contextProps, isContextAvailable } = useAppContext(context);
   const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
   // const [isOpen, setIsOpen] = useState(false);
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
+  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
+    useContext(ModalContext);
 
-  if (!isContextAvailable) {
-    handleSnackbar(
-      `The component isn't wrapped with the ${context}Provider`,
-      'error'
-    );
-    console.error(`The component isn't wrapped with the ${context}Provider`);
-    return null; // Consider rendering an error boundary or user-friendly error message instead.
-  }
+  // if (!isContextAvailable) {
+  //   handleSnackbar(
+  //     `The component isn't wrapped with the ${context}Provider`,
+  //     'error'
+  //   );
+  //   console.error(`The component isn't wrapped with the ${context}Provider`);
+  //   return null; // Consider rendering an error boundary or user-friendly error message instead.
+  // }
 
   const requiresDoubleButtons = context === 'Deck' || context === 'Collection';
-
-  // useEffect(() => {
-  //   setIsOpen(open);
-  // }, [open]);
 
   useEffect(() => {
     if (open && card && !hasLoggedCard) {
@@ -48,27 +41,11 @@ const GenericCardModal = ({
     }
   }, [open, card, hasLoggedCard, handleSnackbar]);
 
-  // useEffect(() => {
-  //   if (!open && hasLoggedCard) {
-  //     setHasLoggedCard(false);
-  //   }
-  // }, [open, hasLoggedCard]);
   useEffect(() => {
     if (!open) {
       setHasLoggedCard(false); // Reset hasLoggedCard when modal closes
     }
   }, [open]); // Removed hasLoggedCard from dependency array
-
-  useEffect(() => {
-    if (context) {
-      // console.log('CONTEXT:', context);
-    }
-  }, [context]); // Removed hasLoggedCard from dependency array
-  useEffect(() => {
-    if (contextProps) {
-      // console.log('CONTEXT_PROPS:', contextProps);
-    }
-  }, [contextProps]); // Removed hasLoggedCard from dependency array
 
   // Example function to be called when an action is successful
   const handleActionSuccess = () => {
@@ -87,11 +64,6 @@ const GenericCardModal = ({
       onClose={() => {
         closeModal(); // Call closeModal directly
       }}
-      // open={isOpen}
-      // onClose={() => {
-      //   setIsOpen(false);
-      //   if (closeModal) closeModal();
-      // }}
       fullWidth
       maxWidth="md"
     >
@@ -105,14 +77,14 @@ const GenericCardModal = ({
               context="Deck"
               onSuccess={handleActionSuccess}
               onFailure={handleActionFailure}
-              setModalOpen={setModalOpen}
+              // setModalOpen={setModalOpen}
             />
             <GenericActionButtons
               card={card}
               context="Collection"
               onSuccess={handleActionSuccess}
               onFailure={handleActionFailure}
-              setModalOpen={setModalOpen}
+              // setModalOpen={setModalOpen}
             />
           </>
         )}

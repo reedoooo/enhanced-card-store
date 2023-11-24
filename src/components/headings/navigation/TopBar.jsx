@@ -1,94 +1,3 @@
-// import React, { useState } from 'react';
-// import {
-//   AppBar,
-//   Toolbar,
-//   IconButton,
-//   Typography,
-//   Container,
-// } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
-// import { Link } from 'react-router-dom';
-// import MenuItems from './MenuItems';
-// import {
-//   StyledAppBar,
-//   StyledBox,
-//   StyledIconButton,
-//   StyledToolbar,
-// } from './styled';
-// import ThemeToggleButton from '../../buttons/ThemeToggleButton';
-
-// const TopBar = ({
-//   handleDrawerOpen,
-//   handleDrawerClose,
-//   isOpen,
-//   isMobileView,
-//   menuSections,
-// }) => {
-//   const [selected, setSelected] = useState('Dashboard');
-//   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-
-//   const handleItemClick = (name) => {
-//     setSelected(name);
-//     handleDrawerClose();
-//   };
-
-//   // Close the drawer if it's not a mobile view
-//   if (!isMobileView) {
-//     handleDrawerClose();
-//   }
-
-//   return (
-//     <StyledAppBar position="sticky" elevation={4}>
-//       <Container maxWidth="lg">
-//         <StyledToolbar>
-//           <StyledBox>
-//             {isMobileView && (
-//               <StyledIconButton
-//                 edge="start"
-//                 color="inherit"
-//                 aria-label="menu"
-//                 onClick={handleDrawerOpen}
-//               >
-//                 <MenuIcon />
-//               </StyledIconButton>
-//             )}
-//             <Typography
-//               variant="h6"
-//               component={Link}
-//               to="/home"
-//               sx={{
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 textDecoration: 'none',
-//                 marginLeft: '1em',
-//               }}
-//             >
-//               SiteName
-//             </Typography>
-//           </StyledBox>
-//           {!isMobileView && (
-//             <MenuItems
-//               handleDrawerClose={handleDrawerClose}
-//               variant="topbar"
-//               isMenuOpen={!isMobileView}
-//               setIsLoginDialogOpen={setIsLoginDialogOpen}
-//               isLoginDialogOpen={isLoginDialogOpen}
-//               menuSections={menuSections} // Use filtered menuSections
-//               handleItemClick={handleItemClick}
-//               isMobileView={isMobileView}
-//               selectedItem={selected}
-//               isOpen={isOpen}
-//             />
-//           )}
-//           <ThemeToggleButton />
-//         </StyledToolbar>
-//       </Container>
-//     </StyledAppBar>
-//   );
-// };
-
-// export default TopBar;
-// TopBar.js
 import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Hidden } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -98,12 +7,14 @@ import MenuItemComponent from '../header/MenuItemComponent';
 import { useAuthContext } from '../../../context/hooks/auth';
 import getMenuItemsData from '../header/menuItemsData';
 import { StyledToolbar } from './styled';
+import { useMode } from '../../../context/hooks/colormode';
 
 const TopBar = ({
   handleDrawerState,
   handleLoginDialogState,
   handleDrawerClose,
 }) => {
+  const { theme } = useMode();
   const [selected, setSelected] = useState('Dashboard');
   const { isLoggedIn } = useAuthContext();
   const menuItemsData = getMenuItemsData(isLoggedIn);
@@ -114,7 +25,7 @@ const TopBar = ({
   };
   return (
     <AppBar position="static">
-      <StyledToolbar>
+      <StyledToolbar theme={theme}>
         <Hidden mdUp implementation="css">
           <IconButton
             edge="start"

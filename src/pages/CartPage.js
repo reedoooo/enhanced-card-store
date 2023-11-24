@@ -7,15 +7,17 @@ import {
   Container,
 } from '@mui/material';
 import { useCartStore } from '../context/CartContext/CartContext';
-import LoadingIndicator from '../components/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/indicators/ErrorIndicator';
-import CartContentContainer from '../containers/CartContentContainer';
-import CustomerFormContainer from '../containers/CustomerFormContainer';
+import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
+import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
+import CartContentContainer from '../containers/cartPageContainers/CartContentContainer';
+import CustomerFormContainer from '../containers/cartPageContainers/CustomerFormContainer';
+import useUpdateAppContext from '../context/hooks/useUpdateContext';
 
 const CartPage = () => {
-  const [cookies] = useCookies(['userCookie']);
-  const user = cookies.userCookie;
+  const [cookies] = useCookies(['user']);
+  const user = cookies.user;
   const userId = user?.id;
+  // useUpdateAppContext(); // This will set the context to 'Deck' when this page is rendered
 
   const {
     cartData,

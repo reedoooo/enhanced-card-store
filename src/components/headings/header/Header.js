@@ -50,6 +50,7 @@ const Header = () => {
             alignItems: 'center',
             textDecoration: 'none',
             marginLeft: '1em',
+            backgroundColor: theme.palette.primary.main,
           }}
         >
           <SideBar

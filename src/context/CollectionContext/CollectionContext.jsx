@@ -27,8 +27,6 @@ import {
   calculateCollectionValue,
 } from './collectionUtility.jsx';
 import moment from 'moment';
-import { createNewDataSet } from './cardHelpers.jsx';
-import { chunkPayload, sendChunks } from './ChunkPaylod.jsx';
 
 export const CollectionContext = createContext(defaultContextValue);
 
@@ -240,49 +238,76 @@ export const CollectionProvider = ({ children }) => {
     }
   };
 
-  const getUpdatedCards = (activeCollection, cardUpdate, operation) => {
+  const getUpdatedCards = (collection, cardUpdate, operation) => {
     let cardsToUpdate;
 
     switch (operation) {
       case 'add':
-        cardsToUpdate = handleCardAddition(activeCollection?.cards, cardUpdate);
+        cardsToUpdate = handleCardAddition(collection?.cards, cardUpdate);
         break;
       case 'remove':
-        cardsToUpdate = handleCardRemoval(activeCollection?.cards, cardUpdate);
+        cardsToUpdate = handleCardRemoval(collection?.cards, cardUpdate);
+        console.log('CARD REMOVAL:', cardUpdate);
+        console.log('CARD REMOVAL:', cardsToUpdate);
         break;
       case 'update':
-        // eslint-disable-next-line no-case-declarations
-        const cardIndex = activeCollection.cards.findIndex(
-          (c) => c.id === cardUpdate.id
-        );
-        if (cardIndex === -1) {
-          console.error('Card not found in the collection.');
-          return activeCollection.cards;
+        if (!collection?.cards) {
+          console.error('No cards found in the collection.');
+          return collection?.cards;
         }
+        if (!cardUpdate?.id) {
+          console.warn('Card ID is missing.', cardUpdate);
+          // return collection?.cards;
+        }
+        // eslint-disable-next-line no-case-declarations
+        const cards = collection?.cards;
 
-        // eslint-disable-next-line no-case-declarations
-        const existingCard = activeCollection.cards[cardIndex];
-        // eslint-disable-next-line no-case-declarations
-        const updatedPriceHistory = updatePriceHistory(
-          existingCard,
-          cardUpdate
-        );
-        // eslint-disable-next-line no-case-declarations
-        const updatedCard = getUpdatedCard(
-          existingCard,
-          cardUpdate,
-          updatedPriceHistory,
-          activeCollection._id
-        );
-        cardsToUpdate = replaceCardInArray(
-          activeCollection.cards,
-          updatedCard,
-          cardIndex
-        );
+        for (let i = 0; i < cards?.length; i++) {
+          // eslint-disable-next-line no-case-declarations
+          // const cardIndex = selectedCollection?.cards?.findIndex(
+          //   (c) => c?.id === cardUpdate?.id
+          // );
+          if (!cards[i]?.id) {
+            console.warn('Card ID is missing.', cards[i]);
+            continue;
+          }
+          cardUpdate = cards[i];
+          const cardIndex = selectedCollection?.cards?.findIndex(
+            (c) => c?.id === cardUpdate?.id
+          );
+
+          if (cardIndex === -1) {
+            console.error(
+              'Card not found in the collection.',
+              collection?.cards[cardIndex]
+            );
+            return collection?.cards;
+          }
+
+          // eslint-disable-next-line no-case-declarations
+          const existingCard = collection?.cards[cardIndex];
+          // eslint-disable-next-line no-case-declarations
+          const updatedPriceHistory = updatePriceHistory(
+            existingCard,
+            cardUpdate
+          );
+          // eslint-disable-next-line no-case-declarations
+          const updatedCard = getUpdatedCard(
+            existingCard,
+            cardUpdate,
+            updatedPriceHistory,
+            collection?._id
+          );
+          cardsToUpdate = replaceCardInArray(
+            collection?.cards,
+            updatedCard,
+            cardIndex
+          );
+        }
         break;
       default:
         console.error('Unsupported operation:', operation);
-        return activeCollection.cards;
+        return collection?.cards;
     }
 
     return cardsToUpdate;
@@ -306,7 +331,11 @@ export const CollectionProvider = ({ children }) => {
       quantity: update.quantity || card.quantity,
       collectionId: collectionId,
       totalPrice: cardPrice * (update.quantity || card.quantity),
-      lastSavedPrice: update.lastSavedPrice,
+      // lastSavedPrice: update.lastSavedPrice,
+      lastSavedPrice: {
+        num: card.price || card.card_prices[0].tcgplayer_price,
+        timestamp: new Date(),
+      },
       latestPrice: update.latestPrice,
       tag: 'monitored',
       chart_datasets: [...(card.chart_datasets || []), newChartDataEntry],
@@ -322,18 +351,18 @@ export const CollectionProvider = ({ children }) => {
 
   function updatePriceHistory(card, update) {
     const newPriceHistoryEntry = createPriceHistoryObject(
-      update.latestPrice.num
+      update?.latestPrice?.num
     );
     const lastPriceHistoryEntry =
-      card.priceHistory[card.priceHistory.length - 1];
+      card?.priceHistory[card?.priceHistory?.length - 1];
 
     if (
       !lastPriceHistoryEntry ||
-      lastPriceHistoryEntry.num !== newPriceHistoryEntry.num
+      lastPriceHistoryEntry?.num !== newPriceHistoryEntry?.num
     ) {
       return [...card.priceHistory, newPriceHistoryEntry];
     }
-    return card.priceHistory;
+    return card?.priceHistory;
   }
 
   function createChartDataEntry(price) {
@@ -383,12 +412,16 @@ export const CollectionProvider = ({ children }) => {
       totalCost: updatedTotalPrice ? updatedTotalPrice.toString() : '0',
       totalQuantity: cards.reduce((acc, card) => acc + (card.quantity || 0), 0),
       quantity: cards.length,
-      // _id,
+      lastSavedPrice: {
+        num: collectionWithCards?.totalPrice || 0,
+        timestamp: collectionWithCards?.lastSavedPrice?.timeStamp || new Date(),
+      },
+      latestPrice: {
+        num: updatedTotalPrice || 0,
+        timestamp: new Date(),
+      },
       dailyPriceChange:
         getPriceChange(currentChartDataSets2)[0]?.priceChange || '',
-      currentChartDataSets: filterUniqueDataPoints(
-        getCurrentChartDataSets(updatedChartData)
-      ),
       currentChartDataSets2: filterUniqueDataPoints(
         transformPriceHistoryToXY(collectionPriceHistory)
       ),
@@ -424,20 +457,6 @@ export const CollectionProvider = ({ children }) => {
     };
   };
 
-  const removeCardsFromCollection = async (userId, collectionId, cardIds) => {
-    const endpoint = `/api/${userId}/collections/${collectionId}/removeCards`;
-    const method = 'POST';
-    const payload = { cardIds };
-
-    try {
-      const response = await fetchWrapper(endpoint, method, payload);
-      return response; // The response contains the updated cards list
-    } catch (error) {
-      console.error('Error removing cards:', error);
-      throw error;
-    }
-  };
-
   const getUpdatedCollection = async (
     collectionWithCards, // updated cards
     cardUpdate, // updated card
@@ -446,28 +465,55 @@ export const CollectionProvider = ({ children }) => {
   ) => {
     const collectionId = collectionWithCards?._id || collectionData?._id;
     if (!collectionId) {
-      console.error('Collection ID is missing.');
+      console.error('Collection ID is missing.', collectionId);
       return;
     }
 
-    const cardExists = collectionWithCards.cards.some(
-      (card) => card.id === cardUpdate.id
+    if (!userId) {
+      console.error('User ID is missing.', userId);
+      return;
+    }
+    const cardExists = collectionWithCards?.cards?.some(
+      (card) => card?.id === cardUpdate?.id
     );
 
-    // Determine the method and endpoint based on operation and card existence
-    const method =
-      operation === 'remove' ? 'DELETE' : cardExists ? 'PUT' : 'POST';
-    const endpointSuffix =
-      operation === 'remove' ? 'removeCards' : 'updateCards';
+    let multipleOfSameCard = [];
+    let cardQuantity = 0;
+    if (cardExists) {
+      multipleOfSameCard = collectionWithCards?.cards?.filter(
+        (card) => card?.id === cardUpdate?.id
+      );
+      cardQuantity = multipleOfSameCard[0]?.quantity;
+    }
+    console.log('MULTIPLE OF SAME CARD:', multipleOfSameCard);
+    console.log('CARD QUANTITY:', cardQuantity);
+    console.log('CARD EXISTS:', cardExists);
+
+    let method;
+    if (operation === 'remove' && cardQuantity === 1) {
+      method = 'DELETE';
+    } else if (cardExists) {
+      method = 'PUT';
+    } else {
+      method = 'POST';
+    }
+
+    let endpointSuffix;
+    if (operation === 'remove' && cardQuantity === 1) {
+      endpointSuffix = 'removeCards';
+    } else {
+      endpointSuffix = 'updateCards';
+    }
+
     const endpoint = createApiUrl(
       `${userId}/collections/${collectionId}/${endpointSuffix}`
     );
-
     console.log('CARDS BEFORE: ', collectionWithCards);
     const updatedCards = getUpdatedCards(
       collectionWithCards,
       cardUpdate,
       operation
+      // collectionId
     );
     console.log('CARDS AFTER: ', updatedCards);
 
@@ -478,22 +524,50 @@ export const CollectionProvider = ({ children }) => {
     //   (total, card) => total + card.price * card.quantity,
     //   0
     // );
-    const updatedTotalQuantity = updatedCards.reduce(
-      (total, card) => total + card.quantity,
+    const updatedTotalQuantity = updatedCards?.reduce(
+      (total, card) => total + card?.quantity,
       0
     );
     const newCollectionPriceHistoryObject =
       createPriceHistoryObject(updatedTotalPrice);
 
     let cardsResponse;
-    // if (operation === 'remove') {
-    //   const cardIds = updatedCards.map((card) => card.id);
-    //   cardsResponse = await fetchWrapper(endpoint, method, cardsPayload);
-    // } else {
-    //   const cardsPayload = { cards: updatedCards };
-    //   cardsResponse = await fetchWrapper(endpoint, method, cardsPayload);
-    // }
-    const cardsPayload = { cards: updatedCards };
+    let cardsPayload;
+    if (operation === 'remove') {
+      const allCardsWithIds = [];
+      for (const card of updatedCards) {
+        // const cardIds = updatedCards.map((card) => card.id);
+        // const cardObjIds = updatedCards.map((card) => card._id);
+        const cardIds = {
+          id: card?.id,
+          _id: card?._id,
+        };
+
+        allCardsWithIds?.push(cardIds);
+      }
+      const removeCard = allCardsWithIds?.find(
+        (idPair) => idPair?.id === cardUpdate?.id
+      );
+      cardsPayload = { cardIds: removeCard };
+    } else {
+      const allCardsWithIds = [];
+      for (const card of updatedCards) {
+        // const cardIds = updatedCards.map((card) => card.id);
+        // const cardObjIds = updatedCards.map((card) => card._id);
+        const cardIds = {
+          id: card.id,
+          _id: card._id,
+        };
+
+        allCardsWithIds?.push(cardIds);
+      }
+      const removeCard = allCardsWithIds?.find(
+        (idPair) => idPair?.id === cardUpdate?.id
+      );
+      cardsPayload = { cards: updatedCards, cardIds: removeCard };
+    }
+    console.log('CARDS PAYLOAD:', cardsPayload);
+
     cardsResponse = await fetchWrapper(endpoint, method, cardsPayload);
     const { cardMessage } = cardsResponse;
 
@@ -513,10 +587,6 @@ export const CollectionProvider = ({ children }) => {
 
     const { chartMessage } = chartDataResponse;
 
-    // const updatedTotalPrice = calculateCollectionValue(selectedCollection);
-    // console.log('NEW VALUE:', newVal);
-
-    // Prepare the updated collection data
     const updatedCollection = getUpdatedCollectionData(
       selectedCollection,
       updatedTotalPrice,
@@ -526,7 +596,6 @@ export const CollectionProvider = ({ children }) => {
       // updatedCards
     );
 
-    // Update the collection
     const collectionEndpoint = createApiUrl(
       `${userId}/collections/${collectionId}`
     );
@@ -536,28 +605,6 @@ export const CollectionProvider = ({ children }) => {
 
     const { collectionMessage } = collectionResponse;
 
-    console.log('********** [--------------------] **********');
-    console.log('********** [CARDS] **********');
-    console.log(`********** [${cardMessage}] **********`);
-    console.log(`********** [${cardsResponse.cards}] **********`);
-    console.log('********** [--------------------] **********');
-    console.log('********** [CHARTS] **********');
-    console.log(`********** [${chartMessage}] **********`);
-    console.log(`********** [${chartDataResponse.chartData}] **********`);
-    console.log('********** [--------------------] **********');
-    console.log('********** [COLLECTION] **********');
-    console.log(`********** [${collectionMessage}] **********`);
-    console.log(`********** [${collectionResponse.collectionData}] **********`);
-    console.log('********** [--------------------] **********');
-
-    // Restructure the collection object
-    // Optionally, update context or state with the new collection data
-    // updateCollectionData(collectionResponse.collectionData, 'allCollections');
-    // updateCollectionData(
-    //   collectionResponse.collectionData,
-    //   'selectedCollection'
-    // );
-    // updateCollectionData(collectionResponse.collectionData, 'collectionData');
     setTotalPrice(calculateCollectionValue(updatedCards));
     const restructuredCollection = {
       ...collectionResponse.collectionData,
@@ -566,7 +613,6 @@ export const CollectionProvider = ({ children }) => {
     };
 
     console.log('RESTRUCTURED COLLECTION:', restructuredCollection);
-    // Return the updated collection data along with responses for cards and chart data
     return {
       restructuredCollection,
     };
@@ -581,7 +627,6 @@ export const CollectionProvider = ({ children }) => {
         description,
       };
 
-      // Update in the state first
       setSelectedCollection(updatedCollection);
       setAllCollections((prevCollections) =>
         prevCollections.map((collection) =>
@@ -618,7 +663,7 @@ export const CollectionProvider = ({ children }) => {
   const handleCardOperation = async (
     card,
     operation,
-    selectedCollection,
+    collection,
     userId,
     allCollections
   ) => {
@@ -627,33 +672,15 @@ export const CollectionProvider = ({ children }) => {
       return;
     }
 
-    // Check if selectedCollection is defined, if not set to first collection in allCollections
-    if (!selectedCollection || !selectedCollection._id) {
-      if (allCollections && allCollections.length > 0) {
-        selectedCollection = allCollections[0];
-      } else {
-        console.error('Selected collection or allCollections is empty.');
-        return; // Stop execution if no valid collection is available
-      }
+    if (!collection) {
+      console.error(
+        `Collection with ID ${collection._id} not found in allCollections.`
+      );
+      return;
     }
 
-    const collectionId = selectedCollection._id;
-
-    const updatedCards = getUpdatedCards(
-      selectedCollection,
-      card,
-      operation,
-      collectionId
-    );
-
-    const collectionWithCards = {
-      ...selectedCollection,
-      cards: updatedCards,
-      _id: selectedCollection._id,
-    };
-
     const updatedCollection = await getUpdatedCollection(
-      collectionWithCards,
+      collection,
       card,
       operation,
       userId
@@ -661,9 +688,21 @@ export const CollectionProvider = ({ children }) => {
 
     if (updatedCollection) {
       console.log('UPDATED COLLECTION:', updatedCollection);
-      updateCollectionData(updatedCollection, 'allCollections');
-      updateCollectionData(updatedCollection, 'selectedCollection');
-      updateCollectionData(updatedCollection, 'collectionData');
+      // Update the relevant collections in the state/context
+      updateCollectionData(
+        updatedCollection?.restructuredCollection,
+        'allCollections'
+      );
+      if (collection._id === selectedCollection?._id) {
+        updateCollectionData(
+          updatedCollection?.restructuredCollection,
+          'selectedCollection'
+        );
+      }
+      updateCollectionData(
+        updatedCollection?.restructuredCollection,
+        'collectionData'
+      );
     } else {
       console.error('Failed to update collection.');
     }
@@ -683,7 +722,6 @@ export const CollectionProvider = ({ children }) => {
       xys: xyData || [],
       openChooseCollectionDialog,
       calculateCollectionValue,
-      // setAllCardPrices,
       setTotalPrice,
       setXyData,
       setUpdatedPricesFromCombinedContext,
@@ -694,25 +732,19 @@ export const CollectionProvider = ({ children }) => {
       getTotalCost: () => getTotalCost(selectedCollection),
       getCardQuantity: (cardId) =>
         selectedCollection?.cards?.find((c) => c?.id === cardId)?.quantity || 0,
-      createUserCollection: (userId, newCollectionInfo, name, description) =>
-        createUserCollection(userId, newCollectionInfo, name, description),
+      createUserCollection,
       removeCollection,
       addOneToCollection: (card) =>
         handleCardOperation(card, 'add', selectedCollection, userId),
       removeOneFromCollection: (card) =>
         handleCardOperation(card, 'remove', selectedCollection, userId),
-      updateOneFromCollection: (card) => handleCardOperation(card, 'update'),
-      updateCollection: (collectionWithCards, card, operation, userId) =>
-        getUpdatedCollection(collectionWithCards, card, operation, userId),
-      updateCollectionState: (collection) => updateCollectionData(collection),
-      updateCollectionDetails: (updatedInfo, userId, collectionId) =>
-        updateCollectionDetails(updatedInfo, userId, collectionId),
-      // updateCollectionDetails: (collection) => {
-      //   console.log('UPDATING COLLECTION DETAILS:', collection);
-      //   updateCollectionData(collection, 'allCollections');
-      //   updateCollectionData(collection, 'selectedCollection');
-      //   updateCollectionData(collection, 'collectionData');
-      // }
+      updateOneFromCollection: (card) =>
+        handleCardOperation(card, 'update', selectedCollection, userId),
+      updateCollection: (card, operation, collection) =>
+        handleCardOperation(card, operation, collection, userId),
+      getUpdatedCollection,
+      updateCollectionState: updateCollectionData,
+      updateCollectionDetails,
       fetchAllCollectionsForUser: fetchAndSetCollections,
       fetchAllCollections: fetchAndSetCollections,
       setSelectedCollection,
@@ -742,13 +774,13 @@ export const CollectionProvider = ({ children }) => {
     if (userId) fetchAndSetCollections();
   }, [userId]);
 
-  useEffect(() => {
-    if (selectedCollection?.chartData)
-      setCurrentChartDataSets(
-        getCurrentChartDataSets(selectedCollection?.chartData)
-      );
-    console.log('CURRENT CHART DATASETS:', currentChartDataSets);
-  }, [selectedCollection]);
+  // useEffect(() => {
+  //   if (selectedCollection?.chartData)
+  //     // setCurrentChartDataSets(
+  //     //   getCurrentChartDataSets(selectedCollection?.chartData)
+  //     // );
+  //   console.log('CURRENT CHART DATASETS:', currentChartDataSets);
+  // }, [selectedCollection]);
 
   useEffect(() => {
     if (selectedCollection?.cards) {
@@ -763,31 +795,11 @@ export const CollectionProvider = ({ children }) => {
     }
   }, [allCollections, fetchAndSetCollections]);
 
-  //     setCurrentChartDataSets2(
-  //       transformPriceHistoryToXY(selectedCollection?.chartData)
-  //     );
-  //   console.log('CURRENT CHART DATASETS 2:', currentChartDataSets2);
-  // }
-
   useEffect(() => {
     if (selectedCollection === null || selectedCollection === undefined) {
       setSelectedCollection(allCollections?.[0]);
     }
   }, [userId]);
-
-  //   setTotalPrice(calculateTotalPrice(selectedCollection));
-  //   console.log('TOTAL PRICE:', totalPrice);
-  // }, [selectedCollection, setTotalPrice]);
-
-  // useEffect(() => {
-  //   const updatedSelectedCollection
-  //    {
-  //     ...selectedCollection,
-
-  //    }
-
-  //   getUpdatedCollection
-  // }, [setAllCardPrices, setTotalPrice]);
 
   return (
     <CollectionContext.Provider value={contextValue}>

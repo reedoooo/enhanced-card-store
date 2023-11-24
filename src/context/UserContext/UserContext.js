@@ -13,12 +13,9 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['userCookie']);
-  // const [user, setUser] = useState(null);
   const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
   const [allCollections, setAllCollections] = useState([]);
-
   const { user, setUser } = useAuthContext(); // Use the useAuthContext hook
-  // const { fetchCollections, fetchAllCollectionsForUser } = useCollectionStore();
 
   const triggerCronJob = async () => {
     // Add your code here
@@ -30,23 +27,14 @@ export const UserProvider = ({ children }) => {
     if (userID) {
       const updatedUser = { userID, username };
       setUser(updatedUser);
-      // setAuthUser(updatedUser); // Update the user in AuthContext as well
     }
   }, [cookies]);
 
   const updateUser = (userData) => {
     setUser(userData);
-    // setAuthUser(userData); // Update the user in AuthContext
     setCookie('userCookie', userData, { path: '/' });
     console.log('User Data Sent to Server and Cookie Updated:', userData);
   };
-
-  // const fetchAndSetCollections = useCallback(async () => {
-  //   const collections = fetchAllCollectionsForUser(user.id);
-  //   if (collections) {
-  //     setAllCollections(collections); // This is saved in the context
-  //   }
-  // }, [user.id, fetchCollections]);
 
   return (
     <UserContext.Provider
@@ -54,7 +42,6 @@ export const UserProvider = ({ children }) => {
         user,
         setUser,
         allCollections,
-        // fetchAndSetCollections,
         setCookie,
         updateUser,
         triggerCronJob,

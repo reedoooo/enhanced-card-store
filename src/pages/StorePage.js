@@ -1,31 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
-import styled from 'styled-components';
 import { Grid } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import SearchBar from '../components/search/SearchBar';
 import ProductGrid from '../components/grids/storeSearchResultsGrid/ProductGrid';
 import { useCardStore } from '../context/CardContext/CardStore';
 import { useCartStore } from '../context/CartContext/CartContext';
-import LoadingIndicator from '../components/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/indicators/ErrorIndicator';
-
-const StoreBanner = styled.div`
-  display: flex;
-  max-width: 100%;
-  justify-content: center;
-  margin: 0 auto;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f7f7f7;
-`;
-
-const StoreTitle = styled.h2`
-  color: #333;
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 20px;
-`;
+import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
+import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
+import { StoreBanner, StoreTitle } from './pageStyles/StyledComponents';
 
 const SearchContainer = () => {
   return (

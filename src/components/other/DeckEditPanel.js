@@ -1,53 +1,60 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Button, TextField, Paper } from '@mui/material';
+import { Button, TextField, Paper, Typography } from '@mui/material';
+import { useMode } from '../../context/hooks/colormode';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(4),
+    margin: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[3],
+    boxShadow: theme.shadows[3], // Utilize theme's predefined shadows
+    backgroundColor: theme.palette.background.paper, // Use theme's paper background color
+  },
+  title: {
+    marginBottom: theme.spacing(3),
+    fontWeight: theme.typography.fontWeightBold, // Use theme's font weight for bold text
+    fontSize: theme.typography.h6.fontSize, // Align font size with h6 variant
+    color: theme.palette.text.primary, // Use theme's primary text color
   },
   textField: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
     '& .MuiOutlinedInput-root': {
       '&:hover fieldset': {
-        borderColor: theme.palette.primary.main,
+        borderColor: theme.palette.secondary.light, // Use secondary color for hover state
       },
       '&.Mui-focused fieldset': {
-        borderColor: theme.palette.primary.dark,
+        borderColor: theme.palette.secondary.main, // Use secondary main color for focus
       },
+    },
+    '& .MuiInputBase-input': {
+      fontSize: theme.typography.subtitle1.fontSize, // Align with subtitle1 font size
     },
   },
   saveButton: {
-    boxShadow: 'none',
+    boxShadow: theme.shadows[1], // Use a softer shadow from theme
     textTransform: 'none',
-    fontSize: 16,
-    padding: theme.spacing(1, 2),
-    border: `1px solid ${theme.palette.primary.main}`,
-    lineHeight: 1.5,
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    fontSize: theme.typography.button.fontSize, // Align with button font size
+    padding: theme.spacing(1, 4),
+    lineHeight: theme.typography.button.lineHeight, // Align with button line height
+    backgroundColor: theme.palette.secondary.main, // Use secondary color for button
+    color: theme.palette.secondary.contrastText, // Contrast text for readability
     '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-      borderColor: theme.palette.primary.dark,
-      boxShadow: 'none',
+      backgroundColor: theme.palette.secondary.dark, // Darken on hover
+      boxShadow: theme.shadows[2], // Slightly elevate shadow on hover
     },
   },
 }));
 
 const DeckEditPanel = ({ selectedDeck, onSave }) => {
-  const classes = useStyles();
+  const { theme } = useMode();
+  const classes = useStyles(theme);
   const [name, setName] = useState(selectedDeck?.name || '');
   const [description, setDescription] = useState(
     selectedDeck?.description || ''
   );
 
   const handleSave = () => {
-    // Log the new deck name and description before saving
-    console.log('New Deck Name:', name);
-    console.log('New Deck Description:', description);
-
     onSave({
       ...selectedDeck,
       name,
@@ -57,6 +64,9 @@ const DeckEditPanel = ({ selectedDeck, onSave }) => {
 
   return (
     <Paper elevation={3} className={classes.root}>
+      <Typography variant="h6" className={classes.title}>
+        Edit Deck
+      </Typography>
       <TextField
         className={classes.textField}
         label="Deck Name"
@@ -77,7 +87,6 @@ const DeckEditPanel = ({ selectedDeck, onSave }) => {
       />
       <Button
         variant="contained"
-        color="primary"
         className={classes.saveButton}
         onClick={handleSave}
       >

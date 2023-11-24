@@ -6,7 +6,7 @@
 
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/styles';
-import { useCallback, useMemo, useState } from 'react';
+// import { useCallback, useMemo, useState } from 'react';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 export const getUniqueValidData = (currentChartData) => {
@@ -49,16 +49,7 @@ export const getUniqueValidData = (currentChartData) => {
       y: entry.y,
     }));
 };
-export const getFilteredData2 = (selectedCollection) => {
-  const filteredChartData2 = useMemo(() => {
-    // const { selectedCollection } = useCollectionStore();
-    const allXYValues2 = selectedCollection?.currentChartDataSets2;
-    // console.log('ALL XY VALUES:', allXYValues2);
-    return allXYValues2 ? getUniqueValidData(allXYValues2) : [];
-  }, [selectedCollection]);
 
-  return filteredChartData2;
-};
 // export const groupAndAverageData = (data, threshold = 600000) => {
 //   // 10 minutes in milliseconds
 //   if (!data || data.length === 0) return { dates: [], times: [], values: [] };
@@ -194,65 +185,65 @@ export const getTickValues = (timeRange) => {
   return mapping[timeRange] || 'every day'; // Default to 'every week' if no match
 };
 
-export const useMovingAverage = (data, numberOfPricePoints) => {
-  return useMemo(() => {
-    if (!Array.isArray(data)) {
-      return [];
-    }
-    console.log('[1][Data]----------> [', data + ']');
-    console.log(
-      '[2][NUMBER OF POINTS]----------> [',
-      numberOfPricePoints + ']'
-    );
+// export const useMovingAverage = (data, numberOfPricePoints) => {
+//   return useMemo(() => {
+//     if (!Array.isArray(data)) {
+//       return [];
+//     }
+//     console.log('[1][Data]----------> [', data + ']');
+//     console.log(
+//       '[2][NUMBER OF POINTS]----------> [',
+//       numberOfPricePoints + ']'
+//     );
 
-    return data.map((row, index, total) => {
-      const start = Math.max(0, index - numberOfPricePoints);
-      const end = index;
-      const subset = total.slice(start, end + 1);
-      const sum = subset.reduce((a, b) => a + b.y, 0);
-      return {
-        // x: String(row.x),
-        x: row.x,
-        y: sum / subset.length || 0,
-      };
-    });
-  }, [data, numberOfPricePoints]);
-};
+//     return data.map((row, index, total) => {
+//       const start = Math.max(0, index - numberOfPricePoints);
+//       const end = index;
+//       const subset = total.slice(start, end + 1);
+//       const sum = subset.reduce((a, b) => a + b.y, 0);
+//       return {
+//         // x: String(row.x),
+//         x: row.x,
+//         y: sum / subset.length || 0,
+//       };
+//     });
+//   }, [data, numberOfPricePoints]);
+// };
 
-export const convertDataForNivo = ({ dates, times, values }) => {
-  if (
-    !dates ||
-    !times ||
-    !values ||
-    dates.length !== times.length ||
-    dates.length !== values.length
-  ) {
-    console.error('Invalid or mismatched data arrays provided');
-    return [];
-  }
+// export const convertDataForNivo = ({ dates, times, values }) => {
+//   if (
+//     !dates ||
+//     !times ||
+//     !values ||
+//     dates.length !== times.length ||
+//     dates.length !== values.length
+//   ) {
+//     console.error('Invalid or mismatched data arrays provided');
+//     return [];
+//   }
 
-  // Assuming that dates, times, and values arrays are of equal length
-  const nivoData = dates.map((date, index) => {
-    const dateTime = new Date(`${date} ${times[index]}`);
-    // Nivo chart requires the date to be either a Date object or an ISO date string
-    return {
-      x: dateTime.toISOString(),
-      y: values[index],
-    };
-  });
+//   // Assuming that dates, times, and values arrays are of equal length
+//   const nivoData = dates.map((date, index) => {
+//     const dateTime = new Date(`${date} ${times[index]}`);
+//     // Nivo chart requires the date to be either a Date object or an ISO date string
+//     return {
+//       x: dateTime.toISOString(),
+//       y: values[index],
+//     };
+//   });
 
-  // Wrapping the data for a single series, you can add more series similarly
-  return [
-    {
-      id: 'Averaged Data',
-      data: nivoData,
-    },
-  ];
-};
+// Wrapping the data for a single series, you can add more series similarly
+//   return [
+//     {
+//       id: 'Averaged Data',
+//       data: nivoData,
+//     },
+//   ];
+// };
 
 export const convertDataForNivo2 = (rawData2) => {
-  if (!Array.isArray(rawData2) || rawData2.length === 0) {
-    console.error('Invalid or empty rawData provided');
+  if (!Array.isArray(rawData2) || rawData2?.length === 0) {
+    console.error('Invalid or empty rawData provided', rawData2);
     return [];
   }
 
@@ -268,48 +259,10 @@ export const convertDataForNivo2 = (rawData2) => {
   return [
     {
       id: 'Averaged Data',
-      color: 'hsl(0, 100%, 50%)',
+      color: '#4cceac',
       data: nivoData,
     },
   ];
-};
-
-export const CustomTooltip = ({ point }) => {
-  const theme = useTheme();
-  const { serieId, data } = point;
-  const { label, xFormatted, yFormatted } = data || {};
-  const series = {
-    type: {
-      Collection: 'Collection',
-      Card: 'Card',
-      Deck: 'Deck',
-    },
-  };
-  return (
-    <Box
-      p={2}
-      boxShadow={3}
-      bgcolor={theme.palette.background.paper}
-      borderRadius={2}
-      borderColor={theme.palette.divider}
-      border={1}
-    >
-      <Typography variant="subtitle1" color="textPrimary">
-        {`Series: ${serieId}`}
-      </Typography>
-      {series.type[label] === 'Card' && (
-        <Typography variant="body1" color="textPrimary">
-          {`Card: ${label}`}
-        </Typography>
-      )}
-      <Typography variant="body2">
-        {`Time: ${new Date(xFormatted).toLocaleString()}`}
-      </Typography>
-      <Typography variant="h6" color="textSecondary">
-        {`Value: $${parseFloat(yFormatted).toFixed(2)}`}
-      </Typography>
-    </Box>
-  );
 };
 
 const roundToNearestTenth = (value) => {
@@ -328,25 +281,6 @@ export const getFilteredData = (data, timeRange) => {
       return date.getTime() >= cutOffTime;
     })
     .map((d) => ({ ...d, y: roundToNearestTenth(d.y) }));
-};
-
-export const useEventHandlers = () => {
-  const [hoveredData, setHoveredData] = useState(null);
-
-  const handleMouseMove = useCallback((point) => {
-    if (point) {
-      setHoveredData({
-        x: point.data.x,
-        y: point.data.y,
-      });
-    }
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredData(null);
-  }, []);
-
-  return { hoveredData, handleMouseMove, handleMouseLeave };
 };
 
 export const formatDateToString = (date) => {

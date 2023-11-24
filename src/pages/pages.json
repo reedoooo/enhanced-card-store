@@ -1,0 +1,49 @@
+{
+  "carouselImages": [
+    { "image": "/images/yugioh.jpeg", "caption": "Yu-Gi-Oh!" },
+    { "image": "/images/pokemon.jpeg", "caption": "Pokemon" },
+    {
+      "image": "/images/magic-the-gathering.jpeg",
+      "caption": "Magic: The Gathering"
+    }
+  ],
+  "tiers": [
+    {
+      "title": "Deck Builder",
+      "price": "0",
+      "description": [
+        "10 users included",
+        "2 GB of storage",
+        "Help center access",
+        "Email support"
+      ],
+      "buttonText": "Sign up for free",
+      "buttonVariant": "outlined"
+    },
+    {
+      "title": "Store",
+      "subheader": "Most popular",
+      "price": "15",
+      "description": [
+        "20 users included",
+        "10 GB of storage",
+        "Help center access",
+        "Priority email support"
+      ],
+      "buttonText": "Get started",
+      "buttonVariant": "contained"
+    },
+    {
+      "title": "Collection Tracker",
+      "price": "30",
+      "description": [
+        "50 users included",
+        "30 GB of storage",
+        "Help center access",
+        "Phone & email support"
+      ],
+      "buttonText": "Contact us",
+      "buttonVariant": "outlined"
+    }
+  ]
+}

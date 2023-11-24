@@ -9,12 +9,20 @@ const initialCollectionState = {
   quantity: 0, // Initialize as 0 if not provided
   totalQuantity: 0, // Initialize as 0 if not provided
   previousDayTotalPrice: 0, // Initialize as 0 if not provided
+  lastSavedPrice: {
+    num: 0,
+    timestamp: '',
+  }, // Initialize as 0 if not provided
+  latestPrice: {
+    num: 0,
+    timestamp: '',
+  }, // Initialize as 0 if not provided
   dailyPriceChange: 0, // Initialize as 0 if not provided
   priceDifference: 0, // Initialize as 0 if not provided
   priceChange: 0, // Initialize as 0 if not provided
   allCardPrices: [], // Initialize as empty array if not provided
   cards: [], // Initialize as empty array if not provided
-  currentChartDataSets: [], // Initialize as empty array if not provided
+  currentChartDataSets2: [], // Initialize as empty array if not provided
   xys: [], // Use defaultXyData or initialize as empty if not provided
   chartData: {
     name: '', // Initialize as empty string if not provided
@@ -586,43 +594,86 @@ const constructPayloadWithDifferences = (
   return { payload, nonMatchingKeys, typeMismatchContent }; // Return both the payload, the list of non-matching keys, and type mismatch messages
 };
 
-function getCurrentChartDataSets(chartData) {
-  if (!chartData || !chartData.datasets) {
-    console.error('Invalid or missing chart data');
-    return [];
-  }
+// function getCurrentChartDataSets(chartData) {
+//   if (!chartData || !chartData?.allXYValues) {
+//     console.error('Invalid or missing chart data');
+//     return [];
+//   }
 
-  const currentChartDataSets = [];
+//   const currentChartDataSets = [];
 
-  // Iterate over each dataset
-  chartData.datasets.forEach((dataset) => {
-    // Check if dataset has 'data' array
-    if (dataset.data && dataset.data.length > 0) {
-      dataset.data.forEach((dataEntry) => {
-        // Check if dataEntry has 'xys' array
-        if (dataEntry.xys && dataEntry.xys.length > 0) {
-          // Add both 'data' and 'label' from each 'xys' entry
-          currentChartDataSets.push(
-            ...dataEntry.xys.map((xy) => ({
-              ...xy.data, // Spread the 'data' object
-              label: xy.label, // Include the 'label'
-            }))
-          );
-        }
-      });
-    }
-  });
+//   // Iterate over each dataset
+//   chartData.allXYValues.forEach((val) => {
+//     // Check if dataset has 'data' array
+//     if (dataset.data && dataset.data.length > 0) {
+//       dataset.data.forEach((dataEntry) => {
+//         // Check if dataEntry has 'xys' array
+//         if (dataEntry.xys && dataEntry.xys.length > 0) {
+//           // Add both 'data' and 'label' from each 'xys' entry
+//           currentChartDataSets.push(
+//             ...dataEntry.xys.map((xy) => ({
+//               ...xy.data, // Spread the 'data' object
+//               label: xy.label, // Include the 'label'
+//             }))
+//           );
+//         }
+//       });
+//     }
+//   });
 
-  return currentChartDataSets;
-}
+//   return currentChartDataSets;
+// }
+
+// function getCurrentChartDataSets(chartData) {
+//   if (!chartData || !chartData.datasets) {
+//     console.error('Invalid or missing chart data');
+//     return [];
+//   }
+
+//   const currentChartDataSets = [];
+
+//   // Iterate over each dataset
+//   chartData.datasets.forEach((dataset) => {
+//     // Check if dataset has 'data' array
+//     if (dataset.data && dataset.data.length > 0) {
+//       dataset.data.forEach((dataEntry) => {
+//         // Check if dataEntry has 'xys' array
+//         if (dataEntry.xys && dataEntry.xys.length > 0) {
+//           // Add both 'data' and 'label' from each 'xys' entry
+//           currentChartDataSets.push(
+//             ...dataEntry.xys.map((xy) => ({
+//               ...xy.data, // Spread the 'data' object
+//               label: xy.label, // Include the 'label'
+//             }))
+//           );
+//         }
+//       });
+//     }
+//   });
+
+//   return currentChartDataSets;
+// }
 
 const calculateCollectionValue = (cards) => {
-  if (!cards?.cards && !Array.isArray(cards) && !cards?.name) {
+  if (
+    !cards?.cards &&
+    !Array.isArray(cards) &&
+    !cards?.name &&
+    !cards?.restructuredCollection
+  ) {
     console.warn('Invalid or missing collection', cards);
     return 0;
   }
+
   if (cards?.tag === 'new') {
     return 0;
+  }
+  if (cards?.restructuredCollection) {
+    return cards?.restructuredCollection?.cards.reduce((totalValue, card) => {
+      const cardPrice = card?.price || 0;
+      const cardQuantity = card?.quantity || 0;
+      return totalValue + cardPrice * cardQuantity;
+    }, 0);
   }
   if (cards?.cards && Array.isArray(cards?.cards)) {
     return cards?.cards.reduce((totalValue, card) => {
@@ -823,7 +874,7 @@ module.exports = {
   createPayload,
   logError,
   constructPayloadWithDifferences,
-  getCurrentChartDataSets,
+  // getCurrentChartDataSets,
   getPriceChange,
   getUpdatedChartData,
   mergeCards,

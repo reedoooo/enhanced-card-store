@@ -1,17 +1,16 @@
 import React, { useMemo } from 'react';
 import { Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import ProductCard from '../../cleanUp/ProductCard';
-import { useCardStore } from '../../../context/CardContext/CardStore';
 import GenericCard from '../../cards/GenericCard';
+import { useCardStore } from '../../../context/CardContext/CardStore';
 
 const useStyles = makeStyles((theme) => ({
-  grid: {
+  productGrid: {
     maxWidth: '90%',
     justifyContent: 'center',
     margin: '0 auto',
   },
-  gridItem: {
+  productGridItem: {
     padding: theme.spacing(2),
     height: 'auto', // Set a specific value if required
     width: '100%',
@@ -31,7 +30,7 @@ const ProductGrid = () => {
   );
 
   return (
-    <Grid container spacing={3} className={classes.grid}>
+    <Grid container spacing={3} className={classes.productGrid}>
       {isCardDataValid &&
         limitedCardsToRender.map((card, index) => (
           <Grid
@@ -41,7 +40,7 @@ const ProductGrid = () => {
             md={4}
             lg={3}
             key={`${card.id}-${index}`}
-            className={classes.gridItem}
+            className={classes.productGridItem}
           >
             <GenericCard card={card} context="Cart" page="storepage" />
           </Grid>

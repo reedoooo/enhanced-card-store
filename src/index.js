@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import GlobalStyles from './assets/GlobalStyles';
+import ErrorBoundary from './context/ErrorBoundary';
 import AuthProvider from './context/Auth/authContext';
 import { CartProvider } from './context/CartContext/CartContext';
 import { DeckProvider } from './context/DeckContext/DeckContext';
@@ -11,61 +12,58 @@ import { ModalProvider } from './context/ModalContext/ModalContext';
 import { UserProvider } from './context/UserContext/UserContext';
 import { CombinedProvider } from './context/CombinedProvider';
 import { ThemeProvider } from '@mui/styles';
-import { useMode } from './context/hooks/colormode';
 import { ColorModeProvider } from './context/ColorModeProvider';
-// import { ApiServiceProvider } from './context/cleanUp/ApiServiceProvider';
-import ErrorBoundary from './context/ErrorBoundary';
 import { SocketProvider } from './context/SocketProvider';
 import { SidebarProvider } from './context/SideBarProvider';
 import { ChartProvider } from './context/ChartContext/ChartContext';
 import { UtilityProvider } from './context/UtilityContext/UtilityContext';
-import { AppContextProvider } from './context/AppContextProvider';
-import { createTheme } from '@mui/material';
+import { AppContextProvider } from './context/AppContext/AppContextProvider';
+import { useMode } from './context/hooks/colormode';
+import { PopoverProvider } from './context/PopoverContext/PopoverContext';
+import { CronJobProvider } from './context/CronJobContext/CronJobContext';
+import { CardImagesProvider } from './context/CardImagesContext/CardImagesContext';
 
 const root = document.getElementById('root');
 
 function Main() {
   const { theme } = useMode();
-  // const darkTheme = createTheme({
-  //   palette: {
-  //     mode: 'dark',
-  //   },
-  // });
-  // const theme = darkTheme;
+
   return (
     <ErrorBoundary>
       <UtilityProvider>
         <AuthProvider>
           <ColorModeProvider>
             <SocketProvider>
-              {/* <UtilityProvider> */}
-              {/* <ApiServiceProvider> */}
               <UserProvider>
                 <ModalProvider>
-                  <CollectionProvider>
-                    <CombinedProvider>
-                      <CardProvider>
-                        <DeckProvider>
-                          <CartProvider>
-                            <GlobalStyles />
-                            <ThemeProvider theme={theme}>
-                              <ChartProvider>
-                                <SidebarProvider>
-                                  <AppContextProvider>
-                                    <App />
-                                  </AppContextProvider>
-                                </SidebarProvider>
-                              </ChartProvider>
-                            </ThemeProvider>
-                          </CartProvider>
-                        </DeckProvider>
-                      </CardProvider>
-                    </CombinedProvider>
-                  </CollectionProvider>
+                  <PopoverProvider>
+                    <CollectionProvider>
+                      <CombinedProvider>
+                        <CardProvider>
+                          <CronJobProvider>
+                            <DeckProvider>
+                              <CartProvider>
+                                <CardImagesProvider>
+                                  <GlobalStyles />
+                                  <ThemeProvider theme={theme}>
+                                    <ChartProvider>
+                                      <SidebarProvider>
+                                        <AppContextProvider>
+                                          <App />
+                                        </AppContextProvider>
+                                      </SidebarProvider>
+                                    </ChartProvider>
+                                  </ThemeProvider>
+                                </CardImagesProvider>
+                              </CartProvider>
+                            </DeckProvider>
+                          </CronJobProvider>
+                        </CardProvider>
+                      </CombinedProvider>
+                    </CollectionProvider>
+                  </PopoverProvider>
                 </ModalProvider>
               </UserProvider>
-              {/* </ApiServiceProvider> */}
-              {/* </UtilityProvider> */}
             </SocketProvider>
           </ColorModeProvider>
         </AuthProvider>
