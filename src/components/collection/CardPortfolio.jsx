@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
-import PortfolioContent from '../content/PortfolioContent';
+import PortfolioContent from '../../containers/collectionPageContainers/PortfolioContent';
 import { Box, Typography } from '@mui/material';
 import CollectionContainer from '../../containers/collectionPageContainers/CollectionContainer';
-import { useCollectionStore } from '../../context/hooks/collection';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 // import UpdateChartData from './UpdateChartData';
 
 const CardPortfolio = ({ allCollections }) => {
@@ -20,14 +20,14 @@ const CardPortfolio = ({ allCollections }) => {
     // allCollections,
     selectedCollection,
     setSelectedCollection,
-    fetchAllCollectionsForUser,
+    // fetchAllCollectionsForUser,
     addOneToCollection,
     removeOneFromCollection,
   } = useCollectionStore();
 
-  useEffect(() => {
-    fetchAllCollectionsForUser();
-  }, []);
+  // useEffect(() => {
+  //   fetchAllCollectionsForUser();
+  // }, []);
 
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
@@ -59,29 +59,11 @@ const CardPortfolio = ({ allCollections }) => {
     hasRun.current = true; // Set the ref to true after the function has been run
   };
 
-  // console.log('ALL COLLECTIONS:', allCollections);
-  // console.log('SELECTED COLLECTION:', selectedCollection);
-  // console.log('SELECTED CARDS:', selectedCards);
-  // console.log('SELECTED COLLECTION (CARD PORT):', selectedCollection);
   return (
     <CollectionContainer>
       {showCollections ? (
         <SelectCollection
-          allCollections={allCollections}
           handleSelectCollection={handleSelectCollection}
-          // userCollection={userCollection}
-          error={error}
-          newCard={newCard}
-          setNewCard={setNewCard}
-          newCardPrice={newCardPrice}
-          setNewCardPrice={setNewCardPrice}
-          newCardCondition={newCardCondition}
-          setSelectedCards={setSelectedCards}
-          selectedCollection={selectedCollection}
-          setSelectedCollection={setSelectedCollection}
-          selectedCards={selectedCards}
-          setNewCardCondition={setNewCardCondition}
-          addCard={addOneToCollection}
           setShowCollections={setShowCollections}
           setShowPortfolio={setShowPortfolio}
         />
@@ -101,21 +83,13 @@ const CardPortfolio = ({ allCollections }) => {
           selectedCollection={selectedCollection}
           setSelectedCollection={setSelectedCollection}
           removeCard={removeOneFromCollection}
-
-          // allCollections={allCollections}
-          // selectedCollection={selectedCollection}
-          // setSelectedCollection={setSelectedCollection}
-          // selectedCards={selectedCards}
-          // setSelectedCards={setSelectedCards}
-          // removeCard={removeOneFromCollection}
-          // chartData={UpdateChartData()}
         />
       ) : (
         <Box
           display="flex"
           alignItems="center"
           justifyContent="center"
-          minHeight="100vh"
+          // minHeight="100vh"
           backgroundColor="#f1f1f1"
         >
           <Typography variant="h6">No Collection Selected</Typography>

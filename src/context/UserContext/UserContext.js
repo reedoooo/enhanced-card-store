@@ -1,14 +1,20 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from 'react';
 import { useCookies } from 'react-cookie';
 import { useAuthContext } from '../hooks/auth';
+import { useCollectionStore } from '../CollectionContext/CollectionContext';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['userCookie']);
-  // const [user, setUser] = useState(null);
   const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
-
+  const [allCollections, setAllCollections] = useState([]);
   const { user, setUser } = useAuthContext(); // Use the useAuthContext hook
 
   const triggerCronJob = async () => {
@@ -21,13 +27,11 @@ export const UserProvider = ({ children }) => {
     if (userID) {
       const updatedUser = { userID, username };
       setUser(updatedUser);
-      // setAuthUser(updatedUser); // Update the user in AuthContext as well
     }
   }, [cookies]);
 
   const updateUser = (userData) => {
     setUser(userData);
-    // setAuthUser(userData); // Update the user in AuthContext
     setCookie('userCookie', userData, { path: '/' });
     console.log('User Data Sent to Server and Cookie Updated:', userData);
   };
@@ -37,6 +41,7 @@ export const UserProvider = ({ children }) => {
       value={{
         user,
         setUser,
+        allCollections,
         setCookie,
         updateUser,
         triggerCronJob,

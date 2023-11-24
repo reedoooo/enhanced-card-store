@@ -5,8 +5,8 @@ import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import SimpleReusableButton from '../reusable/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
-import { useCollectionStore } from '../../context/hooks/collection';
-import SelectCollectionDialog from '../dialogs/SelectCollectionDialog';
+import CreateOrEditCollectionDialog from '../dialogs/CreateOrEditCollectionDialog';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     height: '100%',
-    width: '50vw',
+    // width: '50vw',
     padding: theme.spacing(2),
   },
   button: {
@@ -97,7 +97,7 @@ const SelectCollection = ({
           openDialog={() => openDialog(false)} // Indicate that this is not a new collection
         />
       </div>
-      <SelectCollectionDialog
+      <CreateOrEditCollectionDialog
         {...{
           isDialogOpen,
           closeDialog,

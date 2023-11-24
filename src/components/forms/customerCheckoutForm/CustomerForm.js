@@ -1,17 +1,27 @@
-import React, { useState, useCallback } from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import React, { useState, useCallback, useContext } from 'react';
+import { Box, Container, Typography, Grid } from '@mui/material';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 import CustomerInfoFields from './CustomerInfoFields';
 import CartActions from './CartActions';
 import StripeCheckoutModal from '../../modals/stripeModal/StripeCheckoutModal';
+import { ModalContext } from '../../../context/ModalContext/ModalContext';
 
 const CustomerForm = () => {
   const { getTotalCost, cartData } = useCartStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    openModalWithCard,
+    closeModal,
+    isModalOpen,
+    setModalOpen,
+    modalContent,
+  } = useContext(ModalContext);
+  const { cartCardQuantity } = useCartStore();
 
-  const handleModalOpen = useCallback(() => setIsModalOpen(true), []);
-  const handleModalClose = useCallback(() => setIsModalOpen(false), []);
-
+  const handleModalOpen = useCallback(() => setModalOpen(true), [setModalOpen]);
+  const handleModalClose = useCallback(
+    () => setModalOpen(false),
+    [setModalOpen]
+  );
   const onToken = useCallback(
     (token) => {
       console.log(token);
@@ -20,7 +30,8 @@ const CustomerForm = () => {
     [handleModalClose]
   );
 
-  console.log('CUSTOMER FORM QUANTITY FROM CARTDATA', cartData.quantity);
+  console.log('CUSTOMER FORM QUANTITY FROM CARTDATA', cartCardQuantity);
+
   return (
     <Container maxWidth={false}>
       <Box sx={{ width: '100%', padding: '2rem' }}>
@@ -31,14 +42,21 @@ const CustomerForm = () => {
           Customer Info
         </Typography>
         <form>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <CustomerInfoFields />
-            <CartActions
-              quantity={cartData.quantity}
-              getTotalCost={getTotalCost}
-              handleModalOpen={handleModalOpen}
-            />
-          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={8}>
+              <CustomerInfoFields />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              {/* This space can be used for additional components if needed */}
+            </Grid>
+            <Grid item xs={12}>
+              <CartActions
+                quantity={cartCardQuantity}
+                getTotalCost={getTotalCost}
+                handleModalOpen={handleModalOpen}
+              />
+            </Grid>
+          </Grid>
         </form>
       </Box>
       <StripeCheckoutModal

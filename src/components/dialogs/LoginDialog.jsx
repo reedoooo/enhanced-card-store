@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   Button,
   Dialog,
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 function LoginDialog({ open, onClose, onLogin }) {
-  const authContext = useAuthContext();
+  const authContext = useAuthContext(); // <-- Make sure this line is updated
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -26,40 +26,59 @@ function LoginDialog({ open, onClose, onLogin }) {
   const [name, setName] = useState('');
   const [roleData, setRoleData] = useState('admin'); // Adjusted to handle string value
   const { toggleColorMode, mode } = useMode();
-  const [cookies, setCookie, removeCookie] = useCookies(['isloggedin']);
+  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+  const setLoginState = (isLoggedIn, userId) => {
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 45);
+    setCookie('isLoggedIn', isLoggedIn, { expires });
+    setCookie('userId', userId, { expires });
+    onLogin(isLoggedIn, userId);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      let response = null;
 
-    if (signupMode) {
-      await authContext.signup(username, password, email, name, roleData);
-    } else {
-      try {
-        const loggedIn = await authContext.login(username, password);
-        if (loggedIn) {
-          setCookie('isloggedin', 'true', {
-            path: '/',
-            secure: true, // set to true if using https
-            sameSite: 'strict',
-          });
-          onLogin();
-        }
-      } catch (error) {
-        console.error('Login failed:', error);
+      if (signupMode) {
+        response = await authContext.signup(
+          username,
+          password,
+          email,
+          name,
+          roleData
+        );
+      } else {
+        response = await authContext.login(username, password);
       }
+
+      if (response?.loggedIn) {
+        const expires = new Date();
+        expires.setMinutes(expires.getMinutes() + 45);
+        setCookie('isLoggedIn', true, { expires });
+        setCookie('userId', response.userId, { expires });
+
+        setLoginState(true, response.userId);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   };
 
   const handleLogout = () => {
-    removeCookie('isloggedin', { path: '/' });
+    removeCookie('userId', { path: '/' }); // Remove userId cookie
     authContext.logout();
   };
 
   useEffect(() => {
-    if (authContext.isloggedin && window.location.pathname !== '/profile') {
-      onLogin();
+    if (authContext.isLoggedIn && window.location.pathname !== '/profile') {
+      const isLoggedInFromCookie = cookies['isLoggedIn'];
+      const userIdFromCookie = cookies['userId'];
+      if (isLoggedInFromCookie && userIdFromCookie) {
+        setLoginState(isLoggedInFromCookie, userIdFromCookie);
+      }
     }
-  }, [authContext.isloggedin, onLogin, navigate]);
+  }, [authContext.isLoggedIn, onLogin, navigate, cookies]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -71,7 +90,7 @@ function LoginDialog({ open, onClose, onLogin }) {
         {!mode ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>
       <DialogContent>
-        {authContext.isloggedin ? (
+        {authContext.isLoggedIn ? (
           <Button color="primary" variant="outlined" onClick={handleLogout}>
             Log Out
           </Button>

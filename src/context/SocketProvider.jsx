@@ -9,10 +9,6 @@ import io from 'socket.io-client';
 
 const SocketContext = createContext();
 
-export const useSocket = () => {
-  return useContext(SocketContext);
-};
-
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
@@ -33,4 +29,12 @@ export const SocketProvider = ({ children }) => {
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );
+};
+
+export const useSocketContext = () => {
+  const context = useContext(SocketContext);
+  if (context === undefined) {
+    throw new Error('useSocketContext must be used within a SocketProvider');
+  }
+  return context;
 };

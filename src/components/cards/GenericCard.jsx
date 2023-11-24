@@ -1,221 +1,242 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Card,
   CardContent,
   CardActions,
-  CardMedia,
   Typography,
-  Button,
-  Popover,
-  Grid,
-  ButtonGroup,
+  styled,
+  useMediaQuery,
+  Container,
 } from '@mui/material';
 import CardMediaSection from '../media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/images/placeholder.jpeg';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
-import { CartContext } from '../../context/CartContext/CartContext';
-import { CollectionContext } from '../../context/CollectionContext/CollectionContext';
-import { makeStyles } from '@mui/styles';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { ModalContext } from '../../context/ModalContext/ModalContext';
+import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
+import { useMode } from '../../context/hooks/colormode';
 
-const useStyles = makeStyles((theme) => ({
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    maxHeight: '300px', // or any desired max height
-    minHeight: '300px', // make sure it matches max height
-    overflow: 'hidden', // ensures content doesn't spill out
-    borderRadius: theme.spacing(1), // Add border radius for cards
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Add shadow for cards
-    transition: 'transform 0.2s',
-    '&:hover': {
-      transform: 'scale(1.03)', // Add a slight scale effect on hover
-    },
-  },
-  image: {
-    maxHeight: '200px',
-    width: '100%',
-    objectFit: 'cover', // Ensure the image covers the entire space
-  },
-  text: {
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  button: {
-    // maxWidth: '200px',
-    minHeight: '40px',
-    maxHeight: '60px',
-    width: '100%',
-  },
-  content: {
-    transform: 'scale(0.9)', // scales down to 90% of the original size
-    padding: 0,
-  },
-  cardActions: {
-    marginTop: 'auto', // pushes the actions to the bottom
-    display: 'flex',
-    justifyContent: 'center', // centers the buttons
-    width: '100%',
+const AspectRatioBox = styled('div')(({ theme }) => ({
+  width: '100%', // Full width of the parent container
+  // paddingTop: '2%', // Aspect ratio of 16:9
+  position: 'relative',
+}));
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '100%', // Ensure it doesn't exceed the parent width
+  width: 'auto', // Adjust if needed
+  maxHeight: '80vh', // Max height based on the viewport height
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  transition: 'transform 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
   },
 }));
 
-const GenericCard = ({
-  card,
-  context,
-  cardInfo,
-  cardRef,
-  setHoveredCard,
-  hoveredCard,
-  setIsPopoverOpen,
-  isPopoverOpen,
-  // anchorEl,
-  // handlePopoverOpen,
-  // handlePopoverClose,
-  // open,
-}) => {
-  const deckContext = useContext(DeckContext);
-  const cartContext = useContext(CartContext);
-  const collectionContext = useContext(CollectionContext);
-  const contextProps =
-    {
-      Deck: deckContext,
-      Cart: cartContext,
-      Collection: collectionContext,
-    }[context] || {};
-  // const tooltipRef = useRef(null);
-  // const cardRef = useRef(null);
+const GenericCard = React.forwardRef((props, ref) => {
+  const { theme } = useMode();
+  const { card, context, setClickedCard } = props;
+  // const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const [buttonVariant, setButtonVariant] = useState('contained');
-  const [isModalOpen, setModalOpen] = useState(false);
-  // const [anchorEl, setAnchorEl] = useState(null);
-  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
-  const open = Boolean(hoveredCard === card);
+  const { selectedCollection } = useCollectionStore();
+  const { openModalWithCard, setModalOpen } = useContext(ModalContext);
+  const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
+    useContext(PopoverContext);
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-  const openProductModal = openModal;
-  // const handlePopoverOpen = () => {
-  //   setHoveredCard(card);
-  // };
-
-  // const handlePopoverClose = () => {
-  //   setHoveredCard(null);
-  // };
-
-  const classes = useStyles();
-  const handleCardHover = (cardData) => {
-    setHoveredCard(cardData);
-    setIsPopoverOpen(true); // or based on other logic you might have
+  const handleClick = () => {
+    openModalWithCard(card);
+    setModalOpen(true);
+    setIsPopoverOpen(false);
   };
 
-  const CardContentByContext = ({ context }) => {
-    const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price}`;
+  const handleInteraction = (hoverState) => {
+    if (!hoverState) {
+      setHoveredCard(hoverState ? card : null);
+      setIsPopoverOpen(hoverState);
+    }
+  };
+
+  useEffect(() => {
+    setIsPopoverOpen(hoveredCard === card);
+  }, [hoveredCard, card, setIsPopoverOpen]);
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+
+  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
+  const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price || 'N/A'}`;
+
+  const renderCardContent = () => {
+    // Adjust content based on the screen size
+    let variant = 'body2';
+    if (isSmallScreen) {
+      // variant = 'caption';
+      variant = 'h6';
+    } else if (isMediumScreen) {
+      variant = 'body2';
+    } else if (isLargeScreen) {
+      variant = 'body2';
+    }
+
     return (
-      <>
-        <Typography variant="body3" color="text.secondary" noWrap>
+      <CardContent>
+        <Typography variant={variant}>{card?.name}</Typography>
+        <Typography variant={variant} color="text.secondary" noWrap>
           {price}
         </Typography>
-        <Typography variant="body2" color="text.secondary" noWrap>
-          {/* Quantity: {contextProps?.deckCardQuantity?.quantityOfSameId || `Not in ${context?.toLowerCase()}`} */}
-        </Typography>
-      </>
+      </CardContent>
     );
   };
-  // console.log('cardRef:', cardRef.current);
-  // console.log('anchorEl:', anchorEl);
-  // console.log('open:', open);
-  // console.log('handlePopoverClose:', handlePopoverClose);
-  // console.log('handlePopoverOpen:', handlePopoverOpen);
   return (
-    <Card
-      className={classes.card}
-      // aria-owns={open ? 'mouse-over-popover' : undefined}
-      // aria-haspopup="true"
-      // onMouseEnter={handlePopoverOpen}
-      // onMouseLeave={handlePopoverClose}
-    >
-      {context === 'Deck' ? (
+    <StyledCard ref={ref}>
+      <AspectRatioBox>
         <CardMediaSection
+          isRequired={true}
           imgUrl={imgUrl}
           card={card}
-          onCardHover={handleCardHover}
-          cardData={hoveredCard}
-          openModal={openModal}
-          closeModal={closeModal}
-          setIsPopoverOpen={setIsPopoverOpen}
-          isPopoverOpen={isPopoverOpen}
-          cardRef={cardRef}
-          // hoveredCard={hoveredCard}
-          setHoveredCard={setHoveredCard}
-          modalIsOpen={isModalOpen}
-          // anchorEl={anchorEl}
+          setClickedCard={setClickedCard}
+          isHovered={hoveredCard === card}
+          handleInteraction={handleInteraction}
+          handleClick={handleClick}
         />
-      ) : (
-        <CardMedia
-          component="img"
-          alt={card?.name}
-          // cardRef={ref}
-          image={imgUrl}
-          className={classes.image}
-        />
-      )}
-      <Grid item xs zeroMinWidth>
-        <CardContent className={classes.content}>
-          <Typography variant="h6">{card?.name}</Typography>
-          <CardContentByContext context={context} />
-        </CardContent>
-        <CardActions className={classes.cardActions}>
-          {context === 'Store' || context === 'Cart' ? (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <GenericActionButtons
-                card={card}
-                context={context}
-                // handleOpenDialog={openModal}
-                open={openModal}
-                variant={buttonVariant}
-              />
-              <Button
-                variant={buttonVariant}
-                color="primary"
-                onClick={openProductModal}
-                className={classes.button}
-              >
-                View Details
-              </Button>
-            </div>
-          ) : (
-            <ButtonGroup
-              variant="contained"
-              aria-label="outlined primary button group"
-              // fullWidth={true}//
-              display="flex"
-              // maxWidth="110px"
-              margin="0"
-              padding="0"
-              left="0"
-            >
-              {/* <GenericActionButtons
-                card={card}
-                open={isModalOpen}
-                closeModal={closeModal}
-                context={context}
-                variant={buttonVariant}
-              /> */}
-              <GenericActionButtons
-                card={card}
-                open={isModalOpen}
-                closeModal={closeModal}
-                context={'Collection'}
-                variant={buttonVariant}
-              />
-            </ButtonGroup>
-          )}
-        </CardActions>
-      </Grid>
-    </Card>
+      </AspectRatioBox>
+
+      {renderCardContent()}
+      <CardActions container>
+        <GenericActionButtons card={card} context={context} />
+      </CardActions>
+    </StyledCard>
   );
-};
+});
+
+GenericCard.displayName = 'GenericCard';
 
 export default GenericCard;
+
+// import React, { useContext, useEffect } from 'react';
+// import { Card, CardContent, CardActions, Typography } from '@mui/material';
+// import CardMediaSection from '../media/CardMediaSection';
+// import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
+// import placeholderImage from '../../assets/images/placeholder.jpeg';
+// import { useStyles } from './cardStyles';
+// import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+// import { ModalContext } from '../../context/ModalContext/ModalContext';
+// import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
+
+// const GenericCard = React.forwardRef((props, ref) => {
+//   const {
+//     card,
+//     context,
+//     // isModalOpen,
+//     // setModalOpen,
+//     // hoveredCard,
+//     // setHoveredCard,
+//     // setIsPopoverOpen,
+//     setClickedCard,
+//   } = props;
+//   const classes = useStyles();
+//   const { selectedCollection } = useCollectionStore();
+//   const {
+//     openModalWithCard,
+//     closeModal,
+//     isModalOpen,
+//     setModalOpen,
+//     modalContent,
+//   } = useContext(ModalContext);
+//   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
+//     useContext(PopoverContext);
+
+//   const requiresDoubleButtons = context === 'Deck' || context === 'Collection'; // Added this line
+//   const checkCardInCollection = () => {
+//     if (selectedCollection) {
+//       const cardIds = selectedCollection?.cards?.map((card) => card.id);
+//       return cardIds?.includes(card.id);
+//     }
+//     return false;
+//   };
+
+//   const handleClick = () => {
+//     const cardIsInCollection = checkCardInCollection();
+//     console.log('Modal opened with card:', card);
+//     openModalWithCard(card);
+//     console.log('Card is in collection:', cardIsInCollection);
+
+//     setModalOpen(true);
+//     setIsPopoverOpen(false);
+//   };
+//   // setIsPopoverOpen(false);
+
+//   // Function to handle hover interactions with the card
+//   // const handleInteraction = (hoverState) => {
+//   //   if (!isModalOpen) {
+//   //     setHoveredCard((prev) => (hoverState ? card : null));
+//   //     setIsPopoverOpen(hoverState);
+//   //   }
+//   // };
+//   const handleInteraction = (hoverState) => {
+//     if (!isModalOpen) {
+//       setHoveredCard(hoverState ? card : null);
+//       setIsPopoverOpen(hoverState);
+//     }
+//   };
+//   // Effect to close popover when modal is open or reactivate when modal closes
+//   useEffect(() => {
+//     setIsPopoverOpen(isModalOpen ? false : hoveredCard === card);
+//     if (isModalOpen) {
+//       setHoveredCard(null);
+//     }
+//   }, [isModalOpen, hoveredCard, card, setIsPopoverOpen, setHoveredCard]);
+
+//   // Get the card image URL, or use placeholder if not available
+//   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
+//   const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price || 'N/A'}`;
+//   console.log(typeof handleInteraction); // Should log 'function'
+
+//   return (
+//     <Card className={classes.card} ref={ref}>
+//       <CardMediaSection
+//         isRequired={true}
+//         imgUrl={imgUrl}
+//         card={card}
+//         setClickedCard={setClickedCard}
+//         isHovered={hoveredCard === card}
+//         handleInteraction={handleInteraction}
+//         handleClick={handleClick}
+//         ref={ref}
+//       />
+//       <CardContent className={classes.content}>
+//         <Typography variant="h6">{card?.name}</Typography>
+//         <Typography variant="body2" color="text.secondary" noWrap>
+//           {price}
+//         </Typography>
+//       </CardContent>
+//       <CardActions className={classes.cardActions}>
+//         {requiresDoubleButtons ? (
+//           <>
+//             <GenericActionButtons
+//               card={card}
+//               context="Collection"
+//               // setModalOpen={setModalOpen}
+//             />
+//             {/* TODO fix card to display buttons for both collections and decks */}
+//           </>
+//         ) : (
+//           <GenericActionButtons
+//             card={card}
+//             context={context}
+//             // setModalOpen={setModalOpen}
+//           />
+//         )}
+//       </CardActions>
+//     </Card>
+//   );
+// });
+
+// GenericCard.displayName = 'GenericCard';
+
+// export default GenericCard;

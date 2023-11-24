@@ -1,12 +1,12 @@
 import { useState, useMemo, createContext, useEffect } from 'react';
 import { createTheme } from '@mui/material/styles';
 import { useCookies } from 'react-cookie';
-import { themeSettings } from '../themeSettings';
+import { themeSettings } from '../assets/themeSettings';
 
 export const ColorModeContext = createContext({
   mode: 'dark',
   colorMode: {},
-  theme: themeSettings('dark'), // default theme is light mode theme
+  theme: createTheme(themeSettings('dark')), // Default theme is dark mode
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   toggleColorMode: () => {},
@@ -21,18 +21,17 @@ export const ColorModeProvider = ({ children }) => {
   useEffect(() => {
     // Set the cookie whenever the mode changes
     setCookie('colorMode', mode, { path: '/' });
-  }, [mode]);
+  }, [mode, setCookie]);
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        const newMode = mode === 'light' ? 'dark' : 'light';
+        const newMode = mode === 'dark' ? 'dark' : 'light';
         setMode(newMode);
         setCookie('colorMode', newMode); // also set the cookie here for immediate effect
-        // Cookies.set('colorMode', newMode, { expires: 365 }); // also set the cookie here for immediate effect
       },
     }),
-    [mode]
+    [mode, setCookie]
   );
 
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);

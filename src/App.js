@@ -1,13 +1,12 @@
 // External Imports
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import styled, { createGlobalStyle } from 'styled-components';
 
 // Component Imports
 import Header from './components/headings/header/Header';
 import Footer from './components/headings/footer/Footer';
-import PrivateRoute from './components/Auth/PrivateRoute';
+import PrivateRoute from './components/reusable/PrivateRoute';
 
 // Page Imports
 import SplashPage from './pages/SplashPage';
@@ -17,104 +16,72 @@ import CartPage from './pages/CartPage';
 import ProfilePage from './pages/ProfilePage';
 import CollectionPage from './pages/CollectionPage';
 import DeckBuilderPage from './pages/DeckBuilderPage';
-import ThreeJsCube from './pages/ThreeJsCube';
-import CardDeckAnimation from './pages/CardDeckAnimation';
+import ThreeJsCube from './assets/animations/ThreeJsCube';
+import CardDeckAnimation from './assets/animations/CardDeckAnimation';
 
 // Context Hooks Imports
-import { useCombinedContext } from './context/CombinedProvider';
 import { useUserContext } from './context/UserContext/UserContext';
+import { useCollectionStore } from './context/CollectionContext/CollectionContext';
 import { useUtilityContext } from './context/UtilityContext/UtilityContext';
-
-// Styled Components
-const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`;
-
-const GlobalStyle = createGlobalStyle`
-  /* Your global styles here */
-`;
-
-// Custom Hook for Cron Job
-const useCronJob = (lastCronJobTriggerTime, setLastCronJobTriggerTime) => {
-  const {
-    cronData,
-    handleSendAllCardsInCollections,
-    listOfMonitoredCards,
-    handleRetreiveListOfMonitoredCards,
-    retrievedListOfMonitoredCards,
-    allCollectionsUpdated,
-  } = useCombinedContext();
-
-  const { user } = useUserContext();
-  const userId = user?.userID;
-
-  useEffect(() => {
-    setLastCronJobTriggerTime(new Date().getTime());
-  }, [setLastCronJobTriggerTime]);
-
-  useEffect(() => {
-    const handleTriggerCronJob = () => {
-      const currentTime = new Date().getTime();
-      if (currentTime - lastCronJobTriggerTime >= 60000) {
-        setLastCronJobTriggerTime(currentTime);
-        if (userId && listOfMonitoredCards && retrievedListOfMonitoredCards) {
-          handleSendAllCardsInCollections(
-            userId,
-            listOfMonitoredCards,
-            retrievedListOfMonitoredCards
-          );
-          console.log('SENDING ALL CARDS IN COLLECTIONS');
-        } else if (userId && listOfMonitoredCards) {
-          console.log('RETRIEVING LIST OF MONITORED CARDS');
-          handleSendAllCardsInCollections(
-            userId,
-            listOfMonitoredCards,
-            handleRetreiveListOfMonitoredCards()
-          );
-          console.log('Triggered the cron job.');
-        }
-      }
-    };
-
-    const interval = setInterval(handleTriggerCronJob, 60000);
-    return () => clearInterval(interval);
-  }, [
-    cronData,
-    lastCronJobTriggerTime,
-    allCollectionsUpdated,
-    handleRetreiveListOfMonitoredCards,
-    handleSendAllCardsInCollections,
-    listOfMonitoredCards,
-    retrievedListOfMonitoredCards,
-    userId,
-  ]);
-};
-
-// Main Component
+import { AppContainer } from './pages/pageStyles/StyledComponents';
+import { useCardImages } from './context/CardImagesContext/CardImagesContext';
+import { useCookies } from 'react-cookie';
+import { useDeckStore } from './context/DeckContext/DeckContext';
+import { useCartStore } from './context/CartContext/CartContext';
 const App = () => {
-  const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(null);
-  const { isLoading, setIsContextLoading } = useUtilityContext();
+  const [cookies] = useCookies(['user']);
 
+  const user = cookies.user;
+  const [currentPage, setCurrentPage] = useState('');
+  // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
+  const { fetchAllCollectionsForUser, selectedCollection } =
+    useCollectionStore();
+  const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
+  const { fetchUserCart, cartData } = useCartStore();
+  const { isLoading, setIsLoading } = useUtilityContext();
+
+  // const { getRandomCardImages } = useCardImages(); // Add this line
+
+  // useEffect(() => {
+  //   getRandomCardImages(10); // Fetch 10 random images on app start
+  // }, []); // Add this useEffect
+
+  useEffect(() => {
+    if (user) {
+      fetchAllCollectionsForUser()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching collections:', error);
+          setIsLoading(false);
+        });
+    }
+  }, [user, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchAllDecksForUser(user?.id).catch((err) =>
+  //       console.error('Failed to get all decks:', err)
+  //     );
+  //   }
+  // }, [fetchAllDecksForUser]);
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchUserCart(user?.id).catch((err) =>
+  //       console.error('Failed to get cart:', err)
+  //     );
+  //   }
+  // }, [fetchUserCart]);
+
+  // Handle initial loading state
   useEffect(() => {
     if (!isLoading) {
-      setIsContextLoading(false);
+      setIsLoading(false);
     }
-  }, [isLoading, setIsContextLoading]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsContextLoading(false);
-    }, 5500);
-    return () => clearTimeout(timer);
-  }, [setIsContextLoading]);
-
-  useCronJob(lastCronJobTriggerTime, setLastCronJobTriggerTime);
+  }, [isLoading, setIsLoading]);
 
   return (
     <>
-      <GlobalStyle />
       <Helmet>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -130,10 +97,12 @@ const App = () => {
       {isLoading ? (
         <SplashPage />
       ) : (
-        <Router>
+        <React.Fragment>
           <AppContainer>
             <Header />
             <Routes>
+              {/* {setCurrentPage(useLocation())} */}
+
               <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/store" element={<StorePage />} />
@@ -176,7 +145,7 @@ const App = () => {
             </Routes>
             <Footer />
           </AppContainer>
-        </Router>
+        </React.Fragment>
       )}
     </>
   );

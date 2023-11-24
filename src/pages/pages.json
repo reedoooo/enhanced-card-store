@@ -1,0 +1,46 @@
+{
+  "carouselImages": [
+    { "image": "/images/yugioh.jpeg", "caption": "Yu-Gi-Oh!" },
+    { "image": "/images/pokemon.jpeg", "caption": "Pokemon" },
+    {
+      "image": "/images/magic-the-gathering.jpeg",
+      "caption": "Magic: The Gathering"
+    }
+  ],
+  "tiers": [
+    {
+      "title": "Deck Builder",
+      "description": [
+        "Build and test decks digitally",
+        "Access to a wide library of cards",
+        "Deck performance analytics",
+        "Community deck sharing and rating"
+      ],
+      "buttonText": "Get Started",
+      "buttonVariant": "outlined"
+    },
+    {
+      "title": "Store",
+      "subheader": "Most popular",
+      "description": [
+        "Sell and buy cards with ease",
+        "Secure transaction platform",
+        "Real-time market price tracking",
+        "Exclusive member discounts"
+      ],
+      "buttonText": "Shop now",
+      "buttonVariant": "contained"
+    },
+    {
+      "title": "Collection Tracker",
+      "description": [
+        "Track and manage your card collection",
+        "Value estimation based on market trends",
+        "Automatic collection organization",
+        "Trade and wishlist creation tools"
+      ],
+      "buttonText": "Track Collection",
+      "buttonVariant": "outlined"
+    }
+  ]
+}

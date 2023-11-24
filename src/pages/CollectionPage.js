@@ -1,54 +1,107 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useCookies } from 'react-cookie';
-import LoadingIndicator from '../components/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/indicators/ErrorIndicator';
-import CollectionBanner from './pageStyles/CollectionBanner';
-import CollectionTitle from './pageStyles/CollectionTitle';
+import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
+import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import CardPortfolio from '../components/collection/CardPortfolio';
-import { useCollectionStore } from '../context/hooks/collection';
-import HeaderTitle from '../components/reusable/HeaderTitle';
 import Subheader from '../components/reusable/Subheader';
+import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
+import { ModalContext } from '../context/ModalContext/ModalContext';
+import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
+import { CollectionBanner } from './pageStyles/StyledComponents';
 
+const HeroCenter = ({ decorative, title, subtitle }) => (
+  <Box
+    sx={{
+      flex: 1,
+      height: '50vh',
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+      gap: 2,
+      my: 6,
+      textAlign: 'center',
+    }}
+  >
+    <Typography
+      component="span"
+      sx={{
+        color: 'primary.main',
+        fontWeight: 600,
+        fontSize: 'sm',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+      }}
+    >
+      {decorative}
+    </Typography>
+    <Typography
+      variant="h1"
+      sx={{
+        fontSize: { xs: '4xl', sm: '5xl', md: '6xl' },
+        fontWeight: 800,
+      }}
+    >
+      {title}
+    </Typography>
+    <Typography
+      sx={{
+        fontSize: 'lg',
+        color: 'text.secondary',
+        maxWidth: '54ch',
+      }}
+    >
+      {subtitle}
+    </Typography>
+  </Box>
+);
+
+// Default props for the HeroCenter component for ease of use and maintainability
+HeroCenter.defaultProps = {
+  decorative: 'All-in-One',
+  title: "Your Collection's Home",
+  subtitle:
+    // eslint-disable-next-line max-len
+    'Welcome to your collection! Here you can view all of your cards, add new cards, and remove cards from your collection.',
+};
+
+// Main collection page component
 const CollectionPage = () => {
-  // const [defaultCollection, setDefaultCollection] = useState([]);
-  const { userCookie } = useCookies(['userCookie'])[0];
-  const {
-    fetchAllCollectionsForUser,
-    allCollections = [],
-    setAllCollections,
-    selectedCollection,
-    setSelectedCollection,
-    loading,
-    calculateTotalPrice,
-    error,
-  } = useCollectionStore();
-  const userId = userCookie?.id;
-
-  useEffect(() => {
-    fetchAllCollectionsForUser()
-      .then(() => {
-        console.log('Fetched collections successfully');
-      })
-      .catch((err) => {
-        console.error('Failed to get all collections:', err);
-      });
-  }, [fetchAllCollectionsForUser]);
+  const [{ user }] = useCookies(['user']);
+  const { allCollections, selectedCollection, loading, error } =
+    useCollectionStore();
+  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
+    useContext(ModalContext);
+  const userId = user?.id;
 
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
 
   return (
-    <div>
+    <React.Fragment>
       <CollectionBanner>
-        <HeaderTitle
-          title="Collection Portfolio"
-          size="large"
-          location="center"
-        />
-        <Subheader text={`${selectedCollection?.name}`} />
-        <CardPortfolio allCollections={allCollections} />
+        <Box>
+          <HeroCenter />
+          <Subheader text={selectedCollection?.name || 'Your Collection'} />
+        </Box>
       </CollectionBanner>
-    </div>
+      <Box
+        sx={{
+          maxHeight: '200vh',
+        }}
+      >
+        <CardPortfolio allCollections={allCollections} />
+      </Box>{' '}
+      {isModalOpen && (
+        <GenericCardModal
+          open={isModalOpen}
+          closeModal={closeModal}
+          card={modalContent}
+          // context and other props if necessary
+        />
+      )}
+    </React.Fragment>
   );
 };
 

@@ -4,7 +4,7 @@ import placeholder from '../assets/images/placeholder.jpeg';
 import { useUtilityContext } from '../context/UtilityContext/UtilityContext';
 
 const SplashPage = () => {
-  const { fetchDirectedResponses } = useUtilityContext();
+  // const { fetchDirectedResponses } = useUtilityContext();
 
   useEffect(() => {
     // Initialize the scene, camera, and renderer
@@ -63,10 +63,14 @@ const SplashPage = () => {
 
     // Start the animation loop
     animate();
+    console.log('Three.js scene initialized'); // Debug log
+  }, []); // Empty dependency array ensures this runs once when component mounts
 
-    // Fetch the directed responses
-    fetchDirectedResponses();
-  }, [fetchDirectedResponses]); // Add fetchDirectedResponses as a dependency to ensure it is called when the component mounts
+  // useEffect(() => {
+  //   // Fetch the directed responses
+  //   fetchDirectedResponses();
+  //   console.log('fetchDirectedResponses called'); // Debug log
+  // }, [fetchDirectedResponses]); // fetchDirectedResponses as a dependency
 
   return <div id="splash-container"></div>;
 };

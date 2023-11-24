@@ -1,106 +1,133 @@
-import React, { useState, useEffect } from 'react';
+// CardMediaSection.js
+import React from 'react';
 import ReusableCardMedia from './CardMedia';
-import placeholderImage from '../../assets/images/placeholder.jpeg';
+import CardToolTip from '../cards/CardToolTip';
 import { makeStyles } from '@mui/styles';
 import { Popover } from '@mui/material';
-import CardToolTip from '../cards/CardToolTip';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   mediaContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    '&:hover': {
-      opacity: 0.7,
-    },
+    position: 'relative',
+  },
+  popover: {
+    pointerEvents: 'none', // Ensure popover doesn't block mouse events
   },
 });
 
-const CardMediaSection = ({
-  imgUrl = placeholderImage,
-  card,
-  // open,
-  openModal,
-  cardRef,
-  modalIsOpen,
-  onCardHover,
-  cardData,
-  setIsPopoverOpen,
-  isPopoverOpen,
-}) => {
-  const classes = useStyles();
-  const [hasLoggedCard, setHasLoggedCard] = useState(false);
+const anchorOrigin = {
+  vertical: 'bottom',
+  horizontal: 'left',
+};
 
-  useEffect(() => {
-    if (!hasLoggedCard) {
-      // console.log('CARD:', card);
-      setHasLoggedCard(true);
-    }
-  }, [hasLoggedCard, card]);
+const transformOrigin = {
+  vertical: 'top',
+  horizontal: 'left',
+};
 
-  // useEffect(() => {
-  //   if (!modalIsOpen) {
-  //     setIsPopoverOpen(false);
-  //   }
-  // }, [modalIsOpen]);
+const CardMediaSection = React.forwardRef(
+  (
+    {
+      imgUrl,
+      card,
+      isHovered,
+      handleInteraction,
+      handleClick,
+      setClickedCard,
+      isRequired,
+    },
+    ref
+  ) => {
+    const classes = useStyles();
 
-  const open = Boolean(cardData === card) && !modalIsOpen;
-
-  const handleMouseEnter = () => {
-    if (!modalIsOpen && typeof onCardHover === 'function') {
-      onCardHover(card);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!modalIsOpen && typeof onCardHover === 'function') {
-      onCardHover(null);
-      // setIsPopoverOpen(false);
-    }
-  };
-
-  // const handleClick = () => {
-  //   // Close the popover and open the modal
-  //   setIsPopoverOpen(false);
-  //   openModal();
-  // };
-
-  return (
-    <div
-      ref={cardRef}
-      className={classes.mediaContainer}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div
-        onClick={() => {
-          openModal();
-          setIsPopoverOpen(false);
-        }}
-      >
+    // Event handlers are now only assigned if isRequired is true
+    const eventHandlers = isRequired
+      ? {
+          onMouseEnter: () => {
+            if (typeof handleInteraction === 'function') {
+              handleInteraction(true);
+            }
+          },
+          onMouseLeave: () => {
+            if (typeof handleInteraction === 'function') {
+              handleInteraction(false);
+            }
+          },
+          onClick: () => {
+            if (typeof handleClick === 'function') {
+              handleClick();
+            }
+            if (typeof setClickedCard === 'function') {
+              setClickedCard(card);
+            }
+          },
+        }
+      : {};
+    return (
+      <div className={classes.mediaContainer} ref={ref} {...eventHandlers}>
         <ReusableCardMedia imgUrl={imgUrl} />
+        {isRequired && isHovered && (
+          <Popover
+            className={classes.popover}
+            open={isHovered}
+            anchorEl={ref?.current}
+            onClose={() => handleInteraction(false)}
+            anchorOrigin={anchorOrigin}
+            transformOrigin={transformOrigin}
+            disableRestoreFocus
+          >
+            <CardToolTip card={card} />
+          </Popover>
+        )}
       </div>
+    );
+  }
+);
+//     return (
+//       <div className={classes.mediaContainer} ref={ref}>
+//         <ReusableCardMedia
+//           imgUrl={imgUrl}
+//           {...eventHandlers} // Spread event handlers conditionally
+//         />
+//         {isRequired && isHovered && ref.current && (
+//           <Popover
+//             open={isHovered}
+//             anchorEl={ref?.current}
+//             anchorOrigin={anchorOrigin}
+//             transformOrigin={transformOrigin}
+//             onClose={() => {
+//               if (typeof handleInteraction === 'function') {
+//                 handleInteraction(false);
+//               }
+//             }}
+//             disableRestoreFocus
+//           >
+//             <CardToolTip card={card} />
+//           </Popover>
+//         )}
+//       </div>
+//     );
+//   }
+// );
 
-      <Popover
-        id={open ? 'mouse-over-popover' : undefined}
-        sx={{ pointerEvents: 'none' }}
-        open={open}
-        anchorEl={cardRef?.current || undefined}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        onClose={() => onCardHover(null)}
-        disableRestoreFocus
-      >
-        <CardToolTip card={card} />
-      </Popover>
-    </div>
-  );
+CardMediaSection.displayName = 'CardMediaSection';
+
+CardMediaSection.propTypes = {
+  imgUrl: PropTypes.string.isRequired,
+  card: PropTypes.object.isRequired,
+  isHovered: PropTypes.bool,
+  handleInteraction: PropTypes.func,
+  handleClick: PropTypes.func,
+  setClickedCard: PropTypes.func,
+  isRequired: PropTypes.bool,
+};
+
+CardMediaSection.defaultProps = {
+  isHovered: false,
+  handleInteraction: null,
+  handleClick: null,
+  setClickedCard: null,
+  isRequired: true,
 };
 
 export default CardMediaSection;
-
-CardMediaSection.defaultProps = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onCardHover: () => {}, // provide a no-op function as default
-};

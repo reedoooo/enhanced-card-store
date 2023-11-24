@@ -9,10 +9,9 @@ import {
   Pagination,
 } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
-import { useTheme } from '@emotion/react';
-import SearchForm from './SearchForm';
+import SearchForm from '../forms/SearchForm';
 import DeckSearchCardGrid from '../grids/searchResultGrids/DeckSearchCardGrid';
-import CustomPagination from '../other/CustomPagination';
+import CustomPagination from '../reusable/CustomPagination';
 
 const DeckSearch = ({ userDecks }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,11 +28,21 @@ const DeckSearch = ({ userDecks }) => {
   const itemsPerPage = 36;
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  const currentDeckSearchData = deckSearchData.slice(start, end);
+  const currentDeckSearchData = deckSearchData?.slice(start, end);
 
   return (
     <Fade in={true} timeout={500}>
-      <Box p={1}>
+      <Box
+        p={1}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+        }}
+      >
         <SearchForm
           searchTerm={searchTerm}
           handleChange={handleChange}

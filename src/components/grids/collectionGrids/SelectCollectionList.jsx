@@ -6,11 +6,14 @@ import {
   ListItemText,
   Divider,
   Button,
+  Grid,
+  Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
-import { useCollectionStore } from '../../../context/hooks/collection';
+import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -28,6 +31,12 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     marginLeft: theme.spacing(3),
   },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+  },
   editButton: {
     marginLeft: theme.spacing(2),
     backgroundColor: theme.palette.primary.main,
@@ -35,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+  },
+  gridItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    padding: theme.spacing(1),
+  },
+  gridItemText: {
+    fontWeight: 'bold',
   },
 }));
 
@@ -47,6 +66,7 @@ const SelectCollectionList = ({
   const { allCollections, setSelectedCollection, selectedCollection } =
     useCollectionStore();
   const [cookies] = useCookies(['userCookie']);
+  const [isLoading, setIsLoading] = useState(false);
   // const userId = cookies.userCookie?.id;
   // const [collections, setCollections] = useState([]);
 
@@ -75,38 +95,64 @@ const SelectCollectionList = ({
     [openDialog, setSelectedCollection]
   );
 
-  // console.log(
-  //   'SELECTED COLLECTION (SELECT COLLECTIN LIST):',
-  //   selectedCollection
-  // );
-  // The rendering part of the component
   return (
-    <List className={classes.list}>
-      {allCollections
-        ?.filter((collection) => !!collection?._id)
-        .map((collection) => (
-          <React.Fragment key={collection?._id}>
-            <ListItem className={classes.listItem}>
-              <ButtonBase
-                sx={{ width: '100%' }}
-                onClick={() => handleSelect(collection?._id)}
-              >
-                <ListItemText
-                  primary={collection?.name}
-                  className={classes.listItemText}
-                />
-              </ButtonBase>
-              <Button
-                className={classes.editButton}
-                onClick={() => handleOpenDialog(collection)} // Pass the collection object here
-              >
-                Edit
-              </Button>
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        ))}
-    </List>
+    <>
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <List className={classes.list}>
+          {allCollections
+            ?.filter((collection) => !!collection?._id)
+            .map((collection) => (
+              <React.Fragment key={collection?._id}>
+                <ListItem className={classes.listItem}>
+                  <ButtonBase
+                    sx={{ width: '100%' }}
+                    onClick={() => handleSelect(collection?._id)}
+                  >
+                    <Grid container>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Name:
+                        </Typography>
+                        <Typography>{collection?.name}</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Value:
+                        </Typography>
+                        {/* Replace with actual value */}
+                        <Typography>${collection?.currentValue}</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Performance:
+                        </Typography>
+                        {/* Replace with actual data */}
+                        <Typography>{collection?.performance} %</Typography>
+                      </Grid>
+                      <Grid item xs={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Cards:
+                        </Typography>
+                        {/* Replace with actual count */}
+                        <Typography>{collection?.numberOfCards}</Typography>
+                      </Grid>
+                    </Grid>
+                  </ButtonBase>
+                  <Button
+                    className={classes.editButton}
+                    onClick={() => handleOpenDialog(collection)} // Pass the collection object here
+                  >
+                    Edit
+                  </Button>
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+        </List>
+      )}
+    </>
   );
 };
 

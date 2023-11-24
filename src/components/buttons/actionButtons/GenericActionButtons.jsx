@@ -1,84 +1,168 @@
-// Dependencies
-import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@mui/styles';
-import { CollectionContext } from '../../../context/CollectionContext/CollectionContext';
-import { DeckContext } from '../../../context/DeckContext/DeckContext';
-import { CartContext } from '../../../context/CartContext/CartContext';
-import GenericCardModal from '../../modals/GenericCardModal';
+import React, { useContext } from 'react';
 import CardActionButtons from './CardActionButtons';
-// import ChooseCollectionDialog from './ChooseCollectionDialog';
+import useAppContext from '../../../context/hooks/useAppContext';
+import { ModalContext } from '../../../context/ModalContext/ModalContext';
+import { Box } from '@mui/material';
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    height: '100%',
-  },
-});
+const GenericActionButtons = ({ card, context }) => {
+  const contextProps = useAppContext(); // Assuming useAppContext returns the context object
+  const { closeModal, isModalOpen, setModalOpen } = useContext(ModalContext);
 
-const GenericActionButtons = ({
-  card,
-  context,
-  open,
-  component,
-  closeModal,
-  // handleOpenDialog,
-}) => {
-  const classes = useStyles();
-
-  const collectionContext = useContext(CollectionContext);
-
-  if (!collectionContext) {
-    console.error("The component isn't wrapped with CollectionProvider");
-    return null;
+  if (!contextProps) {
+    return (
+      <Box sx={{ color: 'error.main' }}>Provider not found for {context}</Box>
+    );
   }
 
-  const contexts = {
-    Deck: useContext(DeckContext),
-    Cart: useContext(CartContext),
-    Store: useContext(CartContext),
-    Collection: collectionContext,
-  };
+  let modifiedContextProps = contextProps[context];
 
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const contextProps = contexts[context] || {};
-
-  // useEffect(() => {
-  //   console.log(`openChooseCollectionDialog is: ${openChooseCollectionDialog}`);
-  // }, [openChooseCollectionDialog]);
-
-  const toggleDialog = (setState) => () => {
-    setState((prevState) => !prevState);
-  };
+  if (!modifiedContextProps) {
+    return (
+      <Box sx={{ color: 'error.main' }}>
+        Invalid context provided: {context}
+      </Box>
+    );
+  }
 
   return (
-    <div className={classes.root}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' }, // Vertical layout on small screens, horizontal on larger
+        justifyContent: 'space-between', // Spread buttons evenly
+        alignItems: 'center', // Center align the buttons
+        gap: 1, // Add a small gap between buttons
+        flexGrow: 1,
+      }}
+    >
       <CardActionButtons
         card={card}
         context={context}
-        contextProps={contextProps}
-        // handleOpenDialog={handleOpenDialog}
-        handleOpenDialog={toggleDialog(setOpenDialog)}
+        contextProps={modifiedContextProps}
+        closeModal={() => setModalOpen(false)}
+        open={isModalOpen}
       />
-      {context in contexts && (
-        <GenericCardModal
-          open={open}
-          onClose={closeModal}
-          handleCloseDialog={toggleDialog(setOpenDialog)}
-          context={context}
-          card={card}
-        />
-      )}
-      {/* <ChooseCollectionDialog
-        isOpen={openChooseCollectionDialog}
-        onClose={toggleDialog(setOpenChooseCollectionDialog)}
-        context={context}
-        card={card}
-      /> */}
-    </div>
+    </Box>
   );
 };
 
 export default GenericActionButtons;
+
+// import React, { useContext } from 'react';
+// import CardActionButtons from './CardActionButtons';
+// import useAppContext from '../../../context/hooks/useAppContext';
+// import { ModalContext } from '../../../context/ModalContext/ModalContext';
+// import { Box } from '@mui/material';
+
+// const GenericActionButtons = ({ card, context }) => {
+//   const contextProps = useAppContext(); // Assuming useAppContext returns the context object
+//   const { closeModal, isModalOpen, setModalOpen } = useContext(ModalContext);
+
+//   if (!contextProps) {
+//     return (
+//       <Box sx={{ color: 'error.main' }}>Provider not found for {context}</Box>
+//     );
+//   }
+
+//   let modifiedContextProps = contextProps[context];
+
+//   if (!modifiedContextProps) {
+//     return (
+//       <Box sx={{ color: 'error.main' }}>
+//         Invalid context provided: {context}
+//       </Box>
+//     );
+//   }
+
+//   return (
+//     <Box
+//       sx={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         justifyContent: 'space-evenly',
+//         height: '100%',
+//       }}
+//     >
+//       <CardActionButtons
+//         card={card}
+//         context={context}
+//         contextProps={modifiedContextProps}
+//         closeModal={() => setModalOpen(false)}
+//         open={isModalOpen}
+//       />
+//     </Box>
+//   );
+// };
+
+// export default GenericActionButtons;
+
+// import React, { useContext, useEffect } from 'react';
+// import { makeStyles } from '@mui/styles';
+// import GenericCardModal from '../../modals/GenericCardModal';
+// import CardActionButtons from './CardActionButtons';
+// import useAppContext from '../../../context/hooks/useAppContext';
+// import { ModalContext } from '../../../context/ModalContext/ModalContext';
+
+// const useStyles = makeStyles({
+//   root: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     justifyContent: 'space-evenly',
+//     height: '100%',
+//   },
+// });
+
+// const GenericActionButtons = ({
+//   card,
+//   context,
+//   open,
+//   openModal,
+//   // closeModal,
+//   // isModalOpen,
+//   // setModalOpen,
+// }) => {
+//   const classes = useStyles();
+//   const [contextProps, isContextAvailable] = useAppContext(context);
+//   const {
+//     openModalWithCard,
+//     closeModal,
+//     isModalOpen,
+//     setModalOpen,
+//     modalContent,
+//   } = useContext(ModalContext);
+//   if (!isContextAvailable) {
+//     console.error(`The component isn't wrapped with the ${context}Provider`);
+//     return null; // Consider rendering an error boundary or user-friendly error message instead.
+//   }
+
+//   // Ensure contextProps is an object with the expected methods before using them
+//   if (
+//     typeof contextProps !== 'object' ||
+//     typeof contextProps[context] !== 'object'
+//   ) {
+//     console.error(`Invalid contextProps provided for the context: ${context}`);
+//     return null; // Consider rendering an error boundary or user-friendly error message instead.
+//   }
+
+//   return (
+//     <div className={classes.root}>
+//       <CardActionButtons
+//         card={card}
+//         quantity={0}
+//         context={context}
+//         contextProps={contextProps}
+//         openModal={openModal}
+//         closeModal={() => setModalOpen(false)}
+//         open={open}
+//       />
+//       {/* <GenericCardModal
+//         open={isModalOpen}
+//         closeModal={closeModal}
+//         context={context}
+//         card={card}
+//       /> */}
+//     </div>
+//   );
+// };
+
+// export default GenericActionButtons;

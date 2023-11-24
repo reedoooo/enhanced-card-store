@@ -1,89 +1,222 @@
 import React, { useCallback } from 'react';
-import { Button, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useModal } from '../../../context/hooks/modal';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexGrow: 1,
-    background: '#f1f1f1',
-    borderRadius: '8px',
-  },
-  buttonGrid: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '8px',
-  },
-  fullWidthButton: {
-    width: '100%',
-    height: '100%',
-    borderRadius: '4px',
-  },
-}));
-
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import { useStyles } from '../buttonStyles';
+import useAppContext from '../../../context/hooks/useAppContext';
+import { useMode } from '../../../context/hooks/colormode';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import Logger from '../../grids/collectionGrids/Logger';
+import { useDeckStore } from '../../../context/DeckContext/DeckContext';
+import { useCartStore } from '../../../context/CartContext/CartContext';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
+const cardOtherLogger = new Logger([
+  'Action',
+  'Card Name',
+  'Quantity',
+  'Total Price',
+]);
 const CardActionButtons = ({
   card,
-  quantity,
   context,
-  contextProps,
-  handleOpenDialog,
+  closeModal,
+  modifiedContextProps,
 }) => {
-  const classes = useStyles();
+  const { theme } = useMode(); // Using the theme hook
 
-  const handleAddToContext = useCallback(() => {
-    console.log(`Context is: ${context}`);
-    const addMethod = contextProps[`addOneTo${context}`];
-    if (typeof addMethod === 'function') {
-      addMethod(card);
-    } else if (context === 'Collection') {
-      console.log(
-        "Opening ChooseCollectionDialog because the context is 'Collection'"
-      );
-      handleOpenDialog();
-    } else {
-      console.error(`Method addOneTo${context} not found in contextProps`);
-    }
-  }, [context, contextProps, card, handleOpenDialog]);
+  const classes = useStyles();
+  // const { contextProps, isContextAvailable } = useAppContext(context);
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+
+  const { addOneToCollection, removeOneFromCollection } = useCollectionStore();
+  const { addOneToDeck, removeOneFromDeck } = useDeckStore();
+  const { addOneToCart, removeOneFromCart } = useCartStore();
+  const styles = {
+    box: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexGrow: 1,
+      width: '100%', // Using theme spacing
+      padding: theme.spacing(2), // Using theme spacing
+      backgroundColor: theme.palette.background.paper, // Using theme background color
+    },
+    grid: {
+      // display: 'flex',
+      flexGrow: 1,
+      // flexDirection: 'column',
+      width: '100%', // Using theme spacing
+    },
+    grid2: {
+      display: 'flex',
+      flexGrow: 1,
+      flexDirection: 'row',
+      width: '100%', // Using theme spacing
+      justifyContent: 'space-between',
+    },
+    button: {
+      margin: theme.spacing(1), // Using theme spacing
+      color: theme.palette.background.primary, // Using theme text color
+      backgroundColor: theme.palette.success.main, // Using theme background color
+    },
+    removeButton: {
+      margin: theme.spacing(1), // Using theme spacing
+      color: theme.palette.error.contrastText, // Using theme text color
+      backgroundColor: theme.palette.error.main, // Using theme background color
+    },
+    addButton: {
+      margin: theme.spacing(1), // Using theme spacing
+      color: theme.palette.success.contrastText, // Using theme text color
+      backgroundColor: theme.palette.success.main, // Using theme background color
+    },
+    gridItem: {
+      textAlign: 'center',
+    },
+  };
+  const ADD = 'add';
+  const REMOVE_ONE = 'removeOne';
+  const REMOVE_ALL = 'removeAll';
+  const performAction = useCallback(
+    (action, card) => {
+      try {
+        switch (context) {
+          case 'Collection':
+            if (action === 'add') {
+              addOneToCollection(card, card.id);
+            } else if (action === 'removeOne') {
+              removeOneFromCollection(card, card.id);
+            }
+            break;
+          case 'Deck':
+            if (action === 'add') {
+              addOneToDeck(card);
+            } else if (action === 'removeOne') {
+              removeOneFromDeck(card);
+            }
+            break;
+          case 'Cart':
+            if (action === 'add') {
+              addOneToCart(card);
+            } else if (action === 'removeOne') {
+              removeOneFromCart(card);
+            }
+            break;
+          default:
+            console.error(`Unhandled context: ${context}`);
+        }
+        cardOtherLogger.logCardAction(`${action} Card`, card);
+      } catch (error) {
+        console.error(
+          `Error performing action '${action}' with payload`,
+          card,
+          error
+        );
+      }
+    },
+    [
+      addOneToCollection,
+      removeOneFromCollection,
+      addOneToDeck,
+      removeOneFromDeck,
+      addOneToCart,
+      removeOneFromCart,
+      context,
+    ]
+  );
+
+  const handleAddClick = () => {
+    console.log('handleAddClick', card, context);
+    performAction(ADD, card);
+    closeModal?.();
+  };
+
+  const handleRemoveOne = () => {
+    performAction(REMOVE_ONE, card);
+    closeModal?.();
+  };
+
+  const handleRemoveAll = () => {
+    performAction(REMOVE_ALL, card);
+    closeModal?.();
+  };
 
   return (
-    <div className={classes.root}>
-      {quantity > 0 ? (
+    <Box sx={styles.box} onClick={closeModal}>
+      {!isLargeScreen && (
         <>
-          <Grid container>
-            <Grid item xs={6}>
-              {`In ${context}: `} {quantity}
+          <Grid container spacing={2} sx={styles.grid}>
+            <Grid
+              item
+              xs={6}
+              sx={{ textAlign: 'center', justifyContent: 'center' }}
+            >
+              <Typography variant="h8" component="span">
+                {`In ${context}: `}
+              </Typography>
+              <Typography variant="h6" component="span">
+                {card.quantity}
+              </Typography>
             </Grid>
-            <Grid item xs={6} className={classes.buttonGrid}>
-              <Button onClick={() => contextProps.addOne(card)}>+</Button>
-              <Button onClick={() => contextProps.removeOne(card)}>-</Button>
+
+            <Grid item xs={6} sx={styles.gridItem}>
+              <Button sx={styles.addButton} onClick={handleAddClick}>
+                +
+              </Button>
+              <Button sx={styles.removeButton} onClick={handleRemoveOne}>
+                -
+              </Button>
             </Grid>
           </Grid>
-          <Button
-            variant="contained"
-            color="secondary"
-            className={classes.fullWidthButton}
-            onClick={() => contextProps.removeAll(card)}
-          >
-            {`Remove from ${context}`}
-          </Button>
+          <Divider />
+          <Grid container spacing={2} sx={styles.grid2}>
+            <Grid item xs={6} sx={styles.gridItem}>
+              <IconButton
+                aria-label="delete"
+                size="medium"
+                sx={styles.addButton}
+                onClick={handleAddClick}
+              >
+                <AddCircleOutlineIcon fontSize="inherit" />
+              </IconButton>
+            </Grid>
+            <Grid item xs={6} sx={styles.gridItem}>
+              <IconButton
+                aria-label="delete"
+                size="medium"
+                sx={styles.removeButton}
+                onClick={handleRemoveOne}
+              >
+                <DeleteIcon fontSize="inherit" />
+              </IconButton>
+            </Grid>
+          </Grid>
         </>
-      ) : (
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.fullWidthButton}
-          onClick={handleAddToContext}
-        >
-          {`Add To ${context}`}
-        </Button>
       )}
-    </div>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{ ...styles.addButton, width: '100%' }}
+        onClick={handleAddClick}
+      >
+        {`Add to ${context}`}
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{ ...styles.removeButton, width: '100%' }}
+        onClick={handleRemoveOne}
+      >
+        {`Remove from ${context}`}
+      </Button>
+    </Box>
   );
 };
 

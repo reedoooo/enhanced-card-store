@@ -13,24 +13,27 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import placeholder from '../assets/images/placeholder.jpeg';
-import UserStats from '../components/other/UserStats';
+import UserStats from '../components/other/dataDisplay/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
-import ThemeToggleButton from '../components/buttons/ThemeToggleButton';
+import ThemeToggleButton from '../components/buttons/other/ThemeToggleButton';
 import { useCombinedContext } from '../context/CombinedProvider';
-import { useCollectionStore } from '../context/hooks/collection';
 import {
   AvatarStyled,
   TypographyStyled,
   IconButtonStyled,
   ButtonStyled,
-} from './StyledComponents';
+  ButtonsContainer,
+  CustomButton,
+  ProfileFormContainer,
+} from './pageStyles/StyledComponents';
 import ProfileForm from '../components/forms/ProfileForm';
+import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
 
 const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();
   const { user, updateUser } = useUserContext();
-  const [cookies] = useCookies(['userCookie']);
+  const [cookies] = useCookies(['user']);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     message: '',
@@ -50,8 +53,9 @@ const ProfilePage = () => {
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };
-  const userId = user?.userID;
-  // console.log('USER ID:', userId);
+  // const userId = user?.id;
+  const userId = cookies.user?.id;
+  console.log('USER ID:', userId);
   // console.log('USER:', user);
   const handleSaveChanges = useCallback(
     (data) => {
@@ -81,33 +85,13 @@ const ProfilePage = () => {
     }
   };
 
-  const handleTriggerCronJob = () => {
-    // if (userId) {
-    //   handleCronRequest(userId);
-    //   console.log('TRIGGERING CRON JOB');
-    // }
-    if (userId && listOfMonitoredCards && retrievedListOfMonitoredCards) {
-      handleSendAllCardsInCollections(
-        userId,
-        listOfMonitoredCards,
-        retrievedListOfMonitoredCards
-      );
-      console.log('SENDING ALL CARDS IN COLLECTIONS');
-      openSnackbar('Triggered the cron job.');
-    } else if (
-      userId &&
-      listOfMonitoredCards &&
-      !retrievedListOfMonitoredCards
-    ) {
-      console.log('RETRIEVING LIST OF MONITORED CARDS');
-      handleSendAllCardsInCollections(
-        userId,
-        listOfMonitoredCards,
-        handleRetreiveListOfMonitoredCards()
-      );
-      openSnackbar('Triggered the cron job.');
-    }
-  };
+  // const handleTriggerCronJob = () => {
+  //   if (userId && listOfMonitoredCards) {
+  //     handleSendAllCardsInCollections(userId, listOfMonitoredCards);
+  //     console.log('SENDING ALL CARDS IN COLLECTIONS');
+  //     openSnackbar('Triggered the cron job.');
+  //   }
+  // };
 
   const handleStopCronJob = () => {
     if (userId) {
@@ -128,52 +112,57 @@ const ProfilePage = () => {
         <IconButtonStyled>
           <EditIcon />
         </IconButtonStyled>
-        <ButtonStyled
+      </Box>
+
+      <ButtonsContainer>
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleSendMessage}
         >
           Send Message to Server
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleRequestCollectionDataFunction}
         >
           Request Collection Data
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        <CustomButton
           variant="contained"
           color="primary"
           onClick={handleRequestChartDataFunction}
         >
           Request Chart Data
-        </ButtonStyled>
+        </CustomButton>
 
-        <ButtonStyled
+        {/* <CustomButton
           variant="contained"
           color="primary"
           onClick={handleTriggerCronJob}
         >
           Trigger Cron Job
-        </ButtonStyled>
-        <ButtonStyled
+        </CustomButton> */}
+        <CustomButton
           variant="contained"
           color="secondary"
           onClick={handleStopCronJob}
         >
           Stop Cron Job
-        </ButtonStyled>
-      </Box>
-      <Box mt={3}>
+        </CustomButton>
+      </ButtonsContainer>
+
+      <ProfileFormContainer>
         <ProfileForm
           {...user}
           userName={cookies.userCookie?.username}
           onSave={handleSaveChanges}
         />
-      </Box>
+      </ProfileFormContainer>
+
       <UserStats />
       <ThemeToggleButton />
       <Snackbar

@@ -34,8 +34,8 @@ export const CartProvider = ({ children }) => {
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   });
-  const [cookies, setCookie] = useCookies(['userCookie', 'cart']);
-  const userId = cookies.userCookie?.id;
+  const [cookies, setCookie] = useCookies(['user', 'cart']);
+  const userId = cookies?.user?.id;
   const { getCardData } = useCardStore();
   const isMounted = useRef(true);
 
@@ -45,7 +45,6 @@ export const CartProvider = ({ children }) => {
     };
   }, []);
 
-  //Utility functions
   const fetchFromServer = async (url, options = {}) => {
     const response = await fetch(
       `${process.env.REACT_APP_SERVER}${url}`,
@@ -56,36 +55,49 @@ export const CartProvider = ({ children }) => {
     }
     return await response.json();
   };
-
   const updateCart = async (cartId, updatedCart) => {
-    const formattedCartData = updatedCart.map((item) => ({
-      ...item,
-      quantity: item.quantity,
-    }));
+    if (!cartId) return;
+    const formattedCartData = {
+      cartItems: updatedCart.map((item) => ({
+        ...item,
+        id: item.id, // Make sure 'id' is a number
+        quantity: item.quantity,
+      })),
+      userId: userId,
+    };
     const data = await fetchFromServer(`/api/carts/${cartId}/update`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formattedCartData),
     });
+    // if (data && data.cart) {
+    //   setCartDataAndCookie(data.cart);
+    // }
     setCartDataAndCookie(data);
+    return data;
   };
-
   const createUserCart = useCallback(
     async (userId) => {
-      const newCartData = await fetchFromServer(
-        `/api/carts/${userId}/newCart`,
-        { method: 'POST' }
-      );
-      const newCartItems = Array.isArray(newCartData.cart)
-        ? newCartData.cart
-        : [];
-      setCookie('cart', newCartItems, {
-        // Changed this line
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-      });
-      return newCartItems;
+      try {
+        const newCartData = await fetchFromServer(
+          '/api/carts/createEmptyCart',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+          }
+        );
+        // setCookie('cart', newCartData, {
+        //   // Changed this line
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        setCartDataAndCookie(newCartData);
+        return newCartData;
+      } catch (error) {
+        console.error('Error creating cart:', error);
+      }
     },
     [setCookie]
   );
@@ -94,45 +106,23 @@ export const CartProvider = ({ children }) => {
     async (userId) => {
       try {
         const data = await fetchFromServer(`/api/carts/userCart/${userId}`);
-        setCookie('cart', data.cart || [], {
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-        });
+        // setCookie('cart', data.cart || [], {
+        //   path: '/',
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        setCartDataAndCookie(data);
         return data;
       } catch (error) {
         if (error.message === 'HTTP error! status: 404') {
-          return createUserCart(userId);
+          await createUserCart(userId);
         } else {
-          console.error(error.message);
+          console.error('Error fetching user cart:', error);
         }
       }
     },
-    [createUserCart, setCookie]
+    [createUserCart]
   );
-
-  useEffect(() => {
-    if (userId && typeof userId === 'string') {
-      // console.log('Fetching user cart');
-      fetchUserCart(userId)
-        .then((data) => {
-          if (data && data.cart) {
-            setCartDataAndCookie(data);
-          }
-        })
-        .catch((error) => console.log('Error fetching user cart:', error));
-    }
-  }, [userId, fetchUserCart]);
-
-  const setCartDataAndCookie = (newCartData) => {
-    setCartData(newCartData);
-    setCookie('cart', newCartData.cart, {
-      // Changed this line
-      path: '/',
-      secure: true,
-      sameSite: 'none',
-    });
-  };
 
   const getCardQuantity = (cardId) => {
     let totalItems = 0;
@@ -148,7 +138,8 @@ export const CartProvider = ({ children }) => {
 
   const addOneToCart = async (cardInfo) => {
     if (!cartData._id) return;
-    const { quantityOfSameId } = getCardQuantity(cardInfo.id);
+    console.log('Adding one to cart', cardInfo);
+    const { quantityOfSameId, totalItems } = getCardQuantity(cardInfo.id);
     if (quantityOfSameId >= 3) return;
     let updatedCart = cartData.cart.map((item) =>
       item.id === cardInfo.id ? { ...item, quantity: item.quantity + 1 } : item
@@ -157,6 +148,7 @@ export const CartProvider = ({ children }) => {
       updatedCart = [...updatedCart, { ...cardInfo, quantity: 1 }];
     }
     const updatedCartData = await updateCart(cartData._id, updatedCart);
+    console.log('UPDATED CART DATA:', updatedCartData);
     if (updatedCartData) setCartData(updatedCartData);
   };
 
@@ -180,6 +172,17 @@ export const CartProvider = ({ children }) => {
     if (updatedCartData) setCartData(updatedCartData);
   };
 
+  const setCartDataAndCookie = (newCartData) => {
+    if (newCartData && Array.isArray(newCartData.cart)) {
+      setCartData(newCartData);
+      setCookie('cart', newCartData.cart, {
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+      });
+    }
+  };
+
   useEffect(() => {
     if (userId && typeof userId === 'string' && isMounted.current) {
       fetchUserCart(userId)
@@ -190,7 +193,22 @@ export const CartProvider = ({ children }) => {
         })
         .catch((error) => console.log('Error fetching user cart:', error));
     }
+    return () => {
+      isMounted.current = false;
+    };
   }, [userId, fetchUserCart]);
+  // useEffect(() => {
+  //   if (userId && typeof userId === 'string') {
+  //     // console.log('Fetching user cart');
+  //     fetchUserCart(userId)
+  //       .then((data) => {
+  //         if (data && data.cart) {
+  //           setCartDataAndCookie(data);
+  //         }
+  //       })
+  //       .catch((error) => console.log('Error fetching user cart:', error));
+  //   }
+  // }, [userId, fetchUserCart]);
 
   const getTotalCost = useMemo(
     () =>
@@ -210,6 +228,7 @@ export const CartProvider = ({ children }) => {
       0
     );
 
+    console.log('TOTAL QUANTITY:', totalQuantity);
     if (
       cartData.quantity !== totalQuantity ||
       cartData.totalPrice !== getTotalCost
@@ -229,6 +248,10 @@ export const CartProvider = ({ children }) => {
   const value = {
     cartData,
     getCardQuantity,
+    // getCardQuantity: (cardId) => {
+    //   const card = cartData?.cart?.find((c) => c?.id === cardId);
+    //   return card?.quantity || 0;
+    // },
     cartCardQuantity: cartData.cart?.reduce(
       (acc, card) => acc + card.quantity,
       0
@@ -238,8 +261,8 @@ export const CartProvider = ({ children }) => {
       (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
       0
     ),
-    addOneToCart,
-    removeOneFromCart,
+    addOneToCart: addOneToCart,
+    removeOneFromCart: removeOneFromCart,
     deleteFromCart,
     getTotalCost,
     fetchUserCart,
@@ -250,7 +273,7 @@ export const CartProvider = ({ children }) => {
     console.log('CART CONTEXT: ', {
       cartData,
       // getTotalCost,
-      // // getCardQuantity,
+      // getCardQuantity,
       // fetchUserCart,
       // addOneToCart,
       // removeOneFromCart,
