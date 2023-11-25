@@ -10,6 +10,7 @@ import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import { StoreBanner, StoreTitle } from './pageStyles/StyledComponents';
 import { themeSettings } from '../assets/themeSettings';
 import { useMode } from '../context/hooks/colormode';
+import { useUserContext } from '../context/UserContext/UserContext';
 
 const SearchContainer = () => {
   return (
@@ -88,18 +89,15 @@ HeroCenter3.defaultProps = {
 };
 
 const StorePage = () => {
-  const [cookies] = useCookies(['user']);
-
   const { theme } = useMode();
   const { fetchUserCart, loading, error } = useCartStore();
   const { searchData } = useCardStore();
-
-  const userId = cookies?.user?.id;
-
+  const { user } = useUserContext();
+  const userId = user?.id;
   useEffect(() => {
-    if (userId) {
-      fetchUserCart(userId).catch((err) =>
-        console.error('Failed to get user cart', err)
+    if (userId && typeof userId === 'string') {
+      fetchUserCart(userId).catch((error) =>
+        console.error('Failed to get user cart', error)
       );
       console.log('(STORE PAGE) -- (SEARCHDATA):', searchData);
     }

@@ -1,9 +1,7 @@
 import React from 'react';
 import { makeStyles, Tooltip, Typography } from '@mui/material';
 
-// Define your styles here
 const useStyles = makeStyles((theme) => ({
-  // ... your other styles
   tooltipTarget: {
     cursor: 'pointer', // Change the cursor to indicate it's hoverable
   },

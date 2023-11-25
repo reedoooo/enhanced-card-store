@@ -7,7 +7,41 @@ export const AppContainer = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   height: '100vh',
 }));
+const StyledContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignSelf: 'start',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
+  // minHeight: '250vh',
+  flexGrow: 1,
+  // minHeight: '100%',
+  background: '#333',
+  // backgroundColor: '#f1f1f1',
+  padding: theme.spacing(4),
+  width: '100%',
+}));
+
+export const CollectionContainer = ({ children }) => {
+  return <StyledContainer>{children}</StyledContainer>;
+};
+
 export const MainContainer = styled('div')(({ theme }) => ({
+  background: '#222', // Dark background
+  padding: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  maxHeight: '100%',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  boxShadow: theme.shadows[3],
+  borderRadius: theme.shape.borderRadius,
+}));
+// extra padding | gap
+export const MainContainerb = styled('div')(({ theme }) => ({
   background: '#222', // Dark background
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
@@ -23,6 +57,21 @@ export const MainContainer2 = styled('div')(({ theme }) => ({
   background: '#333', // Dark background
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
+  gap: theme.spacing(2),
+  maxHeight: '100%',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  boxShadow: theme.shadows[3],
+  borderRadius: theme.shape.borderRadius,
+}));
+// extra padding + gap
+export const MainContainer2b = styled('div')(({ theme }) => ({
+  background: '#333', // Dark background
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(2),
+  gap: theme.spacing(2),
   maxHeight: '100%',
   width: '100%',
   display: 'flex',
@@ -174,8 +223,30 @@ export const CollectionBanner = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   padding: theme.spacing(2.5),
-  backgroundColor: '#f7f7f7',
+  // height: '100%',
+  width: '100%',
+  backgroundColor: theme.palette.background.paper,
+  // backgroundColor: '#f7f7f7',
 }));
+
+export const CollectionContentsStyles = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  // margin: '0 auto',
+  // flexDirection: 'column',
+  // alignItems: 'center',
+  // padding: theme.spacing(2.5),
+  height: '100%',
+  width: '100%',
+  // background: '#333',
+
+  // backgroundColor: theme.palette.background.main,
+  // backgroundColor: '#f7f7f7',
+}));
+
+export const CollectionContents = ({ children }) => {
+  return <CollectionContentsStyles>{children}</CollectionContentsStyles>;
+};
 
 export const StoreBanner = styled(Box)(({ theme }) => ({
   display: 'flex',

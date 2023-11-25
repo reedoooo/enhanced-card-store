@@ -15,7 +15,7 @@ const CustomerForm = () => {
     setModalOpen,
     modalContent,
   } = useContext(ModalContext);
-  const { cartCardQuantity } = useCartStore();
+  const { cartCardQuantity, totalCost } = useCartStore();
 
   const handleModalOpen = useCallback(() => setModalOpen(true), [setModalOpen]);
   const handleModalClose = useCallback(
@@ -52,7 +52,7 @@ const CustomerForm = () => {
             <Grid item xs={12}>
               <CartActions
                 quantity={cartCardQuantity}
-                getTotalCost={getTotalCost}
+                totalCost={totalCost}
                 handleModalOpen={handleModalOpen}
               />
             </Grid>

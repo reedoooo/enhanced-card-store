@@ -2,29 +2,21 @@ import React, { useMemo } from 'react';
 import { Box, Grid, Paper, Container, useTheme } from '@mui/material';
 import PortfolioChart from '../../components/chart/PortfolioChart';
 import TimeRangeSelector from '../../components/other/InputComponents/TimeRangeSelector';
-import CollectionStatisticsSelector, {
-  calculateStatistics,
-} from '../../components/other/InputComponents/CollectionStatisticsSelector';
 import UpdateStatusBox2 from '../../components/other/InputComponents/UpdateStatusBox2';
 import TopCardsDisplay from '../../components/other/dataDisplay/TopCardsDisplay';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useCombinedContext } from '../../context/CombinedProvider';
+import { calculateStatistics } from '../../context/StatisticsContext/helpers';
+import CollectionStatisticsSelector from '../../components/other/InputComponents/CollectionStatisticsSelector';
+import { useStatisticsStore } from '../../context/StatisticsContext/StatisticsContext';
 
-const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
+const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
   const theme = useTheme();
   const { timeRange } = useChartContext();
   const { allCollections } = useCollectionStore();
   const { socket } = useCombinedContext();
-
-  const data = allCollections.map((collection) => ({
-    data: collection?.currentChartDataSets2,
-  }));
-  const dataForStats = data[0];
-  const stats = useMemo(
-    () => calculateStatistics(dataForStats, timeRange),
-    [dataForStats, timeRange]
-  );
+  const { stats } = useStatisticsStore();
 
   return (
     <Box
@@ -38,15 +30,15 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
       }}
     >
       {/* Updaters Row */}
-      <Grid container spacing={2} marginBottom={2}>
+      <Grid container spacing={1} marginBottom={2}>
         <Grid item xs={4} md={4}>
           <UpdateStatusBox2 socket={socket} />
         </Grid>
         <Grid item xs={4} md={4}>
-          <TimeRangeSelector data={data} />
+          <TimeRangeSelector />
           <CollectionStatisticsSelector
             timeRange={timeRange}
-            data={data}
+            // data={data}
             stats={stats}
           />
         </Grid>
@@ -56,7 +48,7 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
       </Grid>
 
       {/* Main Grid Container */}
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
         {/* Portfolio Chart Row */}
         <Grid item xs={12}>
           <PortfolioChart
@@ -74,4 +66,4 @@ const PortfolioChartContainer = ({ selectedCards, removeCard }) => {
   );
 };
 
-export default PortfolioChartContainer;
+export default CollectionPortfolioChartContainer;

@@ -11,6 +11,9 @@ import HeaderTitle from '../components/reusable/HeaderTitle';
 import { useMode } from '../context/hooks/colormode';
 import { DeckBuilderBanner } from './pageStyles/StyledComponents';
 import useUpdateAppContext from '../context/hooks/useUpdateContext';
+import UserContext, {
+  useUserContext,
+} from '../context/UserContext/UserContext';
 
 const HeroCenter2 = ({ title, subtitle }) => (
   <Box
@@ -52,15 +55,12 @@ HeroCenter2.defaultProps = {
 
 const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
-  const { user } = useCookies(['user'])[0];
   const { theme } = useMode();
   const { fetchAllDecksForUser, allDecks, loading, error } = useDeckStore();
+  const { user } = useUserContext();
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
   const userId = user?.id;
-  // useUpdateAppContext(); // This will set the context to 'Deck' when this page is rendered
-
-  console.log('userid', userId);
   useEffect(() => {
     fetchAllDecksForUser().catch((err) =>
       console.error('Failed to get all decks:', err)
@@ -68,7 +68,7 @@ const DeckBuilderPage = () => {
   }, [fetchAllDecksForUser]);
 
   useEffect(() => {
-    if (allDecks && userId) {
+    if (allDecks && userId && typeof userId === 'string') {
       const filteredDecks = allDecks?.filter((deck) => deck?.userId === userId);
       console.log('filteredDecks', filteredDecks);
       setUserDecks(filteredDecks);

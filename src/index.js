@@ -21,10 +21,11 @@ import { AppContextProvider } from './context/AppContext/AppContextProvider';
 import { useMode } from './context/hooks/colormode';
 import { PopoverProvider } from './context/PopoverContext/PopoverContext';
 import { CronJobProvider } from './context/CronJobContext/CronJobContext';
-import { CardImagesProvider } from './context/CardImagesContext/CardImagesContext';
+// import { CardImagesProvider } from './context/CardImagesContext/CardImagesContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { StatisticsProvider } from './context/StatisticsContext/StatisticsContext';
 
 const root = document.getElementById('root');
 
@@ -54,13 +55,15 @@ function Main() {
                                   <GlobalStyles />
                                   <ThemeProvider theme={theme}>
                                     <ChartProvider>
-                                      <SidebarProvider>
-                                        <AppContextProvider>
-                                          <Elements stripe={stripePromise}>
-                                            <App />
-                                          </Elements>
-                                        </AppContextProvider>
-                                      </SidebarProvider>
+                                      <StatisticsProvider>
+                                        <SidebarProvider>
+                                          <AppContextProvider>
+                                            <Elements stripe={stripePromise}>
+                                              <App />
+                                            </Elements>
+                                          </AppContextProvider>
+                                        </SidebarProvider>
+                                      </StatisticsProvider>
                                     </ChartProvider>
                                   </ThemeProvider>
                                   {/* </CardImagesProvider> */}

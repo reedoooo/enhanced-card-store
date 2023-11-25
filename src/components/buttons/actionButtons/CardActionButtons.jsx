@@ -17,6 +17,10 @@ import { useDeckStore } from '../../../context/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  AddCircleOutlineOutlined,
+  RemoveCircleOutlineOutlined,
+} from '@mui/icons-material';
 const cardOtherLogger = new Logger([
   'Action',
   'Card Name',
@@ -35,9 +39,30 @@ const CardActionButtons = ({
   // const { contextProps, isContextAvailable } = useAppContext(context);
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const { addOneToCollection, removeOneFromCollection } = useCollectionStore();
-  const { addOneToDeck, removeOneFromDeck } = useDeckStore();
-  const { addOneToCart, removeOneFromCart } = useCartStore();
+  const { addOneToCollection, removeOneFromCollection, selectedCollection } =
+    useCollectionStore();
+  const { addOneToDeck, removeOneFromDeck, selectedDeck } = useDeckStore();
+  const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
+
+  // modified to work with any context
+  // Function to check if a card is in a specific context
+  const isCardInContext = useCallback(() => {
+    switch (context) {
+      case 'Collection':
+        return !!selectedCollection?.cards?.find(
+          (c) => c?.card?.id === card?.id
+        );
+      case 'Deck':
+        return !!selectedDeck?.cards?.find((c) => c?.card?.id === card?.id);
+      case 'Cart':
+        return !!cartData?.cart?.find((c) => c?.card?.id === card?.id);
+      default:
+        return false;
+    }
+  }, [card.id, context, selectedCollection, selectedDeck, cartData]);
+
+  const isInContext = isCardInContext();
+
   const styles = {
     box: {
       display: 'flex',
@@ -147,75 +172,43 @@ const CardActionButtons = ({
     performAction(REMOVE_ALL, card);
     closeModal?.();
   };
-
   return (
-    <Box sx={styles.box} onClick={closeModal}>
-      {!isLargeScreen && (
-        <>
-          <Grid container spacing={2} sx={styles.grid}>
-            <Grid
-              item
-              xs={6}
-              sx={{ textAlign: 'center', justifyContent: 'center' }}
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }}
+    >
+      {isInContext ? (
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <IconButton
+              aria-label="increase"
+              size="medium"
+              sx={styles.addButton}
+              onClick={() => handleAddClick()}
             >
-              <Typography variant="h8" component="span">
-                {`In ${context}: `}
-              </Typography>
-              <Typography variant="h6" component="span">
-                {card.quantity}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={6} sx={styles.gridItem}>
-              <Button sx={styles.addButton} onClick={handleAddClick}>
-                +
-              </Button>
-              <Button sx={styles.removeButton} onClick={handleRemoveOne}>
-                -
-              </Button>
-            </Grid>
+              <AddCircleOutlineIcon />
+            </IconButton>
           </Grid>
-          <Divider />
-          <Grid container spacing={2} sx={styles.grid2}>
-            <Grid item xs={6} sx={styles.gridItem}>
-              <IconButton
-                aria-label="delete"
-                size="medium"
-                sx={styles.addButton}
-                onClick={handleAddClick}
-              >
-                <AddCircleOutlineIcon fontSize="inherit" />
-              </IconButton>
-            </Grid>
-            <Grid item xs={6} sx={styles.gridItem}>
-              <IconButton
-                aria-label="delete"
-                size="medium"
-                sx={styles.removeButton}
-                onClick={handleRemoveOne}
-              >
-                <DeleteIcon fontSize="inherit" />
-              </IconButton>
-            </Grid>
+          <Grid item xs={6}>
+            <IconButton
+              aria-label="decrease"
+              size="medium"
+              sx={styles.removeButton}
+              onClick={() => handleRemoveOne()}
+            >
+              <RemoveCircleOutlineOutlined />
+            </IconButton>
           </Grid>
-        </>
+        </Grid>
+      ) : (
+        <Button
+          variant="contained"
+          color="secondary"
+          sx={{ ...styles.addButton, width: '100%' }}
+          onClick={() => handleAddClick()}
+        >
+          Add to {context}
+        </Button>
       )}
-      <Button
-        variant="contained"
-        color="secondary"
-        sx={{ ...styles.addButton, width: '100%' }}
-        onClick={handleAddClick}
-      >
-        {`Add to ${context}`}
-      </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        sx={{ ...styles.removeButton, width: '100%' }}
-        onClick={handleRemoveOne}
-      >
-        {`Remove from ${context}`}
-      </Button>
     </Box>
   );
 };

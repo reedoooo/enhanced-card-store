@@ -27,6 +27,8 @@ import {
 // import LoadingIndicator2 from '../components/reusable/indicators/LoadingIndicator2';
 // import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import pages from './pages.json';
+import MoneyIcon from '../components/reusable/icons/MoneyIcon';
+import ChartsIcon from '../components/reusable/icons/ChartsIcon';
 const CarouselImage = ({ image, caption }) => {
   return (
     <div>
@@ -63,7 +65,18 @@ const HomePage = () => {
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
   const { initialState, carouselImages, tiers } = pages;
-
+  const getIconForTitle = (title) => {
+    switch (title) {
+      case 'Deck Builder':
+        return <DeckOfCardsIcon />;
+      case 'Collection Tracker':
+        return <MoneyIcon />;
+      case 'Store':
+        return <ChartsIcon />;
+      default:
+        return null;
+    }
+  };
   return (
     // <HomeBanner>
     <React.Fragment>
@@ -164,9 +177,7 @@ const HomePage = () => {
                   title={tier.title}
                   subheader={tier.subheader}
                   titleTypographyProps={{ align: 'center' }}
-                  action={
-                    tier.title === 'Deck Builder' ? <DeckOfCardsIcon /> : null
-                  }
+                  action={getIconForTitle(tier.title)}
                   subheaderTypographyProps={{
                     align: 'center',
                   }}

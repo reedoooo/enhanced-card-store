@@ -1,10 +1,12 @@
 import React from 'react';
 import { Box, Container, Grid, Paper, useTheme } from '@mui/material';
-import PortfolioListContainer from './PortfolioListContainer';
-import PortfolioChartContainer from './PortfolioChartContainer';
-import HeaderTitle from '../../components/reusable/HeaderTitle';
+import HeaderTitle from '../reusable/HeaderTitle';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context/hooks/colormode';
+// eslint-disable-next-line max-len
+import CollectionPortfolioChartContainer from '../../containers/collectionPageContainers/CollectionPortfolioChartContainer';
+// eslint-disable-next-line max-len
+import CollectionPortfolioListContainer from '../../containers/collectionPageContainers/CollectionPortfolioListContainer';
 
 const PortfolioContent = ({ error, selectedCards, removeCard }) => {
   const { theme } = useMode();
@@ -35,6 +37,7 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
           flexDirection: 'column',
           margin: 'auto',
           width: '100%',
+          padding: theme.spacing(2),
           borderRadius: theme.shape.borderRadius,
         }}
       >
@@ -42,6 +45,7 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
           title={selectedCollection?.name}
           size="large"
           location="center"
+          theme={theme}
         />
       </Paper>
       <Grid
@@ -50,6 +54,7 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
         sx={{
           width: '100%',
           maxWidth: '100vw',
+          // minHeight: '100%',
           justifyContent: 'center',
           margin: 'auto',
         }}
@@ -57,16 +62,18 @@ const PortfolioContent = ({ error, selectedCards, removeCard }) => {
         <Grid
           item
           xs={12}
-          md={6}
+          md={12}
+          lg={6}
+          xl={6}
           sx={{ justifyContent: 'center', margin: 'auto' }}
         >
-          <PortfolioChartContainer
+          <CollectionPortfolioChartContainer
             selectedCards={selectedCards}
             removeCard={removeCard}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <PortfolioListContainer
+        <Grid item xs={12} md={12} lg={6} xl={6}>
+          <CollectionPortfolioListContainer
             selectedCards={selectedCards}
             removeCard={removeCard}
           />

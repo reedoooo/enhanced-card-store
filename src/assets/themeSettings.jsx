@@ -69,6 +69,8 @@ export const themeSettings = (mode) => {
       },
       success: {
         light: colors.greenAccent[100],
+        lighter: colors.greenAccent[200],
+        evenLighter: colors.greenAccent[300],
         main: colors.greenAccent[500],
         dark: colors.greenAccent[200],
         contrastText: '#fff',
@@ -85,41 +87,50 @@ export const themeSettings = (mode) => {
         hover: mode === 'dark' ? colors.grey[800] : colors.grey[200],
       },
     },
-    // chart: {
-    //   palette: {
-    //     primary: {
-    //       main: colors.greenAccent[500],
-    //       light: colors.greenAccent[300],
-    //       dark: colors.greenAccent[700],
-    //       contrastText: '#fff',
-    //     },
-    //     secondary: {
-    //       main: colors.greenAccent[200],
-    //       light: colors.greenAccent[100],
-    //       dark: colors.greenAccent[400],
-    //       contrastText: '#000',
-    //     },
-    //     background: {
-    //       paper: colors.greenAccent[100],
-    //       default: colors.greenAccent[200],
-    //     },
-    //     text: {
-    //       primary: colors.greenAccent[800],
-    //       secondary: colors.greenAccent[600],
-    //     },
-    //     chartColors: [
-    //       colors.greenAccent[500],
-    //       colors.greenAccent[400],
-    //       colors.greenAccent[300],
-    //       colors.greenAccent[200],
-    //       colors.greenAccent[100],
-    //     ],
-    //   },
-    //   typography: {
-    //     // Define typography styles if needed
-    //   },
-    // },
-
+    chart: {
+      axis: {
+        domain: {
+          line: {
+            stroke: colors.greenAccent[800],
+            strokeWidth: 1,
+          },
+        },
+        ticks: {
+          line: {
+            stroke: colors.greenAccent[700],
+            strokeWidth: 1,
+          },
+          text: {
+            fill: colors.greenAccent[900],
+            fontSize: 12,
+          },
+        },
+      },
+      grid: {
+        line: {
+          stroke: colors.greenAccent[200],
+          strokeWidth: 1,
+        },
+      },
+      legends: {
+        text: {
+          fill: colors.greenAccent[800],
+          fontSize: 12,
+        },
+      },
+      tooltip: {
+        container: {
+          background: colors.greenAccent[100],
+          color: colors.greenAccent[800],
+          fontSize: 12,
+          borderRadius: 4,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+        },
+      },
+      points: {
+        borderColor: colors.greenAccent[800],
+      },
+    },
     spacing: (factor) => `${0.25 * factor}rem`,
     shape: {
       borderRadius: 4,

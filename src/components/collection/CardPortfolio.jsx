@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
-import PortfolioContent from '../../containers/collectionPageContainers/PortfolioContent';
+import PortfolioContent from './PortfolioContent';
 import { Box, Typography } from '@mui/material';
-import CollectionContainer from '../../containers/collectionPageContainers/CollectionContainer';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { CollectionContainer } from '../../pages/pageStyles/StyledComponents';
 // import UpdateChartData from './UpdateChartData';
 
 const CardPortfolio = ({ allCollections }) => {
@@ -70,18 +70,7 @@ const CardPortfolio = ({ allCollections }) => {
       ) : showPortfolio ? (
         <PortfolioContent
           error={error}
-          allCollections={allCollections}
-          newCard={newCard}
-          setNewCard={setNewCard}
-          newCardPrice={newCardPrice}
-          setNewCardPrice={setNewCardPrice}
-          newCardCondition={newCardCondition}
-          setNewCardCondition={setNewCardCondition}
-          addCard={addOneToCollection}
-          setSelectedCards={setSelectedCards}
           selectedCards={selectedCards}
-          selectedCollection={selectedCollection}
-          setSelectedCollection={setSelectedCollection}
           removeCard={removeOneFromCollection}
         />
       ) : (
@@ -89,7 +78,6 @@ const CardPortfolio = ({ allCollections }) => {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          // minHeight="100vh"
           backgroundColor="#f1f1f1"
         >
           <Typography variant="h6">No Collection Selected</Typography>

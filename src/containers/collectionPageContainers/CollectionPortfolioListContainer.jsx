@@ -4,7 +4,7 @@ import CardList from '../../components/grids/collectionGrids/CardList';
 import { useTheme } from '@mui/material/styles';
 import { useMode } from '../../context/hooks/colormode';
 
-const PortfolioListContainer = ({ selectedCards, removeCard }) => {
+const CollectionPortfolioListContainer = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
 
   return (
@@ -30,4 +30,4 @@ const PortfolioListContainer = ({ selectedCards, removeCard }) => {
   );
 };
 
-export default PortfolioListContainer;
+export default CollectionPortfolioListContainer;

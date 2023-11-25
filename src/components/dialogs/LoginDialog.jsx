@@ -7,7 +7,7 @@ import {
   IconButton,
 } from '@mui/material';
 import LoginForm from '../forms/LoginForm';
-import SignupSwitch from '../Auth/SignupSwitch';
+import SignupSwitch from '../buttons/other/SignupSwitch';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useMode } from '../../context/hooks/colormode';

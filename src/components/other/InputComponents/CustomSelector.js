@@ -3,11 +3,6 @@ import { Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useMode } from '../../../context/hooks/colormode';
 
 const CustomSelector = ({ label, name, value, handleChange, values }) => {
-  // const handleChange = (event) => {
-  //   setValue(
-  //     event.target.value.toLowerCase() === 'unset' ? '' : event.target.value
-  //   );
-  // };
   const defaultValue = value || 'Unset';
 
   if (!values) {

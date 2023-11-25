@@ -19,6 +19,8 @@ import { makeStyles } from '@mui/styles';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
 import GenericCard from '../../cards/GenericCard';
 import {
+  MainContainer2b,
+  MainContainerb,
   MainContainer2,
   MainContainer,
 } from '../../../pages/pageStyles/StyledComponents';
@@ -56,10 +58,10 @@ const CarouselCard = ({ card }) => {
         </Grid>
         <Grid item xs={8} md={8} sx={{ padding: theme.spacing(2) }}>
           <Typography variant="h6" color={theme.palette.success.main}>
-            {card.name}
+            {card?.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {card.description}
+            {card?.description}
           </Typography>
           <Typography variant="subtitle2" color={'white'}>
             Price: ${card?.latestPrice?.num ?? 'N/A'}
