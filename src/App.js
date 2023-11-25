@@ -29,14 +29,18 @@ import { useCookies } from 'react-cookie';
 import { useDeckStore } from './context/DeckContext/DeckContext';
 import { useCartStore } from './context/CartContext/CartContext';
 const App = () => {
-  const [cookies] = useCookies(['user']);
+  // const [cookies] = useCookies(['user']);
 
-  const user = cookies?.user;
-  const userId = user?.id;
+  // const user = cookies?.user;
+  // const userId = user?.id;
   const [currentPage, setCurrentPage] = useState('');
   // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
   const { fetchAllCollectionsForUser, selectedCollection } =
     useCollectionStore();
+  const { user, fetchUser } = useUserContext();
+  const userId = user?.id;
+  console.log('user', user);
+  console.log('userId', userId);
   const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
   const { fetchUserCart, cartData } = useCartStore();
   const { isLoading, setIsLoading } = useUtilityContext();
@@ -48,7 +52,7 @@ const App = () => {
   // }, []); // Add this useEffect
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       fetchAllCollectionsForUser()
         .then(() => {
           setIsLoading(false);
