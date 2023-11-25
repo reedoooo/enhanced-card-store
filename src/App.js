@@ -48,7 +48,7 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      fetchAllCollectionsForUser()
+      fetchAllCollectionsForUser(user.id)
         .then(() => {
           setIsLoading(false);
         })
