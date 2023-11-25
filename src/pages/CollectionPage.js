@@ -9,13 +9,17 @@ import Subheader from '../components/reusable/Subheader';
 import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
 import { ModalContext } from '../context/ModalContext/ModalContext';
 import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
-import { CollectionBanner } from './pageStyles/StyledComponents';
+import {
+  CollectionBanner,
+  CollectionContents,
+} from './pageStyles/StyledComponents';
+import { useMode } from '../context/hooks/colormode';
 
 const HeroCenter = ({ decorative, title, subtitle }) => (
   <Box
     sx={{
       flex: 1,
-      height: '50vh',
+      // height: '50vh',
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
@@ -68,12 +72,11 @@ HeroCenter.defaultProps = {
 
 // Main collection page component
 const CollectionPage = () => {
-  const [{ user }] = useCookies(['user']);
+  const { theme } = useMode();
   const { allCollections, selectedCollection, loading, error } =
     useCollectionStore();
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
-  const userId = user?.id;
 
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorIndicator error={error} />;
@@ -86,19 +89,21 @@ const CollectionPage = () => {
           <Subheader text={selectedCollection?.name || 'Your Collection'} />
         </Box>
       </CollectionBanner>
-      <Box
-        sx={{
-          maxHeight: '200vh',
-        }}
-      >
+      <CollectionContents theme={theme}>
+        {/* <Box
+          sx={{
+            maxHeight: '200vh',
+            overflow: 'auto',
+          }}
+        > */}
         <CardPortfolio allCollections={allCollections} />
-      </Box>{' '}
+        {/* </Box> */}
+      </CollectionContents>
       {isModalOpen && (
         <GenericCardModal
           open={isModalOpen}
           closeModal={closeModal}
           card={modalContent}
-          // context and other props if necessary
         />
       )}
     </React.Fragment>

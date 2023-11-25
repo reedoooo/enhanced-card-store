@@ -36,40 +36,38 @@ const App = () => {
   // const user = cookies?.user;
   // const userId = user?.id;
   const [currentPage, setCurrentPage] = useState('');
-  // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
   const { fetchAllCollectionsForUser, selectedCollection } =
     useCollectionStore();
   const { user, fetchUser } = useUserContext();
   const userId = user?.id;
-  console.log('user', user);
-  console.log('userId', userId);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
   const { fetchUserCart, cartData } = useCartStore();
   const { isLoading, setIsLoading } = useUtilityContext();
-  const handleLoginSuccess = (isLoggedIn, userId) => {
-    // Close the dialog and perform other actions if needed
-    setShowLoginDialog(false);
-    console.log('isLoggedIn', isLoggedIn);
-    console.log('userId', userId);
-  };
 
   // useEffect(() => {
   //   getRandomCardImages(10); // Fetch 10 random images on app start
   // }, []); // Add this useEffect
+  const handleLoginSuccess = (isLoggedIn, userId) => {
+    setShowLoginDialog(false);
+    setIsLoading(false);
+    // Perform other actions after login
+  };
+
   useEffect(() => {
-    // Open the login dialog if there's no userId
+    // Open the login dialog and pause splash page if there's no userId
     if (!userId) {
-      setIsLoading(false);
       setShowLoginDialog(true);
+      setIsLoading(true); // Continue showing splash page
     } else {
       setShowLoginDialog(false);
+      setIsLoading(false); // Hide splash page
     }
   }, [userId]);
 
   useEffect(() => {
-    if (userId) {
+    if (userId && typeof userId === 'string') {
       fetchAllCollectionsForUser()
         .then(() => {
           setIsLoading(false);
@@ -84,20 +82,24 @@ const App = () => {
   //   console.log('Checking userId in useEffect:', userId);
   //   setShowLoginDialog(!userId);
   // }, [userId]);
+  useEffect(() => {
+    if (userId && typeof userId === 'string') {
+      fetchAllDecksForUser()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => console.error('Error fetching decks:', error));
+    }
+  }, [userId, fetchAllDecksForUser, selectedDeck, setIsLoading]);
   // useEffect(() => {
-  //   if (user) {
-  //     fetchAllDecksForUser(user?.id).catch((err) =>
-  //       console.error('Failed to get all decks:', err)
-  //     );
+  //   if (userId && typeof userId === 'string') {
+  //     fetchUserCart()
+  //       .then(() => {
+  //         setIsLoading(false);
+  //       })
+  //       .catch((error) => console.error('Error fetching cart:', error));
   //   }
-  // }, [fetchAllDecksForUser]);
-  // useEffect(() => {
-  //   if (user) {
-  //     fetchUserCart(user?.id).catch((err) =>
-  //       console.error('Failed to get cart:', err)
-  //     );
-  //   }
-  // }, [fetchUserCart]);
+  // }, [userId, fetchUserCart, cartData, setIsLoading]);
 
   // Handle initial loading state
   useEffect(() => {
@@ -124,10 +126,6 @@ const App = () => {
         <SplashPage />
       ) : (
         <React.Fragment>
-          {console.log(
-            'Login Dialog should be:',
-            showLoginDialog ? 'Open' : 'Closed'
-          )}
           <LoginDialog
             open={showLoginDialog}
             onClose={() => setShowLoginDialog(false)}
@@ -179,7 +177,7 @@ const App = () => {
               <Route path="/cardDeck" element={<CardDeckAnimation />} />
               {/* Add a Route for 404 Not Found page if needed */}
             </Routes>
-            <Footer />
+            {/* <Footer /> */}
           </AppContainer>
         </React.Fragment>
       )}

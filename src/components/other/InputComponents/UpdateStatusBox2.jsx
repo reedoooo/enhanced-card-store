@@ -93,17 +93,6 @@ const UpdateStatusBox2 = ({ socket }) => {
     }
   };
 
-  // const sendUpdateRequest = () => {
-  //   if (socket) {
-  //     socket.emit('STATUS_UPDATE_REQUEST', {
-  //       message: 'Requesting status update...',
-  //       data: listOfMonitoredCards,
-  //     });
-  //   }
-  // };
-
-  // Styling for dark theme
-
   return (
     <div style={styles.container}>
       <Typography variant="subtitle1">

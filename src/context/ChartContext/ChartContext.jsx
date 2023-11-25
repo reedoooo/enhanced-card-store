@@ -14,7 +14,6 @@ export const ChartProvider = ({ children }) => {
   const [latestData, setLatestData] = useState(null);
   const [timeRange, setTimeRange] = useState(86400000 || 24 * 60 * 60 * 1000); // Default to 24 hours
 
-  // Correctly initialize timeRanges with the useState hook
   const [timeRanges] = useState([
     { label: '2 hours', value: 720000 || 2 * 60 * 60 * 1000 },
     { label: '24 hours', value: 86400000 || 24 * 60 * 60 * 1000 },
@@ -24,11 +23,9 @@ export const ChartProvider = ({ children }) => {
 
   const currentValue = timeRanges.find((option) => option.value === timeRange);
 
-  // console.log('currentValue: ', currentValue);
   const handleChange = (e) => {
-    setTimeRange(e.target.value);
+    setTimeRange(e.target.value); // Update timeRange based on selection
   };
-
   return (
     <ChartContext.Provider
       value={{

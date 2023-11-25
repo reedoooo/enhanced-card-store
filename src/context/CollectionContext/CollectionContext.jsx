@@ -26,33 +26,22 @@ import {
   getCurrentChartDataSets,
   calculateCollectionValue,
 } from './collectionUtility.jsx';
-import moment from 'moment';
+import {
+  handleError,
+  removeDuplicatesFromCollection,
+  updateCollectionArray,
+  replaceCardInArray,
+  updatePriceHistory,
+  determineCardPrice,
+  createChartDataEntry,
+  createPriceHistoryObject,
+  getFilteredChartData,
+  filterUniqueDataPoints,
+  transformPriceHistoryToXY,
+  getAllCardPrices,
+} from './helpers.jsx';
 
 export const CollectionContext = createContext(defaultContextValue);
-
-function transformPriceHistoryToXY(collectionPriceHistory) {
-  return collectionPriceHistory?.map((entry) => ({
-    x: entry?.timestamp, // x represents the timestamp
-    y: entry?.num, // y represents the numerical value
-    label: `Price at ${entry?.timestamp}`, // label can be customized as needed
-  }));
-}
-
-const getAllCardPrices = (cards) =>
-  cards.flatMap((card) => Array(card.quantity).fill(card.price));
-
-function filterUniqueDataPoints(dataArray) {
-  const uniqueRecords = new Map();
-
-  dataArray?.forEach((item) => {
-    const key = `${item?.label}-${item?.x}-${item?.y}`;
-    if (!uniqueRecords.has(key)) {
-      uniqueRecords.set(key, item);
-    }
-  });
-
-  return Array.from(uniqueRecords.values());
-}
 
 export const CollectionProvider = ({ children }) => {
   const [cookies] = useCookies(['user']);
@@ -72,7 +61,7 @@ export const CollectionProvider = ({ children }) => {
   const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
     useState(false);
   const userId = cookies?.user?.id;
-  console.log('USER ID:', userId);
+  // console.log('USER ID:', userId);
   const lastFetchedTime = useRef(null);
 
   const fetchAndSetCollections = useCallback(async () => {
@@ -88,10 +77,8 @@ export const CollectionProvider = ({ children }) => {
     if (!shouldFetch()) return;
 
     try {
-      if (!userId) {
-        console.error('No user ID found.');
-        return;
-      }
+      if (!handleError(userId, 'User ID is missing.')) return;
+
       lastFetchedTime.current = Date.now();
       const response = await fetchWrapper(
         createApiUrl(`${userId}/collections`),
@@ -102,9 +89,13 @@ export const CollectionProvider = ({ children }) => {
       console.log('FETCHED COLLECTIONS:', collections);
 
       if (collections.length > 0) {
-        setAllCollections(collections);
-        setCollectionData(collections[0]);
-        setSelectedCollection(collections[0]);
+        const uniqueCollections = collections.map(
+          removeDuplicatesFromCollection
+        );
+
+        setAllCollections(uniqueCollections);
+        setCollectionData(uniqueCollections[0]);
+        setSelectedCollection(uniqueCollections[0]);
       } else {
         console.warn('No collections found.');
         // Optionally, set a default or empty state if no collections are found
@@ -114,28 +105,34 @@ export const CollectionProvider = ({ children }) => {
     }
   }, [userId, setAllCollections, setCollectionData, setSelectedCollection]);
 
-  const updateCollectionArray = (collections, newData) => {
-    const index = collections.findIndex((c) => c._id === newData?._id);
-    return index === -1
-      ? [...collections, newData]
-      : collections.map((c) => (c._id === newData?._id ? newData : c));
-  };
-
   const updateCollectionData = useCallback(
-    (newData, collectionType) => {
+    (newData) => {
       try {
-        switch (collectionType) {
-          case 'allCollections':
-            setAllCollections((prev) => updateCollectionArray(prev, newData));
-            break;
-          case 'selectedCollection':
-            setSelectedCollection(newData);
-            break;
-          case 'collectionData':
-            setCollectionData(newData);
-            break;
-          default:
-            console.warn('Unknown collection type for update:', collectionType);
+        // Function to safely check if an object has a property
+        const hasOwnProperty = (obj, prop) =>
+          Object.prototype.hasOwnProperty.call(obj, prop);
+
+        // Determine the type of the new data
+        if (
+          Array.isArray(newData) &&
+          newData.every((item) => hasOwnProperty(item, 'cards'))
+        ) {
+          // If newData is an array of objects each containing 'cards', assume it's 'allCollections'
+          setAllCollections((prev) => updateCollectionArray(prev, newData));
+        } else if (
+          newData &&
+          typeof newData === 'object' &&
+          hasOwnProperty(newData, 'cards')
+        ) {
+          // If newData is an object with a 'cards' property, assume it's 'selectedCollection'
+          setSelectedCollection(newData);
+        } else if (newData && typeof newData === 'object') {
+          // If newData is a general object, assume it's 'collectionData'
+          setCollectionData(newData);
+        } else {
+          console.warn(
+            'Unable to determine the type of collection data for update.'
+          );
         }
       } catch (error) {
         console.error('Error updating collection data:', error);
@@ -163,7 +160,6 @@ export const CollectionProvider = ({ children }) => {
       return;
     }
 
-    // const payload = createPayload(newCollectionInfo, name, description, userId);
     const payload = {
       ...newCollectionInfo,
       name,
@@ -171,21 +167,9 @@ export const CollectionProvider = ({ children }) => {
       userId,
     };
     const url = createApiUrl(`${userId}/collections`);
-    console.log('Creating user collection with data:', {
-      userId,
-      newCollectionInfo,
-      name,
-      description,
-    });
     console.log('Payload for user collection:', payload);
-
     const response = await fetchWrapper(url, 'POST', payload);
-    console.log('6. Saved collection:', response);
-    console.log('6. Saved collection:', response.data);
-    console.log('6. Saved collection:', response.message);
-    updateCollectionData(response.data, 'allCollections');
-    updateCollectionData(response.data, 'collectionData');
-    updateCollectionData(response.data, 'selectedCollection');
+    updateCollectionData(response.data);
   };
 
   const removeCollection = async (collection) => {
@@ -225,16 +209,12 @@ export const CollectionProvider = ({ children }) => {
         }
         if (!cardUpdate?.id) {
           console.warn('Card ID is missing.', cardUpdate);
-          // return collection?.cards;
         }
         // eslint-disable-next-line no-case-declarations
         const cards = collection?.cards;
 
         for (let i = 0; i < cards?.length; i++) {
           // eslint-disable-next-line no-case-declarations
-          // const cardIndex = selectedCollection?.cards?.findIndex(
-          //   (c) => c?.id === cardUpdate?.id
-          // );
           if (!cards[i]?.id) {
             console.warn('Card ID is missing.', cards[i]);
             continue;
@@ -281,14 +261,6 @@ export const CollectionProvider = ({ children }) => {
     return cardsToUpdate;
   };
 
-  function replaceCardInArray(cardsArray, newCard, index) {
-    return [
-      ...cardsArray.slice(0, index),
-      newCard,
-      ...cardsArray.slice(index + 1),
-    ];
-  }
-
   function getUpdatedCard(card, update, priceHistory, collectionId) {
     const cardPrice = determineCardPrice(card, update);
     const newChartDataEntry = createChartDataEntry(totalPrice);
@@ -308,42 +280,6 @@ export const CollectionProvider = ({ children }) => {
       tag: 'monitored',
       chart_datasets: [...(card.chart_datasets || []), newChartDataEntry],
       priceHistory: priceHistory,
-    };
-  }
-
-  function determineCardPrice(card, update) {
-    if (update?.latestPrice?.num) return update.latestPrice.num;
-    if (card.price) return card.price;
-    return card.card_prices[0].tcgplayer_price;
-  }
-
-  function updatePriceHistory(card, update) {
-    const newPriceHistoryEntry = createPriceHistoryObject(
-      update?.latestPrice?.num
-    );
-    const lastPriceHistoryEntry =
-      card?.priceHistory[card?.priceHistory?.length - 1];
-
-    if (
-      !lastPriceHistoryEntry ||
-      lastPriceHistoryEntry?.num !== newPriceHistoryEntry?.num
-    ) {
-      return [...card.priceHistory, newPriceHistoryEntry];
-    }
-    return card?.priceHistory;
-  }
-
-  function createChartDataEntry(price) {
-    return {
-      x: moment().format('YYYY-MM-DD HH:mm'),
-      y: price,
-    };
-  }
-
-  function createPriceHistoryObject(price) {
-    return {
-      num: price,
-      timestamp: new Date(),
     };
   }
 
@@ -377,9 +313,12 @@ export const CollectionProvider = ({ children }) => {
       name,
       userId: userId, // Make sure 'userId' is defined in the scope
       totalPrice: updatedTotalPrice || 0,
-      totalCost: updatedTotalPrice ? updatedTotalPrice.toString() : '0',
-      totalQuantity: cards.reduce((acc, card) => acc + (card.quantity || 0), 0),
-      quantity: cards.length,
+      totalCost: updatedTotalPrice ? updatedTotalPrice?.toString() : '0',
+      totalQuantity: cards?.reduce(
+        (acc, card) => acc + (card?.quantity || 0),
+        0
+      ),
+      quantity: cards?.length,
       lastSavedPrice: {
         num: collectionWithCards?.totalPrice || 0,
         timestamp: collectionWithCards?.lastSavedPrice?.timeStamp || new Date(),
@@ -396,31 +335,6 @@ export const CollectionProvider = ({ children }) => {
       collectionPriceHistory: [
         ...collectionPriceHistory,
         newCollectionPriceHistoryObject,
-      ],
-    };
-  };
-
-  const getFilteredChartData = (chartData, updatedTotalPrice) => {
-    const filteredChartData = {
-      ...chartData,
-      allXYValues: filterUniqueDataPoints(chartData?.allXYValues),
-      datasets: chartData?.datasets.map((dataset) => ({
-        ...dataset,
-        data: dataset?.data.map((dataEntry) => ({
-          ...dataEntry,
-          xys: filterUniqueDataPoints(dataEntry?.xys),
-        })),
-      })),
-    };
-    return {
-      ...filteredChartData,
-      allXYValues: [
-        ...filteredChartData.allXYValues,
-        {
-          label: `Update - ${new Date().toISOString()}`,
-          x: new Date().toISOString(),
-          y: updatedTotalPrice,
-        },
       ],
     };
   };
@@ -655,21 +569,7 @@ export const CollectionProvider = ({ children }) => {
 
     if (updatedCollection) {
       console.log('UPDATED COLLECTION:', updatedCollection);
-      // Update the relevant collections in the state/context
-      updateCollectionData(
-        updatedCollection?.restructuredCollection,
-        'allCollections'
-      );
-      if (collection._id === selectedCollection?._id) {
-        updateCollectionData(
-          updatedCollection?.restructuredCollection,
-          'selectedCollection'
-        );
-      }
-      updateCollectionData(
-        updatedCollection?.restructuredCollection,
-        'collectionData'
-      );
+      updateCollectionData(updatedCollection?.restructuredCollection);
     } else {
       console.error('Failed to update collection.');
     }

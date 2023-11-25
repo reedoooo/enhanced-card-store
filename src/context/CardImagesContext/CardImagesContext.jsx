@@ -44,10 +44,8 @@ export const CardImagesProvider = ({ children }) => {
     try {
       const response = await fetchWrapper(BASE_API_URL + '/download', 'GET');
       console.log('Response from fetchWrapper:', response);
-
       // If response is already JSON
       setCards(response.data); // Directly setting the response if it's already in the desired format
-
       cards.forEach((card) => {
         if (card.card_images && card.card_images.length > 0) {
           // Adding a dummy GET parameter to bypass caching
@@ -56,10 +54,6 @@ export const CardImagesProvider = ({ children }) => {
           setImages(imageUrl);
         }
       });
-
-      // If response needs to be parsed as JSON
-      // const jsonResponse = await response.json(); // Uncomment if response is in JSON format
-      // setCards(jsonResponse); // Assuming jsonResponse is an array of cards
     } catch (error) {
       console.error('Error in downloadCardImages:', error);
       setError(error.message);

@@ -39,9 +39,10 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   height: '100%',
   alignItems: 'center',
   background: theme.palette.background.dark,
+  padding: theme.spacing(2),
   color: '#fff', // White text color
-  padding: 2,
-  borderRadius: 2,
+  // padding: 2,
+  borderRadius: 4,
 }));
 
 // const Paper = styled(MuiPaper)(({ theme }) => ({

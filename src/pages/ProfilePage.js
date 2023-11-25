@@ -94,7 +94,7 @@ const ProfilePage = () => {
   // };
 
   const handleStopCronJob = () => {
-    if (userId) {
+    if (userId && typeof userId === 'string') {
       handleRequestCronStop(userId);
       console.log('STOPPING CRON JOB');
     }

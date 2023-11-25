@@ -272,7 +272,7 @@ export const DeckProvider = ({ children }) => {
   useEffect(() => {
     console.log('DECKCONTEXT:', contextValue);
     const userId = cookies?.user?.id;
-    if (userId) {
+    if (userId && typeof userId === 'string') {
       fetchAndSetDecks();
     }
   }, [cookies?.user?.id, fetchAndSetDecks]);

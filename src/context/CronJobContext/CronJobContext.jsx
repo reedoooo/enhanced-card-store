@@ -20,8 +20,6 @@ export const CronJobProvider = ({ children }) => {
       const currentTime = new Date().getTime();
       const timeDifference = currentTime - lastCronJobTriggerTime;
 
-      // Define your cron job logic here
-      // Example: Trigger an action if a certain time has elapsed
       if (timeDifference >= 60000) {
         // 60 seconds
         setLastCronJobTriggerTime(currentTime);

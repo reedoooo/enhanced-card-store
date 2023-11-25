@@ -61,24 +61,22 @@ const GenericCardModal = ({ open, card, context }) => {
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <CardMediaAndDetails card={card} />
-        {requiresDoubleButtons && (
-          <>
-            <GenericActionButtons
-              card={card}
-              context="Deck"
-              onSuccess={handleActionSuccess}
-              onFailure={handleActionFailure}
-              // setModalOpen={setModalOpen}
-            />
-            <GenericActionButtons
-              card={card}
-              context="Collection"
-              onSuccess={handleActionSuccess}
-              onFailure={handleActionFailure}
-              // setModalOpen={setModalOpen}
-            />
-          </>
-        )}
+        <>
+          <GenericActionButtons
+            card={card}
+            context="Deck"
+            onSuccess={handleActionSuccess}
+            onFailure={handleActionFailure}
+            // setModalOpen={setModalOpen}
+          />
+          <GenericActionButtons
+            card={card}
+            context="Collection"
+            onSuccess={handleActionSuccess}
+            onFailure={handleActionFailure}
+            // setModalOpen={setModalOpen}
+          />
+        </>
       </DialogContent>
       <Snackbar
         open={snackbar.open}

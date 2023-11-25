@@ -59,19 +59,32 @@ const PortfolioChart = () => {
     () => handleThresholdUpdate(lastUpdateTime, setLastUpdateTime),
     [lastUpdateTime]
   );
+  // const filteredChartData2 = useMemo(
+  //   () => getFilteredData2(selectedCollection),
+  //   [selectedCollection]
+  // );
+  // const rawData2 = useMemo(
+  //   () => groupAndAverageData(filteredChartData2, threshold),
+  //   [filteredChartData2, threshold]
+  // );
+  // const nivoReadyData2 = useMemo(
+  //   () => convertDataForNivo2(rawData2),
+  //   [rawData2]
+  // );
   const filteredChartData2 = useMemo(
-    () => getFilteredData2(selectedCollection),
-    [selectedCollection]
+    () => getFilteredData2(selectedCollection, timeRange), // Adjust to filter data based on timeRange
+    [selectedCollection, timeRange]
   );
+
   const rawData2 = useMemo(
-    () => groupAndAverageData(filteredChartData2, threshold),
-    [filteredChartData2, threshold]
+    () => groupAndAverageData(filteredChartData2, threshold, timeRange), // Adjust to group and average data based on timeRange
+    [filteredChartData2, threshold, timeRange]
   );
+
   const nivoReadyData2 = useMemo(
     () => convertDataForNivo2(rawData2),
     [rawData2]
   );
-
   console.log('Selected Collection:', selectedCollection);
   console.log('Filtered Chart Data:', filteredChartData2);
   console.log('Raw Data:', rawData2);
@@ -118,11 +131,9 @@ const PortfolioChart = () => {
         <Grid
           container
           spacing={2}
-          sx={
-            {
-              // background: '#333', // Darker background for Paper
-            }
-          }
+          // sx={{
+          //   // background: '#222', // Darker background for Paper
+          // }}
         >
           <Grid
             item
@@ -135,6 +146,7 @@ const PortfolioChart = () => {
                   nivoReadyData={nivoReadyData2}
                   filteredChartData={filteredChartData2}
                   latestData={latestData}
+                  timeRange={timeRange}
                   dimensions={chartDimensions}
                   timeRanges={timeRange}
                 />

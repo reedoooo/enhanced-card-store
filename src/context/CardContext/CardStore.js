@@ -99,11 +99,6 @@ export const CardProvider = ({ children }) => {
         initialStore,
         cookies,
         currentCart,
-        // getCardQuantity: (cardId) => {
-        //   if
-        //   const card = cartData?.cart?.find((c) => c?.id === cardId);
-        //   return card?.quantity || 0;
-        // },
         setSearchData,
         setDeckSearchData,
         setSavedDeckData,
@@ -127,36 +122,3 @@ export const useCardStore = () => {
   }
   return context;
 };
-
-// export const useCardStore = () => {
-//   const context = useContext(CardContext);
-//   if (!context) {
-//     throw new Error('useCardStore must be used within a CardStoreProvider');
-//   }
-//   const {
-//     cardsArray,
-//     getCardData,
-//     getRandomCard,
-//     setCardsArray,
-//     searchData,
-//     setSearchData,
-//     handleRequest,
-//     deckSearchData,
-//     setDeckSearchData,
-//     savedDeckData,
-//     setSavedDeckData,
-//   } = context;
-//   return {
-//     cardsArray,
-//     getCardData,
-//     getRandomCard,
-//     setCardsArray,
-//     searchData,
-//     setSearchData,
-//     handleRequest,
-//     deckSearchData,
-//     setDeckSearchData,
-//     savedDeckData,
-//     setSavedDeckData,
-//   };
-// };
