@@ -28,6 +28,7 @@ import { useCardImages } from './context/CardImagesContext/CardImagesContext';
 import { useCookies } from 'react-cookie';
 import { useDeckStore } from './context/DeckContext/DeckContext';
 import { useCartStore } from './context/CartContext/CartContext';
+import LoginDialog from './components/dialogs/LoginDialog';
 const App = () => {
   // const [cookies] = useCookies(['user']);
 
@@ -41,15 +42,32 @@ const App = () => {
   const userId = user?.id;
   console.log('user', user);
   console.log('userId', userId);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+
   const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
   const { fetchUserCart, cartData } = useCartStore();
   const { isLoading, setIsLoading } = useUtilityContext();
-
+  // Callback function when login is successful
+  const handleLoginSuccess = (isLoggedIn, userId) => {
+    // Close the dialog and perform other actions if needed
+    setShowLoginDialog(false);
+    console.log('isLoggedIn', isLoggedIn);
+    console.log('userId', userId);
+    // ... any other logic post-login
+  };
   // const { getRandomCardImages } = useCardImages(); // Add this line
 
   // useEffect(() => {
   //   getRandomCardImages(10); // Fetch 10 random images on app start
   // }, []); // Add this useEffect
+  useEffect(() => {
+    // Open the login dialog if there's no userId
+    if (!userId) {
+      setShowLoginDialog(true);
+    } else {
+      setShowLoginDialog(false);
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
@@ -103,6 +121,12 @@ const App = () => {
         <SplashPage />
       ) : (
         <React.Fragment>
+          <LoginDialog
+            open={showLoginDialog}
+            onClose={() => setShowLoginDialog(false)}
+            onLogin={handleLoginSuccess}
+          />
+
           <AppContainer>
             <Header />
             <Routes>
