@@ -1,6 +1,6 @@
 # TCG Enhanced Cardstore
 
-![Netlify Status](https://api.netlify.com/api/v1/badges/5e0666a4-ef7e-42a3-babb-6b2c5f86c400/deploy-status)](https://app.netlify.com/sites/tcg-store/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/958aa5a1-dc96-4fc5-910b-b8274ddfbdd6/deploy-status)](https://app.netlify.com/sites/enhanced-cardstore/deploys)
 
 ## About
 
