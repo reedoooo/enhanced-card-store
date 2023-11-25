@@ -1,9 +1,7 @@
-// StripeForm.js
-
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
-import './StripeForm.css'; // import the CSS file
+import './StripeForm.css';
 
 const StripeForm = ({ total, onToken }) => {
   const stripe = useStripe();
@@ -38,18 +36,24 @@ const StripeForm = ({ total, onToken }) => {
       onToken(id);
       const amountInCents = Math.round(total * 100);
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER}/api/stripe/checkout`,
-        { id, amount: amountInCents }
-      );
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_SERVER}/api/stripe/checkout`,
+          { id, amount: amountInCents }
+        );
 
-      setLoading(false);
+        setLoading(false);
 
-      if (response.data.success) {
-        setPaymentSuccess('Payment Successful!');
-        setPaymentError(null);
-      } else {
-        setPaymentError('Payment failed: ' + response.data.message);
+        if (response.data.success) {
+          setPaymentSuccess('Payment Successful!');
+          setPaymentError(null);
+        } else {
+          setPaymentError('Payment failed: ' + response.data.message);
+          setPaymentSuccess(null);
+        }
+      } catch (err) {
+        setLoading(false);
+        setPaymentError('Error processing payment: ' + err.message);
         setPaymentSuccess(null);
       }
     }

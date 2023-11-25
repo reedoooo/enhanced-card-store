@@ -23,11 +23,16 @@ import { PopoverProvider } from './context/PopoverContext/PopoverContext';
 import { CronJobProvider } from './context/CronJobContext/CronJobContext';
 import { CardImagesProvider } from './context/CardImagesContext/CardImagesContext';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 const root = document.getElementById('root');
 
 function Main() {
   const { theme } = useMode();
+  const stripePromise = loadStripe(
+    process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
+  ); // Use your Stripe publishable key
 
   return (
     <ErrorBoundary>
@@ -51,7 +56,9 @@ function Main() {
                                     <ChartProvider>
                                       <SidebarProvider>
                                         <AppContextProvider>
-                                          <App />
+                                          <Elements stripe={stripePromise}>
+                                            <App />
+                                          </Elements>
                                         </AppContextProvider>
                                       </SidebarProvider>
                                     </ChartProvider>
