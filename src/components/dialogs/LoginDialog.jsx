@@ -26,7 +26,10 @@ function LoginDialog({ open, onClose, onLogin }) {
   const [name, setName] = useState('');
   const [roleData, setRoleData] = useState('admin'); // Adjusted to handle string value
   const { toggleColorMode, mode } = useMode();
-  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    'isLoggedIn',
+    'userId',
+  ]);
   const setLoginState = (isLoggedIn, userId) => {
     const expires = new Date();
     expires.setMinutes(expires.getMinutes() + 45);

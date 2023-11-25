@@ -30,6 +30,7 @@ import { useDeckStore } from './context/DeckContext/DeckContext';
 import { useCartStore } from './context/CartContext/CartContext';
 import LoginDialog from './components/dialogs/LoginDialog';
 const App = () => {
+  // const { getRandomCardImages } = useCardImages(); // Add this line
   // const [cookies] = useCookies(['user']);
 
   // const user = cookies?.user;
@@ -47,15 +48,12 @@ const App = () => {
   const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
   const { fetchUserCart, cartData } = useCartStore();
   const { isLoading, setIsLoading } = useUtilityContext();
-  // Callback function when login is successful
   const handleLoginSuccess = (isLoggedIn, userId) => {
     // Close the dialog and perform other actions if needed
     setShowLoginDialog(false);
     console.log('isLoggedIn', isLoggedIn);
     console.log('userId', userId);
-    // ... any other logic post-login
   };
-  // const { getRandomCardImages } = useCardImages(); // Add this line
 
   // useEffect(() => {
   //   getRandomCardImages(10); // Fetch 10 random images on app start
@@ -63,6 +61,7 @@ const App = () => {
   useEffect(() => {
     // Open the login dialog if there's no userId
     if (!userId) {
+      setIsLoading(false);
       setShowLoginDialog(true);
     } else {
       setShowLoginDialog(false);
@@ -81,6 +80,10 @@ const App = () => {
         });
     }
   }, [userId, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
+  // useEffect(() => {
+  //   console.log('Checking userId in useEffect:', userId);
+  //   setShowLoginDialog(!userId);
+  // }, [userId]);
   // useEffect(() => {
   //   if (user) {
   //     fetchAllDecksForUser(user?.id).catch((err) =>
@@ -121,6 +124,10 @@ const App = () => {
         <SplashPage />
       ) : (
         <React.Fragment>
+          {console.log(
+            'Login Dialog should be:',
+            showLoginDialog ? 'Open' : 'Closed'
+          )}
           <LoginDialog
             open={showLoginDialog}
             onClose={() => setShowLoginDialog(false)}
