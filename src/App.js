@@ -52,7 +52,6 @@ const App = () => {
   const handleLoginSuccess = (isLoggedIn, userId) => {
     setShowLoginDialog(false);
     setIsLoading(false);
-    // Perform other actions after login
   };
 
   useEffect(() => {
@@ -78,10 +77,10 @@ const App = () => {
         });
     }
   }, [userId, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
-  // useEffect(() => {
-  //   console.log('Checking userId in useEffect:', userId);
-  //   setShowLoginDialog(!userId);
-  // }, [userId]);
+  useEffect(() => {
+    console.log('Checking userId in useEffect:', userId);
+    setShowLoginDialog(!userId);
+  }, [userId]);
   useEffect(() => {
     if (userId && typeof userId === 'string') {
       fetchAllDecksForUser()
