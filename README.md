@@ -34,6 +34,10 @@ Reed Vogt
 
    Newcomers to card collection can explore the vast inventory of cards along with their associated costs, providing them an understanding of the financial implications of building a deck.
 
+6. **In-Depth Analysis of Card Performance**
+
+   The collection section of the app provides users a variety of statistics about their collection performance as well as specific cards which enable users to make advanced insights into trends and patterns.
+
 ## Acceptance Tests
 
 To ensure the best user experience and seamless functionality, the following acceptance tests are in place:
@@ -90,7 +94,7 @@ Reed Vogt -
 <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flinkedin_174857&psig=AOvVaw1F9U7jlNJPTJpYUU2wdKLW&ust=1691527142102000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCPjpk-Wzy4ADFQAAAAAdAAAAABAJ" alt="LinkedIn" style="width:24px;height:24px;">
 </a>
 
-Project Site: tcg-store.netlify.app/
+Project Site: https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/
 
 Project Repo: https://github.com/reedoooo/enhanced-card-store#readme
 

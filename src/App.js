@@ -56,7 +56,7 @@ const App = () => {
 
   useEffect(() => {
     // Open the login dialog and pause splash page if there's no userId
-    if (!userId) {
+    if (!userId || typeof userId !== 'string') {
       setShowLoginDialog(true);
       setIsLoading(true); // Continue showing splash page
     } else {
@@ -78,18 +78,19 @@ const App = () => {
     }
   }, [userId, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
   useEffect(() => {
-    console.log('Checking userId in useEffect:', userId);
-    setShowLoginDialog(!userId);
-  }, [userId]);
-  useEffect(() => {
     if (userId && typeof userId === 'string') {
       fetchAllDecksForUser()
         .then(() => {
           setIsLoading(false);
         })
         .catch((error) => console.error('Error fetching decks:', error));
+      setIsLoading(false);
     }
   }, [userId, fetchAllDecksForUser, selectedDeck, setIsLoading]);
+  useEffect(() => {
+    console.log('Checking userId in useEffect:', userId);
+    setShowLoginDialog(!userId);
+  }, [userId]);
   // useEffect(() => {
   //   if (userId && typeof userId === 'string') {
   //     fetchUserCart()

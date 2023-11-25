@@ -644,11 +644,11 @@ export const CollectionProvider = ({ children }) => {
     }
   }, [selectedCollection, setTotalPrice]);
 
-  useEffect(() => {
-    if (allCollections?.length === 0 || allCollections === undefined) {
-      fetchAndSetCollections();
-    }
-  }, [allCollections, fetchAndSetCollections]);
+  // useEffect(() => {
+  //   if (allCollections?.length === 0 || allCollections === undefined) {
+  //     fetchAndSetCollections();
+  //   }
+  // }, [allCollections, fetchAndSetCollections]);
 
   useEffect(() => {
     if (selectedCollection === null || selectedCollection === undefined) {
