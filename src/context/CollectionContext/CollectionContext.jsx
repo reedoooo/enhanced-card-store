@@ -72,6 +72,7 @@ export const CollectionProvider = ({ children }) => {
   const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
     useState(false);
   const userId = cookies?.user?.id;
+  console.log('USER ID:', userId);
   const lastFetchedTime = useRef(null);
 
   const fetchAndSetCollections = useCallback(async () => {
@@ -87,6 +88,10 @@ export const CollectionProvider = ({ children }) => {
     if (!shouldFetch()) return;
 
     try {
+      if (!userId) {
+        console.error('No user ID found.');
+        return;
+      }
       lastFetchedTime.current = Date.now();
       const response = await fetchWrapper(
         createApiUrl(`${userId}/collections`),

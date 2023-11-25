@@ -31,7 +31,8 @@ import { useCartStore } from './context/CartContext/CartContext';
 const App = () => {
   const [cookies] = useCookies(['user']);
 
-  const user = cookies.user;
+  const user = cookies?.user;
+  const userId = user?.id;
   const [currentPage, setCurrentPage] = useState('');
   // const { setContext } = useAppContext(); // Assuming useAppContext provides setContext
   const { fetchAllCollectionsForUser, selectedCollection } =
@@ -48,7 +49,7 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      fetchAllCollectionsForUser(user.id)
+      fetchAllCollectionsForUser()
         .then(() => {
           setIsLoading(false);
         })
@@ -57,7 +58,7 @@ const App = () => {
           setIsLoading(false);
         });
     }
-  }, [user, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
+  }, [userId, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
   // useEffect(() => {
   //   if (user) {
   //     fetchAllDecksForUser(user?.id).catch((err) =>
