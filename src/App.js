@@ -55,13 +55,14 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Open the login dialog and pause splash page if there's no userId
     if (!userId || typeof userId !== 'string') {
+      // Invalid or missing userId, show login dialog and hide splash page
       setShowLoginDialog(true);
-      setIsLoading(true); // Continue showing splash page
+      setIsLoading(false);
     } else {
+      // Valid userId, hide login dialog and splash page
       setShowLoginDialog(false);
-      setIsLoading(false); // Hide splash page
+      setIsLoading(false);
     }
   }, [userId]);
 
