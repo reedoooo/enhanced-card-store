@@ -37,7 +37,6 @@ const CarouselCard = ({ card }) => {
   const { theme } = useMode();
   const classes = useStyles();
   const placeholderImage = '../../assets/images/placeholder.jpeg';
-  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
   const cardRef = useRef(null);
@@ -86,12 +85,7 @@ const TopCardsDisplay = () => {
         const latestPrice = card?.latestPrice?.num ?? 0;
         const lastSavedPrice = card?.lastSavedPrice?.num ?? 0;
 
-        if (
-          latestPrice === 0 ||
-          latestPrice === undefined ||
-          lastSavedPrice === 0 ||
-          lastSavedPrice === undefined
-        ) {
+        if (latestPrice === undefined) {
           console.warn(`Price missing for card: ${card.name}`);
           return { ...card, diff: 0 };
         }
@@ -107,7 +101,7 @@ const TopCardsDisplay = () => {
     setTop5Cards(sortedCards);
   }, [selectedCollection]);
 
-  const maxSteps = top5Cards.length;
+  const maxSteps = top5Cards?.length;
 
   const handleNext = () =>
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -126,7 +120,7 @@ const TopCardsDisplay = () => {
           width: '100%', // Use full width of the container
         }}
       >
-        {top5Cards.map((card, index) => (
+        {top5Cards?.map((card, index) => (
           <MainContainer key={index}>
             <CarouselCard card={card} />
           </MainContainer>

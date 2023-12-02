@@ -84,29 +84,8 @@ const SelectCollectionList = ({
   } = useCollectionStore();
   const { stats, statsByCollectionId } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
-  // const twentyFourHourChange = stats.twentyFourHourAverage;
-
-  // let collectionStats;
-  // let twentyFourHourChange;
-  // const getStatsForAllCollections = (collection) => {
-  //   if (!collection) {
-  //     console.error('Invalid input: selectedCollection should not be null');
-  //     return [];
-  //   }
-  //   if (!statsByCollectionId) {
-  //     console.error('Invalid input: statsByCollectionId should not be null');
-  //     return [];
-  //   }
-
-  //   collectionStats = statsByCollectionId[collection?._id];
-  //   twentyFourHourChange = collectionStats?.twentyFourHourAverage;
-
-  //   return { collectionStats, twentyFourHourChange };
-  // };
-  console.log('STATS:', stats);
-  console.log('STATS BY COLLECTION ID:', statsByCollectionId);
-  console.log('SELECTED COLLECTION:', selectedCollection);
-  console.log('ALL COLLECTIONS:', allCollections);
+  // console.log('STATS:', stats);
+  // console.log('STATS BY COLLECTION ID:', statsByCollectionId);
   function roundToNearestTenth(num) {
     return Math.round(num * 10) / 10;
   }
@@ -142,7 +121,7 @@ const SelectCollectionList = ({
   const handleOpenDialog = useCallback(
     (collection) => {
       setSelectedCollection(collection);
-      console.log('SELECTED COLLECTION:', collection);
+      console.log('SELECTED COLLECTION IN LIST:', collection);
       openDialog(true);
     },
     [openDialog, setSelectedCollection]

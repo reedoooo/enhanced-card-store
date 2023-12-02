@@ -22,6 +22,7 @@ import {
   // ThreeJsCube,
   // CardDeckAnimation,
   NotFoundPage,
+  LoginPage,
 } from './pages';
 
 import {
@@ -107,6 +108,14 @@ const App = () => {
     }
   }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
 
+  useEffect(() => {
+    // if the user is redirected to the login page, show the login dialog and set the loading state to false
+    if (window.location.pathname === '/login') {
+      setShowLoginDialog(true);
+      setIsLoading(false);
+    }
+  }, []);
+
   return (
     <>
       <Helmet>{/* Helmet Configuration */}</Helmet>
@@ -158,6 +167,7 @@ const App = () => {
                 }
               />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/login" element={<LoginPage />} />
               {/* <Route path="/threejs" element={<ThreeJsCube />} /> */}
               {/* <Route path="/cardDeck" element={<CardDeckAnimation />} /> */}
               <Route path="*" element={<NotFoundPage />} />{' '}

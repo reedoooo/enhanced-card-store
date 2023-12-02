@@ -48,9 +48,7 @@ const CardActionButtons = ({
   const isCardInContext = useCallback(() => {
     switch (context) {
       case 'Collection':
-        return !!selectedCollection?.cards?.find(
-          (c) => c?.card?.id === card?.id
-        );
+        return !!selectedCollection?.cards?.find((c) => c?.id === card?.id);
       case 'Deck':
         return !!selectedDeck?.cards?.find((c) => c?.id === card?.id);
       case 'Cart':
@@ -126,9 +124,9 @@ const CardActionButtons = ({
         switch (context) {
           case 'Collection':
             if (action === 'add') {
-              addOneToCollection(card, card.id);
+              addOneToCollection(card);
             } else if (action === 'removeOne') {
-              removeOneFromCollection(card, card.id);
+              removeOneFromCollection(card);
             }
             break;
           case 'Deck':

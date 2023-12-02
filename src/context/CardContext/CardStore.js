@@ -65,7 +65,7 @@ export const CardProvider = ({ children }) => {
           setOrganizedSearchData(limitedCardsToRender);
 
           if (limitedCardsToRender.length >= 1) {
-            console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
+            // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
             setSlicedSearchData(limitedCardsToRender);
           }
         }
@@ -95,11 +95,17 @@ export const CardProvider = ({ children }) => {
 
     for (const collection of allCollections) {
       for (const card of collection.cards) {
-        if (!card.card_images || !card.card_sets || !card.card_prices) {
+        if (
+          !user.id ||
+          !card.card_images ||
+          !card.card_sets ||
+          !card.card_prices
+        ) {
           needsUpdate = true;
           const response = await axios.patch(
             `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.id}`,
-            { id: card.id, user: user, _id: user._id }
+            { id: card.id, user: user.id },
+            { withCredentials: true }
           );
           if (response.data && response.data.data) {
             const updatedCard = response.data.data;

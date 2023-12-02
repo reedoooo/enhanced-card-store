@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Container, Grid, Paper, useTheme } from '@mui/material';
 import HeaderTitle from '../reusable/HeaderTitle';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
@@ -11,6 +11,16 @@ import CollectionPortfolioListContainer from '../../containers/collectionPageCon
 const PortfolioContent = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
   const { selectedCollection } = useCollectionStore();
+  const [collectionName, setCollectionName] = useState(
+    selectedCollection?.name
+  );
+
+  // Update collectionName when selectedCollection changes
+  useEffect(() => {
+    if (selectedCollection?.name) {
+      setCollectionName(selectedCollection.name);
+    }
+  }, [selectedCollection]);
 
   return (
     <Box
@@ -42,7 +52,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         }}
       >
         <HeaderTitle
-          title={selectedCollection?.name}
+          title={collectionName}
           size="large"
           location="center"
           theme={theme}

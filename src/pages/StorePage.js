@@ -36,7 +36,7 @@ const StorePage = () => {
 
       setIsPageLoading(true);
       try {
-        fetchUserCart(userId);
+        fetchUserCart();
         if (searchData && slicedAndMergedSearchData) {
           logPageData('StorePage', slicedAndMergedSearchData);
         }

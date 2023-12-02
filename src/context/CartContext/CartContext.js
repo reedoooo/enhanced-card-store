@@ -227,9 +227,9 @@ export const CartProvider = ({ children }) => {
     createUserCart,
   };
 
-  useEffect(() => {
-    console.log('CART CONTEXT: ', value.cartData);
-  }, [addOneToCart, removeOneFromCart, deleteFromCart]);
+  // useEffect(() => {
+  //   console.log('CART CONTEXT: ', value.cartData);
+  // }, [addOneToCart, removeOneFromCart, deleteFromCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

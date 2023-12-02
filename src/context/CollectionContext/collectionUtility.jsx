@@ -215,61 +215,6 @@ const ensureNumber = (value, defaultValue = 0) => {
 const findCollectionIndex = (collections, id) =>
   collections?.findIndex((collection) => collection?._id === id) ?? -1;
 
-// To prevent making the same type of request within 10 seconds
-const lastRequestTime = {
-  POST: 0,
-  PUT: 0,
-  DELETE: 0,
-  GET: 0,
-  // Add other methods if needed
-};
-
-/**
- * Checks whether a new request can be made based on the last request's timestamp.
- * @param {String} method - The HTTP method for the request.
- */
-const canMakeRequest = (method) => {
-  const currentTime = Date.now();
-  // The comment mentioned 10 seconds, but the code was checking for 5 seconds. Adjust as necessary.
-  return currentTime - lastRequestTime[method] > 1000; // Now it's 10 seconds
-};
-
-/**
- * Updates the last request timestamp for a given method.
- * @param {String} method - The HTTP method for the request.
- */
-const updateLastRequestTime = (method) => {
-  lastRequestTime[method] = Date.now();
-};
-/**
- * Wraps fetch API calls and implements a rate limit for each HTTP method type.
- * @param {String} url - The API URL to make the request to.
- * @param {String} method - The HTTP method for the request.
- * @param {Object} [body=null] - The request payload if needed.
- * @returns {Promise<Object>} - The response from the API call.
- */
-const fetchWrapper = async (url, method, body = null) => {
-  const options = {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    ...(body && { body: JSON.stringify(body) }),
-  };
-
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      // We handle non-ok responses immediately
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    updateLastRequestTime(method); // Assumed to be a function that updates some kind of state
-    return await response.json(); // Directly returning the JSON response
-  } catch (error) {
-    console.error(`Fetch failed: ${error}`);
-    console.trace();
-    throw error; // Re-throwing the error for upstream catch blocks to handle
-  }
-};
-
 const getTotalCost = (selectedCollection) => {
   if (!selectedCollection || !Array.isArray(selectedCollection.cards)) return 0;
 
@@ -285,11 +230,6 @@ const getTotalCost = (selectedCollection) => {
     return total + cardPrice * card.quantity;
   }, 0);
 };
-// const getCardQuantity = (cardId) => {
-//   const card = selectedCollection?.cards?.find((c) => c.id === cardId);
-//   return card?.quantity || 0;
-// }
-
 const defaultContextValue = {
   allCollections: [],
   allCardPrices: [],
@@ -323,7 +263,6 @@ const logError = (source, action, error) => {
   );
 };
 
-// Reusable validation and error logging
 const validateUserIdAndData = (userId, data, actionDescription) => {
   if (!userId) {
     logError(
@@ -344,86 +283,8 @@ const validateUserIdAndData = (userId, data, actionDescription) => {
   return true;
 };
 
-const determineHttpMethod = (isCreatingNew, endpoint) => {
-  return isCreatingNew ? 'POST' : 'PUT';
-};
-
-// Abstracted payload creation to reduce repetition
-// const createPayload = (info, data, defaultXyData) => ({
-//   userId: info.userId || data.userId, // Assuming this is an ObjectId string
-//   name: info.name || data.name || '',
-//   description: info.description || data.description || '',
-//   totalCost: info.totalCost || data.totalCost || '',
-//   totalPrice: info.totalPrice || data.totalPrice || 0,
-//   quantity: info.quantity || data.quantity || 0,
-//   totalQuantity: info.totalQuantity || data.totalQuantity || 0,
-//   previousDayTotalPrice:
-//     info.previousDayTotalPrice || data.previousDayTotalPrice || 0,
-//   dailyPriceChange: info.dailyPriceChange || data.dailyPriceChange || '',
-//   priceDifference: info.priceDifference || data.priceDifference || 0,
-//   priceChange: info.priceChange || data.priceChange || 0,
-//   collectionPriceHistory: Array.isArray(info.collectionPriceHistory)
-//     ? info.collectionPriceHistory
-//     : Array.isArray(data.collectionPriceHistory)
-//     ? data.collectionPriceHistory
-//     : [],
-//   allCardPrices: Array.isArray(info.allCardPrices)
-//     ? info.allCardPrices
-//     : Array.isArray(data.allCardPrices)
-//     ? data.allCardPrices
-//     : [],
-//   cards: Array.isArray(info.cards)
-//     ? info.cards
-//     : Array.isArray(data.cards)
-//     ? data.cards
-//     : [],
-//   currentChartDatasets: Array.isArray(info.currentChartDatasets)
-//     ? info.currentChartDatasets
-//     : Array.isArray(data.currentChartDatasets)
-//     ? data.currentChartDatasets
-//     : [],
-//   xys:
-//     defaultXyData ||
-//     (Array.isArray(info.xys)
-//       ? info.xys
-//       : Array.isArray(data.xys)
-//       ? data.xys
-//       : []),
-//   chartData: {
-//     name:
-//       info.chartData?.name ||
-//       data.chartData?.name ||
-//       `Chart for ${info.name || data.name || 'Collection'}`,
-//     userId:
-//       info.chartData?.userId ||
-//       data.chartData?.userId ||
-//       info.userId ||
-//       data.userId,
-//     datasets: Array.isArray(info.chartData?.datasets)
-//       ? info.chartData.datasets
-//       : Array.isArray(data.chartData?.datasets)
-//       ? data.chartData.datasets
-//       : [],
-//     allXYValues: Array.isArray(info.chartData?.allXYValues)
-//       ? info.chartData.allXYValues
-//       : Array.isArray(data.chartData?.allXYValues)
-//       ? data.chartData.allXYValues
-//       : [],
-//     xys: Array.isArray(info.chartData?.xys)
-//       ? info.chartData.xys
-//       : Array.isArray(data.chartData?.xys)
-//       ? data.chartData.xys
-//       : [],
-//   },
-// });
-
 const createPayload = (info) => {
-  // Merge the 'info' and 'data' objects
-  // const mergedData = { ...data, ...info };
-
-  // console.log('MERGED DATA:', mergedData);
   console.log('INFO:', info);
-  // console.log('DATA:', data);
   return {
     ...info,
     userId: info.userId,
@@ -650,97 +511,6 @@ const calculateCollectionValue = (cards) => {
   }, 0);
 };
 
-// const getPriceChange = (collectionPriceHistory) => {
-//   if (
-//     !Array.isArray(collectionPriceHistory) ||
-//     collectionPriceHistory.length === 0
-//   ) {
-//     console.warn('Invalid or empty price history', collectionPriceHistory);
-//     return 'n/a';
-//   }
-
-//   const mostRecentPrice =
-//     collectionPriceHistory[collectionPriceHistory.length - 1]?.num;
-//   const currentDate = new Date();
-
-//   // Get the first price from the last 24 hours
-//   const firstPriceFromLastDay = collectionPriceHistory
-//     .slice()
-//     .reverse()
-//     .find((priceHistory) => {
-//       const historyDate = new Date(priceHistory.timestamp);
-//       return currentDate - historyDate <= 24 * 60 * 60 * 1000; // less than 24 hours
-//     })?.num;
-
-//   if (mostRecentPrice && firstPriceFromLastDay) {
-//     const priceChange =
-//       ((mostRecentPrice - firstPriceFromLastDay) / firstPriceFromLastDay) * 100;
-//     console.log(
-//       `Price change over the last 24 hours is: ${priceChange.toFixed(2)}%`
-//     );
-//     return priceChange.toFixed(2);
-//   } else {
-//     console.error('Could not calculate price change due to missing data');
-//     return null;
-//   }
-// };
-
-function getPriceChange(currentChartDataSets2) {
-  if (
-    !Array.isArray(currentChartDataSets2) ||
-    currentChartDataSets2.length === 0
-  ) {
-    console.warn('Invalid or empty chart data sets provided');
-    return [];
-  }
-
-  const sortedData = currentChartDataSets2
-    .filter((dataPoint) => dataPoint && dataPoint.x && dataPoint.y != null) // Filter out invalid data points
-    .sort((a, b) => new Date(a.x) - new Date(b.x));
-
-  if (sortedData.length === 0) {
-    console.error('No valid chart data points after filtering');
-    return [];
-  }
-
-  const latestDataPoint = sortedData[sortedData.length - 1];
-  const latestTime = new Date(latestDataPoint.x).getTime();
-  const twentyFourHoursAgo = latestTime - 24 * 60 * 60 * 1000;
-
-  let closestIndex = -1;
-  let closestTimeDifference = Number.MAX_SAFE_INTEGER;
-
-  for (let i = 0; i < sortedData.length - 1; i++) {
-    const time = new Date(sortedData[i].x).getTime();
-    const timeDifference = Math.abs(time - twentyFourHoursAgo);
-
-    if (timeDifference < closestTimeDifference) {
-      closestTimeDifference = timeDifference;
-      closestIndex = i;
-    }
-  }
-
-  if (closestIndex !== -1) {
-    const pastPrice = sortedData[closestIndex].y;
-    const priceChange = latestDataPoint.y - pastPrice;
-    const percentageChange = ((priceChange / pastPrice) * 100).toFixed(2);
-
-    return [
-      {
-        startDate: sortedData[closestIndex].x,
-        lowPoint: pastPrice.toFixed(2),
-        highPoint: latestDataPoint?.y?.toFixed(2),
-        endDate: latestDataPoint?.x,
-        priceChange: priceChange.toFixed(2),
-        percentageChange: `${percentageChange}%`,
-        priceIncreased: priceChange > 0,
-      },
-    ];
-  }
-
-  return [];
-}
-
 const getUpdatedChartData = (collection, newPrice) => {
   const newXYValue = {
     label: `Update - ${new Date().toISOString()}`,
@@ -820,23 +590,22 @@ module.exports = {
   calculateTotalFromAllCardPrices,
   ensureNumber,
   findCollectionIndex,
-  fetchWrapper,
+  // fetchWrapper,
   getTotalCost,
   getCardPrice,
   removeDuplicateCollections,
   initialCollectionState,
   defaultContextValue,
   validateUserIdAndData,
-  determineHttpMethod,
+  // determineHttpMethod,
   createPayload,
   logError,
   constructPayloadWithDifferences,
   // getCurrentChartDataSets,
-  getPriceChange,
   getUpdatedChartData,
   mergeCards,
   updateCardInCollection,
-  canMakeRequest,
-  updateLastRequestTime,
+  // canMakeRequest,
+  // updateLastRequestTime,
   calculateCollectionValue,
 };

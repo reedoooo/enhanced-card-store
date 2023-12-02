@@ -9,6 +9,7 @@ export const useCronJobContext = () => useContext(CronJobContext);
 
 export const CronJobProvider = ({ children }) => {
   const { user } = useUserContext();
+  const { selectedCollection } = useCollectionStore(); // Assuming this is where you get your selectedCollection
   const { handleSendAllCardsInCollections, listOfMonitoredCards } =
     useCombinedContext();
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(
@@ -20,23 +21,27 @@ export const CronJobProvider = ({ children }) => {
       const currentTime = new Date().getTime();
       const timeDifference = currentTime - lastCronJobTriggerTime;
 
-      if (timeDifference >= 60000) {
-        // 60 seconds
+      // Check the conditions for triggering the cron job
+      if (
+        timeDifference >= 120000 &&
+        listOfMonitoredCards.length > 5 &&
+        selectedCollection?.chartData?.allXYValues?.length > 10
+      ) {
         setLastCronJobTriggerTime(currentTime);
-
-        if (user?.id && listOfMonitoredCards?.length > 0) {
+        if (user?.id) {
           console.log('Triggering cron job actions');
           handleSendAllCardsInCollections(user.id, listOfMonitoredCards);
         }
       }
     };
 
-    const interval = setInterval(handleTriggerCronJob, 60000); // Trigger every minute
+    const interval = setInterval(handleTriggerCronJob, 120000); // Trigger every 2 minutes (120000 ms)
     return () => clearInterval(interval);
   }, [
     lastCronJobTriggerTime,
     user,
     listOfMonitoredCards,
+    selectedCollection,
     handleSendAllCardsInCollections,
   ]);
 

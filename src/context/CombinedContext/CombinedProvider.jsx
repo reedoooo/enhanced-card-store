@@ -55,6 +55,7 @@ export const CombinedProvider = ({ children }) => {
     updateCollection,
     allCollections,
     getNewTotalPrice,
+    updateCollectionState,
     getUpdatedCollection,
   } = useContext(CollectionContext);
   const socket = useSocketContext();
@@ -152,7 +153,6 @@ export const CombinedProvider = ({ children }) => {
       const originalCard = cardsWithCollectionId.find(
         (card) => card?.id === id
       );
-
       return {
         ...originalCard,
         priceHistory: originalCard?.priceHistory || [],
@@ -170,7 +170,8 @@ export const CombinedProvider = ({ children }) => {
 
       // If latestPrice is different, update lastSavedPrice and priceHistory
       if (updatedCardInfo.latestPrice?.num !== originalCard.latestPrice?.num) {
-        console.log('ORIGINAL PRICE HISTOY', originalCard.priceHistory);
+        console.log('ORIGINAL CARD: ', originalCard);
+        console.log('UPDATED CARD: ', updatedCardInfo);
         return {
           ...originalCard,
           ...updatedCardInfo,
@@ -199,10 +200,6 @@ export const CombinedProvider = ({ children }) => {
     () => generateListOfMonitoredCards(allCollections),
     [allCollections]
   );
-
-  const emitUpdatedCards = (socket, updatedCards) => {
-    socket.emit('UPDATED_MONITORED_CARDS', updatedCards);
-  };
 
   const handleStatusUpdateCharts = async (newData) => {
     console.log('[STATUS_UPDATE_CHARTS] Data:', newData);
@@ -272,11 +269,12 @@ export const CombinedProvider = ({ children }) => {
     console.log('Existing collection data:', collectionData);
     setDataFunctions.collectionData(collectionData);
   };
-
   const handleCardPricesUpdated = async (priceData) => {
     console.log('Card prices retrieved:', priceData);
     const updatedCardPrices = priceData.data.data;
     const userId = user?.id;
+
+    // Generate list of monitored cards from all collections
     const currentListOfMonitoredCards =
       generateListOfMonitoredCards(allCollections);
     console.log(
@@ -285,6 +283,8 @@ export const CombinedProvider = ({ children }) => {
       )}] | `,
       currentListOfMonitoredCards
     );
+
+    // Update card prices in the list of monitored cards
     const updatedListOfMonitoredCards = updateCardPricesInList(
       currentListOfMonitoredCards,
       updatedCardPrices
@@ -296,7 +296,7 @@ export const CombinedProvider = ({ children }) => {
       updatedListOfMonitoredCards
     );
 
-    // Update the selectedCollection with new card prices
+    // Update the selected collection with new card prices
     const updatedSelectedCollectionCards = selectedCollection.cards.map(
       (card) => {
         const updatedCardPrice = updatedListOfMonitoredCards.find(
@@ -306,39 +306,122 @@ export const CombinedProvider = ({ children }) => {
       }
     );
 
+    // Create an updated collection object
     const updatedCollection = {
       ...selectedCollection,
       cards: updatedSelectedCollectionCards,
     };
 
+    // Filter out collections with null price history
     const filteredUpdatedCollection =
       filterNullPriceHistoryForCollection(updatedCollection);
 
-    console.log('FILTERED UPDATED COLLECTION:', filteredUpdatedCollection);
     try {
-      const updatedCollectionResult = await getUpdatedCollection(
-        filteredUpdatedCollection,
-        null, // No specific card to update
-        'update', // Operation type
-        userId
-      );
-      // for (const card of filteredUpdatedCollection.cards) {
-      // const updatedCollectionResult = await updateCollection(
-      //   card,
-      //   'update',
-      //   selectedCollection
-      // );
-      if (updatedCollectionResult) {
-        console.log('UPDATED COLLECTION RESULT:', updatedCollectionResult);
-        // setDataFunctions.collectionData(updatedCollectionResult);
-        setDataFunctions.listOfSimulatedCards(updatedCollectionResult);
+      // Update each card in the collection
+      for (const card of filteredUpdatedCollection.cards) {
+        const updatedCollectionResult = await getUpdatedCollection(
+          filteredUpdatedCollection,
+          card, // No specific card to update
+          'update', // Operation type
+          userId
+        );
+
+        if (updatedCollectionResult) {
+          console.log(
+            'UPDATED COLLECTION RESULT IN COMBINED:',
+            updatedCollectionResult.filteredRestructuredCollection
+          );
+          updateCollectionState(
+            updatedCollectionResult.filteredRestructuredCollection
+          );
+          setDataFunctions.listOfSimulatedCards(
+            updatedCollectionResult.filteredRestructuredCollection.cards
+          );
+        }
       }
     } catch (error) {
       console.error('Failed to update collection:', error);
     }
 
+    // Update the global state with the new card prices
     setDataFunctions.allCardPrices(updatedListOfMonitoredCards);
   };
+
+  // const handleCardPricesUpdated = async (priceData) => {
+  //   console.log('Card prices retrieved:', priceData);
+  //   const updatedCardPrices = priceData.data.data;
+  //   const userId = user?.id;
+  //   const currentListOfMonitoredCards =
+  //     generateListOfMonitoredCards(allCollections);
+  //   console.log(
+  //     `[currentListOfMonitoredCards: $${getNewTotalPrice(
+  //       currentListOfMonitoredCards
+  //     )}] | `,
+  //     currentListOfMonitoredCards
+  //   );
+  //   const updatedListOfMonitoredCards = updateCardPricesInList(
+  //     currentListOfMonitoredCards,
+  //     updatedCardPrices
+  //   );
+  //   console.log(
+  //     `[updatedListOfMonitoredCards: $${getNewTotalPrice(
+  //       updatedListOfMonitoredCards
+  //     )}] | `,
+  //     updatedListOfMonitoredCards
+  //   );
+
+  //   // Update the selectedCollection with new card prices
+  //   const updatedSelectedCollectionCards = selectedCollection.cards.map(
+  //     (card) => {
+  //       const updatedCardPrice = updatedListOfMonitoredCards.find(
+  //         (updatedCard) => updatedCard.id === card.id
+  //       );
+  //       return updatedCardPrice ? { ...card, ...updatedCardPrice } : card;
+  //     }
+  //   );
+
+  //   const updatedCollection = {
+  //     ...selectedCollection,
+  //     cards: updatedSelectedCollectionCards,
+  //   };
+
+  //   const filteredUpdatedCollection =
+  //     filterNullPriceHistoryForCollection(updatedCollection);
+
+  //   try {
+  //     for (const card of filteredUpdatedCollection.cards) {
+  //       const updatedCollectionResult = await getUpdatedCollection(
+  //         filteredUpdatedCollection,
+  //         card, // No specific card to update
+  //         'update', // Operation type
+  //         userId
+  //       );
+  //       // for (const card of filteredUpdatedCollection.cards) {
+  //       // const updatedCollectionResult = await updateCollection(
+  //       //   card,
+  //       //   'update',
+  //       //   selectedCollection
+  //       // );
+  //       if (updatedCollectionResult) {
+  //         console.log(
+  //           'UPDATED COLLECTION RESULT:',
+  //           updatedCollectionResult.filteredRestructuredCollection
+  //         );
+  //         updateCollectionState(
+  //           updatedCollectionResult.filteredRestructuredCollection
+  //         );
+  //         // setDataFunctions.collectionData(updatedCollectionResult);
+  //         setDataFunctions.listOfSimulatedCards(
+  //           updatedCollectionResult.filteredRestructuredCollection.cards
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to update collection:', error);
+  //   }
+
+  //   setDataFunctions.allCardPrices(updatedListOfMonitoredCards);
+  // };
 
   const handleNoPricesChanged = () => {
     console.log('No prices changed');

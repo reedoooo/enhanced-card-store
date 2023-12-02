@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { createApiUrl, fetchWrapper } from '../Helpers';
 
 export const transformPriceHistoryToXY = (collectionPriceHistory) => {
   return collectionPriceHistory?.map((entry) => ({
@@ -23,11 +24,25 @@ export const filterUniqueDataPoints = (dataArray) => {
 
   return Array.from(uniqueRecords.values());
 };
-
+/**
+ * Calculates the difference between the updated price and the initial price.
+ * @param {Number} updatedPrice - The updated price.
+ * @param {Object} selectedCollection - The selected collection.
+ * @returns {Number} The difference between the updated price and the initial price.
+ * @example calculatePriceDifference(100, { totalPrice: 200 });
+ * calculatePriceDifference(100, { totalPrice: 100 });
+ **/
 export const determineCardPrice = (card, update) => {
-  if (update?.latestPrice?.num) return update.latestPrice.num;
-  if (card.price) return card.price;
-  return card.card_prices[0].tcgplayer_price;
+  let price = 0;
+  console.log('CARD UPDATE:', update);
+  if (card?.price) {
+    price = card?.price;
+  }
+
+  if (update?.latestPrice?.num) {
+    price = update?.latestPrice?.num;
+  }
+  return price || card?.card_prices[0]?.tcgplayer_price;
 };
 
 export const updatePriceHistory = (card, update) => {
@@ -160,10 +175,10 @@ export const filterNullPriceHistory = (allCollections) => {
 };
 
 export const filterNullPriceHistoryForCollection = (collection) => {
-  const filteredCards = collection.cards.map((card) => {
+  const filteredCards = collection?.cards?.map((card) => {
     if (card.priceHistory) {
       // Remove null values, duplicates with less than 24 hours difference, and entries with num = 0
-      const filteredPriceHistory = card.priceHistory.filter(
+      const filteredPriceHistory = card?.priceHistory?.filter(
         (price, index, array) => {
           if (!price || price.num === 0) return false; // Filter out null values and num = 0
 
@@ -252,4 +267,213 @@ export const handleCardRemoval = (currentCards, cardToRemove) => {
     // Remove the card from the collection if quantity is 1 or less
     return currentCards.filter((card) => card.id !== cardToRemoveId);
   }
+};
+
+export const constructCardDifferencesPayload = (
+  oldCollection,
+  newCollection,
+  debug = false
+) => {
+  const differences = {};
+
+  newCollection.cards.forEach((newCard) => {
+    const oldCard =
+      oldCollection.cards.find((card) => card.id === newCard.id) || {};
+
+    Object.keys(newCard).forEach((key) => {
+      if (newCard[key] !== oldCard[key]) {
+        if (!differences[newCard.id]) {
+          differences[newCard.id] = { old: {}, new: {} };
+        }
+        differences[newCard.id].old[key] = oldCard[key];
+        differences[newCard.id].new[key] = newCard[key];
+      }
+    });
+  });
+
+  if (debug && Object.keys(differences).length > 0) {
+    console.log('Card Differences:', differences);
+  }
+
+  return differences;
+};
+
+export const determineMethod = (operation, cardUpdate, collection) => {
+  if (operation === 'remove' && cardUpdate?.quantity === 1) {
+    return 'DELETE';
+  } else if (collection?.cards?.some((card) => card?.id === cardUpdate?.id)) {
+    return 'PUT';
+  } else {
+    return 'POST';
+  }
+};
+
+export const determineEndpointSuffix = (operation) => {
+  return operation === 'remove' ? 'removeCards' : 'updateCards';
+};
+
+/**
+ * Creates cards payload.
+ * @param {Object} collection - The collection to update.
+ * @param {Object} cardUpdate - The card update object.
+ * @param {String} operation - The operation to perform.
+ * @returns {Promise<Object>} The updated collection.
+ */
+export const createCardsPayload = (operation, updatedCards, cardUpdate) => {
+  if (operation === 'remove') {
+    const cardIds = updatedCards
+      .filter((card) => card?.id !== cardUpdate?.id)
+      .map((card) => ({ id: card?.id, _id: card?._id }));
+    return { cardIds };
+  } else {
+    const allCardsWithIds = updatedCards.map((card) => ({
+      id: card?.id,
+      _id: card?._id,
+    }));
+    return { cards: updatedCards, cardIds: allCardsWithIds };
+  }
+};
+
+/**
+ * Handles the updating of a collection chart variable data
+ * @param {Object} collection - The collection to update.
+ * @param {Object} cardUpdate - The card update object.
+ * @param {String} operation - The operation to perform.
+ * @returns {Promise<Object>} The updated collection.
+ */
+export const updateChartData = async (
+  userId,
+  collectionId,
+  updatedChartData
+) => {
+  const chartDataPayload = { chartData: updatedChartData };
+  const chartDataEndpoint = createApiUrl(
+    `${userId}/collections/${collectionId}/updateChartData`
+  );
+  return await fetchWrapper(chartDataEndpoint, 'PUT', chartDataPayload);
+};
+
+/**
+ * Handles the updating of a collection.
+ * @param {Object} collection - The collection to update.
+ * @param {Object} cardUpdate - The card update object.
+ * @param {String} operation - The operation to perform.
+ * @returns {Promise<Object>} The updated collection.
+ */
+export const updateCollectionDataEndpoint = async (
+  userId,
+  collectionId,
+  updatedCollection
+) => {
+  const collectionEndpoint = createApiUrl(
+    `${userId}/collections/${collectionId}`
+  );
+  return await fetchWrapper(collectionEndpoint, 'PUT', { updatedCollection });
+};
+
+/**
+ * Handles the updating of a collection.
+ * @param {Object} collection - The collection to update.
+ * @param {Object} cardUpdate - The card update object.
+ * @param {String} operation - The operation to perform.
+ * @returns {Promise<Object>} The updated collection.
+ */
+export const getPriceChange = (currentChartDataSets2) => {
+  if (
+    !Array.isArray(currentChartDataSets2) ||
+    currentChartDataSets2?.length === 0
+  ) {
+    console.warn('Invalid or empty chart data sets provided');
+    return [];
+  }
+
+  const sortedData = currentChartDataSets2
+    .filter((dataPoint) => dataPoint && dataPoint?.x && dataPoint?.y != null) // Filter out invalid data points
+    .sort((a, b) => new Date(a.x) - new Date(b.x));
+
+  if (sortedData?.length === 0) {
+    console.error('No valid chart data points after filtering');
+    return [];
+  }
+
+  const latestDataPoint = sortedData[sortedData.length - 1];
+  const latestTime = new Date(latestDataPoint.x).getTime();
+  const twentyFourHoursAgo = latestTime - 24 * 60 * 60 * 1000;
+
+  let closestIndex = -1;
+  let closestTimeDifference = Number.MAX_SAFE_INTEGER;
+
+  for (let i = 0; i < sortedData.length - 1; i++) {
+    const time = new Date(sortedData[i].x).getTime();
+    const timeDifference = Math.abs(time - twentyFourHoursAgo);
+
+    if (timeDifference < closestTimeDifference) {
+      closestTimeDifference = timeDifference;
+      closestIndex = i;
+    }
+  }
+
+  if (closestIndex !== -1) {
+    const pastPrice = sortedData[closestIndex].y;
+    const priceChange = latestDataPoint.y - pastPrice;
+    const percentageChange = ((priceChange / pastPrice) * 100).toFixed(2);
+
+    return [
+      {
+        startDate: sortedData[closestIndex].x,
+        lowPoint: pastPrice.toFixed(2),
+        highPoint: latestDataPoint?.y?.toFixed(2),
+        endDate: latestDataPoint?.x,
+        priceChange: priceChange.toFixed(2),
+        percentageChange: `${percentageChange}%`,
+        priceIncreased: priceChange > 0,
+      },
+    ];
+  }
+
+  return [];
+};
+
+export const getCollectionId = (selectedCollection, allCollections) => {
+  return selectedCollection?._id || allCollections[0]?._id;
+};
+
+export const calculatePriceDifference = (updatedPrice, selectedCollection) => {
+  return updatedPrice - (selectedCollection.chartData?.updatedPrice || 0);
+};
+
+export const createNewDataSet = (updatedPrice, selectedCollection) => {
+  return {
+    data: [
+      {
+        xys: [
+          {
+            label: `Update Number ${
+              selectedCollection?.chartData?.datasets?.length + 1 || 1
+            }`,
+            data: {
+              x: moment().format('YYYY-MM-DD HH:mm'),
+              y: updatedPrice,
+            },
+          },
+        ],
+        additionalPriceData: {
+          priceChanged:
+            calculatePriceDifference(updatedPrice, selectedCollection) !== 0,
+          initialPrice: selectedCollection?.totalPrice,
+          updatedPrice: updatedPrice,
+          priceDifference: calculatePriceDifference(
+            updatedPrice,
+            selectedCollection
+          ),
+          priceChange:
+            Math.round(
+              (calculatePriceDifference(updatedPrice, selectedCollection) /
+                (selectedCollection?.totalPrice || 1)) *
+                100
+            ) / 100,
+        },
+      },
+    ],
+  };
 };
