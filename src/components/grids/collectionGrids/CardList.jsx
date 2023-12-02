@@ -19,12 +19,12 @@ import {
   Divider,
 } from '@mui/material';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import TablePaginationActions from './TablePaginationActions';
+import TablePaginationActions from '../../reusable/TablePaginationActions';
 import PropTypes from 'prop-types';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import { makeStyles, styled } from '@mui/styles';
 import { useMode } from '../../../context/hooks/colormode';
-import Logger from './Logger';
+import Logger from '../../reusable/Logger';
 // Instantiate logger outside of the component
 const cardLogger = new Logger([
   'Action',
@@ -65,66 +65,16 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 }));
 
-// const TableContainer = styled(MuiTableContainer)(({ theme }) => ({
-//   background: theme.palette.background.secondary,
-// }));
-
-// const TableHead = styled(MuiTableHead)(({ theme }) => ({
-//   backgroundColor: '#555',
-//   color: '#fff',
-// }));
-
-// const TablePagination = styled(MuiTablePagination)(({ theme }) => ({
-//   color: '#fff',
-// }));
 const StyledTableHeader = styled(TableHead)(({ theme }) => ({
   backgroundColor: '#555', // Darker shade for header
   color: '#fff',
 }));
-// const TableFooter = styled(MuiTableFooter)(({ theme }) => ({
-//   color: '#fff',
-// }));
-
-// const TableBody = styled(MuiTableBody)(({ theme }) => ({
-//   color: '#fff',
-// }));
-
-// const Table = styled(MuiTable)(({ theme }) => ({
-//   color: '#fff',
-// }));
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   color: '#ddd', // Lighter text for better readability
 }));
 const Title = styled(TableCell)(({ theme }) => ({
   color: '#4cceac', // Green color for the title
 }));
-
-// const Button = styled(MuiButton)(({ theme }) => ({
-//   margin: theme.spacing(1),
-//   color: theme.palette.primary.contrastText,
-//   backgroundColor: theme.palette.primary.main,
-//   '&:hover': {
-//     backgroundColor: theme.palette.primary.dark,
-//   },
-// }));
-
-// const ButtonGroup = styled(MuiButtonGroup)(({ theme }) => ({
-//   display: 'flex',
-//   width: '100%',
-//   borderRadius: '5px',
-//   overflow: 'hidden',
-//   flexDirection: 'column',
-//   justifyContent: 'space-between',
-//   alignItems: 'center',
-//   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-// }));
-
-// const TablePaginationActions = styled(MuiTablePaginationActions)(
-//   ({ theme }) => ({
-//     color: '#fff',
-//   })
-// );
 
 const CardList = ({ selectedCards }) => {
   const { theme } = useMode();
@@ -349,7 +299,7 @@ const CardList = ({ selectedCards }) => {
           sx={{ width: '100%' }}
         >
           <Typography variant="h5" sx={{ color: '#fff' }}>
-            {`Total: $${totalCost}`}
+            {`Total: $${getTotalPrice()}`}
           </Typography>
         </Box>
       </Paper>

@@ -8,7 +8,7 @@ import CollectionPortfolioChartContainer from '../../containers/collectionPageCo
 // eslint-disable-next-line max-len
 import CollectionPortfolioListContainer from '../../containers/collectionPageContainers/CollectionPortfolioListContainer';
 
-const PortfolioContent = ({ error, selectedCards, removeCard }) => {
+const PortfolioContent = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
   const { selectedCollection } = useCollectionStore();
 

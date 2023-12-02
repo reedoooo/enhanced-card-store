@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import {
   Box,
   Button,
-  Divider,
+  ButtonGroup,
   Grid,
   IconButton,
   Typography,
@@ -12,11 +12,11 @@ import { useStyles } from '../buttonStyles';
 import useAppContext from '../../../context/hooks/useAppContext';
 import { useMode } from '../../../context/hooks/colormode';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import Logger from '../../grids/collectionGrids/Logger';
+import Logger from '../../reusable/Logger';
 import { useDeckStore } from '../../../context/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/CartContext/CartContext';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
+// import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import {
   AddCircleOutlineOutlined,
   RemoveCircleOutlineOutlined,
@@ -34,18 +34,17 @@ const CardActionButtons = ({
   modifiedContextProps,
 }) => {
   const { theme } = useMode(); // Using the theme hook
-
-  const classes = useStyles();
   // const { contextProps, isContextAvailable } = useAppContext(context);
+  const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+  const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { addOneToCollection, removeOneFromCollection, selectedCollection } =
     useCollectionStore();
   const { addOneToDeck, removeOneFromDeck, selectedDeck } = useDeckStore();
   const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
 
-  // modified to work with any context
-  // Function to check if a card is in a specific context
   const isCardInContext = useCallback(() => {
     switch (context) {
       case 'Collection':
@@ -53,9 +52,9 @@ const CardActionButtons = ({
           (c) => c?.card?.id === card?.id
         );
       case 'Deck':
-        return !!selectedDeck?.cards?.find((c) => c?.card?.id === card?.id);
+        return !!selectedDeck?.cards?.find((c) => c?.id === card?.id);
       case 'Cart':
-        return !!cartData?.cart?.find((c) => c?.card?.id === card?.id);
+        return !!cartData?.cart?.find((c) => c?.id === card?.id);
       default:
         return false;
     }
@@ -71,13 +70,11 @@ const CardActionButtons = ({
       alignItems: 'center',
       flexGrow: 1,
       width: '100%', // Using theme spacing
-      padding: theme.spacing(2), // Using theme spacing
+      padding: theme.spacing(1), // Using theme spacing
       backgroundColor: theme.palette.background.paper, // Using theme background color
     },
     grid: {
-      // display: 'flex',
       flexGrow: 1,
-      // flexDirection: 'column',
       width: '100%', // Using theme spacing
     },
     grid2: {
@@ -96,11 +93,25 @@ const CardActionButtons = ({
       margin: theme.spacing(1), // Using theme spacing
       color: theme.palette.error.contrastText, // Using theme text color
       backgroundColor: theme.palette.error.main, // Using theme background color
+      borderRadius: '0.5rem',
     },
     addButton: {
       margin: theme.spacing(1), // Using theme spacing
       color: theme.palette.success.contrastText, // Using theme text color
       backgroundColor: theme.palette.success.main, // Using theme background color
+      borderRadius: '0.5rem',
+      // width: '100%',
+      // flexGrow: 1,
+      // action: {
+      //   hover: {
+      //     backgroundColor: theme.palette.success.dark, // Using theme background color
+      //     // color: theme.palette.success.contrastText, // Using theme text color
+      //   },
+      // },
+      // hover: {
+      //   backgroundColor: theme.palette.success.dark, // Using theme background color
+      //   // color: theme.palette.success.contrastText, // Using theme text color
+      // },
     },
     gridItem: {
       textAlign: 'center',
@@ -172,41 +183,114 @@ const CardActionButtons = ({
     performAction(REMOVE_ALL, card);
     closeModal?.();
   };
+
   return (
     <Box
       sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }}
     >
       {isInContext ? (
         <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <IconButton
-              aria-label="increase"
-              size="medium"
-              sx={styles.addButton}
-              onClick={() => handleAddClick()}
-            >
-              <AddCircleOutlineIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={6}>
-            <IconButton
-              aria-label="decrease"
-              size="medium"
-              sx={styles.removeButton}
-              onClick={() => handleRemoveOne()}
-            >
-              <RemoveCircleOutlineOutlined />
-            </IconButton>
-          </Grid>
+          {isMediumScreen ? (
+            <Grid item xs={12}>
+              <ButtonGroup
+                sx={{
+                  width: '100%',
+                }}
+              >
+                {/* <Grid item xs={6}> */}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  onClick={handleAddClick}
+                  startIcon={<AddCircleOutlineOutlined />}
+                  sx={{
+                    ...styles.addButton,
+                    width: '100%',
+                    flexGrow: 1,
+                    // height: '100%',
+                    // margin: 'auto',
+                  }}
+                >
+                  <Typography
+                    variant={
+                      isXSmallScreen
+                        ? 'caption'
+                        : isSmallScreen
+                          ? 'body2'
+                          : 'button'
+                    }
+                  >
+                    Add to {context}
+                  </Typography>{' '}
+                </Button>
+                {/* </Grid> */}
+                {/* <Grid item xs={6}> */}
+                <Button
+                  variant="contained"
+                  color="error"
+                  fullWidth
+                  onClick={handleRemoveOne}
+                  startIcon={<RemoveCircleOutlineOutlined />}
+                  sx={{
+                    ...styles.removeButton,
+                    width: '100%',
+                    flexGrow: 1,
+                    // height: '100%',
+                    // margin: 'auto',
+                  }}
+                >
+                  <Typography
+                    variant={
+                      isXSmallScreen
+                        ? 'caption'
+                        : isSmallScreen
+                          ? 'body2'
+                          : 'button'
+                    }
+                  >
+                    Remove From {context}
+                  </Typography>{' '}
+                </Button>
+                {/* </Grid> */}
+              </ButtonGroup>
+            </Grid>
+          ) : (
+            <>
+              <Grid item xs={6}>
+                <IconButton
+                  aria-label="increase"
+                  onClick={handleAddClick}
+                  sx={{ ...styles.addButton, flexGrow: 1 }}
+                >
+                  <AddCircleOutlineOutlined />
+                </IconButton>
+              </Grid>
+              <Grid item xs={6}>
+                <IconButton
+                  aria-label="decrease"
+                  onClick={handleRemoveOne}
+                  sx={{ ...styles.removeButton, flexGrow: 1 }}
+                >
+                  <RemoveCircleOutlineOutlined />
+                </IconButton>
+              </Grid>
+            </>
+          )}
         </Grid>
       ) : (
         <Button
           variant="contained"
           color="secondary"
           sx={{ ...styles.addButton, width: '100%' }}
+          startIcon={<AddCircleOutlineOutlined />}
           onClick={() => handleAddClick()}
         >
-          Add to {context}
+          <Typography
+            variant={isSmallScreen ? 'body2' : 'button'} // Adjust text size based on breakpoint
+          >
+            Add to {context}
+          </Typography>
         </Button>
       )}
     </Box>

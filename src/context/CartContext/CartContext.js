@@ -29,16 +29,16 @@ export const CartContext = createContext({
 });
 
 export const CartProvider = ({ children }) => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
+  const userId = user?.id;
+
   const [cartData, setCartData] = useState({
     _id: '', // Cart id
     cart: [], // Cart items
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   });
-  const [cookies, setCookie] = useCookies(['user', 'cart']);
-
-  const userId = user?.id;
+  const [cookie, setCookie] = useCookies(['user', 'cart']);
   const isMounted = useRef(true);
 
   const getCardQuantity = (cardId) => {
@@ -52,12 +52,6 @@ export const CartProvider = ({ children }) => {
     });
     return { totalItems, quantityOfSameId };
   };
-  // const getTotalCost = useCallback(() => {
-  //   return cartData.cart.reduce(
-  //     (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
-  //     0
-  //   );
-  // }, [cartData.cart]);
 
   const totalCost = useMemo(
     () =>
@@ -109,14 +103,14 @@ export const CartProvider = ({ children }) => {
     }
   }, [userId, createUserCart]);
 
-  useEffect(() => {
-    if (userId && isMounted.current) {
-      fetchUserCart().catch(console.error);
-    }
-    return () => {
-      isMounted.current = false;
-    };
-  }, [userId, fetchUserCart]);
+  // useEffect(() => {
+  //   if (userId && isMounted.current) {
+  //     fetchUserCart().catch(console.error);
+  //   }
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, [userId, fetchUserCart]);
 
   const setCartDataAndCookie = (newCartData) => {
     if (newCartData && Array.isArray(newCartData.cart)) {
@@ -143,6 +137,7 @@ export const CartProvider = ({ children }) => {
     );
     const calculatedTotalPrice = getTotalCost();
 
+    // Check if totalQuantity or calculatedTotalPrice has actually changed
     if (
       cartData.quantity !== totalQuantity ||
       cartData.totalPrice !== calculatedTotalPrice
@@ -154,6 +149,7 @@ export const CartProvider = ({ children }) => {
       }));
     }
   }, [cartData.cart]);
+
   // Fetch user cart on mount and userId change
   const updateCart = async (cartId, updatedCart) => {
     if (!cartId) return;
@@ -207,19 +203,10 @@ export const CartProvider = ({ children }) => {
     const updatedCartData = await updateCart(cartData._id, updatedCart);
     if (updatedCartData) setCartData(updatedCartData);
   };
-  // const setCartDataAndCookie = (newCartData) => {
-  //   if (newCartData && Array.isArray(newCartData.cart)) {
-  //     setCartData(newCartData);
-  //     setCookie('cart', newCartData.cart, {
-  //       path: '/',
-  //       secure: true,
-  //       sameSite: 'none',
-  //     });
-  //   }
-  // };
 
   const value = {
     cartData,
+    cart: cartData.cart,
     getCardQuantity,
     cartCardQuantity: cartData.cart?.reduce(
       (acc, card) => acc + card.quantity,
@@ -232,55 +219,17 @@ export const CartProvider = ({ children }) => {
     ),
     totalPrice: cartData.totalPrice,
     totalCost,
-    addOneToCart: addOneToCart,
-    removeOneFromCart: removeOneFromCart,
+    addOneToCart,
+    removeOneFromCart,
     deleteFromCart,
     getTotalCost,
     fetchUserCart,
     createUserCart,
   };
-  // useEffect(() => {
-  //   if (userId && typeof userId === 'string') {
-  //     fetchUserCart(userId)
-  //       .then((data) => {
-  //         if (isMounted.current && data && data.cart) {
-  //           setCartData(data); // Assuming data has the same structure as cartData
-  //         }
-  //       })
-  //       .catch((error) => console.log('Error fetching user cart:', error));
-  //   }
-  //   return () => {
-  //     isMounted.current = false;
-  //   };
-  // }, [userId, fetchUserCart]);
-
-  // // Update cartData quantity and totalPrice when cart changes
-  // useEffect(() => {
-  //   if (!isMounted.current) return;
-
-  //   const totalQuantity = cartData.cart.reduce(
-  //     (total, item) => total + item.quantity,
-  //     0
-  //   );
-  //   const calculatedTotalPrice = getTotalCost();
-
-  //   if (
-  //     cartData.quantity !== totalQuantity ||
-  //     cartData.totalPrice !== calculatedTotalPrice
-  //   ) {
-  //     setCartData((prevState) => ({
-  //       ...prevState,
-  //       quantity: totalQuantity,
-  //       totalPrice: calculatedTotalPrice,
-  //     }));
-  //   }
-  // }, [cartData.cart, getTotalCost]);
 
   useEffect(() => {
-    console.log('CART CONTEXT: ', {
-      value,
-    });
-  }, [value]);
+    console.log('CART CONTEXT: ', value.cartData);
+  }, [addOneToCart, removeOneFromCart, deleteFromCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

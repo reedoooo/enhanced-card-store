@@ -7,14 +7,22 @@ import { loadStripe } from '@stripe/stripe-js';
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const StripeCheckoutModal = ({ open, onClose, onToken, purchases, total }) => {
+  // console.log('STRIPE CHECKOUT MODAL PURCHASES:', purchases);
+  // console.log('STRIPE CHECKOUT MODAL TOTAL:', total);
   return (
     <Modal
       open={open}
       onClose={onClose}
       closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 500 }}
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      // BackdropComponent={Backdrop}
+      // BackdropProps={{ timeout: 500 }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // If Backdrop customization is needed, handle it here in the sx prop
+        backdropFilter: 'blur(5px)',
+      }}
     >
       <Fade in={open}>
         <Box

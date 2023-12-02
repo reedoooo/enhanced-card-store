@@ -1,40 +1,35 @@
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { Box, Container, Typography, Grid } from '@mui/material';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 import CustomerInfoFields from './CustomerInfoFields';
-import CartActions from './CartActions';
 import StripeCheckoutModal from '../../modals/stripeModal/StripeCheckoutModal';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
+import CartSummary from '../../other/dataDisplay/CartSummary';
+import OrderSubmitButton from '../../buttons/other/OrderSubmitButton';
 
 const CustomerForm = () => {
-  const { getTotalCost, cartData } = useCartStore();
-  const {
-    openModalWithCard,
-    closeModal,
-    isModalOpen,
-    setModalOpen,
-    modalContent,
-  } = useContext(ModalContext);
-  const { cartCardQuantity, totalCost } = useCartStore();
+  const { isModalOpen, setModalOpen } = useContext(ModalContext);
+  const { cartData, cartCardQuantity, totalCost } = useCartStore();
 
-  const handleModalOpen = useCallback(() => setModalOpen(true), [setModalOpen]);
-  const handleModalClose = useCallback(
-    () => setModalOpen(false),
+  const handleModalToggle = useCallback(
+    () => setModalOpen((prev) => !prev),
     [setModalOpen]
   );
-  const onToken = useCallback(
-    (token) => {
-      console.log(token);
-      handleModalClose();
-    },
-    [handleModalClose]
-  );
-
-  console.log('CUSTOMER FORM QUANTITY FROM CARTDATA', cartCardQuantity);
 
   return (
-    <Container maxWidth={false}>
-      <Box sx={{ width: '100%', padding: '2rem' }}>
+    <Container
+      maxWidth={false}
+      sx={{
+        width: '100%',
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          padding: { xs: '.5rem', lg: '1rem' }, // Reduce padding at xs breakpoint
+          margin: 'auto',
+        }}
+      >
         <Typography
           variant="h5"
           sx={{ marginBottom: '1.5rem', fontWeight: 'bold' }}
@@ -43,28 +38,35 @@ const CustomerForm = () => {
         </Typography>
         <form>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={12}>
               <CustomerInfoFields />
             </Grid>
-            <Grid item xs={12} md={4}>
-              {/* This space can be used for additional components if needed */}
-            </Grid>
             <Grid item xs={12}>
-              <CartActions
-                quantity={cartCardQuantity}
-                totalCost={totalCost}
-                handleModalOpen={handleModalOpen}
-              />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  margin: 'auto',
+                  width: '100%',
+                  justifyContent: 'left',
+                }}
+              >
+                <CartSummary
+                  quantity={cartCardQuantity}
+                  totalCost={totalCost}
+                />
+                <OrderSubmitButton onClick={handleModalToggle} />
+              </Box>
             </Grid>
           </Grid>
         </form>
       </Box>
       <StripeCheckoutModal
         open={isModalOpen}
-        onClose={handleModalClose}
+        onClose={handleModalToggle}
         purchases={cartData.cart}
-        total={getTotalCost}
-        onToken={onToken}
+        total={totalCost}
       />
     </Container>
   );

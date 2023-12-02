@@ -13,7 +13,7 @@ import CardMediaAndDetails from '../../media/CardMediaAndDetails';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
 
-const GenericCardModal = ({ open, card, context }) => {
+const GenericCardModal = ({ open, card, context, imgUrl }) => {
   const classes = useStyles();
   const { contextProps, isContextAvailable } = useAppContext(context);
   const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
@@ -60,7 +60,11 @@ const GenericCardModal = ({ open, card, context }) => {
     >
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        <CardMediaAndDetails card={card} />
+        <CardMediaAndDetails
+          card={card}
+          imgUrl={card?.card_images[0]?.image_url}
+          // imageUrl={card?.card_images[0]?.image_url}
+        />
         <>
           <GenericActionButtons
             card={card}

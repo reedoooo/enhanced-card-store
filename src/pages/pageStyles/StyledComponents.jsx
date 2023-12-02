@@ -1,4 +1,11 @@
-import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/styles';
 
 // export const AppContainer = styled.div`
@@ -14,6 +21,7 @@ const StyledContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   marginLeft: theme.spacing(2),
+  borderRadius: theme.shape.borderRadiusLarge,
   marginRight: theme.spacing(2),
   // minHeight: '250vh',
   flexGrow: 1,
@@ -27,7 +35,27 @@ const StyledContainer = styled('div')(({ theme }) => ({
 export const CollectionContainer = ({ children }) => {
   return <StyledContainer>{children}</StyledContainer>;
 };
+const StyledContainer2 = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignSelf: 'start',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginLeft: theme.spacing(2),
+  borderRadius: theme.shape.borderRadiusLarge,
+  marginRight: theme.spacing(2),
+  // minHeight: '250vh',
+  flexGrow: 1,
+  // minHeight: '100%',
+  background: '#333',
+  // backgroundColor: '#f1f1f1',
+  padding: theme.spacing(4),
+  width: '100%',
+}));
 
+export const CollectionContainer2 = ({ children }) => {
+  return <StyledContainer2>{children}</StyledContainer2>;
+};
 export const MainContainer = styled('div')(({ theme }) => ({
   background: '#222', // Dark background
   padding: theme.spacing(2),
@@ -140,6 +168,7 @@ export const DeckBuilderBanner = styled(Box)(({ theme }) => ({
   maxWidth: '1600px',
   margin: 'auto',
   padding: theme.spacing(6, 2),
+  height: '100%',
   boxShadow: theme.shadows[4],
   textAlign: 'center',
 }));
@@ -209,6 +238,35 @@ export const DeckBuilderTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2.5),
 }));
 
+export const CartContainer = styled(Container)(({ theme }) => ({
+  overflow: 'auto',
+  display: 'flex',
+  flexDirection: 'row',
+  margin: 'auto',
+  flexWrap: 'wrap', // Ensure wrapping on smaller screens
+  // overflowY: 'auto', // Enable vertical scrolling
+  // overflowX: 'hidden', // Prevent horizontal scrolling
+  // maxHeight: '400px',
+  backgroundColor: theme.palette.background.main,
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  width: '100%',
+}));
+
+export const CartBox = styled(Box)(({ theme }) => ({
+  overflow: 'auto',
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap', // Ensure wrapping on smaller screens
+  backgroundColor: theme.palette.background.secondary,
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  height: '100%',
+  width: '100%',
+}));
+
 export const CollectionTitle = styled(Typography)(({ theme }) => ({
   color: '#333',
   fontSize: '1.5rem',
@@ -219,12 +277,18 @@ export const CollectionTitle = styled(Typography)(({ theme }) => ({
 export const CollectionBanner = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
-  margin: '0 auto',
+  // margin: '0 auto',
   flexDirection: 'column',
   alignItems: 'center',
-  padding: theme.spacing(2.5),
+  // padding: theme.spacing(2.5),
+  padding: theme.spacing(6, 2),
   // height: '100%',
   width: '100%',
+  // height: '100%',
+  maxWidth: '1600px',
+  margin: 'auto',
+  boxShadow: theme.shadows[4],
+  textAlign: 'center',
   backgroundColor: theme.palette.background.paper,
   // backgroundColor: '#f7f7f7',
 }));

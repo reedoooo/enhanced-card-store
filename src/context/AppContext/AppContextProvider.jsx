@@ -24,6 +24,14 @@ export const AppContextProvider = ({ children }) => {
   );
 };
 
+export const useAppContext = () => {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useAppContext must be used within a AppContextProvider');
+  }
+  return context;
+};
+
 // import React, { createContext, useContext, useState } from 'react';
 // import { DeckContext } from '../DeckContext/DeckContext';
 // import { CartContext } from '../CartContext/CartContext';

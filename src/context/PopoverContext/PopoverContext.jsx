@@ -12,6 +12,7 @@ export const PopoverContext = createContext({
 export const PopoverProvider = ({ children }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  // const [clickedCard, setClickedCard] = useState(null);
 
   const value = {
     hoveredCard,
@@ -23,4 +24,8 @@ export const PopoverProvider = ({ children }) => {
   return (
     <PopoverContext.Provider value={value}>{children}</PopoverContext.Provider>
   );
+};
+
+export const usePopoverContext = () => {
+  return React.useContext(PopoverContext);
 };

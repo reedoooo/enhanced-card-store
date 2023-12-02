@@ -1,17 +1,30 @@
 import axios from 'axios';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
+import { useCombinedContext } from '../CombinedContext/CombinedProvider';
+import { useCollectionStore } from '../CollectionContext/CollectionContext';
+import { useUserContext } from '../UserContext/UserContext';
 
 // Create a context for the cardStore
 const CardContext = createContext();
 
 export const CardProvider = ({ children }) => {
+  const { user } = useUserContext();
   const [cookies, setCookie] = useCookies(['cart'], ['deckData']);
   const initialStore = cookies.store || [];
   const [cardsArray, setCardsArray] = useState(initialStore);
+  const { allCollections, setAllCollections } = useCollectionStore();
+  const { listOfMonitoredCards } = useCombinedContext();
   const currentCart = cookies.cart || [];
   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
   const [searchData, setSearchData] = useState([]);
+  const [isCardDataValid, setIsCardDataValid] = useState(false);
+  const [rawSearchData, setRawSearchData] = useState([]);
+  const [organizedSearchData, setOrganizedSearchData] = useState([]);
+  const [slicedSearchData, setSlicedSearchData] = useState([]);
+  const [slicedAndMergedSearchData, setSlicedAndMergedSearchData] = useState(
+    []
+  );
   const currentDeckData = cookies.deck || [];
   const [savedDeckData, setSavedDeckData] = useState(currentDeckData);
   const [deckSearchData, setDeckSearchData] = useState([]);
@@ -37,24 +50,87 @@ export const CardProvider = ({ children }) => {
             return false;
           } else {
             ids.add(card.id);
-            // ids.add(card.cardId);
             return true;
           }
         });
 
+        // Check if the uniqueCards is an array
+        const validCardData = uniqueCards && Array.isArray(uniqueCards);
+
+        // Set the state to the unique cards
+        setIsCardDataValid(validCardData);
+
+        if (validCardData) {
+          const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
+          setOrganizedSearchData(limitedCardsToRender);
+
+          if (limitedCardsToRender.length >= 1) {
+            console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
+            setSlicedSearchData(limitedCardsToRender);
+          }
+        }
+
         setSearchData(uniqueCards);
         setDeckSearchData(uniqueCards);
+        setRawSearchData(uniqueCards);
 
         // Set the cookie to hold the current searchData
         setCookie('searchData', uniqueCards, { path: '/' });
         setCookie('deckSearchData', uniqueCards, { path: '/' });
+        setCookie('rawSearchData', uniqueCards, { path: '/' });
+        // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
       } else {
         setSearchData([]);
+        setDeckSearchData([]);
+        setRawSearchData([]);
+        setOrganizedSearchData([]);
       }
     } catch (err) {
       console.error(err);
     }
   };
+
+  const handlePatch = async () => {
+    let needsUpdate = false;
+
+    for (const collection of allCollections) {
+      for (const card of collection.cards) {
+        if (!card.card_images || !card.card_sets || !card.card_prices) {
+          needsUpdate = true;
+          const response = await axios.patch(
+            `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.id}`,
+            { id: card.id, user: user, _id: user._id }
+          );
+          if (response.data && response.data.data) {
+            const updatedCard = response.data.data;
+            const cardIndex = collection.cards.findIndex(
+              (c) => c.id === updatedCard.id
+            );
+            if (cardIndex !== -1) {
+              collection.cards[cardIndex] = updatedCard;
+            }
+          }
+        }
+      }
+    }
+
+    if (needsUpdate) {
+      setAllCollections([...allCollections]);
+    }
+  };
+
+  useEffect(() => {
+    // Check if there's any collection that requires an update
+    const hasMissingData = allCollections.some((collection) =>
+      collection.cards.some(
+        (card) => !card.card_images || !card.card_sets || !card.card_prices
+      )
+    );
+
+    if (hasMissingData) {
+      handlePatch();
+    }
+  }, [allCollections]); // Keep the dependency array, but now it only triggers when necessary
 
   const getCardData = (cardId) => {
     if (Array.isArray(currenCartArray)) {
@@ -78,6 +154,23 @@ export const CardProvider = ({ children }) => {
       searchData,
       deckSearchData,
       savedDeckData,
+      randomCardData,
+      currenCartArray,
+      initialStore,
+      cookies,
+      currentCart,
+      currentDeckData,
+      slicedSearchData,
+      rawSearchData,
+      organizedSearchData,
+      isCardDataValid,
+      slicedAndMergedSearchData,
+
+      handlePatch,
+      setSlicedAndMergedSearchData,
+      setOrganizedSearchData,
+      setRawSearchData,
+      setSlicedSearchData,
       setSearchData,
       setDeckSearchData,
       setSavedDeckData,
@@ -99,6 +192,18 @@ export const CardProvider = ({ children }) => {
         initialStore,
         cookies,
         currentCart,
+        currentDeckData,
+        slicedSearchData,
+        rawSearchData,
+        organizedSearchData,
+        isCardDataValid,
+        slicedAndMergedSearchData,
+
+        handlePatch,
+        setSlicedAndMergedSearchData,
+        setOrganizedSearchData,
+        setRawSearchData,
+        setSlicedSearchData,
         setSearchData,
         setDeckSearchData,
         setSavedDeckData,

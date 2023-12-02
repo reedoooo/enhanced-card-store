@@ -7,9 +7,12 @@ import React, {
   useState,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { CollectionContext } from './CollectionContext/CollectionContext';
-import { useSocketContext } from './SocketProvider';
-import { validateData } from './Helpers';
+import { CollectionContext } from '../CollectionContext/CollectionContext';
+import { useSocketContext } from '../SocketContext/SocketProvider';
+import {
+  filterNullPriceHistory,
+  filterNullPriceHistoryForCollection,
+} from '../CollectionContext/helpers';
 export const CombinedContext = createContext();
 
 const initialState = {
@@ -44,12 +47,12 @@ const initialState = {
 
 export const CombinedProvider = ({ children }) => {
   const [cookies] = useCookies(['user']);
-  // const { user } = useCookies(['user']);
   const [state, setState] = useState(initialState);
   const user = cookies.user;
-  // console.log('USER ID:', user.id);
+  const userId = user?.id;
   const {
     selectedCollection,
+    updateCollection,
     allCollections,
     getNewTotalPrice,
     getUpdatedCollection,
@@ -167,6 +170,7 @@ export const CombinedProvider = ({ children }) => {
 
       // If latestPrice is different, update lastSavedPrice and priceHistory
       if (updatedCardInfo.latestPrice?.num !== originalCard.latestPrice?.num) {
+        console.log('ORIGINAL PRICE HISTOY', originalCard.priceHistory);
         return {
           ...originalCard,
           ...updatedCardInfo,
@@ -179,7 +183,10 @@ export const CombinedProvider = ({ children }) => {
               new Date().toISOString(),
           },
           priceHistory: [
+            // Add the previous price to the price history
             ...originalCard.priceHistory,
+
+            // Add the latest price to the price history
             updatedCardInfo?.latestPrice,
           ],
         };
@@ -304,16 +311,25 @@ export const CombinedProvider = ({ children }) => {
       cards: updatedSelectedCollectionCards,
     };
 
+    const filteredUpdatedCollection =
+      filterNullPriceHistoryForCollection(updatedCollection);
+
+    console.log('FILTERED UPDATED COLLECTION:', filteredUpdatedCollection);
     try {
       const updatedCollectionResult = await getUpdatedCollection(
-        updatedCollection,
+        filteredUpdatedCollection,
         null, // No specific card to update
         'update', // Operation type
         userId
       );
-
+      // for (const card of filteredUpdatedCollection.cards) {
+      // const updatedCollectionResult = await updateCollection(
+      //   card,
+      //   'update',
+      //   selectedCollection
+      // );
       if (updatedCollectionResult) {
-        console.log('Updated Collection:', updatedCollectionResult);
+        console.log('UPDATED COLLECTION RESULT:', updatedCollectionResult);
         // setDataFunctions.collectionData(updatedCollectionResult);
         setDataFunctions.listOfSimulatedCards(updatedCollectionResult);
       }
@@ -442,14 +458,31 @@ export const CombinedProvider = ({ children }) => {
       ) => {
         if (!userId)
           return console.error('Missing userId or listOfMonitoredCards.');
-        if (!listOfMonitoredCards)
+        if (!listOfMonitoredCards || listOfMonitoredCards.length === 0)
           return console.error('Missing retrievedListOfMonitoredCards.');
+        let attempt2;
+        if (!Array.isArray(listOfMonitoredCards)) {
+          console.warn(
+            'INITIAL LISTOFMONITOREDCARDSVALUE NOT AN ARRAY, ATTEMPTING TO RETREIVE AND TRY AGAIN',
+            listOfMonitoredCards
+          );
+          attempt2 = generateListOfMonitoredCards(allCollections);
+          console.log('ATTEMPT 2', attempt2);
 
+          if (!attempt2 || attempt2.length === 0) {
+            console.error(
+              'ATTEMPT 2 FAILED, listOfMonitoredCards IS NOT AN ARRAY'
+            );
+            return;
+          }
+        }
         console.log(
           'SENDING CHECK AND UPDATE CARD PRICES',
           listOfMonitoredCards
         );
-        const selectedList = listOfMonitoredCards;
+        const selectedList = listOfMonitoredCards
+          ? listOfMonitoredCards
+          : attempt2;
         socket?.emit('REQUEST_CRON_UPDATED_CARDS_IN_COLLECTION', {
           userId,
           data: {
@@ -468,13 +501,14 @@ export const CombinedProvider = ({ children }) => {
         if (!listOfMonitoredCards)
           return console.log('Missing retrievedListOfMonitoredCards.');
         if (!allCollections) return console.log('Missing allCollections.');
+        const filteredAllCollections = filterNullPriceHistory(allCollections);
         const selectedList = listOfMonitoredCards;
         socket.emit('REQUEST_PRICES_ACTIVATE_CRON', {
           userId,
           data: {
             userId,
             selectedList,
-            allCollections,
+            allCollections: filteredAllCollections,
             cardsWithChangedPrice,
           },
         });
@@ -507,7 +541,9 @@ export const CombinedProvider = ({ children }) => {
         JSON.stringify(allCollections) !==
         JSON.stringify(state.allCollectionData)
       ) {
-        setDataFunctions.allCollectionData(allCollections);
+        const filteredAllCollections = filterNullPriceHistory(allCollections);
+        console.log('FILTERED ALL COLLECTIONS:', filteredAllCollections);
+        setDataFunctions.allCollectionData(filteredAllCollections);
       }
     }
   }, [allCollections]);
@@ -550,8 +586,8 @@ export const CombinedProvider = ({ children }) => {
 
   // Log combined context value for debugging
   useEffect(() => {
-    console.log('COMBINED CONTEXT VALUE:', state);
-  }, [state]);
+    console.log('COMBINED CONTEXT:', state);
+  }, [userId, setDataFunctions.allCollectionData]);
 
   return (
     <CombinedContext.Provider value={value}>

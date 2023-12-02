@@ -1,20 +1,12 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useCookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import SimpleReusableButton from '../reusable/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
 import CreateOrEditCollectionDialog from '../dialogs/CreateOrEditCollectionDialog';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context/hooks/colormode';
-import StatBox from '../other/dataDisplay/StatBox';
-import StatisticsArea from '../other/dataDisplay/StatisticsArea';
-import {
-  MainContainer,
-  MainContainer2,
-  MainContainer3,
-} from '../../pages/pageStyles/StyledComponents';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SelectCollection = ({
   handleSelectCollection,
+  handleCollectionSelect,
   setShowCollections,
   setShowPortfolio,
 }) => {
@@ -132,13 +125,6 @@ const SelectCollection = ({
         >
           Choose a Collection
         </Typography>
-        {/* <Box sx={{ p: 2, justifyContent: 'center', margin: 'auto' }}>
-          <StatBox
-            title="Total Cards"
-            subtitle={selectedCollection?.cards?.length}
-          />
-          {/* <StatisticsArea /> */}
-        {/* </Box>  */}
         <Box sx={{ p: 2, justifyContent: 'center', margin: 'auto' }}>
           <SimpleReusableButton
             variant="outlined"
@@ -152,6 +138,7 @@ const SelectCollection = ({
         <div className={classes.list}>
           <SelectCollectionList
             handleSelectCollection={handleSelectCollection}
+            handleCollectionSelect={handleCollectionSelect}
             onSave={handleSave}
             openDialog={() => openDialog(false)} // Indicate that this is not a new collection
           />

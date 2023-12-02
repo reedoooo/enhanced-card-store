@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
 const initialCollectionState = {
   userId: '', // Assuming this is an ObjectId string
   name: '', // Initialize as empty string if not provided
@@ -148,68 +147,6 @@ const validateData = (data, eventName, functionName) => {
 };
 
 /**
- * Handles the addition of a new card to the collection.
- * @param {Array} currentCards - Current array of cards.
- * @param {Object} cardToAdd - Card object to add.
- * @returns {Array} Updated array of cards.
- */
-const handleCardAddition = (currentCards, cardToAdd) => {
-  // Initialize currentCards to an empty array if it's not defined
-  currentCards = currentCards || [];
-
-  console.log('CURRENT CARDS:', currentCards);
-  console.log('CARD TO ADD:', cardToAdd);
-  const cardToAddId =
-    typeof cardToAdd.id === 'number' ? String(cardToAdd.id) : cardToAdd.id;
-  const matchingCard = currentCards.find((c) => c.id === cardToAddId);
-
-  if (matchingCard) {
-    matchingCard.quantity++;
-    return [...currentCards];
-  }
-
-  return [...currentCards, { ...cardToAdd, id: cardToAddId, quantity: 1 }];
-};
-
-/**
- * Handles the removal of a card from the collection.
- * @param {Array} currentCards - Current array of cards.
- * @param {Object} cardToRemove - Card object to remove.
- * @returns {Array} Updated array of cards.
- */
-const handleCardRemoval = (currentCards, cardToRemove) => {
-  // Initialize currentCards to an empty array if it's not defined
-  currentCards = currentCards || [];
-
-  console.log('CURRENT CARDS:', currentCards);
-  console.log('CARD TO REMOVE:', cardToRemove);
-
-  const cardToRemoveId =
-    typeof cardToRemove.id === 'number'
-      ? String(cardToRemove.id)
-      : cardToRemove.id;
-
-  // Find the card to remove in the current cards array
-  const cardIndex = currentCards.findIndex((c) => c.id === cardToRemoveId);
-
-  if (cardIndex === -1) {
-    console.error('Card not found in the collection.');
-    return [...currentCards];
-  }
-
-  const matchingCard = currentCards[cardIndex];
-
-  // If the card has a quantity greater than 1, decrement it
-  if (matchingCard.quantity > 1) {
-    matchingCard.quantity--;
-    return [...currentCards];
-  } else {
-    // Remove the card from the collection if quantity is 1 or less
-    return currentCards.filter((card) => card.id !== cardToRemoveId);
-  }
-};
-
-/**
  * Filters unique XY values with Y not equal to 0.
  * @param {Array} allXYValues - Array of XY value objects.
  * @returns {Array} Filtered array of XY value objects.
@@ -245,11 +182,6 @@ const getUniqueFilteredXYValues = (allXYValues) => {
     });
 };
 
-// Example usage:
-// console.log(getUniqueFilteredXYValues(null)); // Should return []
-// console.log(getUniqueFilteredXYValues(undefined)); // Should return []
-// console.log(getUniqueFilteredXYValues([{ x: 1, y: 0 }, { x: 2, y: 3 }])); // Should return [{ x: 2, y: 3 }]
-
 /**
  * Calculates the total price from an array of card prices.
  * @param {Array} allCardPrices - Array of card prices.
@@ -282,13 +214,6 @@ const ensureNumber = (value, defaultValue = 0) => {
  */
 const findCollectionIndex = (collections, id) =>
   collections?.findIndex((collection) => collection?._id === id) ?? -1;
-
-/**
- * Creates a full API URL from a given path.
- * @param {String} path - API path.
- * @returns {String} Full API URL.
- */
-const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
 
 // To prevent making the same type of request within 10 seconds
 const lastRequestTime = {
@@ -345,35 +270,18 @@ const fetchWrapper = async (url, method, body = null) => {
   }
 };
 
-const handleApiResponse = async (response) => {
-  if (!(response instanceof Response)) {
-    const error = new Error(
-      "The response object is not an instance of the Fetch API's Response class."
-    );
-    console.error(error.message, response);
-    throw error;
-  }
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  try {
-    const jsonResponse = await response.json();
-    return jsonResponse;
-  } catch (e) {
-    const error = new Error(`Failed to parse JSON from the response: ${e}`);
-    console.error(error.message);
-    throw error;
-  }
-};
-
 const getTotalCost = (selectedCollection) => {
   if (!selectedCollection || !Array.isArray(selectedCollection.cards)) return 0;
 
   return selectedCollection.cards.reduce((total, card) => {
     const cardPrice =
-      (card.card_prices && card.card_prices[0]?.tcgplayer_price) || 0;
+      (card.card_prices && card.card_prices[0]?.tcgplayer_price) || card.price;
+
+    if (!cardPrice) {
+      console.error(
+        `Failed to get price for card: ${card.name} (ID: ${card.id})`
+      );
+    }
     return total + cardPrice * card.quantity;
   }, 0);
 };
@@ -906,15 +814,12 @@ module.exports = {
   convertData,
   isEmpty,
   validateData,
-  handleCardAddition,
-  handleCardRemoval,
+  // handleCardAddition,
+  // handleCardRemoval,
   getUniqueFilteredXYValues,
   calculateTotalFromAllCardPrices,
   ensureNumber,
   findCollectionIndex,
-  createApiUrl,
-  BASE_API_URL,
-  handleApiResponse,
   fetchWrapper,
   getTotalCost,
   getCardPrice,

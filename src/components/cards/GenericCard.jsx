@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -12,9 +12,14 @@ import CardMediaSection from '../media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/images/placeholder.jpeg';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { ModalContext } from '../../context/ModalContext/ModalContext';
+import {
+  ModalContext,
+  useModalContext,
+} from '../../context/ModalContext/ModalContext';
 import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
 import { useMode } from '../../context/hooks/colormode';
+import { Box } from '@mui/system';
+import { useCardStore, useCartStore } from '../../context';
 
 const AspectRatioBox = styled('div')(({ theme }) => ({
   width: '100%', // Full width of the parent container
@@ -25,6 +30,7 @@ const AspectRatioBox = styled('div')(({ theme }) => ({
 const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  minWidth: '109px', //! Important for the card to be responsive. This may change a lot...
   maxWidth: '100%', // Ensure it doesn't exceed the parent width
   width: 'auto', // Adjust if needed
   maxHeight: '80vh', // Max height based on the viewport height
@@ -39,13 +45,15 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const GenericCard = React.forwardRef((props, ref) => {
   const { theme } = useMode();
-  const { card, context, setClickedCard } = props;
-  const { openModalWithCard, setModalOpen } = useContext(ModalContext);
+  const cardRef = useRef(null);
+  const { card, context, page } = props;
+  const { openModalWithCard, setModalOpen, setClickedCard } = useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
     useContext(PopoverContext);
 
   const handleClick = () => {
     openModalWithCard(card);
+    // setClickedCard(card);
     setModalOpen(true);
     setIsPopoverOpen(false);
   };
@@ -65,33 +73,80 @@ const GenericCard = React.forwardRef((props, ref) => {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
+  // const isSmallCard = ref?.current?.offsetWidth < 150;
+  const name = card?.name;
+
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
   const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price || 'N/A'}`;
+  const quantity = card?.quantity || 0;
+  let cartQuantity = 0;
+
+  if (context === 'Cart' || page === 'CartPage' || page === 'StorePage') {
+    cartQuantity = card?.quantity;
+  }
+
+  const isSmallCard = cardRef.current && cardRef.current.offsetWidth < 140;
 
   const renderCardContent = () => {
-    // Adjust content based on the screen size
-    let variant = 'body2';
-    if (isSmallScreen) {
-      // variant = 'caption';
-      variant = 'h6';
-    } else if (isMediumScreen) {
-      variant = 'body2';
-    } else if (isLargeScreen) {
-      variant = 'body2';
-    }
-
     return (
       <CardContent>
-        <Typography variant={variant}>{card?.name}</Typography>
-        <Typography variant={variant} color="text.secondary" noWrap>
-          {price}
+        <Typography
+          variant="body2"
+          sx={{
+            fontSize: {
+              xs: '0.8rem', // smaller font size for extra-small devices
+              sm: '0.9rem', // slightly larger for small devices
+              md: '1rem', // default size for medium devices and up
+            },
+          }}
+        >
+          {name}
         </Typography>
+        {!isSmallCard && (
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              noWrap
+              sx={{
+                fontSize: {
+                  xs: '0.8rem', // smaller font size for extra-small devices
+                  sm: '0.9rem', // slightly larger for small devices
+                  md: '1rem', // default size for medium devices and up
+                },
+              }}
+            >
+              {price}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              noWrap
+              sx={{
+                fontSize: {
+                  xs: '0.8rem', // smaller font size for extra-small devices
+                  sm: '0.9rem', // slightly larger for small devices
+                  md: '1rem', // default size for medium devices and up
+                },
+              }}
+            >
+              {quantity && `Quantity: ${quantity}`}
+            </Typography>
+          </>
+        )}
       </CardContent>
     );
   };
+
+  // useEffect(() => {
+  //   if (cardData === cartCard) {
+  //     console.log('cardData: ', cardData);
+  //   }
+  // }, [cardData]);
+
   return (
-    <StyledCard ref={ref}>
-      <AspectRatioBox>
+    <StyledCard ref={cardRef}>
+      <AspectRatioBox ref={ref}>
         <CardMediaSection
           isRequired={true}
           imgUrl={imgUrl}
@@ -104,9 +159,20 @@ const GenericCard = React.forwardRef((props, ref) => {
       </AspectRatioBox>
 
       {renderCardContent()}
-      <CardActions container>
-        <GenericActionButtons card={card} context={context} />
-      </CardActions>
+      <Box
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <CardActions
+          sx={{
+            inherit: true,
+          }}
+        >
+          <GenericActionButtons card={card} context={context} page={page} />
+        </CardActions>
+      </Box>
     </StyledCard>
   );
 });

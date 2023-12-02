@@ -1,29 +1,61 @@
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
-// Fetch function with proper error handling
+/**
+ * The base URL for all API calls.
+ * @type {String}
+ */
+export const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
+
+/**
+ * Creates a full API URL from a given path.
+ * @param {String} path - API path.
+ * @returns {String} Full API URL.
+ */
+export const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
+
+const lastRequestTime = {
+  POST: 0,
+  PUT: 0,
+  DELETE: 0,
+  GET: 0,
+  PATCH: 0,
+};
+
+/**
+ * Checks if a given request is allowed based on the rate limit.
+ * @param {String} method - The HTTP method for the request.
+ * @returns {Boolean} - Whether the request is allowed or not.
+ */
+const updateLastRequestTime = (method) => {
+  lastRequestTime[method] = Date.now();
+};
+/**
+ * Wraps fetch API calls and implements a rate limit for each HTTP method type.
+ * @param {String} url - The API URL to make the request to.
+ * @param {String} method - The HTTP method for the request.
+ * @param {Object} [body=null] - The request payload if needed.
+ * @returns {Promise<Object>} - The response from the API call.
+ */
 export const fetchWrapper = async (url, method, body = null) => {
   const options = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json' },
+    ...(body && { body: JSON.stringify(body) }),
   };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
 
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
-      throw new Error(`Fetch failed with status: ${response.status}`);
+      // We handle non-ok responses immediately
+      throw new Error(`API request failed with status ${response.status}`);
     }
-    return await response.json();
+    updateLastRequestTime(method); // Assumed to be a function that updates some kind of state
+    return await response.json(); // Directly returning the JSON response
   } catch (error) {
-    console.error(error);
-    throw error;
+    console.error(`Fetch failed: ${error}`);
+    console.trace();
+    throw error; // Re-throwing the error for upstream catch blocks to handle
   }
 };
 
@@ -61,17 +93,17 @@ export const getCardQuantity = (collectionId, allCollections) => {
 
 // Custom Hook to get the userId from cookies
 export const useUserId = () => {
-  const [cookies] = useCookies(['userCookie']);
+  const [cookies] = useCookies(['user']);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    setUserId(cookies.userCookie?.id);
+    setUserId(cookies.user?.id);
   }, [cookies]);
 
   return userId;
 };
 
-const isEmpty = (obj) => {
+export const isEmpty = (obj) => {
   return (
     [Object, Array].includes((obj || {}).constructor) &&
     !Object.entries(obj || {}).length

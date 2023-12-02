@@ -7,7 +7,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { useMode } from '../../../context/hooks/colormode';
+import { useMode } from '../../context/hooks/colormode';
 
 const TablePaginationActions = (props) => {
   const { theme } = useMode();
