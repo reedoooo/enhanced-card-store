@@ -51,7 +51,7 @@ const CarouselCard = ({ card }) => {
         <Grid item xs={4} md={4}>
           <GenericCard
             card={card}
-            onClick={handleClick}
+            onClick={() => handleClick()}
             context={'Collection'}
             ref={cardRef}
           />
@@ -64,7 +64,7 @@ const CarouselCard = ({ card }) => {
             {card?.description}
           </Typography>
           <Typography variant="subtitle2" color={'white'}>
-            Price: ${card?.latestPrice?.num ?? 'N/A'}
+            Price: ${card?.latestPrice?.num || card?.price || 0}
           </Typography>
           {/* Additional statistics */}
         </Grid>
@@ -83,8 +83,8 @@ const TopCardsDisplay = () => {
   useEffect(() => {
     const sortedCards = selectedCollection?.cards
       ?.map((card) => {
-        const latestPrice = card.latestPrice?.num ?? 0;
-        const lastSavedPrice = card.lastSavedPrice?.num ?? 0;
+        const latestPrice = card?.latestPrice?.num ?? 0;
+        const lastSavedPrice = card?.lastSavedPrice?.num ?? 0;
 
         if (
           latestPrice === 0 ||
@@ -96,8 +96,8 @@ const TopCardsDisplay = () => {
           return { ...card, diff: 0 };
         }
 
-        console.log('latestPrice', latestPrice);
-        console.log('lastSavedPrice', lastSavedPrice);
+        // console.log('latestPrice', latestPrice);
+        // console.log('lastSavedPrice', lastSavedPrice);
         return { ...card, diff: Math.abs(latestPrice - lastSavedPrice) };
       })
       .sort((a, b) => b.diff - a.diff || b.price - a.price)

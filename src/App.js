@@ -1,143 +1,127 @@
-// External Imports
-import React, { useContext, useEffect, useRef, useState } from 'react';
+// Note: Main App Component
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { debounce } from 'lodash';
 
 // Component Imports
 import Header from './components/headings/header/Header';
-import Footer from './components/headings/footer/Footer';
 import PrivateRoute from './components/reusable/PrivateRoute';
+import LoginDialog from './components/dialogs/LoginDialog';
+// import Footer from './components/headings/footer/Footer';
 
 // Page Imports
-import SplashPage from './pages/SplashPage';
-import HomePage from './pages/HomePage';
-import StorePage from './pages/StorePage';
-import CartPage from './pages/CartPage';
-import ProfilePage from './pages/ProfilePage';
-import CollectionPage from './pages/CollectionPage';
-import DeckBuilderPage from './pages/DeckBuilderPage';
-import ThreeJsCube from './assets/animations/ThreeJsCube';
-import CardDeckAnimation from './assets/animations/CardDeckAnimation';
+import {
+  SplashPage,
+  HomePage,
+  StorePage,
+  CartPage,
+  ProfilePage,
+  CollectionPage,
+  DeckBuilderPage,
+  // ThreeJsCube,
+  // CardDeckAnimation,
+  NotFoundPage,
+} from './pages';
 
-// Context Hooks Imports
-import { useUserContext } from './context/UserContext/UserContext';
-import { useCollectionStore } from './context/CollectionContext/CollectionContext';
-import { useUtilityContext } from './context/UtilityContext/UtilityContext';
+import {
+  useUserContext,
+  useCollectionStore,
+  useUtilityContext,
+  useDeckStore,
+  useCartStore,
+  useCardImages,
+  useAuthContext,
+  usePageContext,
+} from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
-import { useCardImages } from './context/CardImagesContext/CardImagesContext';
-import { useCookies } from 'react-cookie';
-import { useDeckStore } from './context/DeckContext/DeckContext';
-import { useCartStore } from './context/CartContext/CartContext';
-import LoginDialog from './components/dialogs/LoginDialog';
-const App = () => {
-  // const { getRandomCardImages } = useCardImages(); // Add this line
-  // const [cookies] = useCookies(['user']);
 
-  // const user = cookies?.user;
-  // const userId = user?.id;
-  const [currentPage, setCurrentPage] = useState('');
+const App = () => {
   const { fetchAllCollectionsForUser, selectedCollection } =
     useCollectionStore();
-  const { user, fetchUser } = useUserContext();
-  const userId = user?.id;
-  const [showLoginDialog, setShowLoginDialog] = useState(false);
-
-  const { allDecks, fetchAllDecksForUser, selectedDeck } = useDeckStore();
-  const { fetchUserCart, cartData } = useCartStore();
+  const { fetchAllDecksForUser, selectedDeck } = useDeckStore();
+  const { fetchUserCart } = useCartStore();
+  const { user } = useUserContext();
+  const { logout } = useAuthContext();
   const { isLoading, setIsLoading } = useUtilityContext();
+  const { isPageLoading, setIsPageLoading } = usePageContext();
+  const userId = user?.id;
+  const [showLoginDialog, setShowLoginDialog] = useState(!userId);
+  const logoutTimerRef = useRef(null);
 
-  // useEffect(() => {
-  //   getRandomCardImages(10); // Fetch 10 random images on app start
-  // }, []); // Add this useEffect
+  const handleUserActivity = debounce(() => {
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+    logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
+  }, 500);
+
+  const debouncedLogout = useCallback(
+    debounce(() => {
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+      logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
+    }, 500),
+    [logout] // Dependency for useCallback
+  );
+
+  // Call this function to reset the logout timer
+  const resetLogoutTimer = useCallback(() => {
+    debouncedLogout();
+  }, [debouncedLogout]);
+
   const handleLoginSuccess = (isLoggedIn, userId) => {
     setShowLoginDialog(false);
+    setIsPageLoading(false);
     setIsLoading(false);
+    if (isLoggedIn && userId) {
+      resetLogoutTimer();
+    }
   };
 
   useEffect(() => {
-    if (!userId || typeof userId !== 'string') {
-      // Invalid or missing userId, show login dialog and hide splash page
-      setShowLoginDialog(true);
-      setIsLoading(false);
-    } else {
-      // Valid userId, hide login dialog and splash page
-      setShowLoginDialog(false);
-      setIsLoading(false);
+    // Set up event listeners for user activity
+    if (userId) {
+      window.addEventListener('mousemove', resetLogoutTimer);
+      window.addEventListener('keypress', resetLogoutTimer);
     }
-  }, [userId]);
+
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('mousemove', resetLogoutTimer);
+      window.removeEventListener('keypress', resetLogoutTimer);
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+    };
+  }, [userId, resetLogoutTimer]);
 
   useEffect(() => {
-    if (userId && typeof userId === 'string') {
-      fetchAllCollectionsForUser()
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching collections:', error);
-          setIsLoading(false);
-        });
+    if (userId) {
+      Promise.all([
+        fetchAllCollectionsForUser(),
+        fetchAllDecksForUser(),
+        // fetchUserCart(),
+      ])
+        .catch((error) => console.error('Error fetching data:', error))
+        .finally(() => setIsLoading(false) && setIsPageLoading(false));
     }
-  }, [userId, fetchAllCollectionsForUser, setIsLoading, selectedCollection]);
-  useEffect(() => {
-    if (userId && typeof userId === 'string') {
-      fetchAllDecksForUser()
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch((error) => console.error('Error fetching decks:', error));
-      setIsLoading(false);
-    }
-  }, [userId, fetchAllDecksForUser, selectedDeck, setIsLoading]);
-  useEffect(() => {
-    console.log('Checking userId in useEffect:', userId);
-    setShowLoginDialog(!userId);
-  }, [userId]);
-  // useEffect(() => {
-  //   if (userId && typeof userId === 'string') {
-  //     fetchUserCart()
-  //       .then(() => {
-  //         setIsLoading(false);
-  //       })
-  //       .catch((error) => console.error('Error fetching cart:', error));
-  //   }
-  // }, [userId, fetchUserCart, cartData, setIsLoading]);
-
-  // Handle initial loading state
-  useEffect(() => {
-    if (!isLoading) {
-      setIsLoading(false);
-    }
-  }, [isLoading, setIsLoading]);
+  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
 
   return (
     <>
-      <Helmet>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
-          rel="stylesheet"
-        />
-      </Helmet>
-      {isLoading ? (
+      <Helmet>{/* Helmet Configuration */}</Helmet>
+      {isLoading || isPageLoading ? (
         <SplashPage />
       ) : (
-        <React.Fragment>
+        <>
           <LoginDialog
             open={showLoginDialog}
             onClose={() => setShowLoginDialog(false)}
             onLogin={handleLoginSuccess}
           />
-
           <AppContainer>
             <Header />
             <Routes>
-              {/* {setCurrentPage(useLocation())} */}
-
               <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/store" element={<StorePage />} />
@@ -174,13 +158,14 @@ const App = () => {
                 }
               />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/threejs" element={<ThreeJsCube />} />
-              <Route path="/cardDeck" element={<CardDeckAnimation />} />
-              {/* Add a Route for 404 Not Found page if needed */}
+              {/* <Route path="/threejs" element={<ThreeJsCube />} /> */}
+              {/* <Route path="/cardDeck" element={<CardDeckAnimation />} /> */}
+              <Route path="*" element={<NotFoundPage />} />{' '}
+              {/* 404 Not Found Route */}
             </Routes>
             {/* <Footer /> */}
           </AppContainer>
-        </React.Fragment>
+        </>
       )}
     </>
   );

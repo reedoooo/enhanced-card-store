@@ -73,7 +73,9 @@ export const themeSettings = (mode) => {
         evenLighter: colors.greenAccent[300],
         main: colors.greenAccent[500],
         dark: colors.greenAccent[200],
+        darker: colors.greenAccent[600],
         contrastText: '#fff',
+        hoverContrastText: '#111',
       },
       info: {
         main: colors.blueAccent[500],
@@ -134,6 +136,7 @@ export const themeSettings = (mode) => {
     spacing: (factor) => `${0.25 * factor}rem`,
     shape: {
       borderRadius: 4,
+      borderRadiusLarge: 8,
     },
     action: {
       hover: mode === 'dark' ? colors.grey[800] : colors.grey[200],

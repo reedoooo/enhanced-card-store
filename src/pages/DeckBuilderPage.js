@@ -14,49 +14,20 @@ import useUpdateAppContext from '../context/hooks/useUpdateContext';
 import UserContext, {
   useUserContext,
 } from '../context/UserContext/UserContext';
-
-const HeroCenter2 = ({ title, subtitle }) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      gap: 2,
-      my: 6,
-      textAlign: 'center',
-    }}
-  >
-    <Typography
-      variant="h1"
-      sx={{
-        fontSize: { xs: '4xl', sm: '5xl', md: '6xl' },
-        fontWeight: 800,
-        color: 'black',
-      }}
-    >
-      {title}
-    </Typography>
-    <Typography
-      sx={{
-        fontSize: 'lg',
-        color: 'text.secondary',
-        maxWidth: '54ch',
-      }}
-    >
-      {subtitle}
-    </Typography>
-  </Box>
-);
-
-HeroCenter2.defaultProps = {
-  title: 'Welcome to Deck Builder',
-  subtitle: 'Craft, refine, and explore your deck strategies in one place.',
-};
+import { usePageContext } from '../context/PageContext/PageContext';
+import HeroCenter from './pageStyles/HeroCenter';
 
 const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
   const { theme } = useMode();
-  const { fetchAllDecksForUser, allDecks, loading, error } = useDeckStore();
+  const { fetchAllDecksForUser, allDecks, loading } = useDeckStore();
+  const {
+    isPageLoading,
+    setIsPageLoading,
+    pageError,
+    setPageError,
+    logPageData,
+  } = usePageContext();
   const { user } = useUserContext();
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
@@ -70,24 +41,62 @@ const DeckBuilderPage = () => {
   useEffect(() => {
     if (allDecks && userId && typeof userId === 'string') {
       const filteredDecks = allDecks?.filter((deck) => deck?.userId === userId);
-      console.log('filteredDecks', filteredDecks);
+      // console.log('filteredDecks', filteredDecks);
+      logPageData('DeckBuilderPage', filteredDecks); // Log the cart data
+
+      // console.log('DECK PAGE (FILTERED_DECKS):', filteredDecks);
+
       setUserDecks(filteredDecks);
     }
-  }, [allDecks, userId]);
+  }, [userId]);
 
-  if (loading) return <LoadingIndicator />;
-  if (error) return <ErrorIndicator error={error} />;
+  // useEffect(() => {
+  //   setIsPageLoading(true);
+  //   try {
+  //     // Logic to handle deck data
+  //     if (!userId) {
+  //       setIsPageLoading(false); // End the loading state
+  //       return;
+  //     }
+
+  //     // if theres no cartData or cartData object is empty, fetch the user's cart
+  //     if (!cartData || Object.keys(cartData).length === 0) {
+  //       fetchUserCart(userId);
+  //       return;
+  //     }
+  //     // Your logic to check cart data
+  //     if (userId && cartData.cart && cartData.cart.length > 0) {
+  //       logPageData('CartPage', cartData); // Log the cart data
+  //       console.log('CART PAGE (CART_QUANTITY):', cartCardQuantity);
+  //     }
+  //     logPageData('DeckBuilderPage', allDecks); // Log deck data
+  //   } catch (e) {
+  //     setPageError(e);
+  //   } finally {
+  //     setIsPageLoading(false);
+  //   }
+  // }, [allDecks, setIsPageLoading, setPageError, logPageData]);
+
+  if (isPageLoading) return <LoadingIndicator />;
+  if (pageError) return <ErrorIndicator error={pageError} />;
 
   return (
     <React.Fragment>
       <DeckBuilderBanner>
-        <HeroCenter2 />
+        {/* <HeroCenter2 /> */}
+        <HeroCenter
+          title="Welcome to Deck Builder"
+          subtitle="Craft, refine, and explore your deck strategies in one place."
+        />
+
         <Grid container>
           <Grid item xs={12}>
             <DeckBuilderContainer userDecks={userDecks} />
           </Grid>
         </Grid>
       </DeckBuilderBanner>
+      {pageError && <ErrorIndicator error={pageError} />}
+
       {isModalOpen && (
         <GenericCardModal
           open={isModalOpen}

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
@@ -14,90 +14,66 @@ import {
   CollectionContents,
 } from './pageStyles/StyledComponents';
 import { useMode } from '../context/hooks/colormode';
+import { usePageContext } from '../context/PageContext/PageContext';
+import HeroCenter from './pageStyles/HeroCenter';
 
-const HeroCenter = ({ decorative, title, subtitle }) => (
-  <Box
-    sx={{
-      flex: 1,
-      // height: '50vh',
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      gap: 2,
-      my: 6,
-      textAlign: 'center',
-    }}
-  >
-    <Typography
-      component="span"
-      sx={{
-        color: 'primary.main',
-        fontWeight: 600,
-        fontSize: 'sm',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-      }}
-    >
-      {decorative}
-    </Typography>
-    <Typography
-      variant="h1"
-      sx={{
-        fontSize: { xs: '4xl', sm: '5xl', md: '6xl' },
-        fontWeight: 800,
-      }}
-    >
-      {title}
-    </Typography>
-    <Typography
-      sx={{
-        fontSize: 'lg',
-        color: 'text.secondary',
-        maxWidth: '54ch',
-      }}
-    >
-      {subtitle}
-    </Typography>
-  </Box>
-);
-
-// Default props for the HeroCenter component for ease of use and maintainability
-HeroCenter.defaultProps = {
-  decorative: 'All-in-One',
-  title: "Your Collection's Home",
-  subtitle:
-    // eslint-disable-next-line max-len
-    'Welcome to your collection! Here you can view all of your cards, add new cards, and remove cards from your collection.',
-};
-
-// Main collection page component
 const CollectionPage = () => {
   const { theme } = useMode();
-  const { allCollections, selectedCollection, loading, error } =
-    useCollectionStore();
+  const [isCollectionSelected, setIsCollectionSelected] = useState(false);
+  const { allCollections, selectedCollection } = useCollectionStore();
+  const {
+    isPageLoading,
+    setIsPageLoading,
+    pageError,
+    setPageError,
+    logPageData,
+  } = usePageContext();
+
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
 
-  if (loading) return <LoadingIndicator />;
-  if (error) return <ErrorIndicator error={error} />;
+  useEffect(() => {
+    setIsPageLoading(true);
+    try {
+      // Logic to handle collection data
+      logPageData('CollectionPage', selectedCollection); // Log collection data
+    } catch (e) {
+      setPageError(e); // Handle any errors
+    } finally {
+      setIsPageLoading(false); // End the loading state
+    }
+  }, [selectedCollection, setIsPageLoading, setPageError, logPageData]);
+
+  if (isPageLoading) return <LoadingIndicator />;
+  if (pageError) return <ErrorIndicator error={pageError} />;
+
+  const handleCollectionSelected = (selected) => {
+    console.log('selected', selected);
+    setIsCollectionSelected(!!selected);
+  };
 
   return (
     <React.Fragment>
-      <CollectionBanner>
-        <Box>
-          <HeroCenter />
-          <Subheader text={selectedCollection?.name || 'Your Collection'} />
-        </Box>
-      </CollectionBanner>
+      {!isCollectionSelected && (
+        <CollectionBanner>
+          <Box>
+            <HeroCenter
+              decorative="All-in-One"
+              title="Your Collection's Home"
+              // eslint-disable-next-line max-len
+              subtitle="Welcome to your collection! Here you can view all of your cards, add new cards, and remove cards from your collection."
+              theme={theme} // Pass theme if required
+            />
+            <Subheader text={selectedCollection?.name || 'Your Collection'} />
+          </Box>
+        </CollectionBanner>
+      )}
+
       <CollectionContents theme={theme}>
-        {/* <Box
-          sx={{
-            maxHeight: '200vh',
-            overflow: 'auto',
-          }}
-        > */}
-        <CardPortfolio allCollections={allCollections} />
-        {/* </Box> */}
+        <CardPortfolio
+          allCollections={allCollections}
+          onCollectionSelect={handleCollectionSelected}
+        />
       </CollectionContents>
       {isModalOpen && (
         <GenericCardModal

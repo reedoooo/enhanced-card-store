@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  TextField,
-  Button,
-  Grid,
-  Box,
-  Fade,
-  useMediaQuery,
-  Pagination,
-} from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { useCardStore } from '../../context/CardContext/CardStore';
 import SearchForm from '../forms/SearchForm';
 import DeckSearchCardGrid from '../grids/searchResultGrids/DeckSearchCardGrid';

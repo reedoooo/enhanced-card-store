@@ -3,9 +3,12 @@ import {
   Home as HomeIcon,
   Store as StoreIcon,
   ShoppingCart as CartIcon,
-  Assessment as AssessmentIcon,
-  Deck as DeckOfCardsIcon,
+  Assessment as CollectionIcon,
+  Person as ProfileIcon,
 } from '@mui/icons-material';
+// import DeckOfCardsIcon from '../../reusable/icons/DeckOfCardsIcon';
+import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
+// import DeckOfCardsIcon from '../../../assets/deckIcon2.png';
 
 export const getMenuItemsData = (isLoggedIn) => {
   // Error handling: Check if 'isLoggedIn' is a boolean
@@ -25,7 +28,8 @@ export const getMenuItemsData = (isLoggedIn) => {
       },
       {
         name: 'Deck Builder',
-        icon: <DeckOfCardsIcon />,
+        // icon: <DeckOfCardsIcon />,
+        icon: <DeckBuilderIcon />,
         to: '/deckbuilder',
         requiresLogin: false,
       },
@@ -37,9 +41,15 @@ export const getMenuItemsData = (isLoggedIn) => {
       },
       {
         name: 'Collection',
-        icon: <AssessmentIcon />,
+        icon: <CollectionIcon />,
         to: '/collection',
         requiresLogin: !isLoggedIn,
+      },
+      {
+        name: 'Profile',
+        icon: <ProfileIcon />,
+        to: '/profile',
+        requiresLogin: isLoggedIn,
       },
     ];
 

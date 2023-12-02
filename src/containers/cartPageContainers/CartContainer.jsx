@@ -1,24 +1,34 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 
-const CartContainer = ({ children }) => (
-  <Box
-    sx={{
-      width: '100%',
-      flexGrow: '1',
-      backgroundColor: '#f8f8f8',
-      borderRadius: '5px',
-      padding: '1rem',
-    }}
-  >
-    <Typography
-      variant="h4"
-      sx={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}
+const CartContainer = ({ children }) => {
+  const theme = useTheme();
+
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        maxHeight: '90vh',
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.default,
+        borderRadius: '5px',
+        padding: '1rem',
+        overflowY: 'auto',
+      }}
     >
-      Your Cart
-    </Typography>
-    {children}
-  </Box>
-);
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: 'bold',
+          mb: '1rem',
+          color: theme.palette.text.primary,
+        }}
+      >
+        Your Cart
+      </Typography>
+      {children}
+    </Box>
+  );
+};
 
 export default CartContainer;

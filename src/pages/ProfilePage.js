@@ -17,7 +17,7 @@ import UserStats from '../components/other/dataDisplay/UserStats';
 import { useUserContext } from '../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../components/buttons/other/ThemeToggleButton';
-import { useCombinedContext } from '../context/CombinedProvider';
+import { useCombinedContext } from '../context/CombinedContext/CombinedProvider';
 import {
   AvatarStyled,
   TypographyStyled,
@@ -44,10 +44,6 @@ const ProfilePage = () => {
     handleRequestChartData,
     handleRequestCollectionData,
     handleRequestCronStop,
-    handleSendAllCardsInCollections,
-    listOfMonitoredCards,
-    handleRetreiveListOfMonitoredCards,
-    retrievedListOfMonitoredCards,
   } = useCombinedContext();
 
   const openSnackbar = (message) => {
@@ -84,14 +80,6 @@ const ProfilePage = () => {
       openSnackbar('Requested chart data.');
     }
   };
-
-  // const handleTriggerCronJob = () => {
-  //   if (userId && listOfMonitoredCards) {
-  //     handleSendAllCardsInCollections(userId, listOfMonitoredCards);
-  //     console.log('SENDING ALL CARDS IN COLLECTIONS');
-  //     openSnackbar('Triggered the cron job.');
-  //   }
-  // };
 
   const handleStopCronJob = () => {
     if (userId && typeof userId === 'string') {
@@ -158,7 +146,7 @@ const ProfilePage = () => {
       <ProfileFormContainer>
         <ProfileForm
           {...user}
-          userName={cookies.userCookie?.username}
+          userName={cookies?.user?.username}
           onSave={handleSaveChanges}
         />
       </ProfileFormContainer>

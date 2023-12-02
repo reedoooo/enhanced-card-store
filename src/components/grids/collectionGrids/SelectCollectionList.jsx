@@ -72,6 +72,7 @@ const SelectCollectionList = ({
   onSave,
   openDialog,
   collectionIdFromDialog,
+  handleCollectionSelect,
 }) => {
   const { theme } = useMode();
   const classes = useStyles();
@@ -81,29 +82,35 @@ const SelectCollectionList = ({
     allCollections,
     setAllCollections,
   } = useCollectionStore();
-  const { stats } = useStatisticsStore();
+  const { stats, statsByCollectionId } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
-  const twentyFourHourChange = stats.twentyFourHourAverage;
+  // const twentyFourHourChange = stats.twentyFourHourAverage;
+
+  // let collectionStats;
+  // let twentyFourHourChange;
+  // const getStatsForAllCollections = (collection) => {
+  //   if (!collection) {
+  //     console.error('Invalid input: selectedCollection should not be null');
+  //     return [];
+  //   }
+  //   if (!statsByCollectionId) {
+  //     console.error('Invalid input: statsByCollectionId should not be null');
+  //     return [];
+  //   }
+
+  //   collectionStats = statsByCollectionId[collection?._id];
+  //   twentyFourHourChange = collectionStats?.twentyFourHourAverage;
+
+  //   return { collectionStats, twentyFourHourChange };
+  // };
   console.log('STATS:', stats);
+  console.log('STATS BY COLLECTION ID:', statsByCollectionId);
+  console.log('SELECTED COLLECTION:', selectedCollection);
+  console.log('ALL COLLECTIONS:', allCollections);
   function roundToNearestTenth(num) {
     return Math.round(num * 10) / 10;
   }
-  console.log('TWENTY FOUR HOUR CHANGE:', twentyFourHourChange);
-  // const handleSelect = useCallback(
-  //   (selectedId) => {
-  //     const selected = allCollections.find(
-  //       (collection) => collection._id === selectedId
-  //     );
-  //     if (!selected) {
-  //       console.error('Collection not found with ID:', selectedId);
-  //       // Handle the error accordingly, maybe set an error state here
-  //       return;
-  //     }
-  //     setSelectedCollection(selected);
-  //     onSave(selected);
-  //   },
-  //   [allCollections, onSave, setSelectedCollection]
-  // );
+  // console.log('TWENTY FOUR HOUR CHANGE:', twentyFourHourChange);
   const handleSelect = useCallback(
     (selectedId) => {
       const selected = allCollections.find(
@@ -114,27 +121,22 @@ const SelectCollectionList = ({
         return;
       }
       setSelectedCollection(selected);
+      // handleCollectionSelect(selected);
+      handleCollectionSelect(true);
       onSave(selected);
-
-      // Find the index of the selected collection
       const selectedIndex = allCollections.findIndex(
-        (collection) => collection._id === selectedId
+        (collection) => collection?._id === selectedId
       );
-
       if (selectedIndex > 0) {
-        // Create a new array with the selected collection moved to the 0 index
         const reorderedCollections = [
           selected,
           ...allCollections.slice(0, selectedIndex),
           ...allCollections.slice(selectedIndex + 1),
         ];
-
-        // Update the state with the reordered collections
-        // You need to implement a method in your context to handle this update
         setAllCollections(reorderedCollections);
       }
     },
-    [allCollections, onSave, setSelectedCollection, setAllCollections]
+    [allCollections, onSave, setSelectedCollection]
   );
 
   const handleOpenDialog = useCallback(
@@ -149,73 +151,83 @@ const SelectCollectionList = ({
   return (
     <>
       {isLoading ? (
-        <LoadingIndicator />
+        <div className={classes.loadingContainer}>
+          <LoadingIndicator />
+        </div>
       ) : (
         <List className={classes.list}>
           {allCollections
             ?.filter((collection) => !!collection?._id)
-            .map((collection) => (
-              <React.Fragment key={collection?._id}>
-                <ListItem className={classes.listItem}>
-                  <ButtonBase
-                    sx={{ width: '100%' }}
-                    onClick={() => handleSelect(collection?._id)}
-                  >
-                    <Grid container>
-                      <Grid item xs={3} className={classes.gridItem}>
-                        <Typography className={classes.gridItemText}>
-                          Name:
-                        </Typography>
-                        <Typography>{collection?.name}</Typography>
+            .map((collection) => {
+              const collectionStats = statsByCollectionId[collection?._id];
+              const twentyFourHourChange =
+                collectionStats?.twentyFourHourAverage;
+
+              return (
+                <React.Fragment key={collection?._id}>
+                  {/* {getStatsForAllCollections(collection)} */}
+
+                  <ListItem className={classes.listItem}>
+                    <ButtonBase
+                      sx={{ width: '100%' }}
+                      onClick={() => handleSelect(collection?._id)}
+                    >
+                      <Grid container>
+                        <Grid item xs={3} className={classes.gridItem}>
+                          <Typography className={classes.gridItemText}>
+                            Name:
+                          </Typography>
+                          <Typography>{collection?.name}</Typography>
+                        </Grid>
+                        <Grid item xs={3} className={classes.gridItem}>
+                          <Typography className={classes.gridItemText}>
+                            Value:
+                          </Typography>
+                          {/* Replace with actual value */}
+                          <Typography>
+                            ${roundToNearestTenth(collection?.totalPrice)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={3} className={classes.gridItem}>
+                          <Typography className={classes.gridItemText}>
+                            Performance:
+                          </Typography>
+                          <Typography
+                            component="div"
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            {twentyFourHourChange?.priceChange > 0 ? (
+                              <ArrowUpwardIcon
+                                className={classes.positivePerformance}
+                              />
+                            ) : (
+                              <ArrowDownwardIcon
+                                className={classes.negativePerformance}
+                              />
+                            )}
+                            {twentyFourHourChange?.percentageChange}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={3} className={classes.gridItem}>
+                          <Typography className={classes.gridItemText}>
+                            Cards:
+                          </Typography>
+                          {/* Replace with actual count */}
+                          <Typography>{collection?.totalQuantity}</Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={3} className={classes.gridItem}>
-                        <Typography className={classes.gridItemText}>
-                          Value:
-                        </Typography>
-                        {/* Replace with actual value */}
-                        <Typography>
-                          ${roundToNearestTenth(collection?.totalPrice)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3} className={classes.gridItem}>
-                        <Typography className={classes.gridItemText}>
-                          Performance:
-                        </Typography>
-                        <Typography
-                          component="div"
-                          sx={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          {twentyFourHourChange?.percentageChange > 0 ? (
-                            <ArrowUpwardIcon
-                              className={classes.positivePerformance}
-                            />
-                          ) : (
-                            <ArrowDownwardIcon
-                              className={classes.negativePerformance}
-                            />
-                          )}
-                          {twentyFourHourChange?.percentageChange}%
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3} className={classes.gridItem}>
-                        <Typography className={classes.gridItemText}>
-                          Cards:
-                        </Typography>
-                        {/* Replace with actual count */}
-                        <Typography>{collection?.totalQuantity}</Typography>
-                      </Grid>
-                    </Grid>
-                  </ButtonBase>
-                  <Button
-                    className={classes.editButton}
-                    onClick={() => handleOpenDialog(collection)} // Pass the collection object here
-                  >
-                    Edit
-                  </Button>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
+                    </ButtonBase>
+                    <Button
+                      className={classes.editButton}
+                      onClick={() => handleOpenDialog(collection)}
+                    >
+                      Edit
+                    </Button>
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              );
+            })}
         </List>
       )}
     </>
@@ -226,6 +238,7 @@ SelectCollectionList.propTypes = {
   onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
   collectionIdFromDialog: PropTypes.string,
+  handleCollectionSelect: PropTypes.func.isRequired,
 };
 
 export default SelectCollectionList;

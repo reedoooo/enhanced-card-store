@@ -6,7 +6,7 @@ import UpdateStatusBox2 from '../../components/other/InputComponents/UpdateStatu
 import TopCardsDisplay from '../../components/other/dataDisplay/TopCardsDisplay';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useCombinedContext } from '../../context/CombinedProvider';
+import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
 import { calculateStatistics } from '../../context/StatisticsContext/helpers';
 import CollectionStatisticsSelector from '../../components/other/InputComponents/CollectionStatisticsSelector';
 import { useStatisticsStore } from '../../context/StatisticsContext/StatisticsContext';

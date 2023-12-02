@@ -6,15 +6,7 @@ import { useChartContext } from '../ChartContext/ChartContext';
 const StatisticsContext = createContext();
 
 export const useStatisticsStore = () => useContext(StatisticsContext);
-// export const useStatisticsStore = () => {
-//   const context = useContext(StatisticsContext);
-//   if (!context) {
-//     throw new Error(
-//       'useStatisticsStore must be used within a CollectionProvider'
-//     );
-//   }
-//   return context;
-// };
+
 export const StatisticsProvider = ({ children }) => {
   const { timeRange } = useChartContext();
   const { allCollections } = useCollectionStore();
@@ -28,9 +20,18 @@ export const StatisticsProvider = ({ children }) => {
     [dataForStats, timeRange]
   );
 
-  console.log('stats', stats);
+  const statsByCollectionId = useMemo(() => {
+    return allCollections.reduce((acc, collection) => {
+      const data = collection.currentChartDataSets2;
+      const stats = calculateStatistics({ data }, timeRange);
+      acc[collection._id] = stats;
+      return acc;
+    }, {});
+  }, [allCollections, timeRange]);
+
+  // console.log('stats', stats);
   return (
-    <StatisticsContext.Provider value={{ stats }}>
+    <StatisticsContext.Provider value={{ stats, statsByCollectionId }}>
       {children}
     </StatisticsContext.Provider>
   );

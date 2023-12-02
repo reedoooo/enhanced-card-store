@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-free": "^6.4.0",
@@ -23,6 +24,7 @@
     "dayjs": "^1.11.9",
     "image-downloader": "^4.3.0",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "material-ui-image": "^3.3.2",
     "moment": "^2.29.4",
     "react": "^17.0.2",

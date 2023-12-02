@@ -4,7 +4,7 @@ import LinearChart from './LinearChart';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useCombinedContext } from '../../context/CombinedProvider';
+import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
 import debounce from 'lodash/debounce';
 import {
   convertDataForNivo2,

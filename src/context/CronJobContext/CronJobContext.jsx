@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useUserContext } from '../UserContext/UserContext';
 import { useCollectionStore } from '../CollectionContext/CollectionContext';
-import { useCombinedContext } from '../CombinedProvider';
+import { useCombinedContext } from '../CombinedContext/CombinedProvider';
 
 const CronJobContext = createContext();
 
@@ -9,8 +9,8 @@ export const useCronJobContext = () => useContext(CronJobContext);
 
 export const CronJobProvider = ({ children }) => {
   const { user } = useUserContext();
-  const { allCollections } = useCollectionStore();
-  const { handleSendAllCardsInCollections } = useCombinedContext();
+  const { handleSendAllCardsInCollections, listOfMonitoredCards } =
+    useCombinedContext();
   const [lastCronJobTriggerTime, setLastCronJobTriggerTime] = useState(
     new Date().getTime()
   );
@@ -23,20 +23,20 @@ export const CronJobProvider = ({ children }) => {
       if (timeDifference >= 60000) {
         // 60 seconds
         setLastCronJobTriggerTime(currentTime);
-        if (user && user.userID) {
+
+        if (user?.id && listOfMonitoredCards?.length > 0) {
           console.log('Triggering cron job actions');
-          // Call your functions here
-          handleSendAllCardsInCollections(user.userID);
+          handleSendAllCardsInCollections(user.id, listOfMonitoredCards);
         }
       }
     };
 
-    const interval = setInterval(handleTriggerCronJob, 1000); // Check every second
+    const interval = setInterval(handleTriggerCronJob, 60000); // Trigger every minute
     return () => clearInterval(interval);
   }, [
     lastCronJobTriggerTime,
     user,
-    allCollections,
+    listOfMonitoredCards,
     handleSendAllCardsInCollections,
   ]);
 

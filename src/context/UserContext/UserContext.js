@@ -9,10 +9,10 @@ import { useCookies } from 'react-cookie';
 import { useAuthContext } from '../hooks/auth';
 import { useCollectionStore } from '../CollectionContext/CollectionContext';
 
-const UserContext = createContext();
+export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [cookies, setCookie] = useCookies(['userCookie']);
+  const [cookies, setCookie] = useCookies(['user']);
   const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
   const [allCollections, setAllCollections] = useState([]);
   const { user, setUser } = useAuthContext(); // Use the useAuthContext hook
@@ -22,17 +22,17 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const { id, username } = cookies.userCookie || {};
-    const userID = id;
-    if (userID) {
-      const updatedUser = { userID, username };
+    const userId = user?.id;
+    const username = user?.username;
+    if (userId) {
+      const updatedUser = { userId, username };
       setUser(updatedUser);
     }
   }, [cookies]);
 
   const updateUser = (userData) => {
     setUser(userData);
-    setCookie('userCookie', userData, { path: '/' });
+    setCookie('user', userData, { path: '/' });
     console.log('User Data Sent to Server and Cookie Updated:', userData);
   };
 

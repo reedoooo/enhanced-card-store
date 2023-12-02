@@ -60,11 +60,10 @@ const CarouselImage = ({ image, caption }) => {
 
 const HomePage = () => {
   // const theme = useTheme();
-  const { theme, setMode } = useMode();
+  const { theme } = useMode();
   const classes = useStyles(theme);
-  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
-    useContext(ModalContext);
-  const { initialState, carouselImages, tiers } = pages;
+  const { closeModal, isModalOpen, modalContent } = useContext(ModalContext);
+  const { initialState, carouselImages, tiers, introText } = pages;
   const getIconForTitle = (title) => {
     switch (title) {
       case 'Deck Builder':
@@ -99,7 +98,7 @@ const HomePage = () => {
             color="text.primary"
             gutterBottom
           >
-            Enhanced Cardstore
+            {introText.mainTitle}
           </Typography>
           <Typography
             variant="h5"
@@ -107,11 +106,7 @@ const HomePage = () => {
             color="text.secondary"
             paragraph
           >
-            The purpose of this site is to provide an enhanced user experience
-            for competitive and novice card collectors alike. We provide an
-            advanced collection tracker and deck builder which allows users to
-            build decks and track the prices of the cards they need so they can
-            make the best financial decisions when buying and selling cards.
+            {introText.description}
           </Typography>
           <Stack
             sx={{ pt: 4 }}

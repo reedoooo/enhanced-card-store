@@ -11,21 +11,15 @@ import React, {
 } from 'react';
 import { useCookies } from 'react-cookie';
 import {
-  handleCardAddition,
-  handleCardRemoval,
-  createApiUrl,
-  fetchWrapper,
   getTotalCost,
   initialCollectionState,
   getCardPrice,
   defaultContextValue,
   validateUserIdAndData,
-  getUpdatedChartData,
   getPriceChange,
-  constructPayloadWithDifferences,
-  getCurrentChartDataSets,
   calculateCollectionValue,
 } from './collectionUtility.jsx';
+import { fetchWrapper, createApiUrl } from '../Helpers.jsx';
 import {
   handleError,
   removeDuplicatesFromCollection,
@@ -38,7 +32,10 @@ import {
   getFilteredChartData,
   filterUniqueDataPoints,
   transformPriceHistoryToXY,
-  getAllCardPrices,
+  filterNullPriceHistoryForCollection,
+  filterNullPriceHistory,
+  handleCardAddition,
+  handleCardRemoval,
 } from './helpers.jsx';
 
 export const CollectionContext = createContext(defaultContextValue);
@@ -117,21 +114,26 @@ export const CollectionProvider = ({ children }) => {
           Array.isArray(newData) &&
           newData.every((item) => hasOwnProperty(item, 'cards'))
         ) {
+          const filteredNewData = filterNullPriceHistory(newData);
+
           // If newData is an array of objects each containing 'cards', assume it's 'allCollections'
-          setAllCollections((prev) => updateCollectionArray(prev, newData));
+          setAllCollections((prev) =>
+            updateCollectionArray(prev, filteredNewData)
+          );
         } else if (
           newData &&
           typeof newData === 'object' &&
           hasOwnProperty(newData, 'cards')
         ) {
           // If newData is an object with a 'cards' property, assume it's 'selectedCollection'
-          setSelectedCollection(newData);
+          setSelectedCollection(filterNullPriceHistoryForCollection(newData));
         } else if (newData && typeof newData === 'object') {
           // If newData is a general object, assume it's 'collectionData'
-          setCollectionData(newData);
+          setCollectionData(filterNullPriceHistoryForCollection(newData));
         } else {
           console.warn(
-            'Unable to determine the type of collection data for update.'
+            'Unable to determine the type of collection data for update.',
+            newData
           );
         }
       } catch (error) {
@@ -313,7 +315,8 @@ export const CollectionProvider = ({ children }) => {
       name,
       userId: userId, // Make sure 'userId' is defined in the scope
       totalPrice: updatedTotalPrice || 0,
-      totalCost: updatedTotalPrice ? updatedTotalPrice?.toString() : '0',
+      totalCost: getTotalCost(collectionWithCards),
+      // totalCost: updatedTotalPrice ? updatedTotalPrice?.toString() : '0',
       totalQuantity: cards?.reduce(
         (acc, card) => acc + (card?.quantity || 0),
         0
@@ -337,6 +340,34 @@ export const CollectionProvider = ({ children }) => {
         newCollectionPriceHistoryObject,
       ],
     };
+  };
+  const constructCardDifferencesPayload = (
+    oldCollection,
+    newCollection,
+    debug = false
+  ) => {
+    const differences = {};
+
+    newCollection.cards.forEach((newCard) => {
+      const oldCard =
+        oldCollection.cards.find((card) => card.id === newCard.id) || {};
+
+      Object.keys(newCard).forEach((key) => {
+        if (newCard[key] !== oldCard[key]) {
+          if (!differences[newCard.id]) {
+            differences[newCard.id] = { old: {}, new: {} };
+          }
+          differences[newCard.id].old[key] = oldCard[key];
+          differences[newCard.id].new[key] = newCard[key];
+        }
+      });
+    });
+
+    if (debug && Object.keys(differences).length > 0) {
+      console.log('Card Differences:', differences);
+    }
+
+    return differences;
   };
 
   const getUpdatedCollection = async (
@@ -397,7 +428,8 @@ export const CollectionProvider = ({ children }) => {
       operation
       // collectionId
     );
-    console.log('CARDS AFTER: ', updatedCards);
+    // console.log('CARDS AFTER: ', updatedCards);
+    // Call the function to get differences in cards
 
     const updatedTotalPrice = calculateCollectionValue(updatedCards);
     setTotalPrice(updatedTotalPrice);
@@ -452,6 +484,13 @@ export const CollectionProvider = ({ children }) => {
 
     cardsResponse = await fetchWrapper(endpoint, method, cardsPayload);
     const { cardMessage } = cardsResponse;
+    console.log('CARDS AFTER: ', cardsResponse.cards);
+    const cardDifferences = constructCardDifferencesPayload(
+      collectionWithCards,
+      { cards: cardsResponse.cards },
+      true
+    );
+    console.log('CARD DIFFERENCES:', cardDifferences);
 
     const updatedChartData = getFilteredChartData(
       collectionWithCards.chartData,
@@ -493,10 +532,19 @@ export const CollectionProvider = ({ children }) => {
       cards: cardsResponse.cards,
       chartData: chartDataResponse.chartData,
     };
-
+    console.log('COLLECTION MESSAGE:', collectionMessage);
     console.log('RESTRUCTURED COLLECTION:', restructuredCollection);
+
+    const filteredRestructuredCollection = filterNullPriceHistoryForCollection(
+      restructuredCollection
+    );
+
+    console.log(
+      'FILTERED RESTRUCTURED COLLECTION:',
+      filteredRestructuredCollection
+    );
     return {
-      restructuredCollection,
+      filteredRestructuredCollection,
     };
   };
 
@@ -569,7 +617,7 @@ export const CollectionProvider = ({ children }) => {
 
     if (updatedCollection) {
       console.log('UPDATED COLLECTION:', updatedCollection);
-      updateCollectionData(updatedCollection?.restructuredCollection);
+      updateCollectionData(updatedCollection?.filteredRestructuredCollection);
     } else {
       console.error('Failed to update collection.');
     }
@@ -594,6 +642,7 @@ export const CollectionProvider = ({ children }) => {
       setUpdatedPricesFromCombinedContext,
       setOpenChooseCollectionDialog,
       getTotalPrice2: () => getCardPrice(selectedCollection),
+
       getTotalPrice: () => calculateCollectionValue(selectedCollection),
       getNewTotalPrice: (values) => calculateCollectionValue(values),
       getTotalCost: () => getTotalCost(selectedCollection),
@@ -621,7 +670,7 @@ export const CollectionProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log('CONTEXT STATE:', {
+    console.log('COLLECTION CONTEXT:', {
       totalCost,
       totalPrice,
       totalQuantity: selectedCollection?.totalQuantity || 0,
@@ -631,7 +680,7 @@ export const CollectionProvider = ({ children }) => {
       updatedPricesFromCombinedContext,
       xyData,
     });
-  }, [allCollections, selectedCollection, totalCost, totalPrice, xyData]);
+  }, [userId, selectedCollection]);
 
   useEffect(() => {
     if (userId) fetchAndSetCollections();

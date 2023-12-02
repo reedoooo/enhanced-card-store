@@ -4,7 +4,13 @@ import useAppContext from '../../../context/hooks/useAppContext';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
 import { Box } from '@mui/material';
 
-const GenericActionButtons = ({ card, context }) => {
+const GenericActionButtons = ({
+  card,
+  context,
+  onSuccess,
+  onFailure,
+  page,
+}) => {
   const contextProps = useAppContext(); // Assuming useAppContext returns the context object
   const { closeModal, isModalOpen, setModalOpen } = useContext(ModalContext);
 
@@ -29,7 +35,8 @@ const GenericActionButtons = ({ card, context }) => {
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' }, // Vertical layout on small screens, horizontal on larger
-        justifyContent: 'space-between', // Spread buttons evenly
+        // justifyContent: 'space-between', // Spread buttons evenly
+        justifyContent: 'center', // Center align the buttons
         alignItems: 'center', // Center align the buttons
         gap: 1, // Add a small gap between buttons
         flexGrow: 1,
@@ -38,6 +45,7 @@ const GenericActionButtons = ({ card, context }) => {
       <CardActionButtons
         card={card}
         context={context}
+        page={page}
         contextProps={modifiedContextProps}
         closeModal={() => setModalOpen(false)}
         open={isModalOpen}

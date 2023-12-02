@@ -94,11 +94,12 @@ Reed Vogt -
 <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flinkedin_174857&psig=AOvVaw1F9U7jlNJPTJpYUU2wdKLW&ust=1691527142102000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCPjpk-Wzy4ADFQAAAAAdAAAAABAJ" alt="LinkedIn" style="width:24px;height:24px;">
 </a>
 
-Project Site: https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/
+Project Site: <https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/>
 
-Project Repo: https://github.com/reedoooo/enhanced-card-store#readme
+Project Repo: <https://github.com/reedoooo/enhanced-card-store#readme>
 
 ## Acknowledgements
 
 - [React](https://reactjs.org/)
 - [Stripe](https://stripe.com/)
+- [Convertio](https://convertio.co/download/bde422f6082917756106e52b556e7245cfcfbe/)

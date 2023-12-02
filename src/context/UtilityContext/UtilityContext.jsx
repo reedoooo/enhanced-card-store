@@ -4,15 +4,28 @@ const UtilityContext = createContext();
 
 const UtilityProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   const contextValue = {
     isLoading,
     setIsLoading,
   };
 
+  // Method to handle errors
+  const handleError = (e) => {
+    setError(e);
+    setIsLoading(false); // Optionally stop loading if an error occurs
+  };
+
+  // Method to clear errors
+  const clearError = () => {
+    setError(null);
+  };
+
   useEffect(() => {
     if (isLoading) {
-      console.log('Loading...');
+      // console.log('Loading...');
     } else {
       console.log('Finished Loading', contextValue);
     }

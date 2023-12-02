@@ -1,13 +1,15 @@
 // CardMediaSection.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReusableCardMedia from './CardMedia';
 import CardToolTip from '../cards/CardToolTip';
 import { makeStyles } from '@mui/styles';
 import { Popover } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useModalContext, usePopoverContext } from '../../context';
 
 const useStyles = makeStyles({
   mediaContainer: {
+    cursor: 'pointer', // Change cursor to indicate it's clickable
     position: 'relative',
   },
   popover: {
@@ -27,19 +29,13 @@ const transformOrigin = {
 
 const CardMediaSection = React.forwardRef(
   (
-    {
-      imgUrl,
-      card,
-      isHovered,
-      handleInteraction,
-      handleClick,
-      setClickedCard,
-      isRequired,
-    },
+    { imgUrl, card, isHovered, handleInteraction, handleClick, isRequired },
     ref
   ) => {
     const classes = useStyles();
-
+    const { modalImgUrl, setModalImgUrl, clickedCard, setClickedCard } =
+      useModalContext();
+    // console.log('CardMediaSection: ', card);
     // Event handlers are now only assigned if isRequired is true
     const eventHandlers = isRequired
       ? {
@@ -63,8 +59,25 @@ const CardMediaSection = React.forwardRef(
           },
         }
       : {};
+
+    const onClickHandler = () => {
+      if (handleClick) {
+        handleClick();
+      }
+    };
+
+    useEffect(() => {
+      if (imgUrl && clickedCard) {
+        setModalImgUrl(imgUrl);
+      }
+    }, [modalImgUrl, setModalImgUrl, clickedCard]);
     return (
-      <div className={classes.mediaContainer} ref={ref} {...eventHandlers}>
+      <div
+        className={classes.mediaContainer}
+        ref={ref}
+        {...eventHandlers}
+        onClick={onClickHandler}
+      >
         <ReusableCardMedia imgUrl={imgUrl} />
         {isRequired && isHovered && (
           <Popover

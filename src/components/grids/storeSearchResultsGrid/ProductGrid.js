@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
 import GenericCard from '../../cards/GenericCard';
 import { useCardStore } from '../../../context/CardContext/CardStore';
@@ -6,28 +6,35 @@ import StoreItem from '../StoreItem';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 
 const ProductGrid = () => {
-  const { searchData } = useCardStore();
-  const { addOneToCart, removeOneFromCart } = useCartStore();
+  const {
+    searchData,
+    setSlicedAndMergedSearchData,
+    slicedAndMergedSearchData,
+    slicedSearchData,
+    isCardDataValid,
+  } = useCardStore();
+  const { cart } = useCartStore();
 
-  const isCardDataValid = searchData && Array.isArray(searchData);
+  if (!isCardDataValid) return null;
 
-  const limitedCardsToRender = useMemo(
-    () => (searchData ? Array.from(searchData).slice(0, 30) : []),
-    [searchData]
-  );
-
-  const handleModifyItemInCart = async (cardId, operation) => {
-    try {
-      if (operation === 'add') {
-        addOneToCart(cardId);
-      } else if (operation === 'remove') {
-        removeOneFromCart(cardId);
+  const mergedData = useMemo(() => {
+    return slicedSearchData.map((card) => {
+      // Convert card ID from string to number for accurate comparison
+      const cardId = parseInt(card.id, 10);
+      // Find the cart item with a matching ID
+      const cartItem = cart.find(
+        (cartCard) => parseInt(cartCard.id, 10) === cardId
+      );
+      if (cartItem) {
+        console.log('CART_ITEM: ', cartItem);
       }
-    } catch (error) {
-      console.error('Failed to adjust quantity in cart: ', error);
-    }
-  };
+      return cartItem ? cartItem : card; // Use cart item if it exists, else use original card data
+    });
+  }, [slicedSearchData, cart]);
 
+  useEffect(() => {
+    setSlicedAndMergedSearchData(mergedData);
+  }, [mergedData, setSlicedAndMergedSearchData]);
   return (
     <Grid
       container
@@ -39,7 +46,7 @@ const ProductGrid = () => {
       }}
     >
       {isCardDataValid &&
-        limitedCardsToRender.map((card, index) => (
+        slicedAndMergedSearchData.map((card, index) => (
           <Grid
             item
             xs={12}
@@ -57,11 +64,11 @@ const ProductGrid = () => {
             <StoreItem
               card={card}
               context={'Cart'}
-              page={'storepage'}
+              page={'StorePage'}
               // onAddToCart={(cardId) => handleAddToCart(cardId)}
-              onQuantityChange={(cardId, operation) =>
-                handleModifyItemInCart(cardId, operation)
-              }
+              // onQuantityChange={(cardId, operation) =>
+              //   handleModifyItemInCart(cardId, operation)
+              // }
             />
           </Grid>
         ))}

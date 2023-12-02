@@ -123,3 +123,133 @@ export const handleError = (condition, errorMessage) => {
   }
   return true;
 };
+
+export const filterNullPriceHistory = (allCollections) => {
+  return allCollections.map((collection) => {
+    const filteredCards = collection.cards.map((card) => {
+      if (card.priceHistory) {
+        // Remove nulls and duplicates with less than 24 hours difference
+        const filteredPriceHistory = card.priceHistory.filter(
+          (price, index, array) => {
+            if (!price) return false; // Filter out null values
+            // Check for duplicates with less than 24 hours difference
+            const nextPrice = array[index + 1];
+            if (nextPrice) {
+              const timeDiff =
+                new Date(nextPrice.timestamp) - new Date(price.timestamp);
+              const lessThan24Hours = timeDiff < 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+              return !(price.num === nextPrice.num && lessThan24Hours);
+            }
+            return true;
+          }
+        );
+
+        return {
+          ...card,
+          priceHistory: filteredPriceHistory,
+        };
+      }
+      return card;
+    });
+
+    return {
+      ...collection,
+      cards: filteredCards,
+    };
+  });
+};
+
+export const filterNullPriceHistoryForCollection = (collection) => {
+  const filteredCards = collection.cards.map((card) => {
+    if (card.priceHistory) {
+      // Remove null values, duplicates with less than 24 hours difference, and entries with num = 0
+      const filteredPriceHistory = card.priceHistory.filter(
+        (price, index, array) => {
+          if (!price || price.num === 0) return false; // Filter out null values and num = 0
+
+          // Check for duplicates with less than 24 hours difference
+          const nextPrice = array[index + 1];
+          if (nextPrice) {
+            const timeDiff =
+              new Date(nextPrice.timestamp) - new Date(price.timestamp);
+            const lessThan24Hours = timeDiff < 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            return !(price.num === nextPrice.num && lessThan24Hours);
+          }
+          return true;
+        }
+      );
+
+      return {
+        ...card,
+        priceHistory: filteredPriceHistory,
+      };
+    }
+    return card;
+  });
+
+  return {
+    ...collection,
+    cards: filteredCards,
+  };
+};
+/**
+ * Handles the addition of a new card to the collection.
+ * @param {Array} currentCards - Current array of cards.
+ * @param {Object} cardToAdd - Card object to add.
+ * @returns {Array} Updated array of cards.
+ */
+export const handleCardAddition = (currentCards, cardToAdd) => {
+  // Initialize currentCards to an empty array if it's not defined
+  currentCards = currentCards || [];
+
+  console.log('CURRENT CARDS:', currentCards);
+  console.log('CARD TO ADD:', cardToAdd);
+  const cardToAddId =
+    typeof cardToAdd.id === 'number' ? String(cardToAdd.id) : cardToAdd.id;
+  const matchingCard = currentCards.find((c) => c.id === cardToAddId);
+
+  if (matchingCard) {
+    matchingCard.quantity++;
+    return [...currentCards];
+  }
+
+  return [...currentCards, { ...cardToAdd, id: cardToAddId, quantity: 1 }];
+};
+
+/**
+ * Handles the removal of a card from the collection.
+ * @param {Array} currentCards - Current array of cards.
+ * @param {Object} cardToRemove - Card object to remove.
+ * @returns {Array} Updated array of cards.
+ */
+export const handleCardRemoval = (currentCards, cardToRemove) => {
+  // Initialize currentCards to an empty array if it's not defined
+  currentCards = currentCards || [];
+
+  console.log('CURRENT CARDS:', currentCards);
+  console.log('CARD TO REMOVE:', cardToRemove);
+
+  const cardToRemoveId =
+    typeof cardToRemove.id === 'number'
+      ? String(cardToRemove.id)
+      : cardToRemove.id;
+
+  // Find the card to remove in the current cards array
+  const cardIndex = currentCards.findIndex((c) => c.id === cardToRemoveId);
+
+  if (cardIndex === -1) {
+    console.error('Card not found in the collection.');
+    return [...currentCards];
+  }
+
+  const matchingCard = currentCards[cardIndex];
+
+  // If the card has a quantity greater than 1, decrement it
+  if (matchingCard.quantity > 1) {
+    matchingCard.quantity--;
+    return [...currentCards];
+  } else {
+    // Remove the card from the collection if quantity is 1 or less
+    return currentCards.filter((card) => card.id !== cardToRemoveId);
+  }
+};

@@ -1,4 +1,8 @@
 {
+  "introText": {
+    "mainTitle": "Enhanced Cardstore",
+    "description": "The purpose of this site is to provide an enhanced user experience for competitive and novice card collectors alike. We provide an advanced collection tracker and deck builder which allows users to build decks and track the prices of the cards they need so they can make the best financial decisions when buying and selling cards."
+  },
   "carouselImages": [
     { "image": "/images/yugioh.jpeg", "caption": "Yu-Gi-Oh!" },
     { "image": "/images/pokemon.jpeg", "caption": "Pokemon" },
@@ -16,7 +20,8 @@
         "Deck performance analytics",
         "Community deck sharing and rating"
       ],
-      "buttonText": "Get Started",
+      "buttonText": "View Details",
+      "buttonText2": "Get Started",
       "buttonVariant": "outlined"
     },
     {
@@ -28,7 +33,8 @@
         "Real-time market price tracking",
         "Exclusive member discounts"
       ],
-      "buttonText": "Shop now",
+      "buttonText": "View Details",
+      "buttonText2": "Shop now",
       "buttonVariant": "contained"
     },
     {
@@ -39,7 +45,8 @@
         "Automatic collection organization",
         "Trade and wishlist creation tools"
       ],
-      "buttonText": "Track Collection",
+      "buttonText": "View Details",
+      "buttonText2": "Track Collection",
       "buttonVariant": "outlined"
     }
   ]

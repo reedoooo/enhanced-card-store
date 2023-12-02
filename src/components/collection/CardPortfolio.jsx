@@ -6,7 +6,7 @@ import { useCollectionStore } from '../../context/CollectionContext/CollectionCo
 import { CollectionContainer } from '../../pages/pageStyles/StyledComponents';
 // import UpdateChartData from './UpdateChartData';
 
-const CardPortfolio = ({ allCollections }) => {
+const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   const [error, setError] = useState(null);
   const [showCollections, setShowCollections] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
@@ -64,6 +64,7 @@ const CardPortfolio = ({ allCollections }) => {
       {showCollections ? (
         <SelectCollection
           handleSelectCollection={handleSelectCollection}
+          handleCollectionSelect={onCollectionSelect}
           setShowCollections={setShowCollections}
           setShowPortfolio={setShowPortfolio}
         />
