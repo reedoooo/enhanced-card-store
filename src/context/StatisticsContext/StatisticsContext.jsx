@@ -9,27 +9,26 @@ export const useStatisticsStore = () => useContext(StatisticsContext);
 
 export const StatisticsProvider = ({ children }) => {
   const { timeRange } = useChartContext();
-  const { allCollections } = useCollectionStore();
+  const { allCollections, currentChartDataSets2 } = useCollectionStore();
 
-  const dataForStats = allCollections
-    .map((collection) => collection.currentChartDataSets2)
-    .flat();
+  // console.log('currentChartDataSets2', currentChartDataSets2);
 
   const stats = useMemo(
-    () => calculateStatistics({ data: dataForStats }, timeRange),
-    [dataForStats, timeRange]
+    () => calculateStatistics({ data: currentChartDataSets2 }, timeRange),
+    [currentChartDataSets2, timeRange]
   );
+
+  // console.log('stats', stats);
 
   const statsByCollectionId = useMemo(() => {
     return allCollections.reduce((acc, collection) => {
+      // Assuming each collection has its own 'currentChartDataSets2'
       const data = collection.currentChartDataSets2;
-      const stats = calculateStatistics({ data }, timeRange);
-      acc[collection._id] = stats;
+      acc[collection._id] = calculateStatistics({ data }, timeRange);
       return acc;
     }, {});
   }, [allCollections, timeRange]);
 
-  // console.log('stats', stats);
   return (
     <StatisticsContext.Provider value={{ stats, statsByCollectionId }}>
       {children}
@@ -37,14 +36,4 @@ export const StatisticsProvider = ({ children }) => {
   );
 };
 
-// export const useStatisticsStore = () => {
-//   const context = useContext(StatisticsContext);
-//   if (!context) {
-//     throw new Error(
-//       'useStatisticsStore must be used within a CollectionProvider'
-//     );
-//   }
-//   return context;
-// };
-
-// Include calculateStatistics and calculatePriceChanges functions here
+export default StatisticsProvider;

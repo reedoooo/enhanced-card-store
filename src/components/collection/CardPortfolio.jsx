@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
 import PortfolioContent from './PortfolioContent';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { CollectionContainer } from '../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../context';
 // import UpdateChartData from './UpdateChartData';
 
 const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
+  const { theme } = useMode();
+  const theme2 = useTheme();
   const [error, setError] = useState(null);
   const [showCollections, setShowCollections] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
@@ -60,7 +63,32 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   };
 
   return (
-    <CollectionContainer>
+    <Box
+      sx={{
+        // ...theme,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // height: '100%',
+        // marginLeft: theme.spacing(2),
+        borderRadius: theme.shape.borderRadius,
+        // marginRight: theme.spacing(2),
+        // minHeight: '250vh',
+        flexGrow: 1,
+        // minHeight: '100%',
+        background: '#333',
+        // backgroundColor: '#f1f1f1',
+        padding: {
+          xs: theme.spacing(1),
+          sm: theme.spacing(1),
+          md: theme.spacing(2.5),
+          lg: theme.spacing(2.5),
+        },
+        height: '100%',
+        width: '100%',
+      }}
+    >
       {showCollections ? (
         <SelectCollection
           handleSelectCollection={handleSelectCollection}
@@ -84,7 +112,7 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
           <Typography variant="h6">No Collection Selected</Typography>
         </Box>
       )}
-    </CollectionContainer>
+    </Box>
   );
 };
 

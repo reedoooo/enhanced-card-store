@@ -31,22 +31,6 @@ const initialCollectionState = {
     allXYValues: [], // Initialize as empty array if not provided
   },
 };
-/**
- * Filters out duplicate Y values from an array of datasets.
- * @param {Array} datasets - An array of dataset objects.
- * @returns {Array} Filtered datasets.
- */
-const filterOutDuplicateYValues = (datasets) => {
-  const seenYValues = new Set();
-  return datasets?.filter((data) => {
-    const yValue = data?.y;
-    if (seenYValues.has(yValue)) {
-      return false;
-    }
-    seenYValues.add(yValue);
-    return true;
-  });
-};
 
 /**
  * Transforms the given chartData into an array of x-y points.
@@ -144,42 +128,6 @@ const validateData = (data, eventName, functionName) => {
     `The data passed to ${functionName} from ${eventName} is not an object.`
   );
   return false;
-};
-
-/**
- * Filters unique XY values with Y not equal to 0.
- * @param {Array} allXYValues - Array of XY value objects.
- * @returns {Array} Filtered array of XY value objects.
- */
-const getUniqueFilteredXYValues = (allXYValues) => {
-  // Check if the input is an array and is not null/undefined
-  if (!Array.isArray(allXYValues)) {
-    // You can throw an error, return an empty array, or handle it as needed
-    console.error('Invalid input: allXYValues should be an array');
-    return [];
-  }
-
-  const uniqueXValues = new Set();
-  return allXYValues
-    .filter((entry) => {
-      // Check if entry is an object and has property y with a number value
-      return (
-        entry &&
-        typeof entry === 'object' &&
-        typeof entry.y === 'number' &&
-        entry.y !== 0
-      );
-    })
-    .filter((entry) => {
-      // Check if entry has property x with a valid value (not null/undefined)
-      const hasValidX =
-        entry && 'x' in entry && entry.x !== null && entry.x !== undefined;
-      if (hasValidX && !uniqueXValues.has(entry.x)) {
-        uniqueXValues.add(entry.x);
-        return true;
-      }
-      return false;
-    });
 };
 
 /**
@@ -426,55 +374,6 @@ const constructPayloadWithDifferences = (
 const getAllCardPrices = (cards) =>
   cards.flatMap((card) => Array(card.quantity).fill(card.price));
 
-function filterUniqueDataPoints(dataArray) {
-  const uniqueRecords = new Map();
-
-  dataArray?.forEach((item) => {
-    const key = `${item?.label}-${item?.x}-${item?.y}`;
-    if (!uniqueRecords.has(key)) {
-      uniqueRecords.set(key, item);
-    }
-  });
-
-  return Array.from(uniqueRecords.values());
-}
-
-function filterCollectionData(collection) {
-  if (!collection) return null;
-
-  if (!collection?.chartData) {
-    console.warn('Collection data is missing chart data.');
-    return collection;
-  }
-  collection.chartData.allXYValues = filterUniqueDataPoints(
-    collection?.chartData?.allXYValues
-  );
-  collection.currentChartDataSets = filterUniqueDataPoints(
-    collection?.currentChartDataSets
-  );
-  collection.currentChartDataSets2 = filterUniqueDataPoints(
-    collection?.currentChartDataSets2
-  );
-
-  collection?.chartData?.datasets.forEach((dataset) => {
-    dataset?.data?.forEach((dataEntry) => {
-      dataEntry.xys = filterUniqueDataPoints(dataEntry?.xys);
-    });
-  });
-
-  // Apply the filter function to 'xys' in 'chartData'
-  collection.chartData.xys = filterUniqueDataPoints(collection.chartData.xys);
-
-  // If the 'cards' array contains structures with 'label', 'x', and 'y' properties
-  collection.cards.forEach((card) => {
-    if (card.chart_datasets) {
-      card.chart_datasets = filterUniqueDataPoints(card.chart_datasets);
-    }
-  });
-
-  return collection;
-}
-
 const calculateCollectionValue = (cards) => {
   if (
     !cards?.cards &&
@@ -579,14 +478,12 @@ const getCardPrice = (collection) =>
   parseFloat(collection?.cards?.card_prices?.[0]?.tcgplayer_price || 0);
 
 module.exports = {
-  filterOutDuplicateYValues,
   transformChartData,
   convertData,
   isEmpty,
   validateData,
   // handleCardAddition,
   // handleCardRemoval,
-  getUniqueFilteredXYValues,
   calculateTotalFromAllCardPrices,
   ensureNumber,
   findCollectionIndex,

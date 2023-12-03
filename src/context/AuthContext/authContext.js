@@ -66,6 +66,7 @@ export default function AuthProvider({ children, serverUrl }) {
   const [updatedUser, setUpdatedUser] = useState({});
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
+  // const logoutTimerRef = useRef(null);
 
   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
 
@@ -141,7 +142,21 @@ export default function AuthProvider({ children, serverUrl }) {
   };
 
   // Debounced function to reset the logout timer on user activity
-  const resetLogoutTimer = useRef(debounce(startLogoutTimer, 500)).current;
+  // const resetLogoutTimer = useRef(debounce(startLogoutTimer, 500)).current;
+
+  const debouncedLogout = useCallback(
+    debounce(() => {
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+      logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
+    }, 500),
+    [logout] // Dependency for useCallback
+  );
+
+  const resetLogoutTimer = useCallback(() => {
+    debouncedLogout();
+  }, [debouncedLogout]);
 
   // Attach debounced event listeners for user activity
   useEffect(() => {
@@ -192,8 +207,20 @@ export default function AuthProvider({ children, serverUrl }) {
       value={{
         isLoading,
         isLoggedIn,
-        user,
+        authUser: user,
         error,
+        token,
+        updatedUser,
+        logoutTimerRef,
+        debouncedLogout,
+
+        resetLogoutTimer,
+        setIsLoading,
+        setIsLoggedIn,
+        setError,
+        setToken,
+        startLogoutTimer,
+        setUpdatedUser,
         setUser,
         login,
         signup,

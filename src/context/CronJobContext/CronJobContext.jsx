@@ -9,6 +9,7 @@ export const useCronJobContext = () => useContext(CronJobContext);
 
 export const CronJobProvider = ({ children }) => {
   const { user } = useUserContext();
+  const userId = user?.id;
   const { selectedCollection } = useCollectionStore(); // Assuming this is where you get your selectedCollection
   const { handleSendAllCardsInCollections, listOfMonitoredCards } =
     useCombinedContext();
@@ -28,9 +29,9 @@ export const CronJobProvider = ({ children }) => {
         selectedCollection?.chartData?.allXYValues?.length > 10
       ) {
         setLastCronJobTriggerTime(currentTime);
-        if (user?.id) {
+        if (userId) {
           console.log('Triggering cron job actions');
-          handleSendAllCardsInCollections(user.id, listOfMonitoredCards);
+          handleSendAllCardsInCollections(userId, listOfMonitoredCards);
         }
       }
     };

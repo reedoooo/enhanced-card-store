@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import CardActionButtons from './CardActionButtons';
 import useAppContext from '../../../context/hooks/useAppContext';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
-import { Box } from '@mui/material';
+import { Box, CardActions } from '@mui/material';
 
 const GenericActionButtons = ({
   card,
@@ -42,14 +42,26 @@ const GenericActionButtons = ({
         flexGrow: 1,
       }}
     >
-      <CardActionButtons
-        card={card}
-        context={context}
-        page={page}
-        contextProps={modifiedContextProps}
-        closeModal={() => setModalOpen(false)}
-        open={isModalOpen}
-      />
+      <CardActions>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row', // Change based on screen size if needed
+            justifyContent: 'center', // Center the buttons
+            alignItems: 'center', // Align vertically
+            gap: 1, // Adjust the gap between buttons
+          }}
+        >
+          <CardActionButtons
+            card={card}
+            context={context}
+            page={page}
+            contextProps={modifiedContextProps}
+            closeModal={() => setModalOpen(false)}
+            open={isModalOpen}
+          />
+        </Box>
+      </CardActions>
     </Box>
   );
 };

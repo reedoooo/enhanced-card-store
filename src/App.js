@@ -1,6 +1,11 @@
 // Note: Main App Component
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+} from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { debounce } from 'lodash';
 
@@ -36,44 +41,32 @@ import {
   usePageContext,
 } from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
+import { MainContent } from './components/headings/navigation/styled';
 
 const App = () => {
   const { fetchAllCollectionsForUser, selectedCollection } =
     useCollectionStore();
   const { fetchAllDecksForUser, selectedDeck } = useDeckStore();
+
   const { fetchUserCart } = useCartStore();
   const { user } = useUserContext();
-  const { logout } = useAuthContext();
-  const { isLoading, setIsLoading } = useUtilityContext();
-  const { isPageLoading, setIsPageLoading } = usePageContext();
+  const { logout, logoutTimerRef, resetLogoutTimer } = useAuthContext();
+  const {
+    isPageLoading,
+    setIsPageLoading,
+    displaySplashPage,
+    handleLoadingTimeout,
+  } = usePageContext();
+  const navigate = useNavigate();
+  const loadingTimeoutRef = useRef(null);
   const userId = user?.id;
   const [showLoginDialog, setShowLoginDialog] = useState(!userId);
-  const logoutTimerRef = useRef(null);
-
-  const handleUserActivity = debounce(() => {
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
-  }, 500);
-
-  const debouncedLogout = useCallback(
-    debounce(() => {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
-      }
-      logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
-    }, 500),
-    [logout] // Dependency for useCallback
-  );
-
-  // Call this function to reset the logout timer
-  const resetLogoutTimer = useCallback(() => {
-    debouncedLogout();
-  }, [debouncedLogout]);
+  // const [toolbarHeight, setToolbarHeight] = useState('64px'); // Default height
 
   const handleLoginSuccess = (isLoggedIn, userId) => {
     setShowLoginDialog(false);
     setIsPageLoading(false);
-    setIsLoading(false);
+    // setIsLoading(false);
     if (isLoggedIn && userId) {
       resetLogoutTimer();
     }
@@ -97,6 +90,7 @@ const App = () => {
   }, [userId, resetLogoutTimer]);
 
   useEffect(() => {
+    // Fetch all collections and decks for the user
     if (userId) {
       Promise.all([
         fetchAllCollectionsForUser(),
@@ -104,78 +98,110 @@ const App = () => {
         // fetchUserCart(),
       ])
         .catch((error) => console.error('Error fetching data:', error))
-        .finally(() => setIsLoading(false) && setIsPageLoading(false));
+        .finally(() => setIsPageLoading(false));
     }
   }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
+
+  useEffect(() => {
+    // Check if loading takes more than 45 seconds
+    if (isPageLoading) {
+      loadingTimeoutRef.current = setTimeout(() => {
+        handleLoadingTimeout();
+        navigate('/login');
+      }, 45000); // 45 seconds
+    }
+
+    // Clear the timeout if loading finishes or when unmounting
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [isPageLoading, navigate, handleLoadingTimeout]);
 
   useEffect(() => {
     // if the user is redirected to the login page, show the login dialog and set the loading state to false
     if (window.location.pathname === '/login') {
       setShowLoginDialog(true);
-      setIsLoading(false);
+      setIsPageLoading(false);
+      // setIsLoading(false);
     }
   }, []);
 
+  // useEffect(() => {
+  //   if (toolbarRef.current) {
+  //     setToolbarHeight(`${toolbarRef.current.clientHeight}px`);
+  //   }
+  // }, []);
+
   return (
     <>
-      <Helmet>{/* Helmet Configuration */}</Helmet>
-      {isLoading || isPageLoading ? (
-        <SplashPage />
+      <Helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="true"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+          rel="stylesheet"
+        />
+      </Helmet>{' '}
+      {displaySplashPage()}
+      {!userId ? (
+        <LoginDialog
+          open={showLoginDialog}
+          onClose={() => setShowLoginDialog(false)}
+          onLogin={handleLoginSuccess}
+        />
       ) : (
-        <>
-          <LoginDialog
-            open={showLoginDialog}
-            onClose={() => setShowLoginDialog(false)}
-            onLogin={handleLoginSuccess}
-          />
-          <AppContainer>
-            <Header />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/store" element={<StorePage />} />
-              <Route
-                path="/cart"
-                element={
-                  <PrivateRoute>
-                    <CartPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/userprofile"
-                element={
-                  <PrivateRoute>
-                    <ProfilePage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/collection"
-                element={
-                  <PrivateRoute>
-                    <CollectionPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/deckbuilder"
-                element={
-                  <PrivateRoute>
-                    <DeckBuilderPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              {/* <Route path="/threejs" element={<ThreeJsCube />} /> */}
-              {/* <Route path="/cardDeck" element={<CardDeckAnimation />} /> */}
-              <Route path="*" element={<NotFoundPage />} />{' '}
-              {/* 404 Not Found Route */}
-            </Routes>
-            {/* <Footer /> */}
-          </AppContainer>
-        </>
+        <AppContainer>
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/store" element={<StorePage />} />
+            <Route
+              path="/cart"
+              element={
+                <PrivateRoute>
+                  <CartPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/userprofile"
+              element={
+                <PrivateRoute>
+                  <ProfilePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/collection"
+              element={
+                <PrivateRoute>
+                  <CollectionPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/deckbuilder"
+              element={
+                <PrivateRoute>
+                  <DeckBuilderPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            {/* <Route path="/threejs" element={<ThreeJsCube />} /> */}
+            {/* <Route path="/cardDeck" element={<CardDeckAnimation />} /> */}
+            <Route path="*" element={<NotFoundPage />} />{' '}
+          </Routes>
+          {/* <Footer /> */}
+        </AppContainer>
       )}
     </>
   );

@@ -5,18 +5,29 @@ import { useTheme } from '@mui/material/styles';
 import { useMode } from '../../context/hooks/colormode';
 
 const CollectionPortfolioListContainer = ({ selectedCards, removeCard }) => {
+  const theme2 = useTheme();
   const { theme } = useMode();
 
   return (
-    <Box sx={{ maxWidth: '100%', width: '100%', padding: theme.spacing(3) }}>
+    <Box
+      sx={{
+        maxWidth: '100%',
+        background: theme.palette.background.dark,
+        borderRadius: theme.shape.borderRadius,
+        width: {
+          xs: '100%', // Full width on mobile screens
+          md: '100%', // Full width on mobile screens
+        },
+        padding: theme.spacing(1), // Reduced padding for mobile screens
+      }}
+    >
       <Grid item xs={12} sx={{ maxHeight: '100vh', width: '100%' }}>
         <Paper
           elevation={3}
           sx={{
-            background:
-              'linear-gradient(45deg, rgba(255,255,255,1) 30%, rgba(204,204,204,1) 100%)',
+            background: theme.palette.background.dark,
             borderRadius: theme.shape.borderRadius,
-            p: theme.spacing(2),
+            padding: theme.spacing(1), // Reduced padding for mobile screens
             maxHeight: '100%',
             height: 'auto',
             width: '100%',

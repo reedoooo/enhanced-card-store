@@ -42,6 +42,7 @@ import {
   updateChartData,
   getPriceChange,
   updateCollectionDataEndpoint,
+  getUniqueFilteredXYValues,
 } from './helpers.jsx';
 import axios from 'axios';
 
@@ -54,6 +55,11 @@ export const CollectionProvider = ({ children }) => {
   );
   const [collectionData, setCollectionData] = useState(initialCollectionState);
   const [allCollections, setAllCollections] = useState([]);
+  // Refs to store the previous state of the collections
+  const prevAllCollectionsRef = useRef();
+  const prevSelectedCollectionRef = useRef();
+  const prevCollectionDataRef = useRef();
+
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalCost, setTotalCost] = useState('');
   const [
@@ -62,6 +68,7 @@ export const CollectionProvider = ({ children }) => {
   ] = useState([]);
   const [xyData, setXyData] = useState([]);
   const [currentChartDataSets2, setCurrentChartDataSets2] = useState([]);
+  const [currentChartDataSets, setCurrentChartDataSets] = useState([]);
   const [openChooseCollectionDialog, setOpenChooseCollectionDialog] =
     useState(false);
   const user = cookies?.user;
@@ -308,6 +315,9 @@ export const CollectionProvider = ({ children }) => {
       collectionPriceHistory = selectedCollection.collectionPriceHistory || [],
       chartData = selectedCollection.chartData || {},
       cards = selectedCollection.cards || [],
+      currentChartDataSets2 = getUniqueFilteredXYValues(
+        chartData?.allXYValues
+      ) || [],
     } = collectionWithCards;
     if (!Array.isArray(collectionPriceHistory)) {
       console.error(
@@ -333,12 +343,13 @@ export const CollectionProvider = ({ children }) => {
         num: updatedTotalPrice || 0,
         timestamp: new Date(),
       },
-      dailyPriceChange:
-        getPriceChange(collectionWithCards.chartData)[0]?.priceChange || '',
-      currentChartDataSets2: filterUniqueDataPoints(
-        chartData?.allXYValues
-        // transformPriceHistoryToXY(chartData?.allXYValues)
-      ),
+      dailyPriceChange: '',
+      // getPriceChange(chartData)[0]?.priceChange || '',
+      currentChartDataSets2: currentChartDataSets2,
+      // filterUniqueDataPoints(
+      //   chartData?.allXYValues
+      //   // transformPriceHistoryToXY(chartData?.allXYValues)
+      // ),
       collectionPriceHistory: [
         ...collectionPriceHistory,
         newCollectionPriceHistoryObject || {
@@ -425,8 +436,15 @@ export const CollectionProvider = ({ children }) => {
     const filteredRestructuredCollection = filterNullPriceHistoryForCollection(
       restructuredCollection
     );
+    // setCurrentChartDataSets(
+    //   getUniqueFilteredXYValues(
+    //     filteredRestructuredCollection[0]?.chartData?.allXYValues
+    //   )
+    // );
     setCurrentChartDataSets2(
-      filteredRestructuredCollection?.chartData?.allXYValues
+      getUniqueFilteredXYValues(
+        filteredRestructuredCollection?.chartData?.allXYValues
+      )
     );
 
     return { filteredRestructuredCollection };
@@ -497,42 +515,6 @@ export const CollectionProvider = ({ children }) => {
 
     return updatedCollection;
   };
-  // CardUpdateEffect(allCollections, user, updateCollectionData);
-  // useEffect(() => {
-  //   const updateCardTotalPrice = async (card, collection) => {
-  //     try {
-  //       const updatedTotalPriceForCard = card.price * card.quantity;
-  //       const newCardValueWithUpdatedPrice = {
-  //         ...card,
-  //         totalPrice: updatedTotalPriceForCard,
-  //       };
-  //       handleCardOperation(
-  //         newCardValueWithUpdatedPrice,
-  //         'update',
-  //         collection,
-  //         userId
-  //       );
-  //     } catch (error) {
-  //       console.error(
-  //         `Error updating total price for card ID ${card.id}:`,
-  //         error
-  //       );
-  //     }
-  //   };
-
-  //   const processCollections = () => {
-  //     allCollections?.forEach((collection) => {
-  //       collection?.cards?.forEach((card) => {
-  //         const originalTotalPrice = card?.price * card?.quantity;
-  //         if (card?.totalPrice !== originalTotalPrice) {
-  //           updateCardTotalPrice(card, collection);
-  //         }
-  //       });
-  //     });
-  //   };
-
-  //   processCollections();
-  // }, [allCollections, user, updateCollectionData]);
   useEffect(() => {
     if (!allCollections || !user) return;
     const updateCollectionWhenCardChanged = async (card, collection) => {
@@ -547,7 +529,7 @@ export const CollectionProvider = ({ children }) => {
 
         // Update collection locally
         const updatedCollection = collection?.cards?.map((c) =>
-          c.id === card.id ? newCardValueWithUpdatedPrice : c
+          c?.card?.id === card.id ? newCardValueWithUpdatedPrice : c
         );
 
         console.log('UPDATED CO', updatedCollection);
@@ -586,7 +568,6 @@ export const CollectionProvider = ({ children }) => {
 
     processCollections();
   }, []);
-
   useEffect(() => {
     const checkCardData = (card) => {
       const fields = [
@@ -668,13 +649,72 @@ export const CollectionProvider = ({ children }) => {
     };
 
     processCollections();
-  }, [allCollections, user.id]); // Add other dependencies as needed
+  }, [allCollections, userId]); // Add other dependencies as needed
+  useEffect(() => {
+    // this useEffect is for updating currentChartDatasets with allXYValues in the state if values are added and then we filter them to remove duplicate values
+    if (!selectedCollection?.chartData?.allXYValues) return;
+    setCurrentChartDataSets2(
+      getUniqueFilteredXYValues(selectedCollection?.chartData?.allXYValues)
+    );
+  }, [selectedCollection?.chartData?.allXYValues]);
+
+  // Function to compare and log changes in collections
+  // useEffect(() => {
+  //   const compareAndLogChanges = (oldData, newData, collectionName) => {
+  //     const report = {};
+  //     for (const key in newData) {
+  //       if (JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])) {
+  //         report[key] = {
+  //           oldValue: oldData[key],
+  //           newValue: newData[key],
+  //         };
+  //       }
+  //     }
+  //     console.log(`Changes in ${collectionName}:`, report);
+  //   };
+
+  //   compareAndLogChanges(
+  //     prevAllCollectionsRef.current,
+  //     allCollections,
+  //     'All Collections'
+  //   );
+  //   compareAndLogChanges(
+  //     prevSelectedCollectionRef.current,
+  //     selectedCollection,
+  //     'Selected Collection'
+  //   );
+  //   compareAndLogChanges(
+  //     prevCollectionDataRef.current,
+  //     collectionData,
+  //     'Collection Data'
+  //   );
+
+  //   // Update refs with the current state for the next comparison
+  //   prevAllCollectionsRef.current = allCollections;
+  //   prevSelectedCollectionRef.current = selectedCollection;
+  //   prevCollectionDataRef.current = collectionData;
+  // }, [allCollections, selectedCollection, collectionData]);
+  useEffect(() => {
+    if (!userId || !allCollections) return;
+    if (selectedCollection?.cards) {
+      setTotalPrice(calculateCollectionValue(selectedCollection));
+      setTotalCost(getTotalCost(selectedCollection));
+    }
+  }, [
+    allCollections,
+    selectedCollection,
+    totalPrice,
+    totalCost,
+    setTotalPrice,
+    setTotalCost,
+  ]);
 
   const contextValue = useMemo(
     () => ({
       allCollections,
       selectedCollection,
       collectionData,
+      currentChartDataSets2,
       totalCost,
       totalPrice,
       totalQuantity: selectedCollection?.totalQuantity || 0,
@@ -725,25 +765,12 @@ export const CollectionProvider = ({ children }) => {
       updatedPricesFromCombinedContext,
       xyData,
     });
-  }, [userId, selectedCollection]);
+  }, []);
 
   useEffect(() => {
-    if (userId && typeof userId === 'string') fetchAndSetCollections();
+    if (!userId || !allCollections || allCollections?.length === 0) return;
+    fetchAndSetCollections();
   }, [userId]);
-
-  useEffect(() => {
-    if (!userId || !allCollections) return;
-    if (selectedCollection?.cards) {
-      setTotalPrice(calculateCollectionValue(selectedCollection));
-      setTotalCost(getTotalCost(selectedCollection));
-    }
-  }, [selectedCollection, setTotalPrice]);
-
-  useEffect(() => {
-    if (allCollections?.length === 0 || allCollections === undefined) {
-      fetchAndSetCollections();
-    }
-  }, [allCollections, fetchAndSetCollections]);
 
   return (
     <CollectionContext.Provider value={contextValue}>

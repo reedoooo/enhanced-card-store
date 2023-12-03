@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { AppBar, Toolbar, IconButton, Hidden, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -16,10 +16,11 @@ const TopBar = ({
 }) => {
   const { theme } = useMode();
   const menuItemsData = getMenuItemsData(isLoggedIn);
+  const toolbarRef = useRef(null);
 
   return (
     <AppBar position="static">
-      <StyledToolbar theme={theme}>
+      <StyledToolbar theme={theme} ref={toolbarRef}>
         {isMobileView ? (
           <>
             <IconButton

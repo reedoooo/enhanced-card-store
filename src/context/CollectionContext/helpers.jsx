@@ -434,6 +434,60 @@ export const getPriceChange = (currentChartDataSets2) => {
   return [];
 };
 
+/**
+ * Filters out duplicate Y values from an array of datasets.
+ * @param {Array} datasets - An array of dataset objects.
+ * @returns {Array} Filtered datasets.
+ */
+export const filterOutDuplicateYValues = (datasets) => {
+  const seenYValues = new Set();
+  return datasets?.filter((data) => {
+    const yValue = data?.y;
+    if (seenYValues.has(yValue)) {
+      return false;
+    }
+    seenYValues.add(yValue);
+    return true;
+  });
+};
+
+/**
+ * Filters unique XY values with Y not equal to 0.
+ * @param {Array} allXYValues - Array of XY value objects.
+ * @returns {Array} Filtered array of XY value objects.
+ */
+export const getUniqueFilteredXYValues = (allXYValues) => {
+  // Check if the input is an array and is not null/undefined
+  if (!Array.isArray(allXYValues)) {
+    // You can throw an error, return an empty array, or handle it as needed
+    console.error('Invalid input: allXYValues should be an array', allXYValues);
+    return [];
+  }
+
+  const uniqueXValues = new Set();
+  return allXYValues
+    .filter((entry) => {
+      // Check if entry is an object and has property y with a number value
+      return (
+        entry &&
+        typeof entry === 'object' &&
+        typeof entry.y === 'number' &&
+        entry.y !== 0
+      );
+    })
+    .filter((entry) => {
+      // Check if entry has property x with a valid value (not null/undefined)
+      const hasValidX =
+        entry && 'x' in entry && entry.x !== null && entry.x !== undefined;
+      if (hasValidX && !uniqueXValues.has(entry.x)) {
+        uniqueXValues.add(entry.x);
+        return true;
+      }
+      return false;
+    });
+  // console.log('uniqueXValues', uniqueXValues);
+};
+
 export const getCollectionId = (selectedCollection, allCollections) => {
   return selectedCollection?._id || allCollections[0]?._id;
 };

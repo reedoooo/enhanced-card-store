@@ -31,8 +31,21 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         alignItems: 'center',
         maxWidth: '100vw',
         width: '100%',
-        margin: 'auto',
-        padding: theme.spacing(3),
+        height: '100%',
+        // height: '200vh',
+        // margin: 'auto',
+        margin: {
+          xs: 0,
+          sm: 'auto',
+          md: 'auto',
+          lg: 'auto',
+        },
+        padding: {
+          xs: theme.spacing(1), // Reduced padding for xs breakpoint
+          sm: theme.spacing(2),
+          md: theme.spacing(3),
+          lg: theme.spacing(3),
+        },
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.text.primary,
       }}
@@ -47,7 +60,14 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           flexDirection: 'column',
           margin: 'auto',
           width: '100%',
-          padding: theme.spacing(2),
+          // height: '100%',
+          // height: '200vh',
+          padding: {
+            xs: theme.spacing(1),
+            sm: theme.spacing(1),
+            md: theme.spacing(2),
+            lg: theme.spacing(2),
+          },
           borderRadius: theme.shape.borderRadius,
         }}
       >
@@ -63,6 +83,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         spacing={3}
         sx={{
           width: '100%',
+          // height: '100%',
           maxWidth: '100vw',
           // minHeight: '100%',
           justifyContent: 'center',
@@ -75,7 +96,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           md={12}
           lg={6}
           xl={6}
-          sx={{ justifyContent: 'center', margin: 'auto' }}
+          sx={{ justifyContent: 'center' }}
         >
           <CollectionPortfolioChartContainer
             selectedCards={selectedCards}

@@ -45,7 +45,8 @@ export const calculatePriceChanges = (data) => {
 };
 
 export const calculateStatistics = (data, timeRange) => {
-  if (!data || !Array.isArray(data.data) || data.data.length === 0) return {};
+  if (!data || !Array.isArray(data.data) || data.data.length === 0)
+    return {} && console.log('data', data);
 
   const filteredData = data?.data?.filter(
     (item) => new Date(item?.x).getTime() >= Date.now() - timeRange

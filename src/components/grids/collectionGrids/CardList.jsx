@@ -37,7 +37,9 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  width: '100%',
   alignItems: 'center',
+  // background: theme.palette.background.main,
   background: theme.palette.background.dark,
   padding: theme.spacing(2),
   color: '#fff', // White text color
@@ -114,12 +116,14 @@ const CardList = ({ selectedCards }) => {
   };
 
   const handleRemoveCard = (card) => {
-    removeOneFromCollection(card, card.id);
+    // removeOneFromCollection(card, card.id);
+    removeOneFromCollection(card);
     cardLogger.logCardAction('Remove Card', card);
   };
 
   const handleAddCard = (card) => {
-    addOneToCollection(card, card.id);
+    // addOneToCollection(card, card.id);
+    addOneToCollection(card);
     cardLogger.logCardAction('Add Card', card);
   };
 
@@ -127,14 +131,11 @@ const CardList = ({ selectedCards }) => {
     <StyledContainer maxWidth="lg">
       <Paper
         elevation={8}
-        ref={chartContainerRef}
         sx={{
-          // padding: theme.spacing(2),
-          // borderRadius: theme.shape.borderRadius,
-          padding: 2,
+          padding: theme.spacing(1), // Reduced padding for mobile screens
           borderRadius: 2,
           width: '100%',
-          color: '#fff', // White text color
+          color: '#fff',
           background: theme.palette.background.main,
         }}
       >

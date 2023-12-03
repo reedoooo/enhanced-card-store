@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import * as THREE from 'three';
-import placeholder from '../assets/images/placeholder.jpeg';
-import { useUtilityContext } from '../context/UtilityContext/UtilityContext';
+import placeholder from '../../assets/images/placeholder.jpeg';
+import { useUtilityContext } from '../../context/UtilityContext/UtilityContext';
 
 const SplashPage = () => {
   // const { fetchDirectedResponses } = useUtilityContext();
