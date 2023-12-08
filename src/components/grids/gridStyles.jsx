@@ -79,33 +79,33 @@ export const useDeckButtonListStyles = makeStyles((theme) => ({
   grid: {
     marginBottom: theme?.spacing(2),
   },
-  deckButton: {
-    width: '100%',
-    padding: '6px 0',
-    borderRadius: '5px',
-    transition: '0.3s',
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-    margin: theme?.spacing(1),
-    [theme?.breakpoints?.down('xs')]: {
-      fontSize: '0.7rem',
-      padding: '5px 8px',
-    },
-    [theme?.breakpoints?.up('sm')]: {
-      fontSize: '0.8rem',
-    },
-    [theme?.breakpoints?.up('md')]: {
-      fontSize: '1rem',
-    },
-  },
-  icon: {
-    fontSize: '16px',
-  },
-  text: {
-    fontSize: '12px',
-    fontWeight: '600',
-  },
+  // deckButton: {
+  //   width: '100%',
+  //   padding: '6px 0',
+  //   borderRadius: '5px',
+  //   transition: '0.3s',
+  //   '&:hover': {
+  //     backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  //   },
+  //   margin: theme?.spacing(1),
+  //   [theme?.breakpoints?.down('xs')]: {
+  //     fontSize: '0.7rem',
+  //     padding: '5px 8px',
+  //   },
+  //   [theme?.breakpoints?.up('sm')]: {
+  //     fontSize: '0.8rem',
+  //   },
+  //   [theme?.breakpoints?.up('md')]: {
+  //     fontSize: '1rem',
+  //   },
+  // },
+  // icon: {
+  //   fontSize: '16px',
+  // },
+  // text: {
+  //   fontSize: '12px',
+  //   fontWeight: '600',
+  // },
   root: {
     [theme?.breakpoints?.up('md')]: {
       backgroundColor: 'blue',
@@ -116,5 +116,28 @@ export const useDeckButtonListStyles = makeStyles((theme) => ({
     [theme?.breakpoints?.between('sm', 'md')]: {
       backgroundColor: 'green',
     },
+  },
+  deckButton: {
+    padding: theme.spacing(1),
+    border: '1px solid',
+    borderColor: theme.palette.primary.main,
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+      borderColor: theme.palette.primary.light,
+    },
+    '&.selected': {
+      borderColor: theme.palette.secondary.main,
+      boxShadow: '0 3px 5px 2px rgba(0, 200, 200, .3)',
+    },
+  },
+  icon: {
+    color: theme.palette.secondary.main,
+    marginRight: theme.spacing(1),
+  },
+  text: {
+    color: theme.palette.common.white,
+    fontWeight: 'bold',
   },
 }));

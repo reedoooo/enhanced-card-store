@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   List,
   ListItem,
@@ -20,6 +20,7 @@ import { useMode } from '../../../context/hooks/colormode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LongMenu from '../../reusable/LongMenu';
+import { roundToNearestTenth } from '../../../context/ChartContext/helpers';
 const useStyles = makeStyles((theme) => ({
   listItemText: {
     flex: 1,
@@ -93,52 +94,13 @@ const useStyles = makeStyles((theme) => ({
 const SelectCollectionList = ({
   onSave,
   openDialog,
-  collectionIdFromDialog,
-  handleCollectionSelect,
+  handleSelectCollection,
 }) => {
-  const { theme } = useMode();
-  const theme2 = useTheme();
   const classes = useStyles();
-  const {
-    setSelectedCollection,
-    selectedCollection,
-    allCollections,
-    setAllCollections,
-  } = useCollectionStore();
-  const { stats, statsByCollectionId } = useStatisticsStore();
+  const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
+    useCollectionStore();
+  const { stats } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
-  const maxCollectionsToShow = 7; // Define the maximum number of collections to display
-  const placeholdersCount = maxCollectionsToShow - allCollections.length;
-  const placeholders = Array.from(
-    { length: placeholdersCount },
-    (_, index) => ({
-      _id: `placeholder-${index}`,
-      name: 'Empty Slot',
-      // Other properties set to default or placeholder values
-    })
-  );
-  const combinedCollections = [...allCollections, ...placeholders];
-  const handleEdit = (collection) => {
-    handleOpenDialog(collection);
-    // Logic for editing the collection
-    console.log('Edit Collection:', collection);
-  };
-
-  const handleStats = (collection) => {
-    // Logic for showing stats
-    console.log('Collection Stats:', collection);
-  };
-
-  const handleView = (collection) => {
-    // Logic for quick viewing
-    console.log('Quick View:', collection);
-  };
-  // console.log('STATS:', stats);
-  // console.log('STATS BY COLLECTION ID:', statsByCollectionId);
-  function roundToNearestTenth(num) {
-    return Math.round(num * 10) / 10;
-  }
-  // console.log('TWENTY FOUR HOUR CHANGE:', twentyFourHourChange);
   const handleSelect = useCallback(
     (selectedId) => {
       const selected = allCollections.find(
@@ -149,20 +111,8 @@ const SelectCollectionList = ({
         return;
       }
       setSelectedCollection(selected);
-      // handleCollectionSelect(selected);
-      handleCollectionSelect(true);
+      // handleSelectCollection(selected?._id);
       onSave(selected);
-      const selectedIndex = allCollections.findIndex(
-        (collection) => collection?._id === selectedId
-      );
-      if (selectedIndex > 0) {
-        const reorderedCollections = [
-          selected,
-          ...allCollections.slice(0, selectedIndex),
-          ...allCollections.slice(selectedIndex + 1),
-        ];
-        setAllCollections(reorderedCollections);
-      }
     },
     [allCollections, onSave, setSelectedCollection]
   );
@@ -170,7 +120,6 @@ const SelectCollectionList = ({
   const handleOpenDialog = useCallback(
     (collection) => {
       setSelectedCollection(collection);
-      console.log('SELECTED COLLECTION IN LIST:', collection);
       openDialog(true);
     },
     [openDialog, setSelectedCollection]
@@ -183,24 +132,13 @@ const SelectCollectionList = ({
           <LoadingIndicator />
         </div>
       ) : (
-        <List className={classes.list}>
-          {combinedCollections.map((collection, index) => {
-            const isPlaceholder = index >= allCollections.length;
-            {
-              /* const collectionStats = statsByCollectionId[collection?._id]; */
-            }
-            const twentyFourHourChange = stats?.twentyFourHourAverage;
-            {
-              /* const allStats = stats; */
-            }
-            {
-              /* console.log('ALL STATS:', allStats); */
-            }
+        <List>
+          {allCollections?.map((collection, index) => {
+            const twentyFourHourChange = stats?.twentyFourHourAverage; // Adjust according to your actual data structure
+            const isPlaceholder = index >= allCollections?.length;
 
             return (
-              <React.Fragment key={collection?._id}>
-                {/* {getStatsForAllCollections(collection)} */}
-
+              <React.Fragment key={collection._id}>
                 <ListItem
                   className={classes.listItem}
                   style={{ opacity: isPlaceholder ? 0.5 : 1 }}
@@ -223,7 +161,6 @@ const SelectCollectionList = ({
                         <Typography className={classes.gridItemText}>
                           Value:
                         </Typography>
-                        {/* Replace with actual value */}
                         <Typography>
                           ${roundToNearestTenth(collection?.totalPrice)}
                         </Typography>
@@ -252,7 +189,6 @@ const SelectCollectionList = ({
                         <Typography className={classes.gridItemText}>
                           Cards:
                         </Typography>
-                        {/* Replace with actual count */}
                         <Typography>{collection?.totalQuantity}</Typography>
                       </Grid>
                     </Grid>
@@ -260,19 +196,12 @@ const SelectCollectionList = ({
                   {!isPlaceholder && (
                     <div className={classes.menuButton}>
                       <LongMenu
-                        onEdit={() => handleEdit(collection)}
-                        onStats={() => handleStats(collection)}
-                        onView={() => handleView(collection)}
+                        onEdit={() => handleOpenDialog(collection)}
+                        onStats={() => console.log('Stats:', collection)}
+                        onView={() => console.log('View:', collection)}
                       />
                     </div>
                   )}
-                  {/* <Button
-                      className={classes.editButton}
-                      onClick={() => handleOpenDialog(collection)}
-                    >
-                      Edit
-                    </Button> */}
-                  {/* )} */}
                 </ListItem>
                 <Divider />
               </React.Fragment>
@@ -287,8 +216,7 @@ const SelectCollectionList = ({
 SelectCollectionList.propTypes = {
   onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
-  collectionIdFromDialog: PropTypes.string,
-  handleCollectionSelect: PropTypes.func.isRequired,
+  handleSelectCollection: PropTypes.func.isRequired,
 };
 
 export default SelectCollectionList;

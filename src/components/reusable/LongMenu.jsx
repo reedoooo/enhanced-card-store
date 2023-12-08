@@ -36,11 +36,9 @@ export default function LongMenu({ onEdit, onStats, onView }) {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
-          },
+        sx={{
+          maxHeight: ITEM_HEIGHT * 4.5,
+          width: '20ch',
         }}
       >
         <MenuItem

@@ -130,10 +130,10 @@ export const CombinedProvider = ({ children }) => {
     setDataFunctions.eventsTriggered(data);
   };
 
-  const handleStatusUpdatePrice = (data) => {
-    console.log('STATUS_UPDATE_PRICE:', data);
-    setDataFunctions.priceDifference(data);
-  };
+  // const handleStatusUpdatePrice = (data) => {
+  //   console.log('STATUS_UPDATE_PRICE:', data);
+  //   setDataFunctions.priceDifference(data);
+  // };
 
   const handleStatusUpdateCron = (newData) => {
     const { message, data } = newData;
@@ -149,10 +149,10 @@ export const CombinedProvider = ({ children }) => {
     setDataFunctions.error(errorData);
   };
 
-  const handleExistingCollectionData = (collectionData) => {
-    console.log('Existing collection data:', collectionData);
-    setDataFunctions.collectionData(collectionData);
-  };
+  // const handleExistingCollectionData = (collectionData) => {
+  //   console.log('Existing collection data:', collectionData);
+  //   setDataFunctions.collectionData(collectionData);
+  // };
 
   const handleCardPricesUpdated = async (priceData) => {
     console.log('Card prices retrieved:', priceData);
@@ -232,10 +232,10 @@ export const CombinedProvider = ({ children }) => {
     setDataFunctions.allCardPrices(updatedListOfMonitoredCards);
   };
 
-  const handleNoPricesChanged = () => {
-    console.log('No prices changed');
-    // Perform any necessary actions when no prices have changed
-  };
+  // const handleNoPricesChanged = () => {
+  //   console.log('No prices changed');
+  //   // Perform any necessary actions when no prices have changed
+  // };
 
   useEffect(() => {
     if (!socket) return;
@@ -245,18 +245,18 @@ export const CombinedProvider = ({ children }) => {
       ['MESSAGE_TO_CLIENT', handleReceive],
       ['SIMULATION_CRON_PRICE_RESPONSE', handleSimulationPriceResponse],
       ['EVENT_RESPONSE', handleEventResponse],
-      ['STATUS_UPDATE_PRICE', handleStatusUpdatePrice],
+      // ['STATUS_UPDATE_PRICE', handleStatusUpdatePrice],
       ['STATUS_UPDATE_CRON', handleStatusUpdateCron],
       // ['CHART_CRON_RESPONSE', handleChartCronResponse],
       // ['HANDLE_CRON_JOB_RESPONSE', handleCronJobResponse],
       ['ERROR', handleError],
       // ['EMITTED_RESPONSES', handleEmittedResponses],
       // ['RESPONSE_CRON_DATA', handleCronJobTracker],
-      ['RESPONSE_EXISTING_COLLECTION_DATA', handleExistingCollectionData],
+      // ['RESPONSE_EXISTING_COLLECTION_DATA', handleExistingCollectionData],
       // ['RESPONSE_EXISTING_CHART_DATA', handleExistingChartData],
       // ['CHART_DATASETS_UPDATED', handleChartDatasetsUpdated],
       ['SEND_PRICING_DATA_TO_CLIENT', handleCardPricesUpdated],
-      ['NO_PRICE_CHANGES', handleNoPricesChanged],
+      // ['NO_PRICE_CHANGES', handleNoPricesChanged],
       // ['SEND_UPDATED_DATA_TO_CLIENT', handleNewCardDataObject],
       // ['SEND_FINAL_UPDATE_TO_CLIENT', handleFinalUpdateToClient],
       // [

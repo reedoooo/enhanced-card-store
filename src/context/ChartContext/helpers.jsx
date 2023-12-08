@@ -1,45 +1,4 @@
-export const getUniqueValidData = (currentChartData) => {
-  if (!Array.isArray(currentChartData)) {
-    console.error('Invalid input: currentChartData should be an array');
-    return [];
-  }
-
-  const uniqueLabels = new Set();
-  const uniqueXValues = new Set();
-
-  return currentChartData
-    .filter((entry) => {
-      // Check if entry is valid, y is a number and not zero, and label is unique
-      return (
-        entry &&
-        typeof entry === 'object' &&
-        typeof entry.y === 'number' &&
-        entry.y !== 0 &&
-        entry.y !== null &&
-        entry.y !== undefined &&
-        entry.label &&
-        !uniqueLabels.has(entry.label)
-      );
-    })
-    .filter((entry) => {
-      // Check if x is present, not null, not undefined, and unique
-      const hasValidX =
-        entry && 'x' in entry && entry.x !== null && entry.x !== undefined;
-      if (hasValidX && !uniqueXValues.has(entry.x)) {
-        uniqueXValues.add(entry.x);
-        uniqueLabels.add(entry.label);
-        return true;
-      }
-      return false;
-    })
-    .map((entry) => ({
-      label: entry.label,
-      x: entry.x,
-      y: entry.y,
-    }));
-};
-
-export const groupAndAverageData = (data, threshold = 600000) => {
+export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
   if (!data || data.length === 0) return [];
 
   const clusters = [];
@@ -141,7 +100,7 @@ export const convertDataForNivo2 = (rawData2) => {
   ];
 };
 
-const roundToNearestTenth = (value) => {
+export const roundToNearestTenth = (value) => {
   return Math.round(value * 10) / 10;
 };
 

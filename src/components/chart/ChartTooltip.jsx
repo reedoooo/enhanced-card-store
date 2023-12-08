@@ -9,10 +9,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ChartTooltip = ({ point, lastData, hoveredData, latestData }) => {
   const classes = useStyles();
-
   if (!point) return null;
-
-  // Formatting the date just once to be used in multiple places
   const formattedTime = hoveredData
     ? new Date(hoveredData.x).toLocaleString()
     : new Date((latestData || lastData).x).toLocaleString();

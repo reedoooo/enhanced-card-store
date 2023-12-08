@@ -14,8 +14,6 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
   const [collectionName, setCollectionName] = useState(
     selectedCollection?.name
   );
-
-  // Update collectionName when selectedCollection changes
   useEffect(() => {
     if (selectedCollection?.name) {
       setCollectionName(selectedCollection.name);
@@ -32,8 +30,6 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         maxWidth: '100vw',
         width: '100%',
         height: '100%',
-        // height: '200vh',
-        // margin: 'auto',
         margin: {
           xs: 0,
           sm: 'auto',
@@ -60,8 +56,6 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           flexDirection: 'column',
           margin: 'auto',
           width: '100%',
-          // height: '100%',
-          // height: '200vh',
           padding: {
             xs: theme.spacing(1),
             sm: theme.spacing(1),
@@ -83,9 +77,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         spacing={3}
         sx={{
           width: '100%',
-          // height: '100%',
           maxWidth: '100vw',
-          // minHeight: '100%',
           justifyContent: 'center',
           margin: 'auto',
         }}

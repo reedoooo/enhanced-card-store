@@ -1,5 +1,69 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import moment from 'moment';
 import { createApiUrl, fetchWrapper } from '../Helpers';
+
+export const initialCollectionState = {
+  userId: '', // Assuming this is an ObjectId string
+  name: '', // Initialize as empty string if not provided
+  description: '', // Initialize as empty string if not provided
+  totalPrice: 0, // Initialize as 0 if not provided
+  quantity: 0, // Initialize as 0 if not provided
+  totalQuantity: 0, // Initialize as 0 if not provided
+  previousDayTotalPrice: 0, // Initialize as 0 if not provided
+  lastSavedPrice: {
+    num: 0,
+    timestamp: '',
+  }, // Initialize as 0 if not provided
+  latestPrice: {
+    num: 0,
+    timestamp: '',
+  }, // Initialize as 0 if not provided
+  dailyPriceChange: 0, // Initialize as 0 if not provided
+  priceDifference: 0, // Initialize as 0 if not provided
+  priceChange: 0, // Initialize as 0 if not provided
+  collectionPriceHistory: [],
+  cards: [], // Initialize as empty array if not provided
+  currentChartDataSets2: [], // Initialize as empty array if not provided
+  chartData: {
+    name: '', // Initialize as empty string if not provided
+    userId: '', // Assuming this is an ObjectId string
+    datasets: [], // Initialize as empty array if not provided
+    xys: [], // Initialize as empty array if not provided
+    allXYValues: [], // Initialize as empty array if not provided
+  },
+};
+
+export const defaultContextValue = {
+  allCollections: [],
+  selectedCollection: {},
+  collectionData: initialCollectionState,
+
+  cards: [],
+  currentChartDataSets2: [],
+  totalPrice: 0,
+  totalQuantity: 0,
+  latestPrice: {},
+  lastSavedPrice: {},
+  collectionPriceHistory: [],
+  allXYValues: [],
+  setCurrentChartData2: () => {},
+  calculateCollectionValue: () => {},
+  setUpdatedPricesFromCombinedContext: () => {},
+  setOpenChooseCollectionDialog: () => {},
+  updateCollection: () => {},
+  calculateTotalPrice: () => {},
+  getTotalCost: () => {},
+  getNewTotalPrice: () => {},
+  getTotalPrice: () => {},
+  createUserCollection: () => {},
+  removeCollection: () => {},
+  fetchAllCollectionsForUser: () => {},
+  setSelectedCollection: () => {},
+  setAllCollections: () => {},
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+  getCardQuantity: () => {},
+};
 
 export const transformPriceHistoryToXY = (collectionPriceHistory) => {
   return collectionPriceHistory?.map((entry) => ({
@@ -9,8 +73,66 @@ export const transformPriceHistoryToXY = (collectionPriceHistory) => {
   }));
 };
 
-export const getAllCardPrices = (cards) =>
-  cards.flatMap((card) => Array(card.quantity).fill(card.price));
+export const logError = (source, action, error) => {
+  console.error(
+    `[${source.toUpperCase()}] Failed to ${action}: ${error.message}`
+  );
+};
+
+/**
+ * Checks if the given object is empty.
+ * @param {Object} obj - Object to check.
+ * @returns {Boolean} True if the object is empty, false otherwise.
+ */
+export const isEmpty = (obj) => {
+  return (
+    [Object, Array].includes((obj || {}).constructor) &&
+    !Object.entries(obj || {}).length
+  );
+};
+
+/**
+ * Validates the given data based on its type and emptiness.
+ * @param {any} data - Data to validate.
+ * @param {String} eventName - Event that triggered the function.
+ * @param {String} functionName - Name of the function.
+ * @returns {Boolean} True if the data is valid, false otherwise.
+ */
+export const validateData = (data, eventName, functionName) => {
+  if (typeof data === 'object') {
+    if (isEmpty(data)) {
+      console.error(
+        `The data passed to ${functionName} from ${eventName} is empty.`
+      );
+      return false;
+    }
+    return true;
+  }
+  console.error(
+    `The data passed to ${functionName} from ${eventName} is not an object.`
+  );
+  return false;
+};
+
+export const validateUserIdAndData = (userId, data, actionDescription) => {
+  if (!userId) {
+    logError(
+      'validateUserIdAndData',
+      actionDescription,
+      new Error('User ID is undefined.')
+    );
+    return false;
+  }
+  if (!validateData(data, actionDescription, actionDescription)) {
+    logError(
+      'validateUserIdAndData',
+      actionDescription,
+      new Error('Validation failed for collection data.')
+    );
+    return false;
+  }
+  return true;
+};
 
 export const filterUniqueDataPoints = (dataArray) => {
   const uniqueRecords = new Map();
@@ -32,19 +154,6 @@ export const filterUniqueDataPoints = (dataArray) => {
  * @example calculatePriceDifference(100, { totalPrice: 200 });
  * calculatePriceDifference(100, { totalPrice: 100 });
  **/
-export const determineCardPrice = (card, update) => {
-  let price = 0;
-  console.log('CARD UPDATE:', update);
-  if (card?.price) {
-    price = card?.price;
-  }
-
-  if (update?.latestPrice?.num) {
-    price = update?.latestPrice?.num;
-  }
-  return price || card?.card_prices[0]?.tcgplayer_price;
-};
-
 export const updatePriceHistory = (card, update) => {
   const newPriceHistoryEntry = createPriceHistoryObject(
     update?.latestPrice?.num
@@ -68,12 +177,12 @@ export const createChartDataEntry = (price) => {
   };
 };
 
-export const createPriceHistoryObject = (price) => {
-  return {
-    num: price,
-    timestamp: new Date(),
-  };
-};
+// export const createPriceHistoryObject = (price) => {
+//   return {
+//     num: price,
+//     timestamp: new Date(),
+//   };
+// };
 
 export const getFilteredChartData = (chartData, updatedTotalPrice) => {
   const filteredChartData = {
@@ -117,8 +226,8 @@ export const updateCollectionArray = (collections, newData) => {
 
 export const removeDuplicatesFromCollection = (collection) => {
   const uniqueCardsMap = new Map();
-
-  collection.cards.forEach((card) => {
+  if (!collection?.cards) return collection;
+  collection?.cards.forEach((card) => {
     const uniqueKey = `${card.id}-${card.name}`;
     if (!uniqueCardsMap.has(uniqueKey)) {
       uniqueCardsMap.set(uniqueKey, card);
@@ -214,17 +323,13 @@ export const filterNullPriceHistoryForCollection = (collection) => {
  * @returns {Array} Updated array of cards.
  */
 export const handleCardAddition = (currentCards, cardToAdd) => {
-  // Initialize currentCards to an empty array if it's not defined
-  currentCards = currentCards || [];
+  const cardToAddId = String(cardToAdd.id);
+  const existingCard = currentCards.find((c) => c.id === cardToAddId);
 
-  console.log('CURRENT CARDS:', currentCards);
-  console.log('CARD TO ADD:', cardToAdd);
-  const cardToAddId =
-    typeof cardToAdd.id === 'number' ? String(cardToAdd.id) : cardToAdd.id;
-  const matchingCard = currentCards.find((c) => c.id === cardToAddId);
-
-  if (matchingCard) {
-    matchingCard.quantity++;
+  // console.log('CURRENT CARDS', currentCards);
+  if (existingCard) {
+    existingCard.quantity++;
+    existingCard.totalPrice = existingCard.price * existingCard.quantity;
     return [...currentCards];
   }
 
@@ -238,35 +343,138 @@ export const handleCardAddition = (currentCards, cardToAdd) => {
  * @returns {Array} Updated array of cards.
  */
 export const handleCardRemoval = (currentCards, cardToRemove) => {
-  // Initialize currentCards to an empty array if it's not defined
-  currentCards = currentCards || [];
+  const cardToRemoveId = String(cardToRemove.id);
+  const updatedCards = currentCards.map((card) => {
+    if (card.id === cardToRemoveId) {
+      return card.quantity > 1
+        ? {
+            ...card,
+            quantity: card.quantity - 1,
+            totalPrice: card.totalPrice - card.price,
+          }
+        : null;
+    }
+    return card;
+  });
 
-  console.log('CURRENT CARDS:', currentCards);
-  console.log('CARD TO REMOVE:', cardToRemove);
+  return updatedCards.filter((card) => card !== null);
+};
 
-  const cardToRemoveId =
-    typeof cardToRemove.id === 'number'
-      ? String(cardToRemove.id)
-      : cardToRemove.id;
+/**
+ * Handles the updating of a card in the collection.
+ * @param {Array} currentCards - Current array of cards.
+ * @param {Object} cardToUpdate - Card object to update.
+ * @returns {Array} Updated array of cards.
+ * @example handleCardUpdate([{ id: 1, quantity: 1 }], { id: 1, quantity: 2 });
+ **/
+export const handleCardUpdate = (cards, cardUpdate) => {
+  return cards.map((card) => {
+    if (card.id === cardUpdate.id) {
+      return getUpdatedCard(card, cardUpdate);
+    }
+    return card;
+  });
+};
+function getUpdatedCard(card, update, priceHistory, collectionId) {
+  console.log('CARD UPDATE:', update);
+  console.log('CARD:', card);
+  const cardPrice = determineCardPrice(card, update);
+  const totalPrice = cardPrice * (update?.quantity || card?.quantity);
+  const quantity = update?.quantity || card?.quantity || 1;
+  const newChartDataEntry = createChartDataEntry(
+    cardPrice * (update?.quantity || card?.quantity)
+  );
 
-  // Find the card to remove in the current cards array
-  const cardIndex = currentCards.findIndex((c) => c.id === cardToRemoveId);
+  console.log('UPDATE QUANTITY: ', update.quantity);
+  console.log('CARD QUANTITY: ', card.quantity);
+  console.log('TOTAL PRICE: ', totalPrice);
 
-  if (cardIndex === -1) {
-    console.error('Card not found in the collection.');
-    return [...currentCards];
+  return {
+    ...card,
+    ...update,
+    price: cardPrice || card.price,
+    quantity: quantity,
+    collectionId: collectionId,
+    totalPrice: totalPrice,
+    lastSavedPrice: {
+      num: card.price || card.card_prices[0].tcgplayer_price,
+      timestamp: new Date(),
+    },
+    latestPrice: update.latestPrice,
+    tag: 'monitored',
+    chart_datasets: [...(card.chart_datasets || []), newChartDataEntry],
+    card_prices: update.card_prices,
+    card_sets: update.card_sets,
+    card_images: update.card_images,
+    priceHistory: priceHistory,
+  };
+}
+export const getUpdatedCollectionData = (
+  collectionWithCards,
+  updatedTotalPrice,
+  updatedCollectionPriceHistory,
+  updatedTotalQuantity,
+  updatedCards,
+  userId
+) => {
+  if (!collectionWithCards) {
+    console.error('No collection data provided');
+    return null;
   }
 
-  const matchingCard = currentCards[cardIndex];
-
-  // If the card has a quantity greater than 1, decrement it
-  if (matchingCard.quantity > 1) {
-    matchingCard.quantity--;
-    return [...currentCards];
-  } else {
-    // Remove the card from the collection if quantity is 1 or less
-    return currentCards.filter((card) => card.id !== cardToRemoveId);
+  const {
+    allCardPrices = [],
+    description = collectionWithCards.description || '',
+    name = collectionWithCards.name || '',
+    collectionPriceHistory = [
+      ...collectionWithCards.collectionPriceHistory,
+      ...updatedCollectionPriceHistory,
+    ], // collectionPriceHistory is an array of objects with 'num' and 'timestamp' properties
+    chartData = collectionWithCards.chartData || {},
+    cards = collectionWithCards.cards || [],
+    currentChartDataSets2 = getUniqueFilteredXYValues(chartData?.allXYValues) ||
+      [],
+  } = collectionWithCards;
+  if (!Array.isArray(collectionPriceHistory)) {
+    console.error(
+      'collectionPriceHistory is not an array',
+      collectionPriceHistory
+    );
+    return;
   }
+  return {
+    allCardPrices,
+    description,
+    name,
+    userId: userId,
+    totalPrice: updatedTotalPrice,
+    totalQuantity: updatedTotalQuantity || 0,
+    quantity: cards?.length,
+    lastSavedPrice: {
+      num: collectionWithCards?.totalPrice || 0,
+      timestamp: new Date(),
+    },
+    latestPrice: {
+      num: updatedTotalPrice || 0,
+      timestamp: new Date(),
+    },
+    dailyPriceChange: '',
+    // getPriceChange(chartData)[0]?.priceChange || '',
+    currentChartDataSets2: currentChartDataSets2,
+    // filterUniqueDataPoints(
+    //   chartData?.allXYValues
+    //   // transformPriceHistoryToXY(chartData?.allXYValues)
+    // ),
+    collectionPriceHistory: updatedCollectionPriceHistory,
+    // collectionPriceHistory: [
+    //   ...collectionPriceHistory,
+    //   newCollectionPriceHistoryObject || {
+    //     num: updatedTotalPrice,
+    //     timestamp: new Date(),
+    //   },
+    // ],
+    cards: updatedCards,
+  };
 };
 
 export const constructCardDifferencesPayload = (
@@ -530,4 +738,182 @@ export const createNewDataSet = (updatedPrice, selectedCollection) => {
       },
     ],
   };
+};
+
+export const getTotalQuantityOfSelectedCollection = (selectedCollection) => {
+  if (!selectedCollection) return 'n/a';
+  return selectedCollection?.cards?.reduce(
+    (total, card) => total + card.quantity,
+    0
+  );
+};
+
+// export const getUpdatedCollectionPriceHistory = (
+//   selectedCollection,
+//   updatedPrice
+// ) => {
+//   const updatedPriceHistory = selectedCollection?.collectionPriceHistory || [];
+//   console.log(
+//     'RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ',
+//     updatedPriceHistory
+//   );
+//   const lastPriceHistoryEntry =
+//     updatedPriceHistory[updatedPriceHistory?.length - 1];
+
+//   if (!lastPriceHistoryEntry || lastPriceHistoryEntry?.num !== updatedPrice) {
+//     console.log('RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ', [
+//       // ...selectedCollection?.collectionPriceHistory,
+//       ...updatedPriceHistory,
+//       createPriceHistoryObject(updatedPrice),
+//     ]);
+//     return [...updatedPriceHistory, createPriceHistoryObject(updatedPrice)];
+//   }
+
+//   console.log(
+//     'RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ',
+//     updatedPriceHistory
+//   );
+//   return updatedPriceHistory;
+// };
+export const createPriceHistoryObject = (price) => {
+  return {
+    num: price,
+    timestamp: new Date(),
+  };
+};
+
+export const getUpdatedCollectionPriceHistory = (
+  selectedCollection,
+  updatedPrice
+) => {
+  const updatedPriceHistory = selectedCollection?.collectionPriceHistory || [];
+  return [...updatedPriceHistory, createPriceHistoryObject(updatedPrice)];
+};
+
+export const getUniqueValidData = (currentChartData) => {
+  if (!Array.isArray(currentChartData)) {
+    console.error('Invalid input: currentChartData should be an array');
+    return [];
+  }
+
+  const uniqueLabels = new Set();
+  const uniqueXValues = new Set();
+
+  return currentChartData
+    .filter((entry) => {
+      // Check if entry is valid, y is a number and not zero, and label is unique
+      return (
+        entry &&
+        typeof entry === 'object' &&
+        typeof entry.y === 'number' &&
+        entry.y !== 0 &&
+        entry.y !== null &&
+        entry.y !== undefined &&
+        entry.label &&
+        !uniqueLabels.has(entry.label)
+      );
+    })
+    .filter((entry) => {
+      // Check if x is present, not null, not undefined, and unique
+      const hasValidX =
+        entry && 'x' in entry && entry.x !== null && entry.x !== undefined;
+      if (hasValidX && !uniqueXValues.has(entry.x)) {
+        uniqueXValues.add(entry.x);
+        uniqueLabels.add(entry.label);
+        return true;
+      }
+      return false;
+    })
+    .map((entry) => ({
+      label: entry.label,
+      x: entry.x,
+      y: entry.y,
+    }));
+};
+
+export const getFilteredData2 = (collection, timeRange) => {
+  if (!collection) {
+    console.error('Invalid input: selectedCollection should not be null');
+    return [];
+  }
+  return getUniqueValidData(collection?.chartData?.allXYValues || []);
+};
+
+export const calculateCollectionValue = (cards) => {
+  if (
+    !cards?.cards &&
+    !Array.isArray(cards) &&
+    !cards?.name &&
+    !cards?.restructuredCollection
+  ) {
+    console.warn('Invalid or missing collection', cards);
+    return 0;
+  }
+
+  if (cards?.tag === 'new') {
+    return 0;
+  }
+  if (cards?.restructuredCollection) {
+    return cards?.restructuredCollection?.cards.reduce((totalValue, card) => {
+      const cardPrice = card?.price || 0;
+      const cardQuantity = card?.quantity || 0;
+      return totalValue + cardPrice * cardQuantity;
+    }, 0);
+  }
+  if (cards?.cards && Array.isArray(cards?.cards)) {
+    return cards?.cards.reduce((totalValue, card) => {
+      const cardPrice = card?.price || 0;
+      const cardQuantity = card?.quantity || 0;
+      return totalValue + cardPrice * cardQuantity;
+    }, 0);
+  }
+
+  return cards.reduce((totalValue, card) => {
+    const cardPrice = card.price || 0;
+    const cardQuantity = card.quantity || 0;
+    return totalValue + cardPrice * cardQuantity;
+  }, 0);
+};
+
+/**
+ * Calculates the total price from an array of card prices.
+ * @param {Array} allCardPrices - Array of card prices.
+ * @returns {Number} Total price.
+ */
+export const calculateTotalFromAllCardPrices = (allCardPrices) => {
+  if (!Array.isArray(allCardPrices)) return 0;
+  return allCardPrices.reduce(
+    (total, price) => total + ensureNumber(price, 0),
+    0
+  );
+};
+
+/**
+ * Ensures a value is a number, providing a default if not.
+ * @param {any} value - Value to check.
+ * @param {Number} defaultValue - Default value if check fails.
+ * @returns {Number} Ensured number.
+ */
+export const ensureNumber = (value, defaultValue = 0) => {
+  const num = parseFloat(value);
+  return isNaN(num) ? defaultValue : num;
+};
+
+export const getCardPrice = (collection) =>
+  parseFloat(collection?.cards?.card_prices?.[0]?.tcgplayer_price || 0);
+
+export const getAllCardPrices = (cards) =>
+  cards.flatMap((card) => Array(card.quantity).fill(card.price));
+
+export const determineCardPrice = (card, update) => {
+  let price = 0;
+  // console.log('CARD UPDATE:', update);
+  if (card?.price) {
+    price = card?.price;
+  }
+
+  if (update?.latestPrice?.num) {
+    price = update?.latestPrice?.num;
+  }
+  return price || card?.card_prices[0]?.tcgplayer_price;
 };

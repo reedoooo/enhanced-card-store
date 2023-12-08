@@ -1,11 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import GenericCard from '../../cards/GenericCard';
 import { useCardStore } from '../../../context/CardContext/CardStore';
 import StoreItem from '../StoreItem';
 import { useCartStore } from '../../../context/CartContext/CartContext';
+import CustomPagination from '../../reusable/CustomPagination';
+import { Box } from '@mui/system';
+import { useMode } from '../../../context';
 
 const ProductGrid = () => {
+  const { theme } = useMode();
   const {
     searchData,
     setSlicedAndMergedSearchData,
@@ -14,14 +18,21 @@ const ProductGrid = () => {
     isCardDataValid,
   } = useCardStore();
   const { cart } = useCartStore();
+  const [page, setPage] = useState(1);
+  const [currentStoreSearchData, setCurrentStoreSearchData] = useState();
 
-  if (!isCardDataValid) return null;
+  const handlePagination = (event, value) => setPage(value);
+
+  const itemsPerPage = 12;
+  const start = (page - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  // const currentStoreSearchData = searchData?.slice(start, end);
 
   const mergedData = useMemo(() => {
+    if (!isCardDataValid || !searchData) return null;
+
     return slicedSearchData.map((card) => {
-      // Convert card ID from string to number for accurate comparison
       const cardId = parseInt(card.id, 10);
-      // Find the cart item with a matching ID
       const cartItem = cart.find(
         (cartCard) => parseInt(cartCard.id, 10) === cardId
       );
@@ -33,46 +44,63 @@ const ProductGrid = () => {
   }, [slicedSearchData, cart]);
 
   useEffect(() => {
+    if (!mergedData) return;
     setSlicedAndMergedSearchData(mergedData);
+    setCurrentStoreSearchData(slicedAndMergedSearchData?.slice(start, end));
   }, [mergedData, setSlicedAndMergedSearchData]);
+
   return (
-    <Grid
-      container
-      spacing={3}
-      sx={{
-        maxWidth: '90%',
-        justifyContent: 'center',
-        margin: '0 auto',
-      }}
-    >
-      {isCardDataValid &&
-        slicedAndMergedSearchData.map((card, index) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
-            key={`${card.id}-${index}`}
-            sx={{
-              padding: (theme) => theme.spacing(2),
-              height: 'auto', // Set a specific value if required
-              width: '100%',
-            }}
-          >
-            {/* <GenericCard card={card} context="Cart" page="storepage" /> */}
-            <StoreItem
-              card={card}
-              context={'Cart'}
-              page={'StorePage'}
-              // onAddToCart={(cardId) => handleAddToCart(cardId)}
-              // onQuantityChange={(cardId, operation) =>
-              //   handleModifyItemInCart(cardId, operation)
-              // }
-            />
-          </Grid>
-        ))}
-    </Grid>
+    <>
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          maxWidth: '90%',
+          justifyContent: 'center',
+          margin: '0 auto',
+        }}
+      >
+        {isCardDataValid &&
+          slicedAndMergedSearchData.map((card, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              key={`${card.id}-${index}`}
+              sx={{
+                padding: (theme) => theme.spacing(2),
+                height: 'auto', // Set a specific value if required
+                width: '100%',
+              }}
+            >
+              {/* <GenericCard card={card} context="Cart" page="storepage" /> */}
+              <StoreItem
+                card={card}
+                context={'Cart'}
+                page={'StorePage'}
+                // onAddToCart={(cardId) => handleAddToCart(cardId)}
+                // onQuantityChange={(cardId, operation) =>
+                //   handleModifyItemInCart(cardId, operation)
+                // }
+              />
+            </Grid>
+          ))}
+      </Grid>
+      <Box
+        sx={{
+          borderColor: theme.palette.success.dark,
+        }}
+      >
+        <CustomPagination
+          totalCount={searchData?.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={page}
+          handlePagination={handlePagination}
+        />
+      </Box>
+    </>
   );
 };
 

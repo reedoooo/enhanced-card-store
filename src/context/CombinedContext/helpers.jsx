@@ -44,7 +44,6 @@ export const generateListOfMonitoredCards = (allCollections) => {
     const originalCard = cardsWithCollectionId.find((card) => card?.id === id);
     return {
       ...originalCard,
-      priceHistory: originalCard?.priceHistory || [],
     };
   });
 };
@@ -55,12 +54,12 @@ export const updateCardPricesInList = (listOfMonitoredCards, cardPrices) => {
   // }
   return listOfMonitoredCards.map((originalCard) => {
     const updatedCardInfo =
-      cardPrices.find((price) => price.id === originalCard.id) || {};
+      cardPrices?.find((price) => price.id === originalCard.id) || {};
 
     // If latestPrice is different, update lastSavedPrice and priceHistory
     if (updatedCardInfo.latestPrice?.num !== originalCard.latestPrice?.num) {
-      console.log('ORIGINAL CARD: ', originalCard);
-      console.log('UPDATED CARD: ', updatedCardInfo);
+      // console.log('ORIGINAL CARD: ', originalCard);
+      // console.log('UPDATED CARD: ', updatedCardInfo);
       return {
         ...originalCard,
         ...updatedCardInfo,

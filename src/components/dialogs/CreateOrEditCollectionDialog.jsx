@@ -15,7 +15,6 @@ const CreateOrEditCollectionDialog = ({
   closeDialog,
   onSave,
   isNew,
-  // userId,
   editedName,
   setEditedName,
   editedDescription,
@@ -23,7 +22,6 @@ const CreateOrEditCollectionDialog = ({
 }) => {
   const {
     createUserCollection,
-    addOneToCollection,
     removeCollection,
     selectedCollection,
     updateCollectionDetails,
@@ -48,7 +46,6 @@ const CreateOrEditCollectionDialog = ({
         userId
       );
     } else if (editedName && editedDescription) {
-      // addOneToCollection(newCollectionInfo);
       updateCollectionDetails(
         newCollectionInfo,
         userId,

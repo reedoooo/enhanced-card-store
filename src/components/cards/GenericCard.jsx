@@ -77,7 +77,12 @@ const GenericCard = React.forwardRef((props, ref) => {
   const name = card?.name;
 
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
-  const price = `Price: ${card?.card_prices?.[0]?.tcgplayer_price || 'N/A'}`;
+  const price = `Price: ${
+    card?.latestPrice?.num ||
+    card?.price ||
+    card?.card_prices?.[0]?.tcgplayer_price ||
+    'N/A'
+  }`;
   const quantity = card?.quantity || 0;
   let cartQuantity = 0;
 

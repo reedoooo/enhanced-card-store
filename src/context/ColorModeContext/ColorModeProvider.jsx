@@ -7,7 +7,6 @@ export const ColorModeContext = createContext({
   mode: 'dark',
   colorMode: {},
   theme: createTheme(themeSettings('dark')), // Default theme is dark mode
-
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   toggleColorMode: () => {},
 });

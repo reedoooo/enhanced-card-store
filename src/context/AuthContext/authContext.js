@@ -6,44 +6,15 @@ import React, {
   useContext,
 } from 'react';
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
 import { useCookies } from 'react-cookie';
 import { debounce } from 'lodash';
+import {
+  AUTH_COOKIE,
+  LOGGED_IN_COOKIE,
+  USER_COOKIE,
+  processResponseData,
+} from './helpers';
 
-const LOGGED_IN_COOKIE = 'loggedIn';
-const AUTH_COOKIE = 'authToken';
-const USER_COOKIE = 'user';
-
-// Validator function
-const validateData = (data, eventName, functionName) => {
-  if (!data || Object.keys(data).length === 0) {
-    console.warn(`Invalid data in ${functionName} for ${eventName}`);
-    return false;
-  }
-  return true;
-};
-
-// Process the server response based on the action type (Login/Signup)
-const processResponseData = (data, type) => {
-  if (!validateData(data, `${type} Response`, `process${type}Data`))
-    return null;
-
-  if (type === 'Login') {
-    const token = data?.data?.token;
-    if (!token) return null;
-    const user = jwt_decode(token);
-    return { token, user };
-  }
-
-  if (type === 'Signup') {
-    const { success, newUser } = data;
-    if (success && newUser) return { success, newUser };
-  }
-
-  return null;
-};
-
-// Main AuthContext Provider
 export const AuthContext = React.createContext();
 export default function AuthProvider({ children, serverUrl }) {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -94,7 +65,6 @@ export default function AuthProvider({ children, serverUrl }) {
     }
   };
 
-  // In App.js or inside AuthProvider component
   axios.interceptors.request.use(
     (config) => {
       const token = cookies[AUTH_COOKIE];
@@ -141,9 +111,6 @@ export default function AuthProvider({ children, serverUrl }) {
     }, 1800000);
   };
 
-  // Debounced function to reset the logout timer on user activity
-  // const resetLogoutTimer = useRef(debounce(startLogoutTimer, 500)).current;
-
   const debouncedLogout = useCallback(
     debounce(() => {
       if (logoutTimerRef.current) {
@@ -180,7 +147,6 @@ export default function AuthProvider({ children, serverUrl }) {
     window.addEventListener('scroll', resetLogoutTimer);
     window.addEventListener('click', resetLogoutTimer);
 
-    // Cleanup on component unmount
     return () => {
       clearTimeout(logoutTimerRef.current);
       window.removeEventListener('mousemove', resetLogoutTimer);
@@ -189,8 +155,6 @@ export default function AuthProvider({ children, serverUrl }) {
       window.removeEventListener('click', resetLogoutTimer);
     };
   }, []);
-  // Initialization logic to set user and token from cookies
-  // Initialization logic to set user and token from cookies and log login state
   useEffect(() => {
     const storedToken = cookies[AUTH_COOKIE];
     const storedUser = cookies[USER_COOKIE];

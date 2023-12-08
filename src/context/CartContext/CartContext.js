@@ -39,7 +39,8 @@ export const CartProvider = ({ children }) => {
     totalPrice: 0, // Total price of items
   });
   const [cookie, setCookie] = useCookies(['user', 'cart']);
-  const isMounted = useRef(true);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const getCardQuantity = (cardId) => {
     let totalItems = 0;
@@ -51,6 +52,12 @@ export const CartProvider = ({ children }) => {
       }
     });
     return { totalItems, quantityOfSameId };
+  };
+  const getTotalCost = () => {
+    return cartData.cart.reduce(
+      (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
+      0
+    );
   };
 
   const totalCost = useMemo(
@@ -103,15 +110,6 @@ export const CartProvider = ({ children }) => {
     }
   }, [userId, createUserCart]);
 
-  // useEffect(() => {
-  //   if (userId && isMounted.current) {
-  //     fetchUserCart().catch(console.error);
-  //   }
-  //   return () => {
-  //     isMounted.current = false;
-  //   };
-  // }, [userId, fetchUserCart]);
-
   const setCartDataAndCookie = (newCartData) => {
     if (newCartData && Array.isArray(newCartData.cart)) {
       setCartData(newCartData);
@@ -123,34 +121,33 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const getTotalCost = () => {
-    return cartData.cart.reduce(
-      (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
-      0
-    );
-  };
-
+  // useEffect(() => {
+  //   const totalQuantity = cartData.cart.reduce(
+  //     (total, item) => total + item.quantity,
+  //     0
+  //   );
+  //   const calculatedTotalPrice = getTotalCost();
+  //   if (
+  //     cartData.quantity !== totalQuantity ||
+  //     cartData.totalPrice !== calculatedTotalPrice
+  //   ) {
+  //     setCartData((prevState) => ({
+  //       ...prevState,
+  //       quantity: totalQuantity,
+  //       totalPrice: calculatedTotalPrice,
+  //     }));
+  //   }
+  // }, [cartData?.cart]);
   useEffect(() => {
-    const totalQuantity = cartData.cart.reduce(
+    const newTotalQuantity = cartData.cart.reduce(
       (total, item) => total + item.quantity,
       0
     );
-    const calculatedTotalPrice = getTotalCost();
-
-    // Check if totalQuantity or calculatedTotalPrice has actually changed
-    if (
-      cartData.quantity !== totalQuantity ||
-      cartData.totalPrice !== calculatedTotalPrice
-    ) {
-      setCartData((prevState) => ({
-        ...prevState,
-        quantity: totalQuantity,
-        totalPrice: calculatedTotalPrice,
-      }));
-    }
+    const newTotalPrice = getTotalCost();
+    setTotalQuantity(newTotalQuantity);
+    setTotalPrice(newTotalPrice);
   }, [cartData.cart]);
 
-  // Fetch user cart on mount and userId change
   const updateCart = async (cartId, updatedCart) => {
     if (!cartId) return;
     const formattedCartData = {
@@ -169,7 +166,6 @@ export const CartProvider = ({ children }) => {
     setCartDataAndCookie(data);
     return data;
   };
-
   const addOneToCart = async (cardInfo) => {
     if (!cartData._id) return;
     console.log('Adding one to cart', cardInfo);
@@ -203,35 +199,50 @@ export const CartProvider = ({ children }) => {
     const updatedCartData = await updateCart(cartData._id, updatedCart);
     if (updatedCartData) setCartData(updatedCartData);
   };
+  const contextValue = useMemo(
+    () => ({
+      cartData,
+      totalCost,
+      totalQuantity,
+      totalPrice,
+      cart: cartData?.cart,
+      cartCardQuantity: cartData?.cart?.reduce(
+        (acc, card) => acc + card.quantity,
+        0
+      ),
+      cartCardCount: cartData.cart?.length,
+      cartValue: cartData?.cart?.reduce(
+        (acc, card) =>
+          acc + card.card_prices[0].tcgplayer_price * card.quantity,
+        0
+      ),
+      getCardQuantity,
+      getTotalCost,
+      addOneToCart,
+      removeOneFromCart,
+      deleteFromCart,
+      fetchUserCart,
+      createUserCart,
+    }),
+    [
+      totalQuantity,
+      totalPrice,
+      getCardQuantity,
+      getTotalCost,
+      addOneToCart,
+      removeOneFromCart,
+      deleteFromCart,
+      cartData,
+    ]
+  );
 
-  const value = {
-    cartData,
-    cart: cartData.cart,
-    getCardQuantity,
-    cartCardQuantity: cartData.cart?.reduce(
-      (acc, card) => acc + card.quantity,
-      0
-    ),
-    cartCardCount: cartData.cart?.length,
-    cartValue: cartData.cart?.reduce(
-      (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
-      0
-    ),
-    totalPrice: cartData.totalPrice,
-    totalCost,
-    addOneToCart,
-    removeOneFromCart,
-    deleteFromCart,
-    getTotalCost,
-    fetchUserCart,
-    createUserCart,
-  };
+  useEffect(() => {
+    console.log('CART CONTEXT: ', cartData);
+  }, [cartData]);
 
-  // useEffect(() => {
-  //   console.log('CART CONTEXT: ', value.cartData);
-  // }, [addOneToCart, removeOneFromCart, deleteFromCart]);
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
+  );
 };
 
 export const useCartStore = () => {

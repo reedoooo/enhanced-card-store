@@ -100,7 +100,7 @@ const App = () => {
         .catch((error) => console.error('Error fetching data:', error))
         .finally(() => setIsPageLoading(false));
     }
-  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
+  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser]);
 
   useEffect(() => {
     // Check if loading takes more than 45 seconds

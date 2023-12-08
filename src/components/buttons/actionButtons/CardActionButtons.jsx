@@ -142,7 +142,7 @@ const CardActionButtons = ({
         switch (context) {
           case 'Collection':
             if (action === 'add') {
-              addOneToCollection(card);
+              addOneToCollection(card, selectedCollection);
             } else if (action === 'removeOne') {
               removeOneFromCollection(card);
             }

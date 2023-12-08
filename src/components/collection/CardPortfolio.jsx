@@ -17,21 +17,9 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   const [newCardPrice, setNewCardPrice] = useState('');
   const [newCardCondition, setNewCardCondition] = useState('');
   const [selectedCards, setSelectedCards] = useState([]);
-  // Define a ref to keep track of whether handleSelectCollection has been run
   const hasRun = useRef(false);
-  const {
-    // allCollections,
-    selectedCollection,
-    setSelectedCollection,
-    // fetchAllCollectionsForUser,
-    addOneToCollection,
-    removeOneFromCollection,
-  } = useCollectionStore();
-
-  // useEffect(() => {
-  //   fetchAllCollectionsForUser();
-  // }, []);
-
+  const { selectedCollection, setSelectedCollection, removeOneFromCollection } =
+    useCollectionStore();
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
   }, [selectedCollection]);
@@ -49,36 +37,26 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
       return;
     }
     setSelectedCollection(foundCollection);
-
     if (selectedCollection) {
       setSelectedCards(selectedCollection?.cards?.slice(0, 60));
     }
-
     if (selectedCards) {
       setShowCollections(false);
       setShowPortfolio(true);
     }
-
     hasRun.current = true; // Set the ref to true after the function has been run
   };
 
   return (
     <Box
       sx={{
-        // ...theme,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        // height: '100%',
-        // marginLeft: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
-        // marginRight: theme.spacing(2),
-        // minHeight: '250vh',
         flexGrow: 1,
-        // minHeight: '100%',
         background: '#333',
-        // backgroundColor: '#f1f1f1',
         padding: {
           xs: theme.spacing(1),
           sm: theme.spacing(1),
@@ -92,7 +70,6 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
       {showCollections ? (
         <SelectCollection
           handleSelectCollection={handleSelectCollection}
-          handleCollectionSelect={onCollectionSelect}
           setShowCollections={setShowCollections}
           setShowPortfolio={setShowPortfolio}
         />

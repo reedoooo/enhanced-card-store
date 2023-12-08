@@ -4,13 +4,8 @@ import LinearChart from './LinearChart';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
 import debounce from 'lodash/debounce';
-import {
-  convertDataForNivo2,
-  getUniqueValidData,
-  groupAndAverageData,
-} from '../reusable/chartUtils';
+import { getFilteredData2 } from '../../context/CollectionContext/helpers';
 
 const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -28,6 +23,17 @@ const ChartPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+const ResponsiveSquare = styled(Box)(({ theme }) => ({
+  width: '100%',
+  paddingTop: '100%',
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
 function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
   const currentTime = new Date().getTime();
   if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
@@ -37,16 +43,20 @@ function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
   }
   return lastUpdateTime;
 }
-const getFilteredData2 = (collection, timeRange) => {
-  if (!collection) {
-    console.error('Invalid input: selectedCollection should not be null');
-    return [];
-  }
-  return getUniqueValidData(collection?.chartData?.allXYValues || []);
-};
+
 const PortfolioChart = () => {
   const theme = useTheme();
-  const { latestData, setLatestData, timeRange } = useChartContext();
+  const {
+    latestData,
+    setLatestData,
+    timeRange,
+    groupAndAverageData,
+    convertDataForNivo2,
+    // getUniqueValidData,
+    getTickValues,
+    getFilteredData,
+    formatDateToString,
+  } = useChartContext();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
   const [chartDimensions, setChartDimensions] = useState({
@@ -61,9 +71,21 @@ const PortfolioChart = () => {
   );
 
   const filteredChartData2 = useMemo(
-    () => getFilteredData2(selectedCollection, timeRange), // Adjust to filter data based on timeRange
+    () => getFilteredData2(selectedCollection, timeRange),
     [selectedCollection, timeRange]
   );
+
+  if (filteredChartData2?.length < 5) {
+    return (
+      <Container maxWidth="lg" /* ... existing styles */>
+        <ErrorBoundary>
+          <ResponsiveSquare>
+            <div>Not enough data points</div>
+          </ResponsiveSquare>
+        </ErrorBoundary>
+      </Container>
+    );
+  }
 
   if (!filteredChartData2 || filteredChartData2?.length === 0) {
     console.warn(

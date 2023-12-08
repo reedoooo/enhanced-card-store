@@ -14,6 +14,14 @@ export const CardProvider = ({ children }) => {
   const initialStore = cookies.store || [];
   const [cardsArray, setCardsArray] = useState(initialStore);
   const { allCollections, setAllCollections } = useCollectionStore();
+  // const [searchParam, setSearchParam] = useState('');
+  // const [searchParams, setSearchParams] = useState([]);
+  const [searchParams, setSearchParams] = useState({
+    name: '',
+    type: '',
+    attribute: '',
+    race: '',
+  });
   const { listOfMonitoredCards } = useCombinedContext();
   const currentCart = cookies.cart || [];
   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
@@ -33,15 +41,16 @@ export const CardProvider = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  const handleRequest = async (searchParams) => {
+  const handleRequest = async (searchParamss) => {
     try {
+      // setSearchParams([searchParams]);
+
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
-        searchParams
+        searchParamss
       );
 
       if (response.data.data) {
-        // Create a new Set with just the ids of the cards for easy lookup
         const ids = new Set();
 
         // Filter out duplicate cards
@@ -103,7 +112,7 @@ export const CardProvider = ({ children }) => {
         ) {
           needsUpdate = true;
           const response = await axios.patch(
-            `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.id}`,
+            `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.name}`,
             { id: card.id, user: user.id },
             { withCredentials: true }
           );
@@ -152,12 +161,11 @@ export const CardProvider = ({ children }) => {
   };
 
   const randomCardData = getRandomCard();
-
-  // In CardProvider component
-  useEffect(() => {
-    console.log('CARD CONTEXT: ', {
+  const contextValue = useMemo(
+    () => ({
       cardsArray,
       searchData,
+      searchParams,
       deckSearchData,
       savedDeckData,
       randomCardData,
@@ -172,6 +180,7 @@ export const CardProvider = ({ children }) => {
       isCardDataValid,
       slicedAndMergedSearchData,
 
+      setSearchParams,
       handlePatch,
       setSlicedAndMergedSearchData,
       setOrganizedSearchData,
@@ -181,48 +190,22 @@ export const CardProvider = ({ children }) => {
       setDeckSearchData,
       setSavedDeckData,
       getCardData,
-      getRandomCard,
       setCardsArray,
+      getRandomCard,
+      setCookie,
+      setCurrentCartArray,
       handleRequest, // Add your new function to the context
+    }),
+    [cardsArray, searchData]
+  );
+  // In CardProvider component
+  useEffect(() => {
+    console.log('CARD CONTEXT: ', {
+      contextValue,
     });
   }, []);
   return (
-    <CardContext.Provider
-      value={{
-        cardsArray,
-        searchData,
-        deckSearchData,
-        savedDeckData,
-        randomCardData,
-        currenCartArray,
-        initialStore,
-        cookies,
-        currentCart,
-        currentDeckData,
-        slicedSearchData,
-        rawSearchData,
-        organizedSearchData,
-        isCardDataValid,
-        slicedAndMergedSearchData,
-
-        handlePatch,
-        setSlicedAndMergedSearchData,
-        setOrganizedSearchData,
-        setRawSearchData,
-        setSlicedSearchData,
-        setSearchData,
-        setDeckSearchData,
-        setSavedDeckData,
-        getCardData,
-        setCardsArray,
-        getRandomCard,
-        setCookie,
-        setCurrentCartArray,
-        handleRequest, // Add your new function to the context
-      }}
-    >
-      {children}
-    </CardContext.Provider>
+    <CardContext.Provider value={contextValue}>{children}</CardContext.Provider>
   );
 };
 

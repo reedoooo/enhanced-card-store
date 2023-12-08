@@ -1,4 +1,12 @@
 import { createContext, useContext, useState } from 'react';
+import {
+  groupAndAverageData,
+  convertDataForNivo2,
+  getUniqueValidData,
+  getTickValues,
+  getFilteredData,
+  formatDateToString,
+} from './helpers';
 
 const ChartContext = createContext();
 
@@ -31,10 +39,17 @@ export const ChartProvider = ({ children }) => {
       value={{
         currentValue,
         latestData,
-        setLatestData,
         timeRange,
-        setTimeRange,
         timeRanges,
+
+        groupAndAverageData,
+        convertDataForNivo2,
+        // getUniqueValidData,
+        getTickValues,
+        getFilteredData,
+        formatDateToString,
+        setTimeRange,
+        setLatestData,
         handleChange,
       }}
     >

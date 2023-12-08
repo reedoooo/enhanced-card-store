@@ -22,7 +22,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import TablePaginationActions from '../../reusable/TablePaginationActions';
 import PropTypes from 'prop-types';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import { makeStyles, styled } from '@mui/styles';
+import { styled } from '@mui/styles';
 import { useMode } from '../../../context/hooks/colormode';
 import Logger from '../../reusable/Logger';
 // Instantiate logger outside of the component
@@ -47,26 +47,16 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   borderRadius: 4,
 }));
 
-// const Paper = styled(MuiPaper)(({ theme }) => ({
-//   padding: theme.spacing(2),
-//   borderRadius: 2,
-//   width: '100%',
-//   color: '#fff',
-//   background: theme.palette.background.main,
-// }));
-
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   display: 'flex',
   width: '100%',
   borderRadius: '5px',
   overflow: 'hidden',
-
   flexDirection: 'column',
   justifyContent: 'space-between',
   alignItems: 'center',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 }));
-
 const StyledTableHeader = styled(TableHead)(({ theme }) => ({
   backgroundColor: '#555', // Darker shade for header
   color: '#fff',
@@ -74,23 +64,19 @@ const StyledTableHeader = styled(TableHead)(({ theme }) => ({
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   color: '#ddd', // Lighter text for better readability
 }));
-const Title = styled(TableCell)(({ theme }) => ({
-  color: '#4cceac', // Green color for the title
-}));
 
-const CardList = ({ selectedCards }) => {
+const CardList = () => {
   const { theme } = useMode();
   const {
-    getTotalCost,
     selectedCollection,
     getTotalPrice,
-    totalCost,
-    // totalPrice,
     removeOneFromCollection,
     addOneToCollection,
   } = useCollectionStore();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const selectedCards = selectedCollection?.cards;
+  console.log('SELCTED', selectedCards);
   const chartContainerRef = useRef(null);
   const count = selectedCards?.length || 0;
   const [chartDimensions, setChartDimensions] = useState({
@@ -98,7 +84,6 @@ const CardList = ({ selectedCards }) => {
     height: 0,
   });
   const emptyRows = useMemo(() => {
-    // <-- Use useMemo for better performance
     return page > 0
       ? Math.max(0, (1 + page) * rowsPerPage - (selectedCards?.length || 0))
       : 0;
@@ -116,14 +101,12 @@ const CardList = ({ selectedCards }) => {
   };
 
   const handleRemoveCard = (card) => {
-    // removeOneFromCollection(card, card.id);
-    removeOneFromCollection(card);
+    removeOneFromCollection(card, selectedCollection);
     cardLogger.logCardAction('Remove Card', card);
   };
 
   const handleAddCard = (card) => {
-    // addOneToCollection(card, card.id);
-    addOneToCollection(card);
+    addOneToCollection(card, selectedCollection);
     cardLogger.logCardAction('Add Card', card);
   };
 
@@ -152,7 +135,6 @@ const CardList = ({ selectedCards }) => {
         >
           <IconButton
             color="primary"
-            // className={classes.title}
             sx={{
               color: theme.palette.primary.main,
               marginRight: '4px',
@@ -204,7 +186,11 @@ const CardList = ({ selectedCards }) => {
                     {card.card_prices &&
                     card.card_prices[0] &&
                     card.card_prices[0].tcgplayer_price
-                      ? `$${card.card_prices[0].tcgplayer_price}`
+                      ? `$${
+                          card?.latestPrice?.num ||
+                          card?.price ||
+                          card.card_prices[0].tcgplayer_price
+                        }`
                       : 'Price not available'}
                   </StyledTableCell>
                   <StyledTableCell align="right">
