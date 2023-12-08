@@ -25,14 +25,14 @@ export const SidebarProvider = ({ children }) => {
     <SidebarContext.Provider
       value={{
         isOpen,
+        isLoggedIn,
+        sidebarBackgroundColor,
+        sidebarImage,
         toggleSidebar,
         setIsOpen,
-        isLoggedIn,
         login,
         logout,
-        sidebarBackgroundColor,
         setSidebarBackgroundColor,
-        sidebarImage,
         setSidebarImage,
       }}
     >

@@ -111,13 +111,11 @@ export const CombinedProvider = ({ children }) => {
     console.log('Received message:', message);
     setDataFunctions.messageTest(message);
   };
-
   const handleEventResponse = (newData) => {
     const { message, data } = newData;
     console.log('EVENT_RESPONSE:', message, data);
     setDataFunctions.eventsTriggered(data);
   };
-
   const handleStatusUpdateCron = (newData) => {
     const { message, data } = newData;
     // console.log('[STATUS_UPDATE_CRON]', message, data);
@@ -126,16 +124,27 @@ export const CombinedProvider = ({ children }) => {
     }
     setDataFunctions.data(data);
   };
-
   const handleCollectionsUpdated = (data) => {
     const { message, updatedCards } = data;
     console.log('message', message);
-    console.log('updatedCards', updatedCards);
+    // console.log('updatedCards', updatedCards);
+
+    // Update the selected collection with new card prices
+    // const updatedSelectedCollectionCards = selectedCollection.cards.map(
+    //   (card) => {
+    //     const updatedCardPrice = updatedCards.find(
+    //       (updatedCard) => updatedCard.id === card.id
+    //     );
+    //     return updatedCardPrice ? { ...card, ...updatedCardPrice } : card;
+    //   }
+    // );
+    setDataFunctions.data(updatedCards);
   };
   const handlePricesUnchanged = (data) => {
     const { message, currentPrices } = data;
     console.log('message', message);
-    console.log('currentPrices', currentPrices);
+    // console.log('currentPrices', currentPrices);
+    setDataFunctions.cardPrices(currentPrices);
   };
   const handleError = (errorData) => {
     console.log('ERROR RECEIVED', errorData);
@@ -144,7 +153,6 @@ export const CombinedProvider = ({ children }) => {
     console.log('ERROR STATUS: ', status);
     console.log('ERROR MESSAGE: ', message);
     console.log('ERROR DATA: ', error);
-    // console.error('Error received:', errorData);
     setDataFunctions.error(error);
   };
   const handleCardPricesUpdated = async (priceData) => {
@@ -152,7 +160,6 @@ export const CombinedProvider = ({ children }) => {
     const updatedCardPrices = priceData.data.data;
     const userId = user?.id;
 
-    // Generate list of monitored cards from all collections
     const currentListOfMonitoredCards =
       generateListOfMonitoredCards(allCollections);
     console.log(
@@ -161,8 +168,6 @@ export const CombinedProvider = ({ children }) => {
       )}] | `,
       currentListOfMonitoredCards
     );
-
-    // Update card prices in the list of monitored cards
     const updatedListOfMonitoredCards = updateCardPricesInList(
       currentListOfMonitoredCards,
       updatedCardPrices
@@ -174,7 +179,6 @@ export const CombinedProvider = ({ children }) => {
       updatedListOfMonitoredCards
     );
 
-    // Update the selected collection with new card prices
     const updatedSelectedCollectionCards = selectedCollection.cards.map(
       (card) => {
         const updatedCardPrice = updatedListOfMonitoredCards.find(
@@ -184,13 +188,11 @@ export const CombinedProvider = ({ children }) => {
       }
     );
 
-    // Create an updated collection object
     const updatedCollection = {
       ...selectedCollection,
       cards: updatedSelectedCollectionCards,
     };
 
-    // Filter out collections with null price history
     const filteredUpdatedCollection =
       filterNullPriceHistoryForCollection(updatedCollection);
 

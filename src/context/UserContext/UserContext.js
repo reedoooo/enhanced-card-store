@@ -40,6 +40,7 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user: authUser,
+        userId: authUser.id,
         setUser,
         allCollections,
         setCookie,

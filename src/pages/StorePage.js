@@ -1,90 +1,110 @@
-import React, { useEffect } from 'react';
-import { Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Container, Grid, Paper } from '@mui/material';
 import SearchBar from '../components/search/SearchBar';
 import ProductGrid from '../components/grids/storeSearchResultsGrid/ProductGrid';
-import { useCardStore } from '../context/CardContext/CardStore';
-import { useCartStore } from '../context/CartContext/CartContext';
 import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
-import { useMode } from '../context/hooks/colormode';
-import { useUserContext } from '../context/UserContext/UserContext';
 import HeroCenter from './pageStyles/HeroCenter';
-import { usePageContext } from '../context/PageContext/PageContext';
+import { useModalContext, useMode, usePageContext } from '../context';
+import { gridContainerStyles, gridItemStyles } from './pageStyles/styles';
+import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
+import PageLayout from '../layout/PageLayout';
 
 const StorePage = () => {
   const { theme } = useMode();
-  const { fetchUserCart, cartData } = useCartStore();
-  const { searchData, slicedSearchData, slicedAndMergedSearchData } =
-    useCardStore();
-  const { user, setUser } = useUserContext();
-  const {
-    isPageLoading,
-    setIsPageLoading,
-    pageError,
-    setPageError,
-    logPageData,
-  } = usePageContext();
-
-  const userId = user?.id;
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (!userId) return;
-
-  //     if (!cartData?.cart || cartData?.cart?.length === 0) {
-  //       setIsPageLoading(true);
-  //       // return;
-  //     }
-  //     try {
-  //       // fetchUserCart();
-  //       if (searchData.length > 0 && slicedAndMergedSearchData !== null) {
-  //         logPageData('StorePage', slicedAndMergedSearchData);
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to get user cart', error);
-  //       setPageError(error);
-  //     } finally {
-  //       setIsPageLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
+  const { isPageLoading, pageError } = usePageContext();
+  const [containerHeight, setContainerHeight] = useState(0); // State to store container height
+  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
+    useModalContext();
   if (isPageLoading) return <LoadingIndicator />;
   if (pageError) return <ErrorIndicator error={pageError} />;
+  const updateContainerHeight = (height) => {
+    setContainerHeight(height); // Function to update container height
+  };
 
   return (
     <React.Fragment>
-      <HeroCenter
-        title="Welcome to Store"
-        subtitle="Search for cards and add them to your cart."
-      />
-      <Grid
-        container
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: theme.spacing(3),
-          width: '100%',
-          height: '100%',
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-        }}
-      >
-        <Grid item xs={12}>
-          <SearchBar />
-        </Grid>{' '}
+      <PageLayout>
+        <HeroCenter
+          title="Welcome to Store"
+          subtitle="Search for cards and add them to your cart."
+        />
+
         <Grid
-          item
-          xs={12}
-          sx={{ backgroundColor: theme.palette.background.paper }}
+          container
+          sx={{
+            ...gridContainerStyles,
+            padding: theme.spacing(3),
+            background: theme.palette.background.dark,
+            color: theme.palette.text.primary,
+          }}
         >
-          <ProductGrid />
-        </Grid>{' '}
-      </Grid>
+          <Container
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: theme.spacing(3),
+              minHeight: '100%',
+              backgroundColor: theme.palette.background.secondary,
+              borderRadius: theme.shape.borderRadius,
+              color: theme.palette.text.primary,
+            }}
+          >
+            <Grid
+              item
+              xs={12}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: 1,
+                background: theme.palette.background.secondary,
+                borderRadius: theme.shape.borderRadius,
+                padding: theme.spacing(2),
+              }}
+            >
+              <SearchBar
+                sx={{
+                  ...gridItemStyles,
+                  background: theme.palette.background.dark,
+                  padding: theme.spacing(3),
+                  margin: theme.spacing(3),
+                  borderRadius: theme.shape.borderRadius,
+                }}
+              />
+              <ProductGrid
+                sx={{
+                  ...gridItemStyles,
+                  background: theme.palette.background.dark,
+                  padding: theme.spacing(3),
+                  margin: theme.spacing(3),
+                  borderRadius: theme.shape.borderRadius,
+                }}
+                updateHeight={updateContainerHeight}
+              />
+            </Grid>
+          </Container>
+        </Grid>
+        {isModalOpen && (
+          <GenericCardModal
+            open={isModalOpen}
+            closeModal={closeModal}
+            card={modalContent}
+            // context and other props if necessary
+          />
+        )}
+      </PageLayout>
+      <Box
+        sx={{
+          flexGrow: 1,
+          zIndex: -100,
+          height: `${containerHeight}px`, // Set the height of the Box
+          width: '100%',
+          minHeight: '100%',
+          background: theme.palette.background.dark,
+        }}
+      />
     </React.Fragment>
   );
 };

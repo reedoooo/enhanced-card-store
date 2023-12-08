@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Paper, Button, Typography, Box } from '@mui/material';
 import { DeckContext } from '../../../context/DeckContext/DeckContext';
-import DeckButtonList from './DeckButtonList';
+import SelectDeckList from './SelectDeckList';
 import CardsGrid from './CardsGrid';
 import DeckEditPanel from '../../other/InputComponents/DeckEditPanel';
 import { useMode } from '../../../context/hooks/colormode';
@@ -66,7 +66,7 @@ const DeckDisplay = ({ userDecks = [] }) => {
           {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
         </Button>
         {showAllDecks && (
-          <DeckButtonList
+          <SelectDeckList
             userDecks={userDecks}
             handleSelectDeck={handleSelectDeck}
           />

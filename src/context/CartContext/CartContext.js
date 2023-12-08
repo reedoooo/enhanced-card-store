@@ -9,7 +9,6 @@ import React, {
   useMemo,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { useCardStore } from '../CardContext/CardStore';
 import { useUserContext } from '../UserContext/UserContext';
 
 export const CartContext = createContext({
@@ -19,6 +18,7 @@ export const CartContext = createContext({
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   },
+  cart: [],
   getCardQuantity: () => {},
   addOneToCart: () => {},
   removeOneFromCart: () => {},
@@ -31,7 +31,6 @@ export const CartContext = createContext({
 export const CartProvider = ({ children }) => {
   const { user, setUser } = useUserContext();
   const userId = user?.id;
-
   const [cartData, setCartData] = useState({
     _id: '', // Cart id
     cart: [], // Cart items
@@ -108,7 +107,7 @@ export const CartProvider = ({ children }) => {
         await createUserCart();
       }
     }
-  }, [userId, createUserCart]);
+  }, [userId, setCookie]);
 
   const setCartDataAndCookie = (newCartData) => {
     if (newCartData && Array.isArray(newCartData.cart)) {
@@ -121,23 +120,6 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // useEffect(() => {
-  //   const totalQuantity = cartData.cart.reduce(
-  //     (total, item) => total + item.quantity,
-  //     0
-  //   );
-  //   const calculatedTotalPrice = getTotalCost();
-  //   if (
-  //     cartData.quantity !== totalQuantity ||
-  //     cartData.totalPrice !== calculatedTotalPrice
-  //   ) {
-  //     setCartData((prevState) => ({
-  //       ...prevState,
-  //       quantity: totalQuantity,
-  //       totalPrice: calculatedTotalPrice,
-  //     }));
-  //   }
-  // }, [cartData?.cart]);
   useEffect(() => {
     const newTotalQuantity = cartData.cart.reduce(
       (total, item) => total + item.quantity,
@@ -148,57 +130,73 @@ export const CartProvider = ({ children }) => {
     setTotalPrice(newTotalPrice);
   }, [cartData.cart]);
 
-  const updateCart = async (cartId, updatedCart) => {
-    if (!cartId) return;
-    const formattedCartData = {
-      cartItems: updatedCart.map((item) => ({
-        ...item,
-        id: item.id, // Make sure 'id' is a number
-        quantity: item.quantity,
-      })),
-      userId: userId,
-    };
-    const data = await fetchFromServer(`/api/carts/${cartId}/update`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formattedCartData),
-    });
-    setCartDataAndCookie(data);
-    return data;
-  };
-  const addOneToCart = async (cardInfo) => {
-    if (!cartData._id) return;
-    console.log('Adding one to cart', cardInfo);
-    const { quantityOfSameId, totalItems } = getCardQuantity(cardInfo.id);
-    if (quantityOfSameId >= 3) return;
-    let updatedCart = cartData.cart.map((item) =>
-      item.id === cardInfo.id ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    if (!cartData.cart.some((item) => item.id === cardInfo.id)) {
-      updatedCart = [...updatedCart, { ...cardInfo, quantity: 1 }];
-    }
-    const updatedCartData = await updateCart(cartData._id, updatedCart);
-    console.log('UPDATED CART DATA:', updatedCartData);
-    if (updatedCartData) setCartData(updatedCartData);
-  };
-  const removeOneFromCart = async (cardInfo) => {
-    if (cartData.cart.some((item) => item.id === cardInfo.id)) {
-      const updatedCart = cartData.cart
-        .map((item) =>
-          item.id === cardInfo.id && item.quantity > 0
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
+  const updateCart = useCallback(
+    async (cartId, updatedCart) => {
+      if (!cartId) return;
+      const formattedCartData = {
+        cartItems: updatedCart.map((item) => ({
+          ...item,
+          id: item.id, // Make sure 'id' is a number
+          quantity: item.quantity,
+        })),
+        userId: userId,
+      };
+      const data = await fetchFromServer(`/api/carts/${cartId}/update`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formattedCartData),
+      });
+      setCartDataAndCookie(data);
+      return data;
+    },
+    [fetchFromServer, setCartDataAndCookie]
+  );
+  const addOneToCart = useCallback(
+    async (cardInfo) => {
+      if (!cartData._id) return;
+      console.log('Adding one to cart', cardInfo);
+      const { quantityOfSameId, totalItems } = getCardQuantity(cardInfo.id);
+      if (quantityOfSameId >= 3) return;
+      let updatedCart = cartData.cart.map((item) =>
+        item.id === cardInfo.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      if (!cartData.cart.some((item) => item.id === cardInfo.id)) {
+        updatedCart = [...updatedCart, { ...cardInfo, quantity: 1 }];
+      }
+      const updatedCartData = await updateCart(cartData._id, updatedCart);
+      console.log('UPDATED CART DATA:', updatedCartData);
+      if (updatedCartData) setCartData(updatedCartData);
+    },
+    [cartData._id, cartData.cart, getCardQuantity, updateCart]
+  );
+  const removeOneFromCart = useCallback(
+    async (cardInfo) => {
+      if (cartData.cart.some((item) => item.id === cardInfo.id)) {
+        const updatedCart = cartData.cart
+          .map((item) =>
+            item.id === cardInfo.id && item.quantity > 0
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0);
+        const updatedCartData = await updateCart(cartData._id, updatedCart);
+        if (updatedCartData) setCartData(updatedCartData);
+      }
+    },
+    [cartData._id, cartData.cart, updateCart]
+  );
+  const deleteFromCart = useCallback(
+    async (cardInfo) => {
+      const updatedCart = cartData.cart.filter(
+        (item) => item.id !== cardInfo.id
+      );
       const updatedCartData = await updateCart(cartData._id, updatedCart);
       if (updatedCartData) setCartData(updatedCartData);
-    }
-  };
-  const deleteFromCart = async (cardInfo) => {
-    const updatedCart = cartData.cart.filter((item) => item.id !== cardInfo.id);
-    const updatedCartData = await updateCart(cartData._id, updatedCart);
-    if (updatedCartData) setCartData(updatedCartData);
-  };
+    },
+    [cartData._id, cartData.cart, updateCart]
+  );
   const contextValue = useMemo(
     () => ({
       cartData,

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { AppBar, Toolbar, IconButton, Hidden, Typography } from '@mui/material';
+import React from 'react';
+import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -13,14 +13,28 @@ const TopBar = ({
   handleLoginDialogState,
   isMobileView,
   isLoggedIn,
+  handleLogout,
 }) => {
   const { theme } = useMode();
   const menuItemsData = getMenuItemsData(isLoggedIn);
-  const toolbarRef = useRef(null);
+
+  const handleUserIconClick = () => {
+    if (isLoggedIn) {
+      handleLogout();
+    } else {
+      handleLoginDialogState();
+    }
+  };
 
   return (
-    <AppBar position="static">
-      <StyledToolbar theme={theme} ref={toolbarRef}>
+    <AppBar
+      position="static"
+      sx={{
+        zIndex: theme.zIndex.drawer + 1,
+        background: theme.palette.background.default,
+      }}
+    >
+      <StyledToolbar theme={theme}>
         {isMobileView ? (
           <>
             <IconButton
@@ -31,121 +45,30 @@ const TopBar = ({
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant="h6"
-              style={{ flexGrow: 1, textAlign: 'center' }}
-            >
+            <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
               ReedVogt.com
             </Typography>
           </>
         ) : (
-          <>
-            {menuItemsData.map((item) => (
-              <MenuItemComponent
-                key={item.name}
-                item={item}
-                onClick={handleDrawerState}
-              />
-            ))}
-            {isLoggedIn ? (
-              <IconButton
-                edge="end"
-                color="inherit"
-                aria-label="logout"
-                onClick={handleLoginDialogState}
-              >
-                <LogoutIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                edge="end"
-                color="inherit"
-                aria-label="login"
-                onClick={handleLoginDialogState}
-              >
-                <LoginIcon />
-              </IconButton>
-            )}
-          </>
+          menuItemsData.map((item) => (
+            <MenuItemComponent
+              key={item.name}
+              item={item}
+              onClick={handleDrawerState}
+            />
+          ))
         )}
+        <IconButton
+          edge="end"
+          color="inherit"
+          aria-label={isLoggedIn ? 'logout' : 'login'}
+          onClick={handleUserIconClick}
+        >
+          {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+        </IconButton>
       </StyledToolbar>
     </AppBar>
   );
 };
 
 export default TopBar;
-
-// import React, { useState } from 'react';
-// import { AppBar, Toolbar, IconButton, Hidden } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
-// import LogoutIcon from '@mui/icons-material/Logout';
-// import LoginIcon from '@mui/icons-material/Login';
-// import MenuItemComponent from '../header/MenuItemComponent';
-// import { useAuthContext } from '../../../context/hooks/auth';
-// import getMenuItemsData from '../header/menuItemsData';
-// import { StyledToolbar } from './styled';
-// import { useMode } from '../../../context/hooks/colormode';
-
-// const TopBar = ({
-//   handleDrawerState,
-//   handleLoginDialogState,
-//   handleDrawerClose,
-//   isMobileView,
-// }) => {
-//   const { theme } = useMode();
-//   const [selected, setSelected] = useState('Dashboard');
-//   const { isLoggedIn } = useAuthContext();
-//   const menuItemsData = getMenuItemsData(isLoggedIn);
-
-//   const handleItemClick = (name) => {
-//     setSelected(name);
-//     handleDrawerState();
-//   };
-//   return (
-//     <AppBar position="static">
-//       <StyledToolbar theme={theme}>
-//         <Hidden mdUp implementation="css">
-//           <IconButton
-//             edge="start"
-//             color="inherit"
-//             aria-label="menu"
-//             onClick={handleDrawerState}
-//           >
-//             <MenuIcon />
-//           </IconButton>
-//         </Hidden>
-//         {menuItemsData.map((item) => {
-//           const { name, icon, to, requiresLogin } = item;
-//           return isLoggedIn || !requiresLogin ? (
-//             <MenuItemComponent
-//               key={name}
-//               name={name}
-//               item={item}
-//               icon={icon}
-//               to={to}
-//               onClick={handleDrawerState}
-//             />
-//           ) : null;
-//         })}
-//         {isLoggedIn ? (
-//           <MenuItemComponent
-//             item={{ name: 'Logout', icon: <LogoutIcon /> }}
-//             onClick={handleLoginDialogState}
-//           />
-//         ) : (
-//           <MenuItemComponent
-//             item={{
-//               name: 'Login',
-//               icon: <LoginIcon />,
-//               to: '',
-//               requiresLogin: false,
-//             }}
-//             onClick={handleLoginDialogState}
-//           />
-//         )}
-//       </StyledToolbar>
-//     </AppBar>
-//   );
-// };
-
-// export default TopBar;

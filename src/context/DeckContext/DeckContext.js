@@ -7,45 +7,23 @@ import React, {
   useContext,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { useCardStore } from '../CardContext/CardStore';
 import { fetchWrapper } from '../Helpers.jsx';
-import { BASE_API_URL, createApiUrl } from '../Helpers.jsx';
+import { BASE_API_URL } from '../Helpers.jsx';
 import {
   calculateAndUpdateTotalPrice,
   removeDuplicateDecks,
+  formatCardData,
+  defaultContextValue,
 } from './helpers.jsx';
-export const DeckContext = createContext({
-  deckData: {}, // Provide default values for context properties
-  allDecks: [],
-  selectedDeck: {},
-  userDecks: [],
-  totalQuantity: () => 0,
-  setSelectedDeck: () => {},
-  addOneToDeck: () => {},
-  removeOneFromDeck: () => {},
-  getTotalCost: () => 0,
-  getCardQuantity: () => 0,
-  updateAndSyncDeck: () => {},
-  fetchAllDecksForUser: () => {},
-});
+
+export const DeckContext = createContext(defaultContextValue);
 
 export const DeckProvider = ({ children }) => {
-  const { getCardData } = useCardStore();
   const [cookies] = useCookies(['user']);
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
   const userId = cookies?.user?.id;
-
-  // const calculateAndUpdateTotalPrice = (deck) => {
-  //   let totalPrice = 0;
-  //   if (deck && deck.cards) {
-  //     totalPrice = deck.cards.reduce((total, card) => {
-  //       return total + card.price * card.quantity;
-  //     }, 0);
-  //   }
-  //   return totalPrice;
-  // };
 
   const fetchDecksForUser = useCallback(async () => {
     if (!userId) {
@@ -60,14 +38,12 @@ export const DeckProvider = ({ children }) => {
       return null;
     }
   }, [userId]);
-
   const fetchAndSetDecks = useCallback(async () => {
     try {
       const userDecks = await fetchDecksForUser();
 
       if (userDecks.data && userDecks.data.length > 0) {
         const uniqueDecks = removeDuplicateDecks(userDecks.data);
-        // console.log('UNIQUE DECKS:', uniqueDecks);
         setAllDecks((prevDecks) =>
           removeDuplicateDecks([...prevDecks, ...uniqueDecks])
         );
@@ -91,27 +67,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to fetch decks: ${error.message}`);
     }
   }, [fetchDecksForUser, userId]);
-
-  const formatCardData = (card) => ({
-    id: card.id,
-    ...Object.fromEntries(
-      [
-        'name',
-        'type',
-        'frameType',
-        'description',
-        'card_images',
-        'archetype',
-        'atk',
-        'def',
-        'level',
-        'race',
-        'attribute',
-        'quantity',
-      ].map((key) => [key, card[key] || null])
-    ),
-  });
-
   const updateAndSyncDeck = async (newDeckData) => {
     console.log('Updated Deck Name:', newDeckData.name);
     console.log('Updated Deck Description:', newDeckData.description);
@@ -143,7 +98,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to update deck in backend: ${error.message}`);
     }
   };
-
   const createUserDeck = async (userId, newDeckInfo) => {
     try {
       const url = `${BASE_API_URL}/${userId}/decks`;
@@ -165,7 +119,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to create a new deck: ${error.message}`);
     }
   };
-
   const addOrRemoveCard = async (card, isAdding, isRemoving) => {
     if (!selectedDeck || !selectedDeck._id) {
       console.error('No valid deck to add or remove a card.');
@@ -181,13 +134,11 @@ export const DeckProvider = ({ children }) => {
       cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
     }
 
-    // Create a copy of the current state
     const currentCards = Array.isArray(selectedDeck?.cards)
       ? [...selectedDeck.cards]
       : [];
     let currentTotalPrice = selectedDeck.totalPrice || 0;
 
-    // Find the card index in the current state
     const cardIndex = currentCards.findIndex((item) => item.id === card.id);
 
     if (isAdding) {
@@ -209,7 +160,6 @@ export const DeckProvider = ({ children }) => {
       }
     }
 
-    // Assuming you have a function to update the total price like in the example
     currentTotalPrice = calculateAndUpdateTotalPrice({
       ...selectedDeck,
       cards: currentCards,
@@ -232,11 +182,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to update the deck: ${error.message}`);
     }
   };
-
-  const getQuantity = (cardId) => {
-    const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
-    return foundCard?.quantity || 0;
-  };
   const getCardQuantity = (cardId) => {
     const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
     return foundCard?.quantity || 0;
@@ -247,7 +192,7 @@ export const DeckProvider = ({ children }) => {
     allDecks,
     selectedDeck,
     userDecks: allDecks,
-    totalQuantity: getQuantity,
+    totalQuantity: getCardQuantity,
     setSelectedDeck,
     addOneToDeck: (card) => addOrRemoveCard(card, true, false),
     removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),

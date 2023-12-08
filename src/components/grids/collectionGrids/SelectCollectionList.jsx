@@ -99,7 +99,7 @@ const SelectCollectionList = ({
   const classes = useStyles();
   const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
     useCollectionStore();
-  const { stats } = useStatisticsStore();
+  const { statsByCollectionId } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
   const handleSelect = useCallback(
     (selectedId) => {
@@ -134,7 +134,8 @@ const SelectCollectionList = ({
       ) : (
         <List>
           {allCollections?.map((collection, index) => {
-            const twentyFourHourChange = stats?.twentyFourHourAverage; // Adjust according to your actual data structure
+            const twentyFourHourChange =
+              statsByCollectionId[collection?._id]?.twentyFourHourAverage; // Adjust according to your actual data structure
             const isPlaceholder = index >= allCollections?.length;
 
             return (

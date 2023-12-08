@@ -14,6 +14,7 @@ import UserContext, {
 import { usePageContext } from '../context/PageContext/PageContext';
 import HeroCenter from './pageStyles/HeroCenter';
 import { Container } from 'react-bootstrap';
+import PageLayout from '../layout/PageLayout';
 
 const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
@@ -49,28 +50,30 @@ const DeckBuilderPage = () => {
 
   return (
     <React.Fragment>
-      <DeckBuilderBanner>
-        <Container>
-          <HeroCenter
-            title="Welcome to Deck Builder"
-            subtitle="Craft, refine, and explore your deck strategies in one place."
-          />
-        </Container>
-        <Grid container>
-          <Grid item xs={12}>
-            <DeckBuilderContainer userDecks={userDecks} />
+      <PageLayout>
+        <DeckBuilderBanner>
+          <Container>
+            <HeroCenter
+              title="Welcome to Deck Builder"
+              subtitle="Craft, refine, and explore your deck strategies in one place."
+            />
+          </Container>
+          <Grid container>
+            <Grid item xs={12}>
+              <DeckBuilderContainer userDecks={userDecks} />
+            </Grid>
           </Grid>
-        </Grid>
-      </DeckBuilderBanner>
-      {pageError && <ErrorIndicator error={pageError} />}
+        </DeckBuilderBanner>
+        {pageError && <ErrorIndicator error={pageError} />}
 
-      {isModalOpen && (
-        <GenericCardModal
-          open={isModalOpen}
-          closeModal={closeModal}
-          card={modalContent}
-        />
-      )}
+        {isModalOpen && (
+          <GenericCardModal
+            open={isModalOpen}
+            closeModal={closeModal}
+            card={modalContent}
+          />
+        )}
+      </PageLayout>
     </React.Fragment>
   );
 };

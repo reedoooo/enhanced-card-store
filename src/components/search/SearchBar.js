@@ -6,6 +6,7 @@ import CardNameInput from '../other/InputComponents/CardNameInput';
 import CustomSelector from '../other/InputComponents/CustomSelector';
 import search from './search.json';
 import { useMode } from '../../context/hooks/colormode';
+import SearchForm from '../forms/SearchForm';
 
 const SearchBar = () => {
   const { theme } = useMode();
@@ -20,7 +21,8 @@ const SearchBar = () => {
   const handleChange = (name, newValue) => {
     setSearchParams((prev) => ({ ...prev, [name]: newValue }));
   };
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent default form submission
     handleRequest(searchParams);
   };
   return (
@@ -28,7 +30,8 @@ const SearchBar = () => {
       sx={{
         padding: 3,
         borderRadius: 2,
-        backgroundColor: 'background.paper',
+        // backgroundColor: 'background.paper',
+        background: theme.palette.success.dark,
         boxShadow: 3,
         margin: 'auto',
         width: '100%',
@@ -38,7 +41,11 @@ const SearchBar = () => {
         },
       }}
     >
-      <Container>
+      <Container
+        sx={{
+          background: theme.palette.success.dark,
+        }}
+      >
         <Typography
           variant="h4"
           align="center"
@@ -53,11 +60,17 @@ const SearchBar = () => {
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <CardNameInput
+            {/* <CardNameInput
               value={searchParams?.name}
               handleChange={(event) => handleChange('name', event.target.value)}
+            /> */}
+            <SearchForm
+              searchTerm={searchParams.name}
+              handleChange={(e) => handleChange('name', e.target.value)}
+              handleSubmit={handleSubmit}
             />
           </Grid>
+
           {filters?.map((filter) => (
             <Grid item xs={12} sm={6} md={3} key={filter?.label}>
               <CustomSelector
@@ -67,19 +80,6 @@ const SearchBar = () => {
                 handleChange={(event) =>
                   handleChange(filter.label, event.target.value)
                 }
-                // handleChange={(event) =>
-                //   handleChange(filter.name, event.target.value)
-                // }
-                // setValue={(newValue) =>
-                //   handleChange({ target: { value: newValue } })
-                // }
-                // handleChange={handleChange}
-                // setValue={(newValue) =>
-                //   setSearchParams((prevState) => ({
-                //     ...prevState,
-                //     [filter?.name]: newValue,
-                //   }))
-                // }
                 setSearchParams={setSearchParams}
                 values={filter?.values}
               />

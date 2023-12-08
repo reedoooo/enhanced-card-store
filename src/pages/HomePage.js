@@ -86,7 +86,6 @@ const HomePage = () => {
             spacing={2}
             justifyContent="center"
           ></Stack>
-          {/* </Container> */}
         </Box>
         <SecondaryContainer>
           <Paper className={classes.secondaryPaperContainer}>
@@ -96,7 +95,6 @@ const HomePage = () => {
               infiniteLoop
               useKeyboardArrows
               autoPlay
-              // className={classes.carouselContainer}
             >
               {carouselImages?.map(({ image, caption }, index) => (
                 <CarouselImage
@@ -150,10 +148,6 @@ const HomePage = () => {
                   }}
                   sx={{
                     background: theme.palette.success.main,
-                    // backgroundColor: (theme) =>
-                    //   theme.palette.mode === 'light'
-                    //     ? theme.palette.grey[200]
-                    //     : theme.palette.grey[700],
                   }}
                 />
                 <CardContent>

@@ -22,10 +22,12 @@ const DeckEditPanel = ({ selectedDeck, onSave }) => {
       elevation={3}
       sx={{
         padding: theme.spacing(4),
-        margin: theme.spacing(2),
+        margin: 'auto',
+        maxWidth: 600, // Limit the width for better readability
         borderRadius: theme.shape.borderRadius,
         boxShadow: theme.shadows[3],
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.secondary,
       }}
     >
       <Typography
@@ -33,48 +35,30 @@ const DeckEditPanel = ({ selectedDeck, onSave }) => {
         sx={{
           marginBottom: theme.spacing(3),
           fontWeight: theme.typography.fontWeightBold,
-          fontSize: theme.typography.h6.fontSize,
-          color: theme.palette.text.primary,
+          color: theme.palette.primary.main,
         }}
       >
         Edit Deck
       </Typography>
       <TextField
-        sx={{
-          marginBottom: theme.spacing(3),
-          '& .MuiOutlinedInput-root': {
-            '&:hover fieldset': {
-              borderColor: theme.palette.secondary.light,
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: theme.palette.secondary.main,
-            },
-          },
-          '& .MuiInputBase-input': {
-            fontSize: theme.typography.subtitle1.fontSize,
-          },
-        }}
         label="Deck Name"
         value={name}
         variant="outlined"
         fullWidth
         onChange={(e) => setName(e.target.value)}
-      />
-      <TextField
         sx={{
-          marginBottom: theme.spacing(3),
+          marginBottom: theme.spacing(2),
           '& .MuiOutlinedInput-root': {
             '&:hover fieldset': {
-              borderColor: theme.palette.secondary.light,
+              borderColor: theme.palette.primary.dark,
             },
             '&.Mui-focused fieldset': {
-              borderColor: theme.palette.secondary.main,
+              borderColor: theme.palette.primary.main,
             },
           },
-          '& .MuiInputBase-input': {
-            fontSize: theme.typography.subtitle1.fontSize,
-          },
         }}
+      />
+      <TextField
         label="Deck Description"
         value={description}
         variant="outlined"
@@ -82,23 +66,29 @@ const DeckEditPanel = ({ selectedDeck, onSave }) => {
         multiline
         rows={4}
         onChange={(e) => setDescription(e.target.value)}
+        sx={{
+          marginBottom: theme.spacing(3),
+          '& .MuiOutlinedInput-root': {
+            '&:hover fieldset': {
+              borderColor: theme.palette.primary.dark,
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: theme.palette.primary.main,
+            },
+          },
+        }}
       />
       <Button
         variant="contained"
+        onClick={handleSave}
         sx={{
-          boxShadow: theme.shadows[1],
           textTransform: 'none',
-          fontSize: theme.typography.button.fontSize,
-          padding: theme.spacing(1, 4),
-          lineHeight: theme.typography.button.lineHeight,
-          backgroundColor: theme.palette.secondary.main,
-          color: theme.palette.secondary.contrastText,
+          backgroundColor: theme.palette.success.main,
+          color: theme.palette.success.contrastText,
           '&:hover': {
-            backgroundColor: theme.palette.secondary.dark,
-            boxShadow: theme.shadows[2],
+            backgroundColor: theme.palette.success.dark,
           },
         }}
-        onClick={handleSave}
       >
         Save Changes
       </Button>

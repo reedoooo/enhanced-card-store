@@ -7,7 +7,6 @@ import {
   Alert,
 } from '@mui/material';
 import { useStyles } from '../modalStyles';
-import useAppContext from '../../../context/hooks/useAppContext';
 import useSnackbar from '../../../context/hooks/useSnackBar';
 import CardMediaAndDetails from '../../media/CardMediaAndDetails';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
@@ -15,14 +14,10 @@ import { ModalContext } from '../../../context/ModalContext/ModalContext';
 
 const GenericCardModal = ({ open, card, context, imgUrl }) => {
   const classes = useStyles();
-  const { contextProps, isContextAvailable } = useAppContext(context);
   const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
-  // const [isOpen, setIsOpen] = useState(false);
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
-
-  const requiresDoubleButtons = context === 'Deck' || context === 'Collection';
 
   useEffect(() => {
     if (open && card && !hasLoggedCard) {
@@ -38,12 +33,10 @@ const GenericCardModal = ({ open, card, context, imgUrl }) => {
     }
   }, [open]); // Removed hasLoggedCard from dependency array
 
-  // Example function to be called when an action is successful
   const handleActionSuccess = () => {
     handleSnackbar('Action was successful!', 'success');
   };
 
-  // Example function to be called when an action fails
   const handleActionFailure = (error) => {
     console.error('Action failed:', error);
     handleSnackbar('Action failed. Please try again.', 'error');
@@ -63,7 +56,6 @@ const GenericCardModal = ({ open, card, context, imgUrl }) => {
         <CardMediaAndDetails
           card={card}
           imgUrl={card?.card_images[0]?.image_url}
-          // imageUrl={card?.card_images[0]?.image_url}
         />
         <>
           <GenericActionButtons
@@ -71,14 +63,18 @@ const GenericCardModal = ({ open, card, context, imgUrl }) => {
             context="Deck"
             onSuccess={handleActionSuccess}
             onFailure={handleActionFailure}
-            // setModalOpen={setModalOpen}
           />
           <GenericActionButtons
             card={card}
             context="Collection"
             onSuccess={handleActionSuccess}
             onFailure={handleActionFailure}
-            // setModalOpen={setModalOpen}
+          />
+          <GenericActionButtons
+            card={card}
+            context="Cart"
+            onSuccess={handleActionSuccess}
+            onFailure={handleActionFailure}
           />
         </>
       </DialogContent>

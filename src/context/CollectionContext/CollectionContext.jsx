@@ -35,6 +35,8 @@ import {
   getFilteredChartData,
   filterUniqueDataPoints,
   getUniqueValidData,
+  createPriceHistoryObject,
+  determineCardPrice,
 } from './helpers.jsx';
 
 export const CollectionContext = createContext(defaultContextValue);
@@ -162,27 +164,29 @@ export const CollectionProvider = ({ children }) => {
   const createUserCollection = async (
     userId,
     newCollectionInfo,
-    name,
-    description
+    actionDescription
   ) => {
     if (
       !userId ||
-      !name ||
-      !validateUserIdAndData(
+      !actionDescription ||
+      !validateUserIdAndData(userId, newCollectionInfo, actionDescription)
+    ) {
+      console.warn(
+        'Invalid inputs for creating user collection.',
         userId,
         newCollectionInfo,
-        'create a new collection'
-      )
-    ) {
-      console.warn('Invalid inputs for creating user collection.');
+        actionDescription
+      );
       return;
     }
 
+    const name = newCollectionInfo?.name || '';
+    const description = newCollectionInfo?.description || '';
     const payload = {
       ...newCollectionInfo,
-      name,
-      description,
-      userId,
+      name: name,
+      description: description,
+      userId: userId,
     };
     const url = createApiUrl(`${userId}/collections`);
     // console.log('Payload for user collection:', payload);
@@ -214,14 +218,27 @@ export const CollectionProvider = ({ children }) => {
       console.error('Invalid collection or cards data');
       return [];
     }
+    let cardPrice;
+    for (const card of collection.cards) {
+      cardPrice = determineCardPrice(collection.cards, cardUpdate);
+    }
 
+    console.log('CPRICE', cardPrice);
     switch (operation) {
       case 'add':
         return handleCardAddition(collection.cards, cardUpdate);
       case 'remove':
         return handleCardRemoval(collection.cards, cardUpdate);
       case 'update':
-        return handleCardUpdate(collection.cards, cardUpdate);
+        return handleCardUpdate(
+          collection?.cards,
+          cardUpdate,
+          createPriceHistoryObject(
+            cardUpdate(cardPrice * cardUpdate?.quantity)
+          ),
+          collection?._id,
+          cardPrice
+        );
       default:
         console.error('Unsupported operation:', operation);
         return [];

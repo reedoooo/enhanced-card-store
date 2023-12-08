@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /**
  * Wraps fetch API calls and implements a rate limit for each HTTP method type.
  * @param {String} url - The API URL to make the request to.
@@ -24,4 +25,44 @@ export const calculateAndUpdateTotalPrice = (deck) => {
     }, 0);
   }
   return totalPrice;
+};
+
+/**
+ * Formats card data to be used in the app.
+ * @param {Object} card - The card object to format.
+ * @returns {Object} - The formatted card object.
+ */
+export const formatCardData = (card) => ({
+  id: card.id,
+  ...Object.fromEntries(
+    [
+      'name',
+      'type',
+      'frameType',
+      'description',
+      'card_images',
+      'archetype',
+      'atk',
+      'def',
+      'level',
+      'race',
+      'attribute',
+      'quantity',
+    ].map((key) => [key, card[key] || null])
+  ),
+});
+
+export const defaultContextValue = {
+  deckData: {}, // Provide default values for context properties
+  allDecks: [],
+  selectedDeck: {},
+  userDecks: [],
+  totalQuantity: () => 0,
+  setSelectedDeck: () => {},
+  addOneToDeck: () => {},
+  removeOneFromDeck: () => {},
+  getTotalCost: () => 0,
+  getCardQuantity: () => 0,
+  updateAndSyncDeck: () => {},
+  fetchAllDecksForUser: () => {},
 };

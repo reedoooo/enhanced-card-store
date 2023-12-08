@@ -12,12 +12,12 @@ import {
   TextField,
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
-import placeholder from '../assets/images/placeholder.jpeg';
-import UserStats from '../components/other/dataDisplay/UserStats';
-import { useUserContext } from '../context/UserContext/UserContext';
+import placeholder from '../../assets/images/placeholder.jpeg';
+import UserStats from '../../components/other/dataDisplay/UserStats';
+import { useUserContext } from '../../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
-import ThemeToggleButton from '../components/buttons/other/ThemeToggleButton';
-import { useCombinedContext } from '../context/CombinedContext/CombinedProvider';
+import ThemeToggleButton from '../../components/buttons/other/ThemeToggleButton';
+import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
 import {
   AvatarStyled,
   TypographyStyled,
@@ -26,9 +26,9 @@ import {
   ButtonsContainer,
   CustomButton,
   ProfileFormContainer,
-} from './pageStyles/StyledComponents';
-import ProfileForm from '../components/forms/ProfileForm';
-import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
+} from '../pageStyles/StyledComponents';
+import ProfileForm from '../../components/forms/ProfileForm';
+import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 
 const ProfilePage = () => {
   const { selectedCollection } = useCollectionStore();

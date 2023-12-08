@@ -13,6 +13,7 @@ export const AppContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
+  // background: '#222',
 }));
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -224,6 +225,50 @@ export const ButtonStyled = styled(Button)({
   '&:hover': {
     backgroundColor: '#303f9f',
   },
+});
+
+export const MiddleContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.quinternary,
+  boxShadow: theme.shadows[3],
+  width: '100%',
+}));
+
+export const RootContainer = styled(Box)(({ theme, isXSmallScreen }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  margin: 'auto',
+  alignItems: 'stretch',
+  width: '100%',
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  height: '100%',
+  padding: theme.spacing(2),
+}));
+
+export const ListContainer = styled('div')(({ theme, isXSmallScreen }) => ({
+  flexGrow: 1,
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.success.evenLighter,
+  boxShadow: theme.shadows[3],
+  width: '100%',
+  height: '100%',
+  padding: theme.spacing(isXSmallScreen ? 1 : 2),
+}));
+
+export const buttonStyle = (theme, buttonSize) => ({
+  padding: buttonSize === 'small' ? theme.spacing(1) : theme.spacing(2),
+  fontSize: buttonSize === 'small' ? 'small' : 'default',
+  color: theme.palette.info.main,
 });
 
 export const DataTextStyled = styled(Typography)({

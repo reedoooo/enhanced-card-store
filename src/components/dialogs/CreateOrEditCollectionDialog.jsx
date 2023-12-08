@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Dialog,
@@ -6,6 +6,7 @@ import {
   Button,
   TextField,
   Typography,
+  Alert,
 } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
@@ -15,11 +16,18 @@ const CreateOrEditCollectionDialog = ({
   closeDialog,
   onSave,
   isNew,
-  editedName,
-  setEditedName,
-  editedDescription,
-  setEditedDescription,
+  initialName = '',
+  initialDescription = '',
+  // editedName,
+  // setEditedName,
+  // editedDescription,
+  // setEditedDescription,
 }) => {
+  const [error, setError] = useState('');
+  const [editedName, setEditedName] = useState(initialName);
+  const [editedDescription, setEditedDescription] =
+    useState(initialDescription);
+
   const {
     createUserCollection,
     removeCollection,
@@ -29,7 +37,21 @@ const CreateOrEditCollectionDialog = ({
   const [cookies] = useCookies(['user']);
   const userId = cookies.user?.id;
 
+  useEffect(() => {
+    setError('');
+  }, [isDialogOpen]);
+  useEffect(() => {
+    // Update internal state when dialog opens
+    setEditedName(initialName);
+    setEditedDescription(initialDescription);
+  }, [initialName, initialDescription, isDialogOpen]);
+
   const handleSave = () => {
+    if (!editedName.trim() || !editedDescription.trim()) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
     const newCollectionInfo = {
       name: editedName,
       description: editedDescription,
@@ -38,21 +60,9 @@ const CreateOrEditCollectionDialog = ({
     };
 
     if (isNew) {
-      createUserCollection(
-        userId,
-        newCollectionInfo,
-        editedName,
-        editedDescription,
-        userId
-      );
-    } else if (editedName && editedDescription) {
-      updateCollectionDetails(
-        newCollectionInfo,
-        userId,
-        selectedCollection._id
-      );
+      createUserCollection(userId, newCollectionInfo, 'create');
     } else {
-      console.error('No card to add to the collection');
+      updateCollectionDetails(newCollectionInfo, selectedCollection._id);
     }
 
     onSave(newCollectionInfo);
@@ -61,7 +71,6 @@ const CreateOrEditCollectionDialog = ({
 
   const handleRemove = (e) => {
     e.preventDefault();
-
     removeCollection(selectedCollection);
     closeDialog();
   };
@@ -70,32 +79,31 @@ const CreateOrEditCollectionDialog = ({
     <Dialog open={isDialogOpen} onClose={closeDialog}>
       <DialogContent>
         <Typography variant="h6">
-          {isNew
-            ? 'Fill in the data below to create a new collection'
-            : 'Edit your collection'}
+          {isNew ? 'Create a new collection' : 'Edit your collection'}
         </Typography>
-        <div>
-          <TextField
-            label="Collection Name"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-          />
-        </div>
-        <div>
-          <TextField
-            label="Collection Description"
-            value={editedDescription}
-            onChange={(e) => setEditedDescription(e.target.value)}
-            variant="outlined"
-            multiline
-            rows={4}
-            fullWidth
-            margin="normal"
-          />
-        </div>
+        {error && (
+          <Alert severity="error" style={{ marginBottom: '16px' }}>
+            {error}
+          </Alert>
+        )}
+        <TextField
+          label="Collection Name"
+          value={editedName}
+          onChange={(e) => setEditedName(e.target.value)}
+          variant="outlined"
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Collection Description"
+          value={editedDescription}
+          onChange={(e) => setEditedDescription(e.target.value)}
+          variant="outlined"
+          multiline
+          rows={4}
+          fullWidth
+          margin="normal"
+        />
         <div
           style={{
             display: 'flex',
@@ -127,11 +135,10 @@ CreateOrEditCollectionDialog.propTypes = {
   closeDialog: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
-  userId: PropTypes.string,
   editedName: PropTypes.string,
-  setEditedName: PropTypes.func.isRequired,
+  setEditedName: PropTypes.func,
   editedDescription: PropTypes.string,
-  setEditedDescription: PropTypes.func.isRequired,
+  setEditedDescription: PropTypes.func,
 };
 
 export default CreateOrEditCollectionDialog;

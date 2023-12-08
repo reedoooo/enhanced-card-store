@@ -145,6 +145,10 @@ export const themeSettings = (mode) => {
       borderRadius: 4,
       borderRadiusLarge: 8,
     },
+    zIndex: {
+      appBar: 1200,
+      drawer: 1100,
+    },
     action: {
       hover: mode === 'dark' ? colors.grey[800] : colors.grey[200],
     },

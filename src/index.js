@@ -20,7 +20,6 @@ import {
   SocketProvider,
   SidebarProvider,
   ChartProvider,
-  // UtilityProvider,
   AppContextProvider,
   PopoverProvider,
   CronJobProvider,
@@ -40,7 +39,6 @@ function Main() {
 
   return (
     <ErrorBoundary>
-      {/* <UtilityProvider> */}
       <Router>
         <AuthProvider>
           <ColorModeProvider>
@@ -85,7 +83,6 @@ function Main() {
           </ColorModeProvider>
         </AuthProvider>
       </Router>
-      {/* </UtilityProvider> */}
     </ErrorBoundary>
   );
 }

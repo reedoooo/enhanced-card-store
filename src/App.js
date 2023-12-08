@@ -7,25 +7,20 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { debounce } from 'lodash';
 
 // Component Imports
 import Header from './components/headings/header/Header';
 import PrivateRoute from './components/reusable/PrivateRoute';
 import LoginDialog from './components/dialogs/LoginDialog';
-// import Footer from './components/headings/footer/Footer';
 
 // Page Imports
 import {
-  SplashPage,
   HomePage,
   StorePage,
   CartPage,
   ProfilePage,
   CollectionPage,
   DeckBuilderPage,
-  // ThreeJsCube,
-  // CardDeckAnimation,
   NotFoundPage,
   LoginPage,
 } from './pages';
@@ -33,7 +28,6 @@ import {
 import {
   useUserContext,
   useCollectionStore,
-  useUtilityContext,
   useDeckStore,
   useCartStore,
   useCardImages,
@@ -41,16 +35,13 @@ import {
   usePageContext,
 } from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
-import { MainContent } from './components/headings/navigation/styled';
 
 const App = () => {
-  const { fetchAllCollectionsForUser, selectedCollection } =
-    useCollectionStore();
-  const { fetchAllDecksForUser, selectedDeck } = useDeckStore();
-
+  const { fetchAllCollectionsForUser } = useCollectionStore();
+  const { fetchAllDecksForUser } = useDeckStore();
   const { fetchUserCart } = useCartStore();
   const { user } = useUserContext();
-  const { logout, logoutTimerRef, resetLogoutTimer } = useAuthContext();
+  const { logoutTimerRef, resetLogoutTimer } = useAuthContext();
   const {
     isPageLoading,
     setIsPageLoading,
@@ -66,20 +57,17 @@ const App = () => {
   const handleLoginSuccess = (isLoggedIn, userId) => {
     setShowLoginDialog(false);
     setIsPageLoading(false);
-    // setIsLoading(false);
     if (isLoggedIn && userId) {
       resetLogoutTimer();
     }
   };
 
   useEffect(() => {
-    // Set up event listeners for user activity
     if (userId) {
       window.addEventListener('mousemove', resetLogoutTimer);
       window.addEventListener('keypress', resetLogoutTimer);
     }
 
-    // Clean up event listeners
     return () => {
       window.removeEventListener('mousemove', resetLogoutTimer);
       window.removeEventListener('keypress', resetLogoutTimer);
@@ -90,28 +78,35 @@ const App = () => {
   }, [userId, resetLogoutTimer]);
 
   useEffect(() => {
-    // Fetch all collections and decks for the user
-    if (userId) {
-      Promise.all([
-        fetchAllCollectionsForUser(),
-        fetchAllDecksForUser(),
-        // fetchUserCart(),
-      ])
-        .catch((error) => console.error('Error fetching data:', error))
-        .finally(() => setIsPageLoading(false));
-    }
-  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser]);
+    console.log('useEffect triggered for fetch data');
+
+    const fetchData = async () => {
+      try {
+        if (userId) {
+          console.log('Fetching user data');
+          await Promise.all([
+            fetchAllCollectionsForUser(),
+            fetchAllDecksForUser(),
+            fetchUserCart(),
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsPageLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
 
   useEffect(() => {
-    // Check if loading takes more than 45 seconds
     if (isPageLoading) {
       loadingTimeoutRef.current = setTimeout(() => {
         handleLoadingTimeout();
         navigate('/login');
       }, 45000); // 45 seconds
     }
-
-    // Clear the timeout if loading finishes or when unmounting
     return () => {
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
@@ -120,20 +115,12 @@ const App = () => {
   }, [isPageLoading, navigate, handleLoadingTimeout]);
 
   useEffect(() => {
-    // if the user is redirected to the login page, show the login dialog and set the loading state to false
     if (window.location.pathname === '/login') {
       setShowLoginDialog(true);
       setIsPageLoading(false);
       // setIsLoading(false);
     }
   }, []);
-
-  // useEffect(() => {
-  //   if (toolbarRef.current) {
-  //     setToolbarHeight(`${toolbarRef.current.clientHeight}px`);
-  //   }
-  // }, []);
-
   return (
     <>
       <Helmet>

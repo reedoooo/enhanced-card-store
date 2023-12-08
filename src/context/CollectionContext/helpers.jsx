@@ -49,7 +49,6 @@ export const defaultContextValue = {
   setCurrentChartData2: () => {},
   calculateCollectionValue: () => {},
   setUpdatedPricesFromCombinedContext: () => {},
-  setOpenChooseCollectionDialog: () => {},
   updateCollection: () => {},
   calculateTotalPrice: () => {},
   getNewTotalPrice: () => {},
@@ -97,9 +96,10 @@ export const isEmpty = (obj) => {
  * @param {String} functionName - Name of the function.
  * @returns {Boolean} True if the data is valid, false otherwise.
  */
-export const validateData = (data, eventName, functionName) => {
-  if (typeof data === 'object') {
-    if (isEmpty(data)) {
+export const validateData = (newCollectionInfo, eventName, functionName) => {
+  console.log('NEW COLLECTION INFO: ', newCollectionInfo);
+  if (typeof newCollectionInfo.name === 'string') {
+    if (!newCollectionInfo.name || !newCollectionInfo.description) {
       console.error(
         `The data passed to ${functionName} from ${eventName} is empty.`
       );
@@ -113,7 +113,11 @@ export const validateData = (data, eventName, functionName) => {
   return false;
 };
 
-export const validateUserIdAndData = (userId, data, actionDescription) => {
+export const validateUserIdAndData = (
+  userId,
+  newCollectionInfo,
+  actionDescription
+) => {
   if (!userId) {
     logError(
       'validateUserIdAndData',
@@ -122,7 +126,9 @@ export const validateUserIdAndData = (userId, data, actionDescription) => {
     );
     return false;
   }
-  if (!validateData(data, actionDescription, actionDescription)) {
+  if (
+    !validateData(newCollectionInfo, actionDescription, 'createUserCollection')
+  ) {
     logError(
       'validateUserIdAndData',
       actionDescription,
@@ -364,27 +370,37 @@ export const handleCardRemoval = (currentCards, cardToRemove) => {
  * @returns {Array} Updated array of cards.
  * @example handleCardUpdate([{ id: 1, quantity: 1 }], { id: 1, quantity: 2 });
  **/
-export const handleCardUpdate = (cards, cardUpdate) => {
+export const handleCardUpdate = (
+  cards,
+  cardUpdate,
+  priceHistory,
+  collectionId,
+  cardPrice
+) => {
   return cards.map((card) => {
     if (card.id === cardUpdate.id) {
-      return getUpdatedCard(card, cardUpdate);
+      return getUpdatedCard(
+        card,
+        cardUpdate,
+        priceHistory,
+        collectionId,
+        cardPrice
+      );
     }
     return card;
   });
 };
-function getUpdatedCard(card, update, priceHistory, collectionId) {
+function getUpdatedCard(card, update, priceHistory, collectionId, cardPrice) {
   console.log('CARD UPDATE:', update);
   console.log('CARD:', card);
-  const cardPrice = determineCardPrice(card, update);
   const totalPrice = cardPrice * (update?.quantity || card?.quantity);
   const quantity = update?.quantity || card?.quantity || 1;
-  const newChartDataEntry = createChartDataEntry(
-    cardPrice * (update?.quantity || card?.quantity)
-  );
+  const newChartDataEntry = createChartDataEntry(totalPrice);
 
   console.log('UPDATE QUANTITY: ', update.quantity);
   console.log('CARD QUANTITY: ', card.quantity);
   console.log('TOTAL PRICE: ', totalPrice);
+  console.log('NEW CHARTDAT EN', newChartDataEntry);
 
   return {
     ...card,
@@ -399,7 +415,7 @@ function getUpdatedCard(card, update, priceHistory, collectionId) {
     },
     latestPrice: update.latestPrice,
     tag: 'monitored',
-    chart_datasets: [...(card.chart_datasets || []), newChartDataEntry],
+    chart_datasets: [...card.chart_datasets, newChartDataEntry],
     card_prices: update.card_prices,
     card_sets: update.card_sets,
     card_images: update.card_images,
@@ -799,6 +815,7 @@ export const getUniqueValidData = (allXYValues) => {
       y: entry.y,
     }));
 };
+
 export const getFilteredData = (data, timeRange) => {
   const cutOffTime = new Date().getTime() - timeRange;
   return data

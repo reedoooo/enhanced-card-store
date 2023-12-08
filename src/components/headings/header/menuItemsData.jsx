@@ -6,10 +6,7 @@ import {
   Assessment as CollectionIcon,
   Person as ProfileIcon,
 } from '@mui/icons-material';
-// import DeckOfCardsIcon from '../../reusable/icons/DeckOfCardsIcon';
 import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
-// import DeckOfCardsIcon from '../../../assets/deckIcon2.png';
-
 export const getMenuItemsData = (isLoggedIn) => {
   // Error handling: Check if 'isLoggedIn' is a boolean
   if (typeof isLoggedIn !== 'boolean') {
@@ -53,9 +50,7 @@ export const getMenuItemsData = (isLoggedIn) => {
       },
     ];
 
-    // If the user is logged in, set all requiresLogin fields to false
     if (isLoggedIn) {
-      // console.log('isLoggedIn is true', isLoggedIn);
       return baseMenuItems.map((item) => ({
         ...item,
         requiresLogin: false,

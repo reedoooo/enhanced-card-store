@@ -11,16 +11,10 @@ import {
 import CardMediaSection from '../media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/images/placeholder.jpeg';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import {
-  ModalContext,
-  useModalContext,
-} from '../../context/ModalContext/ModalContext';
+import { useModalContext } from '../../context/ModalContext/ModalContext';
 import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
 import { useMode } from '../../context/hooks/colormode';
 import { Box } from '@mui/system';
-import { useCardStore, useCartStore } from '../../context';
-
 const AspectRatioBox = styled('div')(({ theme }) => ({
   width: '100%', // Full width of the parent container
   // paddingTop: '2%', // Aspect ratio of 16:9

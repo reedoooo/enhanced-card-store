@@ -7,6 +7,7 @@ import { useMode } from '../../../context/hooks/colormode';
 import { makeStyles, styled } from '@mui/styles';
 import { MainContainer } from '../../../pages/pageStyles/StyledComponents';
 import CarouselCard from '../../cards/CarouselCard';
+import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
 const useStyles = makeStyles((theme) => ({
   stepper: {
     background: theme.palette.background.main,
@@ -62,6 +63,14 @@ const TopCardsDisplay = () => {
   const maxSteps = top5Cards?.length;
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handleBack = () => setActiveStep((prev) => prev - 1);
+
+  if (!selectedCollection) {
+    return (
+      <StyledContainer>
+        <LoadingIndicator />
+      </StyledContainer>
+    );
+  }
 
   return (
     <StyledContainer>

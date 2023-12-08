@@ -9,21 +9,17 @@ export const useStatisticsStore = () => useContext(StatisticsContext);
 
 export const StatisticsProvider = ({ children }) => {
   const { timeRange } = useChartContext();
-  const { allCollections, currentChartDataSets2 } = useCollectionStore();
-
-  // console.log('currentChartDataSets2', currentChartDataSets2);
+  const { allCollections, allXYValues } = useCollectionStore();
 
   const stats = useMemo(
-    () => calculateStatistics({ data: currentChartDataSets2 }, timeRange),
-    [currentChartDataSets2, timeRange]
+    () => calculateStatistics({ data: allXYValues }, timeRange),
+    [allXYValues, timeRange]
   );
-
-  // console.log('stats', stats);
 
   const statsByCollectionId = useMemo(() => {
     return allCollections.reduce((acc, collection) => {
       // Assuming each collection has its own 'currentChartDataSets2'
-      const data = collection.currentChartDataSets2;
+      const data = collection?.chartData?.allXYValues;
       acc[collection._id] = calculateStatistics({ data }, timeRange);
       return acc;
     }, {});

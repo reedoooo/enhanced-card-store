@@ -1,37 +1,12 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import { CardMedia } from '@mui/material';
 import { useStyles } from './mediaStyles';
-import { ModalContext } from '../../context/ModalContext/ModalContext';
-import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
+import PropTypes from 'prop-types';
 
 const ReusableCardMedia = React.forwardRef(
-  (
-    {
-      imgUrl,
-      onMouseEnter,
-      onMouseLeave,
-      onClick,
-      // isModalOpen,
-      // setIsPopoverOpen,
-    },
-    ref
-  ) => {
+  ({ imgUrl, onMouseEnter, onMouseLeave, onClick }, ref) => {
     const classes = useStyles();
     const altText = `Image for ${imgUrl || 'the card'}`;
-    const {
-      openModalWithCard,
-      closeModal,
-      isModalOpen,
-      setModalOpen,
-      modalContent,
-    } = useContext(ModalContext);
-    const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
-      useContext(PopoverContext);
-    useEffect(() => {
-      if (isModalOpen) {
-        setIsPopoverOpen(false);
-      }
-    }, [isModalOpen, setIsPopoverOpen]);
 
     return (
       <CardMedia
@@ -49,5 +24,12 @@ const ReusableCardMedia = React.forwardRef(
 );
 
 ReusableCardMedia.displayName = 'ReusableCardMedia';
+
+ReusableCardMedia.propTypes = {
+  imgUrl: PropTypes.string,
+  onMouseEnter: PropTypes.func,
+  onMouseLeave: PropTypes.func,
+  onClick: PropTypes.func,
+};
 
 export default ReusableCardMedia;

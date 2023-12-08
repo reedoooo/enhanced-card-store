@@ -11,7 +11,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useStyles } from './dialogStyles';
+import { useStyles } from '../../components/dialogs/dialogStyles';
 
 const ChooseCollectionDialog = ({ onSave, isOpen, onClose }) => {
   const { setSelectedCollection, allCollections } = useCollectionStore();
