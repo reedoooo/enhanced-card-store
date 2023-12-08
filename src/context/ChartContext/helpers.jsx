@@ -1,3 +1,5 @@
+import { roundToNearestTenth } from '../Helpers';
+
 export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
   if (!data || data.length === 0) return [];
 
@@ -98,10 +100,6 @@ export const convertDataForNivo2 = (rawData2) => {
       data: nivoData,
     },
   ];
-};
-
-export const roundToNearestTenth = (value) => {
-  return Math.round(value * 10) / 10;
 };
 
 export const getFilteredData = (data, timeRange) => {

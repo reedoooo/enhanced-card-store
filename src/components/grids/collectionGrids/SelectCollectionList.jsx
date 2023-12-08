@@ -20,7 +20,7 @@ import { useMode } from '../../../context/hooks/colormode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LongMenu from '../../reusable/LongMenu';
-import { roundToNearestTenth } from '../../../context/ChartContext/helpers';
+import { roundToNearestTenth } from '../../../context/Helpers';
 const useStyles = makeStyles((theme) => ({
   listItemText: {
     flex: 1,
@@ -111,7 +111,7 @@ const SelectCollectionList = ({
         return;
       }
       setSelectedCollection(selected);
-      // handleSelectCollection(selected?._id);
+      handleSelectCollection(selected?._id);
       onSave(selected);
     },
     [allCollections, onSave, setSelectedCollection]

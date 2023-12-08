@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import moment from 'moment';
-import { createApiUrl, fetchWrapper } from '../Helpers';
+import { createApiUrl, fetchWrapper, roundToNearestTenth } from '../Helpers';
 
 export const initialCollectionState = {
   userId: '', // Assuming this is an ObjectId string
@@ -28,7 +28,7 @@ export const initialCollectionState = {
     name: '', // Initialize as empty string if not provided
     userId: '', // Assuming this is an ObjectId string
     datasets: [], // Initialize as empty array if not provided
-    xys: [], // Initialize as empty array if not provided
+    // xys: [], // Initialize as empty array if not provided
     allXYValues: [], // Initialize as empty array if not provided
   },
 };
@@ -52,7 +52,6 @@ export const defaultContextValue = {
   setOpenChooseCollectionDialog: () => {},
   updateCollection: () => {},
   calculateTotalPrice: () => {},
-  getTotalCost: () => {},
   getNewTotalPrice: () => {},
   getTotalPrice: () => {},
   createUserCollection: () => {},
@@ -177,24 +176,10 @@ export const createChartDataEntry = (price) => {
   };
 };
 
-// export const createPriceHistoryObject = (price) => {
-//   return {
-//     num: price,
-//     timestamp: new Date(),
-//   };
-// };
-
 export const getFilteredChartData = (chartData, updatedTotalPrice) => {
   const filteredChartData = {
     ...chartData,
     allXYValues: filterUniqueDataPoints(chartData?.allXYValues),
-    datasets: chartData?.datasets.map((dataset) => ({
-      ...dataset,
-      data: dataset?.data.map((dataEntry) => ({
-        ...dataEntry,
-        xys: filterUniqueDataPoints(dataEntry?.xys),
-      })),
-    })),
   };
   return {
     ...filteredChartData,
@@ -324,16 +309,28 @@ export const filterNullPriceHistoryForCollection = (collection) => {
  */
 export const handleCardAddition = (currentCards, cardToAdd) => {
   const cardToAddId = String(cardToAdd.id);
-  const existingCard = currentCards.find((c) => c.id === cardToAddId);
+  const existingCardIndex = currentCards.findIndex((c) => c.id === cardToAddId);
 
-  // console.log('CURRENT CARDS', currentCards);
-  if (existingCard) {
-    existingCard.quantity++;
+  if (existingCardIndex !== -1) {
+    // Card already exists in the collection
+    const existingCard = currentCards[existingCardIndex];
+    existingCard.quantity = (existingCard.quantity || 0) + 1;
     existingCard.totalPrice = existingCard.price * existingCard.quantity;
-    return [...currentCards];
+
+    // Update the card in the currentCards array
+    currentCards[existingCardIndex] = existingCard;
+  } else {
+    // Card does not exist in the collection, add it
+    const newCard = {
+      ...cardToAdd,
+      id: cardToAddId,
+      quantity: 1,
+      totalPrice: cardToAdd.price, // Assuming the cardToAdd has a 'price' field
+    };
+    currentCards.push(newCard);
   }
 
-  return [...currentCards, { ...cardToAdd, id: cardToAddId, quantity: 1 }];
+  return [...currentCards];
 };
 
 /**
@@ -748,33 +745,6 @@ export const getTotalQuantityOfSelectedCollection = (selectedCollection) => {
   );
 };
 
-// export const getUpdatedCollectionPriceHistory = (
-//   selectedCollection,
-//   updatedPrice
-// ) => {
-//   const updatedPriceHistory = selectedCollection?.collectionPriceHistory || [];
-//   console.log(
-//     'RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ',
-//     updatedPriceHistory
-//   );
-//   const lastPriceHistoryEntry =
-//     updatedPriceHistory[updatedPriceHistory?.length - 1];
-
-//   if (!lastPriceHistoryEntry || lastPriceHistoryEntry?.num !== updatedPrice) {
-//     console.log('RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ', [
-//       // ...selectedCollection?.collectionPriceHistory,
-//       ...updatedPriceHistory,
-//       createPriceHistoryObject(updatedPrice),
-//     ]);
-//     return [...updatedPriceHistory, createPriceHistoryObject(updatedPrice)];
-//   }
-
-//   console.log(
-//     'RETURN VAL OF: getUpdatedCollectionPriceHistory -----> ',
-//     updatedPriceHistory
-//   );
-//   return updatedPriceHistory;
-// };
 export const createPriceHistoryObject = (price) => {
   return {
     num: price,
@@ -790,16 +760,15 @@ export const getUpdatedCollectionPriceHistory = (
   return [...updatedPriceHistory, createPriceHistoryObject(updatedPrice)];
 };
 
-export const getUniqueValidData = (currentChartData) => {
-  if (!Array.isArray(currentChartData)) {
-    console.error('Invalid input: currentChartData should be an array');
+export const getUniqueValidData = (allXYValues) => {
+  if (!Array.isArray(allXYValues)) {
+    console.error('Invalid input: allXYValues should be an array', allXYValues);
     return [];
   }
-
   const uniqueLabels = new Set();
   const uniqueXValues = new Set();
 
-  return currentChartData
+  return allXYValues
     .filter((entry) => {
       // Check if entry is valid, y is a number and not zero, and label is unique
       return (
@@ -830,13 +799,18 @@ export const getUniqueValidData = (currentChartData) => {
       y: entry.y,
     }));
 };
-
-export const getFilteredData2 = (collection, timeRange) => {
-  if (!collection) {
-    console.error('Invalid input: selectedCollection should not be null');
-    return [];
-  }
-  return getUniqueValidData(collection?.chartData?.allXYValues || []);
+export const getFilteredData = (data, timeRange) => {
+  const cutOffTime = new Date().getTime() - timeRange;
+  return data
+    .filter((d) => {
+      const date = new Date(d.x);
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', d.x);
+        return false;
+      }
+      return date.getTime() >= cutOffTime;
+    })
+    .map((d) => ({ ...d, y: roundToNearestTenth(d.y) }));
 };
 
 export const calculateCollectionValue = (cards) => {
@@ -876,19 +850,6 @@ export const calculateCollectionValue = (cards) => {
 };
 
 /**
- * Calculates the total price from an array of card prices.
- * @param {Array} allCardPrices - Array of card prices.
- * @returns {Number} Total price.
- */
-export const calculateTotalFromAllCardPrices = (allCardPrices) => {
-  if (!Array.isArray(allCardPrices)) return 0;
-  return allCardPrices.reduce(
-    (total, price) => total + ensureNumber(price, 0),
-    0
-  );
-};
-
-/**
  * Ensures a value is a number, providing a default if not.
  * @param {any} value - Value to check.
  * @param {Number} defaultValue - Default value if check fails.
@@ -916,4 +877,14 @@ export const determineCardPrice = (card, update) => {
     price = update?.latestPrice?.num;
   }
   return price || card?.card_prices[0]?.tcgplayer_price;
+};
+
+export const convertToXYLabelData = (collectionPriceHistory) => {
+  return collectionPriceHistory?.map((item) => ({
+    x: new Date(item?.timestamp).toLocaleDateString(), // Converts timestamp to a readable date string
+    y: item?.num,
+    label: `Price: $${item?.num} at ${new Date(
+      item.timestamp
+    ).toLocaleTimeString()}`, // Combines price and time for the label
+  }));
 };

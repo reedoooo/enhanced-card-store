@@ -23,7 +23,6 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
   }, [selectedCollection]);
-
   const handleSelectCollection = (collectionId) => {
     if (hasRun.current) return; // Check if the function has already been run
 
@@ -39,6 +38,7 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
     setSelectedCollection(foundCollection);
     if (selectedCollection) {
       setSelectedCards(selectedCollection?.cards?.slice(0, 60));
+      onCollectionSelect(true);
     }
     if (selectedCards) {
       setShowCollections(false);

@@ -25,11 +25,16 @@ import {
   getTotalQuantityOfSelectedCollection,
   getUpdatedCollectionPriceHistory,
   getFilteredData2,
+  getFilteredData,
   calculateCollectionValue,
   getUpdatedCollectionData,
   initialCollectionState,
   defaultContextValue,
   validateUserIdAndData,
+  convertToXYLabelData,
+  getFilteredChartData,
+  filterUniqueDataPoints,
+  getUniqueValidData,
 } from './helpers.jsx';
 
 export const CollectionContext = createContext(defaultContextValue);
@@ -49,6 +54,7 @@ export const CollectionProvider = ({ children }) => {
 
   // state for the collection context
   const [collectionPriceHistory, setCollectionPriceHistory] = useState([]);
+  const [allXYValues, setAllXYValues] = useState([]);
   const [currentChartDataSets2, setCurrentChartDataSets2] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
@@ -124,22 +130,22 @@ export const CollectionProvider = ({ children }) => {
           Array.isArray(newData) &&
           newData.every((item) => has(item, 'cards'))
         ) {
-          const filteredNewData = filterNullPriceHistory(newData);
+          // const filteredNewData = filterNullPriceHistory(newData);
 
           // If newData is an array of objects each containing 'cards', assume it's 'allCollections'
-          setAllCollections((prev) =>
-            updateCollectionArray(prev, filteredNewData)
-          );
+          setAllCollections((prev) => updateCollectionArray(prev, newData));
         } else if (
           newData &&
           typeof newData === 'object' &&
           has(newData, 'cards')
         ) {
           // If newData is an object with a 'cards' property, assume it's 'selectedCollection'
-          setSelectedCollection(filterNullPriceHistoryForCollection(newData));
+          // setSelectedCollection(filterNullPriceHistoryForCollection(newData));
+          setSelectedCollection(newData);
         } else if (newData && typeof newData === 'object') {
           // If newData is a general object, assume it's 'collectionData'
-          setCollectionData(filterNullPriceHistoryForCollection(newData));
+          // setCollectionData(filterNullPriceHistoryForCollection(newData));
+          setCollectionData(newData);
         } else {
           console.warn(
             'Unable to determine the type of collection data for update.',
@@ -266,8 +272,24 @@ export const CollectionProvider = ({ children }) => {
     }
 
     try {
+      // REQUEST 1: CARDS
       const cardsResponse = await fetchWrapper(endpoint, method, cardsPayload);
       const updatedCards = cardsResponse?.cards || [];
+
+      const chartPayload = getFilteredChartData(
+        collectionWithCards?.chartData,
+        calculateCollectionValue(updatedCards)
+      );
+      // REQUEST 2: CHART DATA
+      const endpoint2 = createApiUrl(
+        `${userId}/collections/${collectionId}/updateChartData`
+      );
+      const chartResponse = await fetchWrapper(endpoint2, 'PUT', chartPayload);
+      console.log('UPDATED CHARTRESPONSE MESSAGE', chartResponse.message);
+      console.log('UPDATED CHARTRESPONSE DATA', chartResponse.allXYValues);
+
+      const updatedChartData = chartResponse?.allXYValues || [];
+      console.log('UPDATED CHARTS', updatedChartData);
 
       const updatedCollectionUpdatedCards = getUpdatedCollectionData(
         collectionWithCards,
@@ -280,7 +302,7 @@ export const CollectionProvider = ({ children }) => {
         updatedCards,
         userId
       );
-
+      // REQUEST 3: COLLECTION DATA
       const collectionResponse = await updateCollectionDataEndpoint(
         userId,
         collectionId,
@@ -290,7 +312,6 @@ export const CollectionProvider = ({ children }) => {
 
       setTotalPrice(calculateCollectionValue(updatedCollection));
       setTotalQuantity(getTotalQuantityOfSelectedCollection(updatedCollection));
-      setCurrentChartDataSets2(getFilteredData2(updatedCollection, 'all'));
       setLastSavedPrice({
         num: updatedCollection?.lastSavedPrice?.num || 0,
         timestamp: new Date(),
@@ -303,6 +324,11 @@ export const CollectionProvider = ({ children }) => {
         getUpdatedCollectionPriceHistory(
           updatedCollection,
           updatedCollection?.totalPrice || 0
+        )
+      );
+      setCurrentChartDataSets2(
+        filterUniqueDataPoints(
+          convertToXYLabelData(selectedCollection?.collectionPriceHistory)
         )
       );
       updateCollectionData(updatedCollection);
@@ -379,8 +405,23 @@ export const CollectionProvider = ({ children }) => {
   };
   // this useEffect is for updating currentChartDatasets with allXYValues in the state if values are added and then we filter them to remove duplicate values
   useEffect(() => {
-    if (selectedCollection?.chartData?.allXYValues?.length === 0) return;
-    setCurrentChartDataSets2(getFilteredData2(selectedCollection, 'all'));
+    if (
+      !selectedCollection?.chartData?.allXYValues ||
+      !Array.isArray(selectedCollection?.chartData?.allXYValues) ||
+      !selectedCollection?.chartData?.allXYValues?.length > 0
+    )
+      return;
+    setAllXYValues(
+      filterUniqueDataPoints(
+        convertToXYLabelData(selectedCollection?.collectionPriceHistory)
+      )
+    );
+    setCurrentChartDataSets2(
+      filterUniqueDataPoints(
+        convertToXYLabelData(selectedCollection?.collectionPriceHistory)
+      )
+      // getUniqueValidData(selectedCollection?.chartData?.allXYValues)
+    );
   }, [selectedCollection?.chartData?.allXYValues]);
   // useEffect to ensure a collection is always selected
   useEffect(() => {
@@ -455,42 +496,6 @@ export const CollectionProvider = ({ children }) => {
     setCollectionsFetched(false);
     setCardsUpdated(true);
   });
-  // useEffect for updating collections
-  // useEffect(() => {
-  //   if (!userId || !allCollections) return;
-  //   if (cardsUpdated === true) {
-  //     setTotalPrice(calculateCollectionValue(selectedCollection));
-  //     setTotalQuantity(
-  //       getTotalQuantityOfSelectedCollection(selectedCollection)
-  //     );
-  //     // setCurrentChartDataSets2(getFilteredData2(selectedCollection, 'all'));
-  //     setLastSavedPrice({
-  //       num: selectedCollection?.lastSavedPrice?.num || 0,
-  //       timestamp: new Date(),
-  //     });
-  //     setLatestPrice({
-  //       num: selectedCollection?.totalPrice || 0,
-  //       timestamp: new Date(),
-  //     });
-  //     setCollectionPriceHistory(
-  //       getUpdatedCollectionPriceHistory(
-  //         selectedCollection,
-  //         selectedCollection?.totalPrice || 0
-  //       )
-  //     );
-  //   }
-  //   setCardsUpdated(false);
-  // }, [
-  //   getUpdatedCollectionData,
-  //   getUpdatedCollectionPriceHistory,
-  //   selectedCollection?.cards,
-  //   selectedCollection?.totalQuantity,
-  //   selectedCollection?.totalPrice,
-  //   selectedCollection?.latestPrice,
-  //   selectedCollection?.lastSavedPrice,
-  //   selectedCollection?.chartData?.allXYValues,
-  //   cardsUpdated,
-  // ]);
   const contextValue = useMemo(
     () => ({
       allCollections,

@@ -13,6 +13,7 @@ import UserContext, {
 } from '../context/UserContext/UserContext';
 import { usePageContext } from '../context/PageContext/PageContext';
 import HeroCenter from './pageStyles/HeroCenter';
+import { Container } from 'react-bootstrap';
 
 const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
@@ -49,10 +50,12 @@ const DeckBuilderPage = () => {
   return (
     <React.Fragment>
       <DeckBuilderBanner>
-        <HeroCenter
-          title="Welcome to Deck Builder"
-          subtitle="Craft, refine, and explore your deck strategies in one place."
-        />
+        <Container>
+          <HeroCenter
+            title="Welcome to Deck Builder"
+            subtitle="Craft, refine, and explore your deck strategies in one place."
+          />
+        </Container>
         <Grid container>
           <Grid item xs={12}>
             <DeckBuilderContainer userDecks={userDecks} />

@@ -76,7 +76,6 @@ const CardList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const selectedCards = selectedCollection?.cards;
-  console.log('SELCTED', selectedCards);
   const chartContainerRef = useRef(null);
   const count = selectedCards?.length || 0;
   const [chartDimensions, setChartDimensions] = useState({

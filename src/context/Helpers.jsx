@@ -78,6 +78,10 @@ export const calculateAndUpdateTotalPrice = (collection) => {
   return totalPrice;
 };
 
+export const roundToNearestTenth = (value) => {
+  return Math.round(value * 10) / 10;
+};
+
 // Function to calculate total price of a collection
 export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price

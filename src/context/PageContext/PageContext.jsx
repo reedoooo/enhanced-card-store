@@ -11,7 +11,7 @@ export const usePageContext = () => useContext(PageContext);
 
 // Provider component
 export const PageProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageError, setPageError] = useState(null);
