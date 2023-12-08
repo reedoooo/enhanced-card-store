@@ -64,7 +64,6 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
         fullWidth
         margin="normal"
       />
-      {/* Add more TextField components as needed */}
       <Button type="submit" variant="contained" color="primary" fullWidth>
         Save Changes
       </Button>

@@ -34,7 +34,8 @@ export const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
-  maxWidth: '100vw',
+  width: '100%',
+  // Do not explicitly set the height here to allow Toolbar's default styling to take effect
   backgroundColor: theme.palette.primary.dark,
 }));
 
@@ -46,4 +47,11 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
+}));
+
+const navbarHeight = '50px'; // Default height for MUI Toolbar on desktop
+
+export const MainContent = styled(Box)(({ topMargin }) => ({
+  marginTop: topMargin, // Dynamic top margin based on the Toolbar's height
+  // ... other styles
 }));

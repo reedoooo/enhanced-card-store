@@ -14,21 +14,27 @@ export const AppContainer = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   height: '100vh',
 }));
-const StyledContainer = styled('div')(({ theme }) => ({
+const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  alignSelf: 'start',
+  // alignSelf: 'start',
   alignItems: 'center',
   justifyContent: 'center',
-  marginLeft: theme.spacing(2),
+  // marginLeft: theme.spacing(2),
   borderRadius: theme.shape.borderRadiusLarge,
-  marginRight: theme.spacing(2),
+  // marginRight: theme.spacing(2),
   // minHeight: '250vh',
   flexGrow: 1,
   // minHeight: '100%',
   background: '#333',
   // backgroundColor: '#f1f1f1',
-  padding: theme.spacing(4),
+  padding: {
+    xs: 0,
+    sm: theme.spacing(1),
+    md: theme.spacing(2.5),
+    lg: theme.spacing(2.5),
+  },
+  height: '100%',
   width: '100%',
 }));
 
@@ -83,7 +89,7 @@ export const MainContainerb = styled('div')(({ theme }) => ({
 }));
 export const MainContainer2 = styled('div')(({ theme }) => ({
   background: '#333', // Dark background
-  padding: theme.spacing(2),
+  padding: theme.spacing(4),
   marginBottom: theme.spacing(2),
   gap: theme.spacing(2),
   maxHeight: '100%',
@@ -281,12 +287,14 @@ export const CollectionBanner = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   // padding: theme.spacing(2.5),
-  padding: theme.spacing(6, 2),
+  // padding: theme.spacing(6, 2),
   // height: '100%',
   width: '100%',
+  maxWith: '100%',
   // height: '100%',
-  maxWidth: '1600px',
-  margin: 'auto',
+  // maxWidth: '1600px',
+  // maxHeight: '80%',
+  // margin: 'auto',
   boxShadow: theme.shadows[4],
   textAlign: 'center',
   backgroundColor: theme.palette.background.paper,
@@ -300,11 +308,11 @@ export const CollectionContentsStyles = styled(Box)(({ theme }) => ({
   // flexDirection: 'column',
   // alignItems: 'center',
   // padding: theme.spacing(2.5),
-  height: '100%',
+  height: '100vh',
   width: '100%',
   // background: '#333',
 
-  // backgroundColor: theme.palette.background.main,
+  backgroundColor: theme.palette.background.main,
   // backgroundColor: '#f7f7f7',
 }));
 

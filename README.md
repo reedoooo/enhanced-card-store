@@ -14,6 +14,8 @@ Reed Vogt
 
 ## Features
 
+### User Features
+
 1. **Search Functionality**
 
    Users can search for their favorite cards by name. The search functionality returns all the cards matching the search query, helping users quickly find the desired cards to add to their decks.
@@ -37,6 +39,84 @@ Reed Vogt
 6. **In-Depth Analysis of Card Performance**
 
    The collection section of the app provides users a variety of statistics about their collection performance as well as specific cards which enable users to make advanced insights into trends and patterns.
+
+### Developer Features
+
+1.  **Backend Cronjob**
+
+    The backend of the application is integrated with a cronjob that updates the card database every 10 minutes, ensuring that the application is always up-to-date with the latest cards.
+
+2.  **Secure Payment Processing**
+
+    The application is integrated with Stripe, enabling developers to leverage the secure payment processing capabilities of Stripe.
+
+3.  **Responsive Design**
+
+    The application is built with a responsive design, enabling developers to leverage the vast ecosystem of responsive design libraries and packages.
+
+4.  **Secure File Conversion**
+
+    The application is integrated with Convertio, enabling developers to leverage the secure file conversion capabilities of Convertio.
+
+### Frontend Technologies
+
+1.  **React**
+
+    The application is built with React, enabling developers to leverage the vast ecosystem of React libraries and packages.
+
+2.  **Stripe**
+
+    The application is integrated with Stripe, enabling developers to leverage the secure payment processing capabilities of Stripe.
+
+3.  **mui**
+
+    The application is built with mui, enabling developers to leverage the vast ecosystem of mui libraries and packages.
+
+4.  **Convertio**
+
+    The application is integrated with Convertio, enabling developers to leverage the secure file conversion capabilities of Convertio.
+
+5.  **YGOProDeck-api**
+
+The application is built with YGOProDeck-api, enabling developers to leverage the vast ecosystem of YGOProDeck-api libraries and packages.
+
+6.  **MongoDB**
+
+    The application is built with MongoDB, enabling developers to leverage the vast ecosystem of MongoDB libraries and packages.
+
+7.  **Netlify**
+
+    The application is deployed with Netlify, enabling developers to leverage the vast ecosystem of Netlify libraries and packages.
+
+8.  **Nivo Charts**
+
+    The application is built with Nivo Charts, enabling developers to leverage the vast ecosystem of Nivo Charts libraries and packages.
+
+### Backend Technologies
+
+1.  **Node.js**
+
+    The application is built with Node.js, enabling developers to leverage the vast ecosystem of Node.js libraries and packages.
+
+2.  **Express.js**
+
+    The application is built with Express.js, enabling developers to leverage the vast ecosystem of Express.js libraries and packages.
+
+3.  **MongoDB**
+
+    The application is built with MongoDB, enabling developers to leverage the vast ecosystem of MongoDB libraries and packages.
+
+4.  **Netlify**
+
+    The application is deployed with Netlify, enabling developers to leverage the vast ecosystem of Netlify libraries and packages.
+
+5.  **Heroku**
+
+    The application is deployed with Heroku, enabling developers to leverage the vast ecosystem of Heroku libraries and packages.
+
+6.  **Cronjob**
+
+    The application is integrated with a cronjob that updates the card database every 24 hours, ensuring that the application is always up-to-date with the latest cards.
 
 ## Acceptance Tests
 
@@ -64,7 +144,7 @@ To ensure the best user experience and seamless functionality, the following acc
 
 ## Installation
 
-To get started with TCG eCommerce-frontEnd, follow these steps:
+To get started with the enhanced card store, follow these steps:
 
 1. Clone the repository with `git clone https://github.com/your_username_/Project-Name.git`.
 2. Navigate to the project directory with `cd Project-Name`.
@@ -102,4 +182,9 @@ Project Repo: <https://github.com/reedoooo/enhanced-card-store#readme>
 
 - [React](https://reactjs.org/)
 - [Stripe](https://stripe.com/)
+- [mui](https://mui.com/)
 - [Convertio](https://convertio.co/download/bde422f6082917756106e52b556e7245cfcfbe/)
+- [YGOProDeck-api](https://ygoprodeck.com/api-guide/)
+- [MongoDB](https://cloud.mongodb.com/v2#/org/641ca5d870f5f76cbe646c47/projects)
+- [Netlify](https://app.netlify.com/teams/reedoooo/overview)
+- [Nivo Charts](https://nivo.rocks/)

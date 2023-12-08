@@ -10,7 +10,6 @@ import { useMode } from '../../context/hooks/colormode';
 const SearchBar = () => {
   const { theme } = useMode();
   const { initialState, filters } = search;
-
   const [searchParams, setSearchParams] = useState({
     name: '',
     type: '',
@@ -18,17 +17,9 @@ const SearchBar = () => {
     race: '',
   });
   const { handleRequest } = useCardStore();
-  // const handleChange = (name, newValue) => {
-  //   setSearchParams((prev) => ({ ...prev, [name]: newValue }));
-  // };
   const handleChange = (name, newValue) => {
     setSearchParams((prev) => ({ ...prev, [name]: newValue }));
   };
-  // Correct handleSubmit to use handleRequest with searchParams
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   handleRequest(searchParams);
-  // };
   const handleSubmit = () => {
     handleRequest(searchParams);
   };
@@ -63,7 +54,7 @@ const SearchBar = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <CardNameInput
-              value={searchParams.name}
+              value={searchParams?.name}
               handleChange={(event) => handleChange('name', event.target.value)}
             />
           </Grid>

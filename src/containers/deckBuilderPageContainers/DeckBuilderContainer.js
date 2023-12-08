@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import DeckDisplay from '../../components/grids/DeckDisplay';
+import DeckDisplay from '../../components/grids/deckBuilderGrids/DeckDisplay';
 import DeckSearch from '../../components/search/DeckSearch';
 import { styled } from '@mui/styles';
 import { useMode } from '../../context/hooks/colormode';

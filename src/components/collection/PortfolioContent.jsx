@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Container, Grid, Paper, useTheme } from '@mui/material';
 import HeaderTitle from '../reusable/HeaderTitle';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
@@ -11,6 +11,14 @@ import CollectionPortfolioListContainer from '../../containers/collectionPageCon
 const PortfolioContent = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
   const { selectedCollection } = useCollectionStore();
+  const [collectionName, setCollectionName] = useState(
+    selectedCollection?.name
+  );
+  useEffect(() => {
+    if (selectedCollection?.name) {
+      setCollectionName(selectedCollection.name);
+    }
+  }, [selectedCollection]);
 
   return (
     <Box
@@ -21,8 +29,19 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         alignItems: 'center',
         maxWidth: '100vw',
         width: '100%',
-        margin: 'auto',
-        padding: theme.spacing(3),
+        height: '100%',
+        margin: {
+          xs: 0,
+          sm: 'auto',
+          md: 'auto',
+          lg: 'auto',
+        },
+        padding: {
+          xs: theme.spacing(1), // Reduced padding for xs breakpoint
+          sm: theme.spacing(2),
+          md: theme.spacing(3),
+          lg: theme.spacing(3),
+        },
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.text.primary,
       }}
@@ -37,12 +56,17 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           flexDirection: 'column',
           margin: 'auto',
           width: '100%',
-          padding: theme.spacing(2),
+          padding: {
+            xs: theme.spacing(1),
+            sm: theme.spacing(1),
+            md: theme.spacing(2),
+            lg: theme.spacing(2),
+          },
           borderRadius: theme.shape.borderRadius,
         }}
       >
         <HeaderTitle
-          title={selectedCollection?.name}
+          title={collectionName}
           size="large"
           location="center"
           theme={theme}
@@ -54,7 +78,6 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
         sx={{
           width: '100%',
           maxWidth: '100vw',
-          // minHeight: '100%',
           justifyContent: 'center',
           margin: 'auto',
         }}
@@ -65,7 +88,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           md={12}
           lg={6}
           xl={6}
-          sx={{ justifyContent: 'center', margin: 'auto' }}
+          sx={{ justifyContent: 'center' }}
         >
           <CollectionPortfolioChartContainer
             selectedCards={selectedCards}

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Paper, Button, Typography, Box } from '@mui/material';
-import { DeckContext } from '../../context/DeckContext/DeckContext';
-import DeckButtonList from './deckBuilderGrids/DeckButtonList';
-import CardsGrid from './deckBuilderGrids/CardsGrid';
-import DeckEditPanel from '../other/InputComponents/DeckEditPanel';
-import { useMode } from '../../context/hooks/colormode';
+import { DeckContext } from '../../../context/DeckContext/DeckContext';
+import DeckButtonList from './DeckButtonList';
+import CardsGrid from './CardsGrid';
+import DeckEditPanel from '../../other/InputComponents/DeckEditPanel';
+import { useMode } from '../../../context/hooks/colormode';
 
 const DeckDisplay = ({ userDecks = [] }) => {
   const { theme } = useMode();

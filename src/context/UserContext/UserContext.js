@@ -15,15 +15,15 @@ export const UserProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['user']);
   const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
   const [allCollections, setAllCollections] = useState([]);
-  const { user, setUser } = useAuthContext(); // Use the useAuthContext hook
+  const { authUser, setUser } = useAuthContext(); // Use the useAuthContext hook
 
   const triggerCronJob = async () => {
     // Add your code here
   };
 
   useEffect(() => {
-    const userId = user?.id;
-    const username = user?.username;
+    const userId = authUser?.id;
+    const username = authUser?.username;
     if (userId) {
       const updatedUser = { userId, username };
       setUser(updatedUser);
@@ -39,7 +39,7 @@ export const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        user,
+        user: authUser,
         setUser,
         allCollections,
         setCookie,

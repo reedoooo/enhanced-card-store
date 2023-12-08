@@ -55,8 +55,10 @@ export const themeSettings = (mode) => {
         tertiary: '#555',
         quaternary: '#666',
         quinternary: '#999',
+        lighter: colors.grey[300],
         default: mode === 'dark' ? '#777' : '#ffffff',
         paper: colors.greenAccent[100],
+        disabled: colors.grey[200],
         // paper: mode === 'dark' ? colors.grey[300] : '#ffffff',
       },
       error: {
@@ -79,6 +81,10 @@ export const themeSettings = (mode) => {
       },
       info: {
         main: colors.blueAccent[500],
+        dark: colors.blueAccent[700],
+        light: colors.blueAccent[200],
+
+        contrastText: '#fff',
       },
       text: {
         primary: colors.grey[900],
@@ -87,6 +93,7 @@ export const themeSettings = (mode) => {
       divider: mode === 'dark' ? colors.grey[800] : colors.grey[200],
       action: {
         hover: mode === 'dark' ? colors.grey[800] : colors.grey[200],
+        disabled: colors.grey[200],
       },
     },
     chart: {

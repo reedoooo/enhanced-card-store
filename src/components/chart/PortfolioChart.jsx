@@ -4,13 +4,8 @@ import LinearChart from './LinearChart';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
 import debounce from 'lodash/debounce';
-import {
-  convertDataForNivo2,
-  getUniqueValidData,
-  groupAndAverageData,
-} from '../reusable/chartUtils';
+import { getFilteredData2 } from '../../context/CollectionContext/helpers';
 
 const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -28,6 +23,17 @@ const ChartPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+const ResponsiveSquare = styled(Box)(({ theme }) => ({
+  width: '100%',
+  paddingTop: '100%',
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
 function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
   const currentTime = new Date().getTime();
   if (!lastUpdateTime || currentTime - lastUpdateTime >= 600000) {
@@ -37,16 +43,20 @@ function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
   }
   return lastUpdateTime;
 }
-const getFilteredData2 = (collection) => {
-  if (!collection) {
-    console.error('Invalid input: selectedCollection should not be null');
-    return [];
-  }
-  return getUniqueValidData(collection.currentChartDataSets2 || []);
-};
+
 const PortfolioChart = () => {
   const theme = useTheme();
-  const { latestData, setLatestData, timeRange } = useChartContext();
+  const {
+    latestData,
+    setLatestData,
+    timeRange,
+    groupAndAverageData,
+    convertDataForNivo2,
+    // getUniqueValidData,
+    getTickValues,
+    getFilteredData,
+    formatDateToString,
+  } = useChartContext();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
   const [chartDimensions, setChartDimensions] = useState({
@@ -59,36 +69,45 @@ const PortfolioChart = () => {
     () => handleThresholdUpdate(lastUpdateTime, setLastUpdateTime),
     [lastUpdateTime]
   );
-  // const filteredChartData2 = useMemo(
-  //   () => getFilteredData2(selectedCollection),
-  //   [selectedCollection]
-  // );
-  // const rawData2 = useMemo(
-  //   () => groupAndAverageData(filteredChartData2, threshold),
-  //   [filteredChartData2, threshold]
-  // );
-  // const nivoReadyData2 = useMemo(
-  //   () => convertDataForNivo2(rawData2),
-  //   [rawData2]
-  // );
+
   const filteredChartData2 = useMemo(
-    () => getFilteredData2(selectedCollection, timeRange), // Adjust to filter data based on timeRange
+    () => getFilteredData2(selectedCollection, timeRange),
     [selectedCollection, timeRange]
   );
 
+  if (filteredChartData2?.length < 5) {
+    return (
+      <Container maxWidth="lg" /* ... existing styles */>
+        <ErrorBoundary>
+          <ResponsiveSquare>
+            <div>Not enough data points</div>
+          </ResponsiveSquare>
+        </ErrorBoundary>
+      </Container>
+    );
+  }
+
+  if (!filteredChartData2 || filteredChartData2?.length === 0) {
+    console.warn(
+      'Invalid input: filteredChartData2 should not be null or empty'
+    );
+    return filteredChartData2;
+  }
   const rawData2 = useMemo(
     () => groupAndAverageData(filteredChartData2, threshold, timeRange), // Adjust to group and average data based on timeRange
     [filteredChartData2, threshold, timeRange]
   );
 
+  if (!rawData2 || rawData2?.length === 0) {
+    console.warn('Invalid input: rawData2 should not be null or empty');
+    return rawData2;
+  }
+
   const nivoReadyData2 = useMemo(
     () => convertDataForNivo2(rawData2),
     [rawData2]
   );
-  console.log('Selected Collection:', selectedCollection);
-  console.log('Filtered Chart Data:', filteredChartData2);
-  console.log('Raw Data:', rawData2);
-  console.log('Nivo Ready Data:', nivoReadyData2);
+
   const HEIGHT_TO_WIDTH_RATIO = 7 / 10;
 
   useEffect(() => {
@@ -118,23 +137,14 @@ const PortfolioChart = () => {
         alignItems: 'center',
         padding: theme.spacing(2),
         gap: theme.spacing(2),
-        // backgroundColor: theme.palette.background.paper,
         background: '#333', // Darker background for Paper
-
         color: '#fff', // White text color
         border: '1px solid #555',
         borderRadius: 2,
-        // color: theme.palette.text.primary,
       }}
     >
       <ErrorBoundary>
-        <Grid
-          container
-          spacing={2}
-          // sx={{
-          //   // background: '#222', // Darker background for Paper
-          // }}
-        >
+        <Grid container spacing={2}>
           <Grid
             item
             xs={12}

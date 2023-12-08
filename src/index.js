@@ -20,7 +20,7 @@ import {
   SocketProvider,
   SidebarProvider,
   ChartProvider,
-  UtilityProvider,
+  // UtilityProvider,
   AppContextProvider,
   PopoverProvider,
   CronJobProvider,
@@ -40,52 +40,52 @@ function Main() {
 
   return (
     <ErrorBoundary>
-      <UtilityProvider>
-        <Router>
-          <AuthProvider>
-            <ColorModeProvider>
-              <SocketProvider>
-                <UserProvider>
-                  <ModalProvider>
-                    <PopoverProvider>
-                      <CollectionProvider>
-                        <CombinedProvider>
-                          <CardProvider>
-                            <CronJobProvider>
-                              <DeckProvider>
-                                <CartProvider>
-                                  {/* <CardImagesProvider> */}
-                                  <GlobalStyles />
-                                  <ThemeProvider theme={theme}>
-                                    <ChartProvider>
-                                      <StatisticsProvider>
-                                        <SidebarProvider>
-                                          <AppContextProvider>
-                                            <PageProvider>
-                                              <Elements stripe={stripePromise}>
-                                                <App />
-                                              </Elements>
-                                            </PageProvider>
-                                          </AppContextProvider>
-                                        </SidebarProvider>
-                                      </StatisticsProvider>
-                                    </ChartProvider>
-                                  </ThemeProvider>
-                                  {/* </CardImagesProvider> */}
-                                </CartProvider>
-                              </DeckProvider>
-                            </CronJobProvider>
-                          </CardProvider>
-                        </CombinedProvider>
-                      </CollectionProvider>
-                    </PopoverProvider>
-                  </ModalProvider>
-                </UserProvider>
-              </SocketProvider>
-            </ColorModeProvider>
-          </AuthProvider>
-        </Router>
-      </UtilityProvider>
+      {/* <UtilityProvider> */}
+      <Router>
+        <AuthProvider>
+          <ColorModeProvider>
+            <SocketProvider>
+              <UserProvider>
+                <ModalProvider>
+                  <PopoverProvider>
+                    <CollectionProvider>
+                      <CombinedProvider>
+                        <CardProvider>
+                          <CronJobProvider>
+                            <DeckProvider>
+                              <CartProvider>
+                                {/* <CardImagesProvider> */}
+                                <GlobalStyles />
+                                <ThemeProvider theme={theme}>
+                                  <ChartProvider>
+                                    <StatisticsProvider>
+                                      <SidebarProvider>
+                                        <AppContextProvider>
+                                          <PageProvider>
+                                            <Elements stripe={stripePromise}>
+                                              <App />
+                                            </Elements>
+                                          </PageProvider>
+                                        </AppContextProvider>
+                                      </SidebarProvider>
+                                    </StatisticsProvider>
+                                  </ChartProvider>
+                                </ThemeProvider>
+                                {/* </CardImagesProvider> */}
+                              </CartProvider>
+                            </DeckProvider>
+                          </CronJobProvider>
+                        </CardProvider>
+                      </CombinedProvider>
+                    </CollectionProvider>
+                  </PopoverProvider>
+                </ModalProvider>
+              </UserProvider>
+            </SocketProvider>
+          </ColorModeProvider>
+        </AuthProvider>
+      </Router>
+      {/* </UtilityProvider> */}
     </ErrorBoundary>
   );
 }

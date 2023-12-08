@@ -1,54 +1,76 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 
-const HeroCenter = ({ decorative, title, subtitle, theme }) => (
-  <Box
-    sx={{
-      flex: 1,
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      gap: 2,
-      my: 6,
-      textAlign: 'center',
-      height: decorative ? '50vh' : 'auto', // Adjust height based on the presence of decorative text
-    }}
-  >
-    {decorative && (
+const HeroCenter = ({ decorative, title, subtitle }) => {
+  const theme = useTheme(); // Using the theme for responsive breakpoints
+
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        gap: theme.spacing(2),
+        padding: theme.spacing(2),
+        // my: theme.spacing(6),
+        // mt: theme.spacing(12),
+        // mb: theme.spacing(2),
+        textAlign: 'center',
+        height: {
+          xs: 'auto',
+          sm: 'auto',
+          md: 'auto',
+          lg: 'auto',
+        },
+      }}
+    >
+      {decorative && (
+        <Typography
+          component="span"
+          sx={{
+            color: theme.palette.primary.main,
+            fontWeight: theme.typography.fontWeightMedium,
+            fontSize: {
+              xs: theme.typography.body2.fontSize, // smaller screens
+              sm: theme.typography.body1.fontSize, // medium screens
+              md: theme.typography.body1.fontSize, // larger screens
+            },
+            textTransform: 'uppercase',
+            letterSpacing: theme.spacing(0.5),
+          }}
+        >
+          {decorative}
+        </Typography>
+      )}
       <Typography
-        component="span"
+        variant="h1"
         sx={{
-          color: theme?.palette.primary.main || 'primary.main',
-          fontWeight: 600,
-          fontSize: 'sm',
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
+          fontSize: {
+            xs: theme.typography.h4.fontSize, // smaller screens
+            sm: theme.typography.h3.fontSize, // medium screens
+            md: theme.typography.h2.fontSize, // larger screens
+            lg: theme.typography.h1.fontSize, // extra large screens
+          },
+          fontWeight: theme.typography.fontWeightBold,
+          color: theme.palette.text.primary,
         }}
       >
-        {decorative}
+        {title}
       </Typography>
-    )}
-    <Typography
-      variant="h1"
-      sx={{
-        fontSize: { xs: '4xl', sm: '5xl', md: '6xl' },
-        fontWeight: 800,
-        color: theme?.palette.text.primary || 'black',
-      }}
-    >
-      {title}
-    </Typography>
-    <Typography
-      sx={{
-        fontSize: 'lg',
-        color: 'text.secondary',
-        maxWidth: '54ch',
-      }}
-    >
-      {subtitle}
-    </Typography>
-  </Box>
-);
+      <Typography
+        sx={{
+          fontSize: theme.typography.subtitle1.fontSize,
+          color: theme.palette.text.secondary,
+          maxWidth: '54ch',
+        }}
+      >
+        {subtitle}
+      </Typography>
+    </Box>
+  );
+};
 
 HeroCenter.defaultProps = {
   decorative: '',

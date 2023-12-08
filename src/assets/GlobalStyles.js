@@ -4,7 +4,7 @@ const MyGlobalStyles = () => (
   <GlobalStyles
     styles={{
       html: {
-        height: '100vh',
+        height: '100%',
         fontSize: '16px', // default font-size
         maxWidth: '100vw',
         fontFamily: '"Roboto", sans-serif', // default font

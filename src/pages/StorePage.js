@@ -13,7 +13,7 @@ import { usePageContext } from '../context/PageContext/PageContext';
 
 const StorePage = () => {
   const { theme } = useMode();
-  const { fetchUserCart } = useCartStore();
+  const { fetchUserCart, cartData } = useCartStore();
   const { searchData, slicedSearchData, slicedAndMergedSearchData } =
     useCardStore();
   const { user, setUser } = useUserContext();
@@ -27,29 +27,29 @@ const StorePage = () => {
 
   const userId = user?.id;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) {
-        setIsPageLoading(false);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!userId) return;
 
-      setIsPageLoading(true);
-      try {
-        fetchUserCart(userId);
-        if (searchData && slicedAndMergedSearchData) {
-          logPageData('StorePage', slicedAndMergedSearchData);
-        }
-      } catch (error) {
-        console.error('Failed to get user cart', error);
-        setPageError(error);
-      } finally {
-        setIsPageLoading(false);
-      }
-    };
+  //     if (!cartData?.cart || cartData?.cart?.length === 0) {
+  //       setIsPageLoading(true);
+  //       // return;
+  //     }
+  //     try {
+  //       // fetchUserCart();
+  //       if (searchData.length > 0 && slicedAndMergedSearchData !== null) {
+  //         logPageData('StorePage', slicedAndMergedSearchData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to get user cart', error);
+  //       setPageError(error);
+  //     } finally {
+  //       setIsPageLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [logPageData, searchData, setUser]);
+  //   fetchData();
+  // }, []);
 
   if (isPageLoading) return <LoadingIndicator />;
   if (pageError) return <ErrorIndicator error={pageError} />;

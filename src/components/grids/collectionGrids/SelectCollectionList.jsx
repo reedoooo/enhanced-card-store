@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   List,
   ListItem,
@@ -8,6 +8,7 @@ import {
   Button,
   Grid,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useCookies } from 'react-cookie';
@@ -18,18 +19,9 @@ import { useStatisticsStore } from '../../../context/StatisticsContext/Statistic
 import { useMode } from '../../../context/hooks/colormode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import LongMenu from '../../reusable/LongMenu';
+import { roundToNearestTenth } from '../../../context/ChartContext/helpers';
 const useStyles = makeStyles((theme) => ({
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2),
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    width: '100%',
-    marginBottom: theme.spacing(2),
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  },
   listItemText: {
     flex: 1,
     textAlign: 'left',
@@ -49,16 +41,41 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.primary.dark,
     },
   },
+  listItem: {
+    position: 'relative', // Added to position the menu button absolutely
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    width: '100%',
+    marginBottom: theme.spacing(1),
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    [theme.breakpoints.up('sm')]: {
+      flexDirection: 'row',
+      padding: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+  },
   gridItem: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: '100%',
+    width: '50%', // Half width for xs breakpoint
     justifyContent: 'center',
-    padding: theme.spacing(1),
+    padding: theme.spacing(0.5), // Reduced padding
+    [theme.breakpoints.up('sm')]: {
+      width: '100%', // Full width for larger screens
+      padding: theme.spacing(1),
+    },
   },
   gridItemText: {
     fontWeight: 'bold',
+    fontSize: '0.8rem', // Smaller text size
+    [theme.breakpoints.up('sm')]: {
+      fontSize: '1rem', // Larger text size for larger screens
+    },
   },
   positivePerformance: {
     color: 'green',
@@ -66,51 +83,24 @@ const useStyles = makeStyles((theme) => ({
   negativePerformance: {
     color: 'red',
   },
+  menuButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    // Adjust padding and margin as needed
+  },
 }));
 
 const SelectCollectionList = ({
   onSave,
   openDialog,
-  collectionIdFromDialog,
-  handleCollectionSelect,
+  handleSelectCollection,
 }) => {
-  const { theme } = useMode();
   const classes = useStyles();
-  const {
-    setSelectedCollection,
-    selectedCollection,
-    allCollections,
-    setAllCollections,
-  } = useCollectionStore();
-  const { stats, statsByCollectionId } = useStatisticsStore();
+  const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
+    useCollectionStore();
+  const { stats } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
-  // const twentyFourHourChange = stats.twentyFourHourAverage;
-
-  // let collectionStats;
-  // let twentyFourHourChange;
-  // const getStatsForAllCollections = (collection) => {
-  //   if (!collection) {
-  //     console.error('Invalid input: selectedCollection should not be null');
-  //     return [];
-  //   }
-  //   if (!statsByCollectionId) {
-  //     console.error('Invalid input: statsByCollectionId should not be null');
-  //     return [];
-  //   }
-
-  //   collectionStats = statsByCollectionId[collection?._id];
-  //   twentyFourHourChange = collectionStats?.twentyFourHourAverage;
-
-  //   return { collectionStats, twentyFourHourChange };
-  // };
-  console.log('STATS:', stats);
-  console.log('STATS BY COLLECTION ID:', statsByCollectionId);
-  console.log('SELECTED COLLECTION:', selectedCollection);
-  console.log('ALL COLLECTIONS:', allCollections);
-  function roundToNearestTenth(num) {
-    return Math.round(num * 10) / 10;
-  }
-  // console.log('TWENTY FOUR HOUR CHANGE:', twentyFourHourChange);
   const handleSelect = useCallback(
     (selectedId) => {
       const selected = allCollections.find(
@@ -121,20 +111,8 @@ const SelectCollectionList = ({
         return;
       }
       setSelectedCollection(selected);
-      // handleCollectionSelect(selected);
-      handleCollectionSelect(true);
+      // handleSelectCollection(selected?._id);
       onSave(selected);
-      const selectedIndex = allCollections.findIndex(
-        (collection) => collection?._id === selectedId
-      );
-      if (selectedIndex > 0) {
-        const reorderedCollections = [
-          selected,
-          ...allCollections.slice(0, selectedIndex),
-          ...allCollections.slice(selectedIndex + 1),
-        ];
-        setAllCollections(reorderedCollections);
-      }
     },
     [allCollections, onSave, setSelectedCollection]
   );
@@ -142,7 +120,6 @@ const SelectCollectionList = ({
   const handleOpenDialog = useCallback(
     (collection) => {
       setSelectedCollection(collection);
-      console.log('SELECTED COLLECTION:', collection);
       openDialog(true);
     },
     [openDialog, setSelectedCollection]
@@ -155,79 +132,81 @@ const SelectCollectionList = ({
           <LoadingIndicator />
         </div>
       ) : (
-        <List className={classes.list}>
-          {allCollections
-            ?.filter((collection) => !!collection?._id)
-            .map((collection) => {
-              const collectionStats = statsByCollectionId[collection?._id];
-              const twentyFourHourChange =
-                collectionStats?.twentyFourHourAverage;
+        <List>
+          {allCollections?.map((collection, index) => {
+            const twentyFourHourChange = stats?.twentyFourHourAverage; // Adjust according to your actual data structure
+            const isPlaceholder = index >= allCollections?.length;
 
-              return (
-                <React.Fragment key={collection?._id}>
-                  {/* {getStatsForAllCollections(collection)} */}
-
-                  <ListItem className={classes.listItem}>
-                    <ButtonBase
-                      sx={{ width: '100%' }}
-                      onClick={() => handleSelect(collection?._id)}
-                    >
-                      <Grid container>
-                        <Grid item xs={3} className={classes.gridItem}>
-                          <Typography className={classes.gridItemText}>
-                            Name:
-                          </Typography>
-                          <Typography>{collection?.name}</Typography>
-                        </Grid>
-                        <Grid item xs={3} className={classes.gridItem}>
-                          <Typography className={classes.gridItemText}>
-                            Value:
-                          </Typography>
-                          {/* Replace with actual value */}
-                          <Typography>
-                            ${roundToNearestTenth(collection?.totalPrice)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3} className={classes.gridItem}>
-                          <Typography className={classes.gridItemText}>
-                            Performance:
-                          </Typography>
-                          <Typography
-                            component="div"
-                            sx={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            {twentyFourHourChange?.priceChange > 0 ? (
-                              <ArrowUpwardIcon
-                                className={classes.positivePerformance}
-                              />
-                            ) : (
-                              <ArrowDownwardIcon
-                                className={classes.negativePerformance}
-                              />
-                            )}
-                            {twentyFourHourChange?.percentageChange}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3} className={classes.gridItem}>
-                          <Typography className={classes.gridItemText}>
-                            Cards:
-                          </Typography>
-                          {/* Replace with actual count */}
-                          <Typography>{collection?.totalQuantity}</Typography>
-                        </Grid>
+            return (
+              <React.Fragment key={collection._id}>
+                <ListItem
+                  className={classes.listItem}
+                  style={{ opacity: isPlaceholder ? 0.5 : 1 }}
+                >
+                  <ButtonBase
+                    sx={{ width: '100%' }}
+                    disabled={isPlaceholder}
+                    onClick={() =>
+                      !isPlaceholder && handleSelect(collection._id)
+                    }
+                  >
+                    <Grid container spacing={1}>
+                      <Grid item xs={6} sm={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Name:
+                        </Typography>
+                        <Typography>{collection?.name}</Typography>
                       </Grid>
-                    </ButtonBase>
-                    <Button
-                      className={classes.editButton}
-                      onClick={() => handleOpenDialog(collection)}
-                    >
-                      Edit
-                    </Button>
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
-              );
-            })}
+                      <Grid item xs={6} sm={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Value:
+                        </Typography>
+                        <Typography>
+                          ${roundToNearestTenth(collection?.totalPrice)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Performance:
+                        </Typography>
+                        <Typography
+                          component="div"
+                          sx={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          {twentyFourHourChange?.priceChange > 0 ? (
+                            <ArrowUpwardIcon
+                              className={classes.positivePerformance}
+                            />
+                          ) : (
+                            <ArrowDownwardIcon
+                              className={classes.negativePerformance}
+                            />
+                          )}
+                          {twentyFourHourChange?.percentageChange}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3} className={classes.gridItem}>
+                        <Typography className={classes.gridItemText}>
+                          Cards:
+                        </Typography>
+                        <Typography>{collection?.totalQuantity}</Typography>
+                      </Grid>
+                    </Grid>
+                  </ButtonBase>
+                  {!isPlaceholder && (
+                    <div className={classes.menuButton}>
+                      <LongMenu
+                        onEdit={() => handleOpenDialog(collection)}
+                        onStats={() => console.log('Stats:', collection)}
+                        onView={() => console.log('View:', collection)}
+                      />
+                    </div>
+                  )}
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            );
+          })}
         </List>
       )}
     </>
@@ -237,8 +216,7 @@ const SelectCollectionList = ({
 SelectCollectionList.propTypes = {
   onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
-  collectionIdFromDialog: PropTypes.string,
-  handleCollectionSelect: PropTypes.func.isRequired,
+  handleSelectCollection: PropTypes.func.isRequired,
 };
 
 export default SelectCollectionList;

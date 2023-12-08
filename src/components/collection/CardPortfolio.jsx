@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
 import PortfolioContent from './PortfolioContent';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { CollectionContainer } from '../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../context';
 // import UpdateChartData from './UpdateChartData';
 
 const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
+  const { theme } = useMode();
+  const theme2 = useTheme();
   const [error, setError] = useState(null);
   const [showCollections, setShowCollections] = useState(true);
   const [showPortfolio, setShowPortfolio] = useState(false);
@@ -14,21 +17,9 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   const [newCardPrice, setNewCardPrice] = useState('');
   const [newCardCondition, setNewCardCondition] = useState('');
   const [selectedCards, setSelectedCards] = useState([]);
-  // Define a ref to keep track of whether handleSelectCollection has been run
   const hasRun = useRef(false);
-  const {
-    // allCollections,
-    selectedCollection,
-    setSelectedCollection,
-    // fetchAllCollectionsForUser,
-    addOneToCollection,
-    removeOneFromCollection,
-  } = useCollectionStore();
-
-  // useEffect(() => {
-  //   fetchAllCollectionsForUser();
-  // }, []);
-
+  const { selectedCollection, setSelectedCollection, removeOneFromCollection } =
+    useCollectionStore();
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
   }, [selectedCollection]);
@@ -46,25 +37,39 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
       return;
     }
     setSelectedCollection(foundCollection);
-
     if (selectedCollection) {
       setSelectedCards(selectedCollection?.cards?.slice(0, 60));
     }
-
     if (selectedCards) {
       setShowCollections(false);
       setShowPortfolio(true);
     }
-
     hasRun.current = true; // Set the ref to true after the function has been run
   };
 
   return (
-    <CollectionContainer>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: theme.shape.borderRadius,
+        flexGrow: 1,
+        background: '#333',
+        padding: {
+          xs: theme.spacing(1),
+          sm: theme.spacing(1),
+          md: theme.spacing(2.5),
+          lg: theme.spacing(2.5),
+        },
+        height: '100%',
+        width: '100%',
+      }}
+    >
       {showCollections ? (
         <SelectCollection
           handleSelectCollection={handleSelectCollection}
-          handleCollectionSelect={onCollectionSelect}
           setShowCollections={setShowCollections}
           setShowPortfolio={setShowPortfolio}
         />
@@ -84,7 +89,7 @@ const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
           <Typography variant="h6">No Collection Selected</Typography>
         </Box>
       )}
-    </CollectionContainer>
+    </Box>
   );
 };
 

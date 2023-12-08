@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  CardActions,
   Grid,
   IconButton,
   Typography,
@@ -40,6 +41,23 @@ const CardActionButtons = ({
   const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const isSmallCard = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMediumCard = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isMediumLargeCard = useMediaQuery(
+    theme.breakpoints.between('md', 'lg')
+  );
+  // const isLargeCard = useMediaQuery(theme.breakpoints.up('lg'));
+
+  // ...other hooks and variables
+
+  // Adjust button size and styles based on screen and card size
+  const buttonSize = isSmallCard ? 'small' : isMediumCard ? 'medium' : 'large';
+  const buttonStyle = {
+    padding: buttonSize === 'small' ? theme.spacing(1) : theme.spacing(2),
+    fontSize: buttonSize === 'small' ? 'small' : 'default',
+    // Add other style adjustments as needed
+  };
+
   const { addOneToCollection, removeOneFromCollection, selectedCollection } =
     useCollectionStore();
   const { addOneToDeck, removeOneFromDeck, selectedDeck } = useDeckStore();
@@ -48,9 +66,7 @@ const CardActionButtons = ({
   const isCardInContext = useCallback(() => {
     switch (context) {
       case 'Collection':
-        return !!selectedCollection?.cards?.find(
-          (c) => c?.card?.id === card?.id
-        );
+        return !!selectedCollection?.cards?.find((c) => c?.id === card?.id);
       case 'Deck':
         return !!selectedDeck?.cards?.find((c) => c?.id === card?.id);
       case 'Cart':
@@ -126,9 +142,9 @@ const CardActionButtons = ({
         switch (context) {
           case 'Collection':
             if (action === 'add') {
-              addOneToCollection(card, card.id);
+              addOneToCollection(card, selectedCollection);
             } else if (action === 'removeOne') {
-              removeOneFromCollection(card, card.id);
+              removeOneFromCollection(card);
             }
             break;
           case 'Deck':
@@ -186,113 +202,131 @@ const CardActionButtons = ({
 
   return (
     <Box
-      sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        // gap: theme.spacing(2),
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexGrow: 1,
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        padding: theme.spacing(1),
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[4],
+      }}
     >
-      {isInContext ? (
-        <Grid container spacing={2}>
-          {isMediumScreen ? (
-            <Grid item xs={12}>
-              <ButtonGroup
-                sx={{
-                  width: '100%',
-                }}
-              >
-                {/* <Grid item xs={6}> */}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  fullWidth
-                  onClick={handleAddClick}
-                  startIcon={<AddCircleOutlineOutlined />}
+      <CardActions>
+        {isInContext ? (
+          <Grid container spacing={2}>
+            {isMediumScreen ? (
+              <Grid item xs={12}>
+                {/* <CardActions> */}
+
+                <Grid
+                  item
+                  xs={12}
                   sx={{
-                    ...styles.addButton,
-                    width: '100%',
-                    flexGrow: 1,
-                    // height: '100%',
+                    noWrap: true,
+                    display: 'flex',
+                    flexDirection: 'column',
                     // margin: 'auto',
+                    // justifyContent: 'center',
                   }}
                 >
-                  <Typography
-                    variant={
-                      isXSmallScreen
-                        ? 'caption'
-                        : isSmallScreen
-                          ? 'body2'
-                          : 'button'
-                    }
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={handleAddClick}
+                    startIcon={<AddCircleOutlineOutlined />}
+                    sx={{
+                      ...styles.addButton,
+                      ...buttonStyle,
+                      width: '100%',
+                      flexGrow: 1,
+                      // height: '100%',
+                      // margin: 'auto',
+                    }}
                   >
-                    Add to {context}
-                  </Typography>{' '}
-                </Button>
-                {/* </Grid> */}
-                {/* <Grid item xs={6}> */}
-                <Button
-                  variant="contained"
-                  color="error"
-                  fullWidth
-                  onClick={handleRemoveOne}
-                  startIcon={<RemoveCircleOutlineOutlined />}
-                  sx={{
-                    ...styles.removeButton,
-                    width: '100%',
-                    flexGrow: 1,
-                    // height: '100%',
-                    // margin: 'auto',
-                  }}
-                >
-                  <Typography
-                    variant={
-                      isXSmallScreen
-                        ? 'caption'
-                        : isSmallScreen
-                          ? 'body2'
-                          : 'button'
-                    }
+                    <Typography
+                      variant={buttonSize === 'small' ? 'caption' : 'button'}
+                    >
+                      Add to {context}
+                    </Typography>{' '}
+                  </Button>
+                  {/* </Grid> */}
+                  {/* <Grid item xs={6}> */}
+                  <Button
+                    variant="contained"
+                    color="error"
+                    fullWidth
+                    onClick={handleRemoveOne}
+                    startIcon={<RemoveCircleOutlineOutlined />}
+                    sx={{
+                      ...styles.removeButton,
+                      ...buttonStyle,
+                      width: '100%',
+                      flexGrow: 1,
+                      // height: '100%',
+                      // margin: 'auto',
+                    }}
                   >
-                    Remove From {context}
-                  </Typography>{' '}
-                </Button>
-                {/* </Grid> */}
-              </ButtonGroup>
-            </Grid>
-          ) : (
-            <>
-              <Grid item xs={6}>
-                <IconButton
-                  aria-label="increase"
-                  onClick={handleAddClick}
-                  sx={{ ...styles.addButton, flexGrow: 1 }}
-                >
-                  <AddCircleOutlineOutlined />
-                </IconButton>
+                    <Typography
+                      variant={
+                        isXSmallScreen
+                          ? 'caption'
+                          : isSmallScreen
+                            ? 'body2'
+                            : 'button'
+                      }
+                    >
+                      Remove From {context}
+                    </Typography>{' '}
+                  </Button>
+                </Grid>
+                {/* </CardActions> */}
               </Grid>
-              <Grid item xs={6}>
-                <IconButton
-                  aria-label="decrease"
-                  onClick={handleRemoveOne}
-                  sx={{ ...styles.removeButton, flexGrow: 1 }}
-                >
-                  <RemoveCircleOutlineOutlined />
-                </IconButton>
-              </Grid>
-            </>
-          )}
-        </Grid>
-      ) : (
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{ ...styles.addButton, width: '100%' }}
-          startIcon={<AddCircleOutlineOutlined />}
-          onClick={() => handleAddClick()}
-        >
-          <Typography
-            variant={isSmallScreen ? 'body2' : 'button'} // Adjust text size based on breakpoint
+            ) : (
+              <>
+                <Grid item xs={6}>
+                  <IconButton
+                    aria-label="increase"
+                    onClick={handleAddClick}
+                    sx={{ ...styles.addButton, flexGrow: 1 }}
+                  >
+                    <AddCircleOutlineOutlined />
+                  </IconButton>
+                </Grid>
+                <Grid item xs={6}>
+                  <IconButton
+                    aria-label="decrease"
+                    onClick={handleRemoveOne}
+                    sx={{ ...styles.removeButton, flexGrow: 1 }}
+                  >
+                    <RemoveCircleOutlineOutlined />
+                  </IconButton>
+                </Grid>
+              </>
+            )}
+          </Grid>
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ ...styles.addButton, width: '100%' }}
+            startIcon={<AddCircleOutlineOutlined />}
+            onClick={() => handleAddClick()}
           >
-            Add to {context}
-          </Typography>
-        </Button>
-      )}
+            <Typography
+              variant={isSmallScreen ? 'body2' : 'button'} // Adjust text size based on breakpoint
+            >
+              Add to {context}
+            </Typography>
+          </Button>
+        )}
+      </CardActions>
     </Box>
   );
 };

@@ -26,40 +26,12 @@ import {
 } from './pageStyles/StyledComponents';
 // import LoadingIndicator2 from '../components/reusable/indicators/LoadingIndicator2';
 // import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
-import pages from './pages.json';
+import pages from '../assets/pages.json';
 import MoneyIcon from '../components/reusable/icons/MoneyIcon';
 import ChartsIcon from '../components/reusable/icons/ChartsIcon';
-const CarouselImage = ({ image, caption }) => {
-  return (
-    <div>
-      <img
-        src={image}
-        alt={caption}
-        style={{ height: '600px', width: '100%', objectFit: 'cover' }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          // backgroundColor: (theme) => theme.palette.secondary.main,
-          color: (theme) =>
-            theme.palette.secondary.contrastText || 'common.white',
-          width: '100%',
-          padding: 2,
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="body1">
-          Browse and shop for your favorite trading cards. Whether buying or
-          selling, we&apos;ve got something for every collector!
-        </Typography>
-      </Box>
-    </div>
-  );
-};
+import { CarouselImage } from './pageStyles/CarouselImage';
 
 const HomePage = () => {
-  // const theme = useTheme();
   const { theme } = useMode();
   const classes = useStyles(theme);
   const { closeModal, isModalOpen, modalContent } = useContext(ModalContext);
@@ -126,7 +98,7 @@ const HomePage = () => {
               autoPlay
               // className={classes.carouselContainer}
             >
-              {carouselImages.map(({ image, caption }, index) => (
+              {carouselImages?.map(({ image, caption }, index) => (
                 <CarouselImage
                   key={index}
                   image={image}
