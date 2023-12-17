@@ -10,6 +10,8 @@ import React, {
 } from 'react';
 import { useCookies } from 'react-cookie';
 import { useUserContext } from '../UserContext/UserContext';
+import { fetchWrapper } from '../Helpers';
+import { getCardQuantity } from './helpers';
 
 export const CartContext = createContext({
   cartData: {
@@ -29,29 +31,19 @@ export const CartContext = createContext({
 });
 
 export const CartProvider = ({ children }) => {
-  const { user, setUser } = useUserContext();
-  const userId = user?.id;
+  // const { user, setUser } = useUserContext();
+  // const userId = user?.id;
   const [cartData, setCartData] = useState({
-    _id: '', // Cart id
-    cart: [], // Cart items
+    _id: '',
+    cart: [],
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   });
-  const [cookie, setCookie] = useCookies(['user', 'cart']);
+  const [cookies, setCookies] = useCookies(['user', 'cart']);
+  const userId = cookies?.user?.id;
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  const getCardQuantity = (cardId) => {
-    let totalItems = 0;
-    let quantityOfSameId = 0;
-    cartData.cart.forEach((item) => {
-      totalItems += item.quantity;
-      if (item.id === cardId) {
-        quantityOfSameId += item.quantity;
-      }
-    });
-    return { totalItems, quantityOfSameId };
-  };
   const getTotalCost = () => {
     return cartData.cart.reduce(
       (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
@@ -68,94 +60,113 @@ export const CartProvider = ({ children }) => {
       ),
     [cartData.cart]
   );
-  const fetchFromServer = async (url, options = {}) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}${url}`,
-        options
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching from server:', error);
-      throw error; // Rethrow the error for handling in calling functions
-    }
-  };
-
   const createUserCart = useCallback(async () => {
+    if (!userId) return;
     try {
-      const newCartData = await fetchFromServer('/api/carts/createEmptyCart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
+      const newCartData = await fetchWrapper(
+        // `${process.env.REACT_APP_SERVER}/api/carts/createEmptyCart`,
+        `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/createCart`,
+
+        'POST',
+        JSON.stringify({ userId })
+      );
+
       setCartDataAndCookie(newCartData);
     } catch (error) {
       console.error('Error creating cart:', error);
+
+      if (error.message.includes('404')) {
+        await createUserCart();
+      }
+
+      if (error.message.includes('500')) {
+        throw new Error('Failed to create cart');
+      }
     }
-  }, [userId, setCookie]);
+  }, [userId]);
 
   const fetchUserCart = useCallback(async () => {
+    if (!userId) return;
     try {
-      const data = await fetchFromServer(`/api/carts/userCart/${userId}`);
-      setCartDataAndCookie(data);
+      const response = await fetchWrapper(
+        `${process.env.REACT_APP_SERVER}${`/api/users/${userId}/cart`}`,
+        'GET'
+      );
+      setCartDataAndCookie(response);
     } catch (error) {
       console.error('Error fetching user cart:', error);
       if (error.message.includes('404')) {
         await createUserCart();
       }
     }
-  }, [userId, setCookie]);
+  }, [userId, setCookies]);
 
-  const setCartDataAndCookie = (newCartData) => {
-    if (newCartData && Array.isArray(newCartData.cart)) {
-      setCartData(newCartData);
-      setCookie('cart', newCartData.cart, {
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-      });
+  // Set cart data and cookie
+  const setCartDataAndCookie = useCallback(
+    (newCartData) => {
+      if (newCartData && Array.isArray(newCartData.cart)) {
+        setCartData(newCartData);
+        setCookies('cart', newCartData.cart, {
+          path: '/',
+          secure: true,
+          sameSite: 'none',
+        });
+      }
+    },
+    [setCookies]
+  );
+
+  // useEffect to fetch and set cart data
+  useEffect(() => {
+    if (userId) {
+      fetchUserCart().catch((error) =>
+        console.error('Failed to fetch or create cart:', error)
+      );
     }
-  };
-
+  }, [userId, fetchUserCart]);
   useEffect(() => {
     const newTotalQuantity = cartData.cart.reduce(
       (total, item) => total + item.quantity,
       0
     );
-    const newTotalPrice = getTotalCost();
     setTotalQuantity(newTotalQuantity);
-    setTotalPrice(newTotalPrice);
-  }, [cartData.cart]);
-
+    setTotalPrice(totalCost);
+  }, [cartData.cart, totalCost]);
   const updateCart = useCallback(
     async (cartId, updatedCart) => {
+      if (!userId) return;
       if (!cartId) return;
       const formattedCartData = {
         cartItems: updatedCart.map((item) => ({
           ...item,
-          id: item.id, // Make sure 'id' is a number
+          id: item.id,
           quantity: item.quantity,
         })),
         userId: userId,
       };
-      const data = await fetchFromServer(`/api/carts/${cartId}/update`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formattedCartData),
-      });
+      // const response = await fetchWrapper(
+      //   `${process.env.REACT_APP_SERVER}${`/api/carts/userCart/${userId}`}`,
+      //   'GET'
+      // );
+      const data = await fetchWrapper(
+        `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/${cartId}/update`,
+        'PUT',
+        formattedCartData
+        // JSON.stringify(formattedCartData)
+      );
       setCartDataAndCookie(data);
       return data;
     },
-    [fetchFromServer, setCartDataAndCookie]
+    [fetchWrapper, setCartDataAndCookie]
   );
   const addOneToCart = useCallback(
     async (cardInfo) => {
       if (!cartData._id) return;
       console.log('Adding one to cart', cardInfo);
-      const { quantityOfSameId, totalItems } = getCardQuantity(cardInfo.id);
+      const { quantityOfSameId, totalItems } = getCardQuantity(
+        cartData,
+        cardInfo.id
+      );
       if (quantityOfSameId >= 3) return;
       let updatedCart = cartData.cart.map((item) =>
         item.id === cardInfo.id
@@ -214,8 +225,8 @@ export const CartProvider = ({ children }) => {
           acc + card.card_prices[0].tcgplayer_price * card.quantity,
         0
       ),
-      getCardQuantity,
       getTotalCost,
+      getCardQuantity,
       addOneToCart,
       removeOneFromCart,
       deleteFromCart,
@@ -226,17 +237,21 @@ export const CartProvider = ({ children }) => {
       totalQuantity,
       totalPrice,
       getCardQuantity,
-      getTotalCost,
       addOneToCart,
       removeOneFromCart,
       deleteFromCart,
       cartData,
+      fetchUserCart,
+      createUserCart,
     ]
   );
 
   useEffect(() => {
-    console.log('CART CONTEXT: ', cartData);
-  }, [cartData]);
+    console.log('CART CONTEXT: ', contextValue);
+    if (userId && typeof userId === 'string') {
+      fetchUserCart();
+    }
+  }, [userId, fetchUserCart]);
 
   return (
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>

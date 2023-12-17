@@ -53,13 +53,13 @@ export const CollectionProvider = ({ children }) => {
   const [allCollections, setAllCollections] = useState([]);
   const [collectionsFetched, setCollectionsFetched] = useState(false);
   const [cardsUpdated, setCardsUpdated] = useState(false);
-
   // state for the collection context
   const [collectionPriceHistory, setCollectionPriceHistory] = useState([]);
   const [allXYValues, setAllXYValues] = useState([]);
   const [currentChartDataSets2, setCurrentChartDataSets2] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
+
   const [lastSavedPrice, setLastSavedPrice] = useState({
     num: 0,
     timestamp: new Date(),
@@ -68,12 +68,12 @@ export const CollectionProvider = ({ children }) => {
     num: 0,
     timestamp: new Date(),
   });
-
   // state for the card in collection context
   const [quantityInCard, setQuantityInCard] = useState(0);
   const [priceInCard, setPriceInCard] = useState(0);
 
   const lastFetchedTime = useRef(null);
+  const [unsavedCards, setUnsavedCards] = useState([]);
   const [
     updatedPricesFromCombinedContext,
     setUpdatedPricesFromCombinedContext,
@@ -95,16 +95,11 @@ export const CollectionProvider = ({ children }) => {
 
     try {
       if (!handleError(userId, 'User ID is missing.')) return;
-
-      // lastFetchedTime.current = Date.now();
       const response = await fetchWrapper(
         createApiUrl(`${userId}/collections`),
         'GET'
       );
       const collections = response?.data || [];
-
-      // console.log('FETCHED COLLECTIONS:', collections);
-
       if (collections?.length > 0) {
         const uniqueCollections = collections?.map(
           removeDuplicatesFromCollection
@@ -211,7 +206,6 @@ export const CollectionProvider = ({ children }) => {
       setCollectionData(initialCollectionState);
     }
   };
-
   // update cards in collection
   const getUpdatedCards = (collection, cardUpdate, operation) => {
     if (!collection?.cards || !Array.isArray(collection.cards)) {
@@ -281,7 +275,8 @@ export const CollectionProvider = ({ children }) => {
         cardsPayload = { cards: updatedCardsData };
         break;
       case 'remove':
-        cardsPayload = { cardIds: [updatedCardsData.id] };
+        // console.log('UPDATED CARDS DATA', updatedCardsData.filter());
+        cardsPayload = { updatedCards: [cardToUpdate] };
         break;
       default:
         console.error('Unsupported operation:', operation);
@@ -355,7 +350,6 @@ export const CollectionProvider = ({ children }) => {
       console.error(`Error in ${operation} operation:`, error);
     }
   };
-
   // update collection details (name, description, etc.)
   const updateCollectionDetails = async (updatedInfo, userId, collectionId) => {
     const { name, description } = updatedInfo;
@@ -513,6 +507,35 @@ export const CollectionProvider = ({ children }) => {
     setCollectionsFetched(false);
     setCardsUpdated(true);
   });
+  // useEffect to ensure allXYValues is always updated (and if it is deleted, this will set the values again)
+  function convertToLabelXYData(collectionPriceHistory) {
+    return collectionPriceHistory?.map((entry) => ({
+      label: entry._id,
+      x: new Date(entry.timestamp),
+      y: entry.num,
+    }));
+  }
+
+  useEffect(() => {
+    if (
+      !selectedCollection?.chartData?.allXYValues ||
+      !Array.isArray(selectedCollection?.chartData?.allXYValues) ||
+      !selectedCollection?.chartData?.allXYValues?.length > 0
+    ) {
+      setAllXYValues(
+        // ...selectedCollection.chartData.allXYValues,
+        filterUniqueDataPoints(
+          convertToLabelXYData(selectedCollection?.collectionPriceHistory)
+        )
+      );
+      setCurrentChartDataSets2(
+        filterUniqueDataPoints(
+          convertToXYLabelData(selectedCollection?.collectionPriceHistory)
+        )
+      );
+    }
+  }, [selectedCollection?.chartData?.allXYValues]);
+
   const contextValue = useMemo(
     () => ({
       allCollections,
@@ -550,6 +573,10 @@ export const CollectionProvider = ({ children }) => {
       updateOneFromCollection: (card, collection) =>
         handleCardOperation(card, 'update', collection, userId),
       updateCollection: (card, operation, collection) =>
+        handleCardOperation(card, operation, collection, userId),
+      updateAllCollectionState: (newData) => updateCollectionData(newData),
+      externalCollectionUpdate: (newData) => getUpdatedCollection(newData),
+      externalOperationHandler: (card, operation, collection) =>
         handleCardOperation(card, operation, collection, userId),
     }),
     [allCollections, selectedCollection, totalPrice, xyData]

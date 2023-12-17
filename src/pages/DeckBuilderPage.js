@@ -60,7 +60,7 @@ const DeckBuilderPage = () => {
           </Container>
           <Grid container>
             <Grid item xs={12}>
-              <DeckBuilderContainer userDecks={userDecks} />
+              <DeckBuilderContainer />
             </Grid>
           </Grid>
         </DeckBuilderBanner>

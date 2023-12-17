@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SwipeableViews from 'react-swipeable-views';
-import { Box, Button, Container, Grid, MobileStepper } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  MobileStepper,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../../context/hooks/colormode';
@@ -17,12 +25,22 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     padding: theme.spacing(1),
     height: '100%',
+    '@media (max-width: 600px)': {
+      width: '100%', // Full width on mobile screens
+      padding: theme.spacing(0.5), // Reduced padding on mobile
+    },
   },
   cardDetails: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  swipeableView: {
+    '@media (max-width: 600px)': {
+      width: '100%', // Full width on mobile screens
+      overflow: 'hidden', // Hide overflow on mobile
+    },
   },
 }));
 
@@ -35,14 +53,19 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   borderRadius: theme.shape.borderRadiusLarge,
   padding: theme.spacing(3),
   color: '#fff',
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1), // Reduced padding on mobile
+  },
 }));
 
 const TopCardsDisplay = () => {
   const { theme } = useMode();
+  const theme2 = useTheme();
   const { selectedCollection } = useCollectionStore();
   const [top5Cards, setTop5Cards] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const classes = useStyles();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const sortedCards = selectedCollection?.cards

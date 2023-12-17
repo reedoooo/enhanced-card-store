@@ -82,12 +82,12 @@ const App = () => {
 
     const fetchData = async () => {
       try {
-        if (userId) {
+        if (userId && typeof userId === 'string') {
           console.log('Fetching user data');
           await Promise.all([
             fetchAllCollectionsForUser(),
             fetchAllDecksForUser(),
-            fetchUserCart(),
+            // fetchUserCart(),
           ]);
         }
       } catch (error) {
@@ -98,7 +98,7 @@ const App = () => {
     };
 
     fetchData();
-  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser, fetchUserCart]);
+  }, [userId, fetchAllCollectionsForUser, fetchAllDecksForUser]);
 
   useEffect(() => {
     if (isPageLoading) {

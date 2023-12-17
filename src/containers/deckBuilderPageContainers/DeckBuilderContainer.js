@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import DeckDisplay from '../../components/grids/deckBuilderGrids/DeckDisplay';
+import DeckDisplay from '../../layout/DeckDisplay';
 import DeckSearch from '../../components/search/DeckSearch';
 import { styled } from '@mui/styles';
 import { useMode } from '../../context/hooks/colormode';
@@ -31,16 +31,16 @@ const RootGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
 }));
 
-const DeckBuilderContainer = ({ userDecks }) => {
+const DeckBuilderContainer = () => {
   const { theme } = useMode();
 
   return (
     <RootGrid container>
       <SearchGrid item xs={12} md={6} lg={4}>
-        <DeckSearch userDecks={userDecks} />
+        <DeckSearch />
       </SearchGrid>
       <DisplayGrid item xs={12} md={6} lg={8}>
-        <DeckDisplay userDecks={userDecks} />
+        <DeckDisplay />
       </DisplayGrid>
     </RootGrid>
   );

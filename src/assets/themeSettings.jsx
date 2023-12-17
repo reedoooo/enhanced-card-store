@@ -73,6 +73,7 @@ export const themeSettings = (mode) => {
         light: colors.greenAccent[100],
         lighter: colors.greenAccent[200],
         evenLighter: colors.greenAccent[300],
+        lightish: colors.greenAccent[400],
         main: colors.greenAccent[500],
         dark: colors.greenAccent[200],
         darker: colors.greenAccent[600],

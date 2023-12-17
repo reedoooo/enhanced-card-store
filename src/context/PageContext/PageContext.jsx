@@ -51,6 +51,14 @@ export const PageProvider = ({ children }) => {
     if (isPageLoading) return <SplashPage />;
   };
 
+  // const setLoader = (isLoading) => {
+  //   if (typeof isLoading !== 'boolean') {
+  //     console.error('Invalid argument type for setLoader: Expected boolean');
+  //     return;
+  //   }
+  //   setState((prev) => ({ ...prev, isLoading }));
+  // };
+
   const value = {
     isPageLoading,
     pageError,

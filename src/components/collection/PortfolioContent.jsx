@@ -79,7 +79,7 @@ const PortfolioContent = ({ selectedCards, removeCard }) => {
           width: '100%',
           maxWidth: '100vw',
           justifyContent: 'center',
-          margin: 'auto',
+          // margin: 'auto',
         }}
       >
         <Grid

@@ -9,7 +9,7 @@
     "@fortawesome/fontawesome-free": "^6.4.0",
     "@mui/icons-material": "^5.14.1",
     "@mui/joy": "^5.0.0-beta.16",
-    "@mui/material": "^5.14.1",
+    "@mui/material": "^5.14.20",
     "@mui/styles": "^5.14.13",
     "@mui/system": "^5.14.1",
     "@mui/x-data-grid": "^6.16.2",
@@ -50,6 +50,7 @@
     "socket.io-client": "^4.7.2",
     "stripe": "^12.14.0",
     "styled-components": "^6.0.5",
+    "swiper": "^11.0.5",
     "three": "^0.156.1",
     "web-vitals": "^2.1.4"
   },

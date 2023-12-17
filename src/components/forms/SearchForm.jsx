@@ -1,67 +1,44 @@
 import React from 'react';
-import { TextField, Button, Paper } from '@mui/material';
 import { useMode } from '../../context/hooks/colormode';
+import { StyledButton, StyledPaper, StyledTextField } from './styled';
+import SearchButton from '../buttons/other/SearchButton';
 
-const SearchForm = ({ searchTerm, handleChange, handleSubmit }) => {
+const SearchForm = ({
+  searchTerm,
+  handleChange,
+  onFocus,
+  onBlur,
+  handleSubmit,
+}) => {
   const { theme } = useMode();
 
   return (
-    <Paper
-      sx={{
-        width: '100%',
-        padding: theme.spacing(3),
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: theme.palette.secondary.light,
-        boxShadow: theme.shadows[3], // Use the theme's predefined shadows
-        maxWidth: 400,
-        margin: 'auto',
-      }}
-    >
+    <StyledPaper theme={theme}>
       <form
-        onSubmit={handleSubmit}
+        // onSubmit={handleSubmit}
         style={{
           display: 'flex',
           flexDirection: 'column',
           gap: theme.spacing(2),
-          padding: theme.spacing(2),
+          // background: theme.palette.background.quaternary,
         }}
       >
-        <TextField
+        <StyledTextField
           value={searchTerm}
           onChange={handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
           label="Search for cards"
           variant="outlined"
           fullWidth
-          sx={{
-            '& label.Mui-focused': {
-              color: theme.palette.primary.main,
-            },
-            '& .MuiOutlinedInput-root': {
-              '&:hover fieldset': {
-                borderColor: theme.palette.background.tertiary,
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: theme.palette.primary.main,
-              },
-            },
-          }}
+          theme={theme}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{
-            backgroundColor: theme.palette.success.main,
-            color: theme.palette.getContrastText(theme.palette.success.main),
-            '&:hover': {
-              backgroundColor: theme.palette.success.dark,
-            },
-          }}
-          fullWidth
-        >
+        <SearchButton handleSubmit={handleSubmit} />
+        {/* <StyledButton type="submit" fullWidth theme={theme}>
           Search
-        </Button>
+        </StyledButton> */}
       </form>
-    </Paper>
+    </StyledPaper>
   );
 };
 

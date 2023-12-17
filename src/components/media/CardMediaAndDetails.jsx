@@ -41,14 +41,14 @@ const CardMediaAndDetails = ({ card }) => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12}>
         <CardMediaSection
           isRequired={false}
           card={updatedCard}
           imgUrl={imgUrl}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12}>
         <CardDetailsContainer card={updatedCard} />
       </Grid>
     </Grid>

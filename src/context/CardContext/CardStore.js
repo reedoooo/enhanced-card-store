@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+} from 'react';
 import { useCookies } from 'react-cookie';
 import { useCombinedContext } from '../CombinedContext/CombinedProvider';
 import { useCollectionStore } from '../CollectionContext/CollectionContext';
@@ -16,13 +23,12 @@ export const CardProvider = ({ children }) => {
   const { allCollections, setAllCollections } = useCollectionStore();
   // const [searchParam, setSearchParam] = useState('');
   // const [searchParams, setSearchParams] = useState([]);
-  const [searchParams, setSearchParams] = useState({
-    name: '',
-    type: '',
-    attribute: '',
-    race: '',
-  });
-  const { listOfMonitoredCards } = useCombinedContext();
+  // const [searchParams, setSearchParams] = useState({
+  //   name: '',
+  //   type: '',
+  //   attribute: '',
+  //   race: '',
+  // });
   const currentCart = cookies.cart || [];
   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
   const [searchData, setSearchData] = useState([]);
@@ -134,10 +140,10 @@ export const CardProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Check if there's any collection that requires an update
-    const hasMissingData = allCollections.some((collection) =>
-      collection.cards.some(
+    const hasMissingData = allCollections?.some((collection) =>
+      collection.cards?.some(
         (card) => !card.card_images || !card.card_sets || !card.card_prices
       )
     );
@@ -165,7 +171,6 @@ export const CardProvider = ({ children }) => {
     () => ({
       cardsArray,
       searchData,
-      searchParams,
       deckSearchData,
       savedDeckData,
       randomCardData,
@@ -180,7 +185,6 @@ export const CardProvider = ({ children }) => {
       isCardDataValid,
       slicedAndMergedSearchData,
 
-      setSearchParams,
       handlePatch,
       setSlicedAndMergedSearchData,
       setOrganizedSearchData,

@@ -8,8 +8,6 @@ import {
   MobileStepper,
   Typography,
 } from '@mui/material';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context/hooks/colormode';
 import { makeStyles, styled } from '@mui/styles';
 import { ModalContext } from '../../context/ModalContext/ModalContext';
@@ -20,13 +18,24 @@ import {
 } from '../../pages/pageStyles/StyledComponents';
 import { AspectRatio } from '@mui/joy';
 import { debounce } from 'lodash';
-import CardDetailsContainer from '../../containers/CardDetailsContainer';
 const useStyles = makeStyles((theme) => ({
   cardDetails: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cardMobile: {
+    '@media (max-width: 600px)': {
+      width: '100%', // Full width on mobile screens
+    },
+  },
+  // Styles for the chart container on mobile
+  chartContainerMobile: {
+    '@media (max-width: 600px)': {
+      width: '100%', // Full width on mobile screens
+      padding: theme.spacing(1), // Reduced padding on mobile
+    },
   },
 }));
 
@@ -72,7 +81,7 @@ const CarouselCard = ({ card }) => {
           justifyContent: 'space-between',
         }}
       >
-        <Grid item xs={4} md={4}>
+        <Grid item xs={12} sm={4} className={classes.cardMobile}>
           <GenericCard
             card={card}
             onClick={() => handleClick()}
@@ -82,23 +91,24 @@ const CarouselCard = ({ card }) => {
         </Grid>
         {/* Top section for card details */}
         <Grid
-          container
           item
-          xs={8}
-          md={8}
+          xs={12}
+          sm={8}
+          container
           alignItems="center"
           justifyContent="center"
         >
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%',
-              height: '100%',
-              padding: theme.spacing(2),
-            }}
+            className={classes.chartContainerMobile}
+            // sx={{
+            //   display: 'flex',
+            //   flexDirection: 'column',
+            //   justifyContent: 'center',
+            //   alignItems: 'center',
+            //   width: '100%',
+            //   height: '100%',
+            //   padding: theme.spacing(2),
+            // }}
           >
             <Grid item xs={12}>
               <Box

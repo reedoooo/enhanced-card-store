@@ -56,6 +56,8 @@ const GenericActionButtons = ({
             card={card}
             context={context}
             page={page}
+            onSuccess={onSuccess}
+            onFailure={onFailure}
             contextProps={modifiedContextProps}
             closeModal={() => setModalOpen(false)}
             open={isModalOpen}

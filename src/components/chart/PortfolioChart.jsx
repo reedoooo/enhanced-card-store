@@ -6,7 +6,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Box, Container, Grid, Paper, styled, useTheme } from '@mui/material';
+import {
+  Box,
+  Container,
+  Grid,
+  Paper,
+  styled,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import LinearChart from './LinearChart';
 import { useChartContext } from '../../context/ChartContext/ChartContext';
 import ErrorBoundary from '../../context/ErrorBoundary';
@@ -58,6 +66,7 @@ const PortfolioChart = () => {
     useChartContext();
   const { isLoading, setIsLoading, displayLoadingIndicator } = usePageContext();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
   const chartContainerRef = useRef(null);
@@ -135,12 +144,13 @@ const PortfolioChart = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: theme.spacing(2),
+        padding: isMobile ? theme.spacing(1) : theme.spacing(2),
         gap: theme.spacing(2),
-        background: '#333', // Darker background for Paper
-        color: '#fff', // White text color
+        background: '#333',
+        color: '#fff',
         border: '1px solid #555',
         borderRadius: 2,
+        justifyContent: 'center', // Centers vertically
       }}
     >
       <ErrorBoundary>

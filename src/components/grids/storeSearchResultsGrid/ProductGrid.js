@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Grid, Container } from '@mui/material';
-import StoreItem from '../StoreItem';
+import StoreItem from '../StoreItem'; // Ensure StoreItem is wrapped with React.memo
 import CustomPagination from '../../reusable/CustomPagination';
 import { useCardStore, useMode } from '../../../context';
+import SkeletonStoreItem from '../SkeletonStoreItem'; // A new component for skeleton screens
 
 const ProductGrid = ({ updateHeight }) => {
   const { theme } = useMode();
@@ -12,7 +13,7 @@ const ProductGrid = ({ updateHeight }) => {
   const itemsPerPage = 12;
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  const containerRef = useRef(null); // useRef hook to track the Container
+  const containerRef = useRef(null);
 
   const handlePagination = (event, value) => setPage(value);
 
@@ -20,14 +21,13 @@ const ProductGrid = ({ updateHeight }) => {
     () => searchData?.slice(start, end),
     [searchData, page]
   );
-
   useEffect(() => {
     setSlicedAndMergedSearchData(currentStoreSearchData);
     if (containerRef.current) {
       const height = containerRef.current.clientHeight;
-      updateHeight(height); // Update the height in StorePage
+      updateHeight(height);
     }
-  }, [currentStoreSearchData, updateHeight]); // Add updateHeight to dependency array
+  }, [currentStoreSearchData, updateHeight]);
 
   return (
     <Container
@@ -41,12 +41,24 @@ const ProductGrid = ({ updateHeight }) => {
       }}
     >
       <Grid container spacing={3}>
-        {isCardDataValid &&
-          currentStoreSearchData?.map((card, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <StoreItem card={card} context="Cart" page="StorePage" />
-            </Grid>
-          ))}
+        {isCardDataValid
+          ? currentStoreSearchData?.map((card, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <StoreItem
+                  card={card}
+                  context="Cart"
+                  page="Store"
+                  index={index}
+                />
+              </Grid>
+            ))
+          : Array(itemsPerPage)
+              .fill(0)
+              .map((_, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <SkeletonStoreItem />
+                </Grid>
+              ))}
       </Grid>
       <CustomPagination
         totalCount={searchData?.length}

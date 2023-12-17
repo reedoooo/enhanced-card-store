@@ -7,7 +7,10 @@ import {
   Person as ProfileIcon,
 } from '@mui/icons-material';
 import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
+import { Badge } from '@mui/material';
+import { useCartStore } from '../../../context/CartContext/CartContext';
 export const getMenuItemsData = (isLoggedIn) => {
+  const { cartCardQuantity } = useCartStore();
   // Error handling: Check if 'isLoggedIn' is a boolean
   if (typeof isLoggedIn !== 'boolean') {
     console.error("Invalid argument: 'isLoggedIn' should be a boolean");
@@ -18,12 +21,6 @@ export const getMenuItemsData = (isLoggedIn) => {
     const baseMenuItems = [
       { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
       {
-        name: 'Store',
-        icon: <StoreIcon />,
-        to: '/store',
-        requiresLogin: !isLoggedIn,
-      },
-      {
         name: 'Deck Builder',
         // icon: <DeckOfCardsIcon />,
         icon: <DeckBuilderIcon />,
@@ -31,15 +28,34 @@ export const getMenuItemsData = (isLoggedIn) => {
         requiresLogin: false,
       },
       {
-        name: 'Cart',
-        icon: <CartIcon />,
-        to: '/cart',
-        requiresLogin: !isLoggedIn,
-      },
-      {
         name: 'Collection',
         icon: <CollectionIcon />,
         to: '/collection',
+        requiresLogin: !isLoggedIn,
+      },
+      {
+        name: 'Store',
+        icon: <StoreIcon />,
+        to: '/store',
+        requiresLogin: !isLoggedIn,
+      },
+      {
+        name: 'Cart',
+        icon: (
+          <Badge
+            badgeContent={cartCardQuantity}
+            color="secondary"
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+
+              paddingRight: '1rem',
+            }}
+          >
+            <CartIcon />
+          </Badge>
+        ),
+        to: '/cart',
         requiresLogin: !isLoggedIn,
       },
       {

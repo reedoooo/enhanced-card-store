@@ -61,6 +61,9 @@ export const defaultContextValue = {
   addOneToCollection: () => {},
   removeOneFromCollection: () => {},
   getCardQuantity: () => {},
+  externalOperationHandler: () => {},
+  externalCollectionUpdate: () => {},
+  updateAllCollectionState: () => {},
 };
 
 export const transformPriceHistoryToXY = (collectionPriceHistory) => {

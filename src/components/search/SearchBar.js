@@ -8,7 +8,7 @@ import search from './search.json';
 import { useMode } from '../../context/hooks/colormode';
 import SearchForm from '../forms/SearchForm';
 
-const SearchBar = () => {
+const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
   const { theme } = useMode();
   const { initialState, filters } = search;
   const [searchParams, setSearchParams] = useState({
@@ -21,8 +21,8 @@ const SearchBar = () => {
   const handleChange = (name, newValue) => {
     setSearchParams((prev) => ({ ...prev, [name]: newValue }));
   };
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const handleSubmit = () => {
+    // e.preventDefault(); // Prevent default form submission
     handleRequest(searchParams);
   };
   return (
@@ -52,7 +52,7 @@ const SearchBar = () => {
           sx={{
             mb: 3,
             fontWeight: 'bold',
-            color: theme.palette.primary.main,
+            color: theme.palette.background.main,
             textTransform: 'uppercase',
           }}
         >
@@ -68,6 +68,8 @@ const SearchBar = () => {
               searchTerm={searchParams.name}
               handleChange={(e) => handleChange('name', e.target.value)}
               handleSubmit={handleSubmit}
+              onFocus={onSearchFocus}
+              onBlur={onSearchBlur}
             />
           </Grid>
 
@@ -85,7 +87,7 @@ const SearchBar = () => {
               />
             </Grid>
           ))}
-          <Grid
+          {/* <Grid
             item
             xs={12}
             sx={{
@@ -95,7 +97,7 @@ const SearchBar = () => {
             }}
           >
             <SearchButton handleSubmit={handleSubmit} />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </Paper>
