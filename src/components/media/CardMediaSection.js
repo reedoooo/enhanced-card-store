@@ -71,6 +71,7 @@ const CardMediaSection = React.forwardRef(
         setModalImgUrl(imgUrl);
       }
     }, [modalImgUrl, setModalImgUrl, clickedCard]);
+
     return (
       <div
         className={classes.mediaContainer}
@@ -96,32 +97,6 @@ const CardMediaSection = React.forwardRef(
     );
   }
 );
-//     return (
-//       <div className={classes.mediaContainer} ref={ref}>
-//         <ReusableCardMedia
-//           imgUrl={imgUrl}
-//           {...eventHandlers} // Spread event handlers conditionally
-//         />
-//         {isRequired && isHovered && ref.current && (
-//           <Popover
-//             open={isHovered}
-//             anchorEl={ref?.current}
-//             anchorOrigin={anchorOrigin}
-//             transformOrigin={transformOrigin}
-//             onClose={() => {
-//               if (typeof handleInteraction === 'function') {
-//                 handleInteraction(false);
-//               }
-//             }}
-//             disableRestoreFocus
-//           >
-//             <CardToolTip card={card} />
-//           </Popover>
-//         )}
-//       </div>
-//     );
-//   }
-// );
 
 CardMediaSection.displayName = 'CardMediaSection';
 

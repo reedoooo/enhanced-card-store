@@ -1,27 +1,17 @@
 export const initialState = {
-  allData: {},
   data: {},
   messageTest: {},
   userData: {},
-  existingChartData: {},
   collectionData: {},
   allCollectionsUpdated: {},
-  simData: {},
   allCollectionData: {},
   cronData: {},
-  finalUpdateData: {},
   cardPrices: {},
   eventsTriggered: null,
-  cardsWithChangedPrice: {},
-  previousDayTotalPrice: 0,
-  dailyPriceChange: 0,
-  priceDifference: 0,
   allCardPrices: {},
   retrievedListOfMonitoredCards: {},
   listOfMonitoredCards: {},
   listOfSimulatedCards: {},
-  isLoading: false,
-  cronTriggerTimestamps: [],
   emittedResponses: [],
   error: null,
   isDelaying: false, // Added isDelaying to initialState as it is referred in your code
@@ -48,18 +38,10 @@ export const generateListOfMonitoredCards = (allCollections) => {
   });
 };
 export const updateCardPricesInList = (listOfMonitoredCards, cardPrices) => {
-  // if (!data || !Array.isArray(data)) {
-  //   console.error('Data is undefined or not an array');
-  //   return; // or handle the error appropriately
-  // }
   return listOfMonitoredCards.map((originalCard) => {
     const updatedCardInfo =
       cardPrices?.find((price) => price.id === originalCard.id) || {};
-
-    // If latestPrice is different, update lastSavedPrice and priceHistory
     if (updatedCardInfo.latestPrice?.num !== originalCard.latestPrice?.num) {
-      // console.log('ORIGINAL CARD: ', originalCard);
-      // console.log('UPDATED CARD: ', updatedCardInfo);
       return {
         ...originalCard,
         ...updatedCardInfo,
@@ -71,10 +53,7 @@ export const updateCardPricesInList = (listOfMonitoredCards, cardPrices) => {
             updatedCardInfo?.latestPrice?.timestamp || new Date().toISOString(),
         },
         priceHistory: [
-          // Add the previous price to the price history
           ...originalCard.priceHistory,
-
-          // Add the latest price to the price history
           updatedCardInfo?.latestPrice,
         ],
       };
@@ -82,4 +61,35 @@ export const updateCardPricesInList = (listOfMonitoredCards, cardPrices) => {
 
     return originalCard;
   });
+};
+// Regular function to process unsaved cards
+export const processUnsavedCards = (
+  allCollections,
+  userId,
+  externalOperationHandler,
+  externalCollectionUpdate
+) => {
+  if (!allCollections || !userId) return;
+  console.log('allCollections:', allCollections);
+  const unsavedCollections = allCollections
+    ?.map((collection) => {
+      const unsavedCardsInCollection = collection?.cards?.filter(
+        (card) => card.tag === 'unsaved'
+      );
+      return {
+        collectionId: collection._id,
+        unsavedCards: unsavedCardsInCollection,
+      };
+    })
+    .filter((collection) => collection.unsavedCards.length > 0);
+
+  const unsavedCardsPromises = unsavedCollections?.flatMap((collection) =>
+    collection?.unsavedCards?.map((card) =>
+      externalOperationHandler(card, 'update', collection, userId).then(() =>
+        externalCollectionUpdate(collection, null, 'update', userId)
+      )
+    )
+  );
+
+  return Promise.all(unsavedCardsPromises);
 };

@@ -7,45 +7,26 @@ import React, {
   useContext,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { useCardStore } from '../CardContext/CardStore';
-import { fetchWrapper } from '../Helpers.jsx';
-import { BASE_API_URL, createApiUrl } from '../Helpers.jsx';
+import { createApiUrl, fetchWrapper } from '../Helpers.jsx';
+import { BASE_API_URL } from '../Helpers.jsx';
 import {
   calculateAndUpdateTotalPrice,
   removeDuplicateDecks,
+  formatCardData,
+  defaultContextValue,
+  handleCardAddition,
+  handleCardUpdate,
 } from './helpers.jsx';
-export const DeckContext = createContext({
-  deckData: {}, // Provide default values for context properties
-  allDecks: [],
-  selectedDeck: {},
-  userDecks: [],
-  totalQuantity: () => 0,
-  setSelectedDeck: () => {},
-  addOneToDeck: () => {},
-  removeOneFromDeck: () => {},
-  getTotalCost: () => 0,
-  getCardQuantity: () => 0,
-  updateAndSyncDeck: () => {},
-  fetchAllDecksForUser: () => {},
-});
+
+export const DeckContext = createContext(defaultContextValue);
 
 export const DeckProvider = ({ children }) => {
-  const { getCardData } = useCardStore();
   const [cookies] = useCookies(['user']);
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
+  const [selectedCards, setSelectedCards] = useState(selectedDeck?.cards || []);
   const userId = cookies?.user?.id;
-
-  // const calculateAndUpdateTotalPrice = (deck) => {
-  //   let totalPrice = 0;
-  //   if (deck && deck.cards) {
-  //     totalPrice = deck.cards.reduce((total, card) => {
-  //       return total + card.price * card.quantity;
-  //     }, 0);
-  //   }
-  //   return totalPrice;
-  // };
 
   const fetchDecksForUser = useCallback(async () => {
     if (!userId) {
@@ -60,14 +41,12 @@ export const DeckProvider = ({ children }) => {
       return null;
     }
   }, [userId]);
-
   const fetchAndSetDecks = useCallback(async () => {
     try {
       const userDecks = await fetchDecksForUser();
 
       if (userDecks.data && userDecks.data.length > 0) {
         const uniqueDecks = removeDuplicateDecks(userDecks.data);
-        // console.log('UNIQUE DECKS:', uniqueDecks);
         setAllDecks((prevDecks) =>
           removeDuplicateDecks([...prevDecks, ...uniqueDecks])
         );
@@ -91,54 +70,41 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to fetch decks: ${error.message}`);
     }
   }, [fetchDecksForUser, userId]);
-
-  const formatCardData = (card) => ({
-    id: card.id,
-    ...Object.fromEntries(
-      [
-        'name',
-        'type',
-        'frameType',
-        'description',
-        'card_images',
-        'archetype',
-        'atk',
-        'def',
-        'level',
-        'race',
-        'attribute',
-        'quantity',
-      ].map((key) => [key, card[key] || null])
-    ),
-  });
-
   const updateAndSyncDeck = async (newDeckData) => {
-    console.log('Updated Deck Name:', newDeckData.name);
-    console.log('Updated Deck Description:', newDeckData.description);
-
-    setDeckData(newDeckData);
-    setSelectedDeck(newDeckData); // <-- This line ensures that the selected deck is updated
-    setAllDecks((prevDecks) => {
-      const newAllDecks = prevDecks.map((deck) =>
-        deck._id === newDeckData._id ? newDeckData : deck
-      );
-      return prevDecks.some((deck) => deck._id === newDeckData._id)
-        ? newAllDecks
-        : [...newAllDecks, newDeckData];
-    });
-
-    if (!userId) {
-      console.error('No user ID found.');
-      return;
-    }
-
     try {
-      const url = `${BASE_API_URL}/${userId}/decks/${selectedDeck._id}`; // Removed deckId from the URL
-      const bodyData = {
-        ...newDeckData,
-        deckId: newDeckData._id, // Included deckId in the body
-      };
-      await fetchWrapper(url, 'PUT', bodyData);
+      if (Array.isArray(newDeckData)) {
+        // If newDeckData is an array, update all decks
+        setAllDecks(newDeckData);
+      } else if (newDeckData && typeof newDeckData === 'object') {
+        // If newDeckData is an object, update the selected deck and sync it with allDecks
+        setSelectedDeck(newDeckData);
+        setDeckData(newDeckData);
+        setAllDecks((prevDecks) => {
+          const newAllDecks = prevDecks.map((deck) =>
+            deck._id === newDeckData._id ? newDeckData : deck
+          );
+          return prevDecks.some((deck) => deck._id === newDeckData._id)
+            ? newAllDecks
+            : [...newAllDecks, newDeckData];
+        });
+      } else {
+        console.warn(
+          'Unable to determine the type of deck data for update.',
+          newDeckData
+        );
+        return;
+      }
+
+      if (!userId) {
+        console.error('No user ID found.');
+        return;
+      }
+
+      const deckId = newDeckData._id || selectedDeck._id;
+      // Synchronize with backend
+      console.log('Updating deck in backend:', newDeckData);
+      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/updateDeck`;
+      await fetchWrapper(url, 'PUT', { allDecks: [newDeckData] });
     } catch (error) {
       console.error(`Failed to update deck in backend: ${error.message}`);
     }
@@ -146,16 +112,18 @@ export const DeckProvider = ({ children }) => {
 
   const createUserDeck = async (userId, newDeckInfo) => {
     try {
-      const url = `${BASE_API_URL}/${userId}/decks`;
-      const cards = Array.isArray(newDeckInfo.cards)
-        ? newDeckInfo.cards.map(formatCardData)
-        : [];
+      const url = `${BASE_API_URL}/${userId}/decks/createDeck`;
+      // const cards = Array.isArray(newDeckInfo.cards)
+      //   ? newDeckInfo.cards.map(formatCardData)
+      //   : [];
+      console.log('NEW DECK INFO:', newDeckInfo);
       const data = await fetchWrapper(url, 'POST', {
-        cards,
-        userId,
+        cards: [],
         totalPrice: 0,
-        description: newDeckInfo.description || '',
-        name: newDeckInfo.name || '',
+        description: newDeckInfo.updatedInfo.description || '',
+        name: newDeckInfo.updatedInfo.name || '',
+        tags: newDeckInfo.updatedInfo.tags || [],
+        color: newDeckInfo.updatedInfo.color || '',
       });
       console.log('NEW DECK DATA:', data);
       setDeckData(data.data);
@@ -165,77 +133,156 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to create a new deck: ${error.message}`);
     }
   };
-
-  const addOrRemoveCard = async (card, isAdding, isRemoving) => {
-    if (!selectedDeck || !selectedDeck._id) {
-      console.error('No valid deck to add or remove a card.');
-      return;
-    }
-
-    let cardPrice = 0;
-    if (
-      card.card_prices &&
-      card.card_prices.length > 0 &&
-      card.card_prices[0].tcgplayer_price
-    ) {
-      cardPrice = parseFloat(card.card_prices[0].tcgplayer_price);
-    }
-
-    // Create a copy of the current state
-    const currentCards = Array.isArray(selectedDeck?.cards)
-      ? [...selectedDeck.cards]
-      : [];
-    let currentTotalPrice = selectedDeck.totalPrice || 0;
-
-    // Find the card index in the current state
-    const cardIndex = currentCards.findIndex((item) => item.id === card.id);
-
-    if (isAdding) {
-      console.log('isAdding:', isAdding);
-      if (cardIndex !== -1) {
-        currentCards[cardIndex].quantity += 1;
-      } else {
-        currentCards.push({ ...card, quantity: 1, price: cardPrice });
-      }
-      currentTotalPrice += cardPrice;
-    } else {
-      console.log('isRemoving:', isRemoving);
-      if (cardIndex !== -1) {
-        currentCards[cardIndex].quantity -= 1;
-        if (currentCards[cardIndex].quantity <= 0) {
-          currentCards.splice(cardIndex, 1);
-        }
-        currentTotalPrice -= cardPrice;
-      }
-    }
-
-    // Assuming you have a function to update the total price like in the example
-    currentTotalPrice = calculateAndUpdateTotalPrice({
-      ...selectedDeck,
-      cards: currentCards,
-    });
+  const deleteUserDeck = async (deckId) => {
+    // if (!deckId) {
+    //   setSelectedDeck(allDecks[0]);
+    //   console.warn('No deck ID provided. Adding card to first deck in list.');
+    // }
 
     try {
-      const url = `${BASE_API_URL}/${userId}/decks/${selectedDeck._id}`;
-      const updatedDeck = await fetchWrapper(url, 'PUT', {
-        cards: currentCards,
-        totalPrice: currentTotalPrice,
-      });
+      // Making API call to delete the deck
+      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/deleteDeck`;
+      await fetchWrapper(url, 'DELETE');
 
-      setSelectedDeck({
-        ...updatedDeck.data,
-        cards: currentCards,
-        totalPrice: currentTotalPrice,
-      });
-      updateAndSyncDeck({ ...updatedDeck.data, totalPrice: currentTotalPrice });
+      // Update local state to reflect the deletion
+      setAllDecks((prevDecks) =>
+        prevDecks.filter((deck) => deck._id !== deckId)
+      );
+      if (selectedDeck?._id === deckId) {
+        setSelectedDeck(null); // Clear the selected deck if it's the one being deleted
+      }
     } catch (error) {
-      console.error(`Failed to update the deck: ${error.message}`);
+      console.error(`Failed to delete deck: ${error.message}`);
     }
   };
 
-  const getQuantity = (cardId) => {
-    const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
-    return foundCard?.quantity || 0;
+  const addCardToDeck = async (newCard, deckId) => {
+    if (!deckId || !newCard || !newCard.id) {
+      console.error('Invalid card data', deckId, newCard);
+      return;
+    }
+    try {
+      // Update deck data locally
+      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/add`;
+      const responseData = await fetchWrapper(url, 'POST', {
+        cards: [newCard],
+      });
+
+      if (selectedDeck._id === deckId) {
+        const updatedCards = handleCardAddition(selectedDeck.cards, newCard);
+        setSelectedDeck({ ...selectedDeck, cards: updatedCards });
+      }
+      updateAndSyncDeck(responseData.allDecks);
+    } catch (error) {
+      console.error(`Failed to add card to deck: ${error.message}`);
+    }
+  };
+  const removeCardFromDeck = async (deckId, card) => {
+    if (!card) {
+      console.error('Invalid card data', card);
+      return;
+    }
+    if (!deckId) {
+      setSelectedDeck(allDecks[0]);
+      console.warn('No deck ID provided. Adding card to first deck in list.');
+      deckId = allDecks[0]._id;
+    }
+    try {
+      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/remove`;
+      const responseData = await fetchWrapper(url, 'POST', {
+        cards: [card],
+      });
+
+      // Update deck data remotely
+      updateAndSyncDeck(responseData.allDecks);
+
+      // Update deck data locally
+      if (selectedDeck._id === deckId) {
+        const updatedDeck = responseData.allDecks.find(
+          (deck) => deck._id === deckId
+        ).cards;
+        const updatedCards = updatedDeck.cards;
+        setSelectedDeck({ ...selectedDeck, cards: updatedCards });
+      }
+    } catch (error) {
+      console.error(`Failed to remove card from deck: ${error.message}`);
+    }
+  };
+  const updateCardInDeck = async (updatedCard, deckId) => {
+    if (!deckId || !updatedCard || !updatedCard.id) {
+      console.error('Invalid card data', deckId, updatedCard);
+      return;
+    }
+
+    try {
+      const currentDeck = allDecks.find((deck) => deck._id === deckId);
+      if (!currentDeck) {
+        throw new Error('Deck not found locally');
+      }
+
+      const originalCard = currentDeck.cards.find(
+        (card) => card.id === updatedCard.id
+      );
+      if (originalCard && originalCard.quantity === updatedCard.quantity) {
+        console.log('No change in card quantity. Skipping update.');
+        return; // Skip update if quantity hasn't changed
+      }
+
+      const updatedCards = handleCardUpdate(currentDeck.cards, updatedCard);
+      const updatedDeck = { ...currentDeck, cards: updatedCards };
+
+      if (selectedDeck._id === deckId) {
+        setSelectedDeck(updatedDeck);
+      }
+
+      updateAndSyncDeck([
+        ...allDecks.filter((deck) => deck._id !== deckId),
+        updatedDeck,
+      ]);
+
+      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/update`;
+      await fetchWrapper(url, 'PUT', { cards: [updatedCard] });
+    } catch (error) {
+      console.error(`Failed to update card in deck: ${error.message}`);
+    }
+  };
+  const updateDeckDetails = async (userId, deckId, updatedInfo) => {
+    const { name, description, tags, color } = updatedInfo;
+    if (!userId) {
+      console.error('User ID is missing.');
+      return;
+    }
+    if (!deckId) {
+      console.error('Deck ID is missing.');
+      return;
+    }
+
+    const updatedDeck = {
+      ...selectedDeck,
+      name,
+      description,
+      tags,
+      color,
+    };
+
+    setSelectedDeck(updatedDeck);
+    setAllDecks((prevDecks) =>
+      prevDecks.map((deck) => (deck._id === deckId ? updatedDeck : deck))
+    );
+
+    try {
+      const deckEndpoint = createApiUrl(
+        `${userId}/decks/${deckId}/deckDetails`
+      );
+      await fetchWrapper(deckEndpoint, 'PUT', {
+        name: name,
+        description: description,
+        tags: tags,
+        color: color,
+      });
+    } catch (error) {
+      console.error('Error updating deck details:', error);
+    }
   };
   const getCardQuantity = (cardId) => {
     const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
@@ -247,16 +294,30 @@ export const DeckProvider = ({ children }) => {
     allDecks,
     selectedDeck,
     userDecks: allDecks,
-    totalQuantity: getQuantity,
-    setSelectedDeck,
-    addOneToDeck: (card) => addOrRemoveCard(card, true, false),
-    removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),
+    selectedCards,
+    setSelectedCards,
+    totalQuantity: getCardQuantity,
+    getCardQuantity: getCardQuantity,
     getTotalCost: () =>
       selectedDeck?.cards?.reduce((acc, card) => acc + (card.cost || 0), 0) ||
       0,
-    getCardQuantity: getCardQuantity,
+    setSelectedDeck,
+    // addOneToDeck: (card) => addOrRemoveCard(card, true, false),
+    // removeOneFromDeck: (card) => addOrRemoveCard(card, false, true),
+    addOneToDeck: (card, deckId) => addCardToDeck(card, deckId),
+    removeOneFromDeck: (card, deckId) => removeCardFromDeck(card, deckId),
+    updateOneInDeck: (card, deckId, userId) =>
+      updateCardInDeck(card, deckId, userId),
+    updateDeckDetails: (userId, deckId, updatedInfo) =>
+      updateDeckDetails(userId, deckId, updatedInfo),
+    createUserDeck,
+    deleteUserDeck,
+
     updateAndSyncDeck,
     fetchAllDecksForUser: fetchAndSetDecks,
+    // addCardsToDeck: addCardToDeck,
+    // removeCardsFromDeck: removeCardFromDeck,
+    // updateCardsInDeck: updateCardInDeck,
   };
 
   useEffect(() => {

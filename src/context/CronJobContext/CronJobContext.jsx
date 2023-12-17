@@ -8,8 +8,7 @@ const CronJobContext = createContext();
 export const useCronJobContext = () => useContext(CronJobContext);
 
 export const CronJobProvider = ({ children }) => {
-  const { user } = useUserContext();
-  const userId = user?.id;
+  const { user, userId } = useUserContext();
   const { selectedCollection } = useCollectionStore(); // Assuming this is where you get your selectedCollection
   const { handleSendAllCardsInCollections, listOfMonitoredCards } =
     useCombinedContext();
@@ -22,7 +21,6 @@ export const CronJobProvider = ({ children }) => {
       const currentTime = new Date().getTime();
       const timeDifference = currentTime - lastCronJobTriggerTime;
 
-      // Check the conditions for triggering the cron job
       if (
         timeDifference >= 120000 &&
         listOfMonitoredCards.length > 5 &&

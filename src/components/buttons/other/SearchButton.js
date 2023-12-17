@@ -13,7 +13,15 @@ const SearchButton = ({ searchParams, handleSubmit }) => {
         fullWidth
         variant="contained"
         color="primary"
-        sx={{ mt: 1, mb: 1, background: theme.palette.primary.main }}
+        sx={{
+          mt: 1,
+          mb: 1,
+          background: theme.palette.primary.main,
+          '&:hover': {
+            background: theme.palette.primary.dark,
+            boxShadow: 6,
+          },
+        }}
         onClick={() => handleSubmit()} // Corrected onClick
       >
         Search

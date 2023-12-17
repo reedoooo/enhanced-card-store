@@ -7,109 +7,53 @@ import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList'
 import CreateOrEditCollectionDialog from '../dialogs/CreateOrEditCollectionDialog';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context/hooks/colormode';
+import {
+  ListContainer,
+  MiddleContainer,
+  RootContainer,
+  buttonStyle,
+} from '../../pages/pageStyles/StyledComponents';
 
 const SelectCollection = ({
   handleSelectCollection,
-  setShowCollections,
-  setShowPortfolio,
+  // setShowCollections,
+  // setShowPortfolio,
 }) => {
   const { theme } = useMode();
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { setSelectedCollection, selectedCollection } = useCollectionStore();
-  const [editedName, setEditedName] = useState('');
-  const [editedDescription, setEditedDescription] = useState('');
+  // const [editedName, setEditedName] = useState('');
+  // const [editedDescription, setEditedDescription] = useState('');
   const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const isSmallCard = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumCard = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isMediumLargeCard = useMediaQuery(
     theme.breakpoints.between('md', 'lg')
   );
-
   const buttonSize = isSmallCard ? 'small' : isMediumCard ? 'medium' : 'large';
-  const buttonStyle = {
-    padding: buttonSize === 'small' ? theme.spacing(1) : theme.spacing(2),
-    fontSize: buttonSize === 'small' ? 'small' : 'default',
-    color: theme.palette.info.main,
-  };
-
   const handleOpenCollectionModal = useCallback(() => {
     setDialogOpen(true);
     setIsNew(true);
-    setEditedName('');
-    setEditedDescription('');
+    // No need to set editedName and editedDescription here
   }, []);
 
   const closeDialog = useCallback(() => setDialogOpen(false), []);
   const handleSave = useCallback(
     (collection) => {
       setSelectedCollection(collection);
-      setShowCollections(false);
-      setShowPortfolio(true);
+      // setShowCollections(false);
+      // setShowPortfolio(true);
       closeDialog();
     },
-    [setSelectedCollection, setShowCollections, setShowPortfolio, closeDialog]
+    [setSelectedCollection, closeDialog]
   );
 
-  useEffect(() => {
-    if (selectedCollection) {
-      setEditedName(selectedCollection.name);
-      setEditedDescription(selectedCollection.description);
-    }
-  }, [selectedCollection]);
-
-  const openDialog = useCallback(
-    (isNewCollection) => {
-      setDialogOpen(true);
-      setIsNew(isNewCollection);
-      if (!isNewCollection && selectedCollection) {
-        setEditedName(selectedCollection.name);
-        setEditedDescription(selectedCollection.description);
-      }
-    },
-    [selectedCollection]
-  );
-
-  const MiddleContainer = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: theme.spacing(2),
-    padding: theme.spacing(4),
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.background.quinternary,
-    boxShadow: theme.shadows[3],
-    width: '100%',
-    height: isXSmallScreen ? 'auto' : '100%', // Example of responsive height
-  }));
-  const RootContainer = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    margin: 'auto',
-    alignItems: 'stretch',
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
-    [theme.breakpoints.down('sm')]: {
-      height: '100%',
-      padding: theme.spacing(2),
-    },
-    height: '100%',
-    padding: isXSmallScreen ? theme.spacing(2) : theme.spacing(4), // Adjust padding
-  }));
-  const ListContainer = styled('div')(({ theme }) => ({
-    flexGrow: 1,
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.success.evenLighter,
-    boxShadow: theme.shadows[3],
-    width: '100%',
-    height: '100%',
-    padding: theme.spacing(isXSmallScreen ? 1 : 2),
-  }));
+  const openDialog = useCallback((isNewCollection) => {
+    setDialogOpen(true);
+    setIsNew(isNewCollection);
+    // No need to set editedName and editedDescription here
+  }, []);
 
   return (
     <MiddleContainer>
@@ -134,9 +78,7 @@ const SelectCollection = ({
               <Button
                 variant={'outlined'}
                 onClick={handleOpenCollectionModal}
-                sx={{
-                  ...buttonStyle,
-                }}
+                sx={buttonStyle(theme, buttonSize)}
               >
                 <Typography
                   variant={buttonSize === 'small' ? 'caption' : 'button'}
@@ -162,10 +104,8 @@ const SelectCollection = ({
             onOpen: handleOpenCollectionModal,
             onSave: handleSave,
             isNew,
-            editedName,
-            setEditedName,
-            editedDescription,
-            setEditedDescription,
+            initialName: isNew ? '' : selectedCollection?.name, // Pass initial values
+            initialDescription: isNew ? '' : selectedCollection?.description,
           }}
         />
       </RootContainer>

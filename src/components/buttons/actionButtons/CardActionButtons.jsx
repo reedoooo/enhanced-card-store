@@ -1,67 +1,41 @@
 import React, { useCallback } from 'react';
 import {
+  Alert,
   Box,
   Button,
-  ButtonGroup,
   CardActions,
   Grid,
   IconButton,
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { useStyles } from '../buttonStyles';
-import useAppContext from '../../../context/hooks/useAppContext';
-import { useMode } from '../../../context/hooks/colormode';
-import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import Logger from '../../reusable/Logger';
-import { useDeckStore } from '../../../context/DeckContext/DeckContext';
-import { useCartStore } from '../../../context/CartContext/CartContext';
-// import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-// import DeleteIcon from '@material-ui/icons/Delete';
 import {
   AddCircleOutlineOutlined,
   RemoveCircleOutlineOutlined,
 } from '@mui/icons-material';
+import { useMode } from '../../../context/hooks/colormode';
+import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import { useDeckStore } from '../../../context/DeckContext/DeckContext';
+import { useCartStore } from '../../../context/CartContext/CartContext';
+import Logger from '../../reusable/Logger';
+import { Container } from 'react-bootstrap';
+
 const cardOtherLogger = new Logger([
   'Action',
   'Card Name',
   'Quantity',
   'Total Price',
 ]);
-const CardActionButtons = ({
-  card,
-  context,
-  closeModal,
-  modifiedContextProps,
-}) => {
-  const { theme } = useMode(); // Using the theme hook
-  // const { contextProps, isContextAvailable } = useAppContext(context);
-  const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
-  const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const isSmallCard = useMediaQuery(theme.breakpoints.down('sm'));
-  const isMediumCard = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const isMediumLargeCard = useMediaQuery(
-    theme.breakpoints.between('md', 'lg')
-  );
-  // const isLargeCard = useMediaQuery(theme.breakpoints.up('lg'));
-
-  // ...other hooks and variables
-
-  // Adjust button size and styles based on screen and card size
-  const buttonSize = isSmallCard ? 'small' : isMediumCard ? 'medium' : 'large';
-  const buttonStyle = {
-    padding: buttonSize === 'small' ? theme.spacing(1) : theme.spacing(2),
-    fontSize: buttonSize === 'small' ? 'small' : 'default',
-    // Add other style adjustments as needed
-  };
-
+const CardActionButtons = ({ card, context, closeModal, page }) => {
+  const { theme } = useMode();
   const { addOneToCollection, removeOneFromCollection, selectedCollection } =
     useCollectionStore();
-  const { addOneToDeck, removeOneFromDeck, selectedDeck } = useDeckStore();
+  const { addOneToDeck, removeOneFromDeck, selectedDeck, allDecks } =
+    useDeckStore();
   const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
+  const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const isCardInContext = useCallback(() => {
     switch (context) {
@@ -76,253 +50,139 @@ const CardActionButtons = ({
     }
   }, [card.id, context, selectedCollection, selectedDeck, cartData]);
 
-  const isInContext = isCardInContext();
-
-  const styles = {
-    box: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexGrow: 1,
-      width: '100%', // Using theme spacing
-      padding: theme.spacing(1), // Using theme spacing
-      backgroundColor: theme.palette.background.paper, // Using theme background color
-    },
-    grid: {
-      flexGrow: 1,
-      width: '100%', // Using theme spacing
-    },
-    grid2: {
-      display: 'flex',
-      flexGrow: 1,
-      flexDirection: 'row',
-      width: '100%', // Using theme spacing
-      justifyContent: 'space-between',
-    },
-    button: {
-      margin: theme.spacing(1), // Using theme spacing
-      color: theme.palette.background.primary, // Using theme text color
-      backgroundColor: theme.palette.success.main, // Using theme background color
-    },
-    removeButton: {
-      margin: theme.spacing(1), // Using theme spacing
-      color: theme.palette.error.contrastText, // Using theme text color
-      backgroundColor: theme.palette.error.main, // Using theme background color
-      borderRadius: '0.5rem',
-    },
-    addButton: {
-      margin: theme.spacing(1), // Using theme spacing
-      color: theme.palette.success.contrastText, // Using theme text color
-      backgroundColor: theme.palette.success.main, // Using theme background color
-      borderRadius: '0.5rem',
-      // width: '100%',
-      // flexGrow: 1,
-      // action: {
-      //   hover: {
-      //     backgroundColor: theme.palette.success.dark, // Using theme background color
-      //     // color: theme.palette.success.contrastText, // Using theme text color
-      //   },
-      // },
-      // hover: {
-      //   backgroundColor: theme.palette.success.dark, // Using theme background color
-      //   // color: theme.palette.success.contrastText, // Using theme text color
-      // },
-    },
-    gridItem: {
-      textAlign: 'center',
-    },
-  };
-  const ADD = 'add';
-  const REMOVE_ONE = 'removeOne';
-  const REMOVE_ALL = 'removeAll';
   const performAction = useCallback(
-    (action, card) => {
+    (action) => {
       try {
-        switch (context) {
-          case 'Collection':
-            if (action === 'add') {
-              addOneToCollection(card, selectedCollection);
-            } else if (action === 'removeOne') {
-              removeOneFromCollection(card);
-            }
-            break;
-          case 'Deck':
-            if (action === 'add') {
-              addOneToDeck(card);
-            } else if (action === 'removeOne') {
-              removeOneFromDeck(card);
-            }
-            break;
-          case 'Cart':
-            if (action === 'add') {
-              addOneToCart(card);
-            } else if (action === 'removeOne') {
-              removeOneFromCart(card);
-            }
-            break;
-          default:
-            console.error(`Unhandled context: ${context}`);
+        if (context === 'Collection') {
+          if (!selectedCollection) {
+            <Alert variant="danger">
+              <Alert.Heading>
+                No Collection Selected, Please Select A Collection
+              </Alert.Heading>
+              <p>
+                Please select a collection to add cards to. You can do this by
+                clicking one of the &quot;Deck Icon&quot; buttons in the
+                dropdown menu.
+              </p>
+            </Alert>;
+          }
+          action === 'add'
+            ? addOneToCollection(card, selectedCollection)
+            : removeOneFromCollection(card, selectedCollection);
+        } else if (context === 'Deck') {
+          if (!selectedDeck) {
+            <Alert variant="danger">
+              <Alert.Heading>
+                No Deck Selected, Please Select A Deck
+              </Alert.Heading>
+              <p>
+                Please select a deck to add cards to. You can do this by
+                clicking one of the &quot;Deck Icon&quot; buttons in the
+                dropdown menu.
+              </p>
+            </Alert>;
+          }
+          action === 'add'
+            ? addOneToDeck(card, selectedDeck?._id || allDecks[0]?._id)
+            : removeOneFromDeck(selectedDeck?._id, card);
+        } else if (context === 'Cart' || context === 'Store') {
+          action === 'add' ? addOneToCart(card) : removeOneFromCart(card);
         }
+
         cardOtherLogger.logCardAction(`${action} Card`, card);
       } catch (error) {
-        console.error(
-          `Error performing action '${action}' with payload`,
-          card,
-          error
-        );
+        console.error(`Error performing '${action}' action`, error);
       }
     },
     [
+      context,
+      card,
       addOneToCollection,
       removeOneFromCollection,
       addOneToDeck,
       removeOneFromDeck,
       addOneToCart,
       removeOneFromCart,
-      context,
     ]
   );
 
   const handleAddClick = () => {
-    console.log('handleAddClick', card, context);
-    performAction(ADD, card);
+    performAction('add');
     closeModal?.();
   };
-
   const handleRemoveOne = () => {
-    performAction(REMOVE_ONE, card);
+    performAction('remove');
     closeModal?.();
   };
-
-  const handleRemoveAll = () => {
-    performAction(REMOVE_ALL, card);
-    closeModal?.();
+  const getButtonLabel = () => {
+    if (isXSmallScreen) {
+      return ''; // No text for very small screens
+    } else if (isSmallScreen) {
+      return 'Add'; // Shortened text for small screens
+    } else {
+      return `Add to ${context}`; // Full text for larger screens
+    }
   };
 
+  const buttonStyles = {
+    addButton: {
+      color: theme.palette.success.contrastText,
+      backgroundColor: theme.palette.success.main,
+      '&:hover': {
+        backgroundColor: theme.palette.success.darker,
+      },
+    },
+    removeButton: {
+      color: theme.palette.error.contrastText,
+      backgroundColor: theme.palette.error.main,
+      '&:hover': {
+        backgroundColor: theme.palette.error.dark,
+      },
+    },
+  };
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        // gap: theme.spacing(2),
-        justifyContent: 'center',
+        justifyContent: 'space-between', // This will ensure the button aligns to the bottom
         alignItems: 'center',
-        flexGrow: 1,
+        height: '100%', // Set the height to 100% of the parent
         width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        padding: theme.spacing(1),
+        padding: 1,
         backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[4],
       }}
     >
-      <CardActions>
-        {isInContext ? (
+      <CardActions sx={{ alignSelf: 'flex-end', width: '100%' }}>
+        {isCardInContext() ? (
           <Grid container spacing={2}>
-            {isMediumScreen ? (
-              <Grid item xs={12}>
-                {/* <CardActions> */}
-
-                <Grid
-                  item
-                  xs={12}
-                  sx={{
-                    noWrap: true,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    // margin: 'auto',
-                    // justifyContent: 'center',
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    onClick={handleAddClick}
-                    startIcon={<AddCircleOutlineOutlined />}
-                    sx={{
-                      ...styles.addButton,
-                      ...buttonStyle,
-                      width: '100%',
-                      flexGrow: 1,
-                      // height: '100%',
-                      // margin: 'auto',
-                    }}
-                  >
-                    <Typography
-                      variant={buttonSize === 'small' ? 'caption' : 'button'}
-                    >
-                      Add to {context}
-                    </Typography>{' '}
-                  </Button>
-                  {/* </Grid> */}
-                  {/* <Grid item xs={6}> */}
-                  <Button
-                    variant="contained"
-                    color="error"
-                    fullWidth
-                    onClick={handleRemoveOne}
-                    startIcon={<RemoveCircleOutlineOutlined />}
-                    sx={{
-                      ...styles.removeButton,
-                      ...buttonStyle,
-                      width: '100%',
-                      flexGrow: 1,
-                      // height: '100%',
-                      // margin: 'auto',
-                    }}
-                  >
-                    <Typography
-                      variant={
-                        isXSmallScreen
-                          ? 'caption'
-                          : isSmallScreen
-                            ? 'body2'
-                            : 'button'
-                      }
-                    >
-                      Remove From {context}
-                    </Typography>{' '}
-                  </Button>
-                </Grid>
-                {/* </CardActions> */}
-              </Grid>
-            ) : (
-              <>
-                <Grid item xs={6}>
-                  <IconButton
-                    aria-label="increase"
-                    onClick={handleAddClick}
-                    sx={{ ...styles.addButton, flexGrow: 1 }}
-                  >
-                    <AddCircleOutlineOutlined />
-                  </IconButton>
-                </Grid>
-                <Grid item xs={6}>
-                  <IconButton
-                    aria-label="decrease"
-                    onClick={handleRemoveOne}
-                    sx={{ ...styles.removeButton, flexGrow: 1 }}
-                  >
-                    <RemoveCircleOutlineOutlined />
-                  </IconButton>
-                </Grid>
-              </>
-            )}
+            <Grid item xs={6}>
+              <IconButton onClick={handleAddClick} sx={buttonStyles.addButton}>
+                <AddCircleOutlineOutlined />
+              </IconButton>
+            </Grid>
+            <Grid item xs={6}>
+              <IconButton
+                onClick={handleRemoveOne}
+                sx={buttonStyles.removeButton}
+              >
+                <RemoveCircleOutlineOutlined />
+              </IconButton>
+            </Grid>
           </Grid>
         ) : (
           <Button
+            fullWidth
             variant="contained"
             color="secondary"
-            sx={{ ...styles.addButton, width: '100%' }}
+            onClick={handleAddClick}
             startIcon={<AddCircleOutlineOutlined />}
-            onClick={() => handleAddClick()}
+            sx={{
+              ...buttonStyles.addButton,
+            }}
           >
-            <Typography
-              variant={isSmallScreen ? 'body2' : 'button'} // Adjust text size based on breakpoint
-            >
-              Add to {context}
+            <Typography variant={isSmallScreen ? 'body2' : 'button'}>
+              {getButtonLabel()}
             </Typography>
           </Button>
         )}

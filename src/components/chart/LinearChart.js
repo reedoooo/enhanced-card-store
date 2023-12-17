@@ -1,6 +1,12 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import { Typography, Box, Tooltip, useTheme } from '@mui/material';
+import {
+  Typography,
+  Box,
+  Tooltip,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
 import ChartErrorBoundary from '../reusable/ChartErrorBoundary';
 import { useMode } from '../../context/hooks/colormode';
 import { makeStyles } from '@mui/styles';
@@ -13,9 +19,30 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     color: theme.palette.text.primary,
   },
+  // chartContainer: {
+  //   width: '100%',
+  //   height: 'auto',
+  // },
+  // chartContainer: {
+  //   width: '100%',
+  //   height: 'auto',
+  //   '@media (max-width: 600px)': {
+  //     width: '130%', // Adjust width to 150% for mobile screens
+
+  //     height: '300px', // Adjust height for mobile screens
+  //   },
+  // },
   chartContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     height: 'auto',
+    '@media (max-width: 600px)': {
+      width: '150%', // Adjust width for mobile screens
+      height: '300px', // Adjust height for mobile screens
+      transform: 'translateX(10%)', // Shift the chart to the right by 50%
+    },
   },
 }));
 
@@ -63,6 +90,8 @@ const LinearChart = ({
 }) => {
   const { theme } = useMode();
   const classes = useStyles(theme);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [isZoomed, setIsZoomed] = useState(false);
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
   if (
@@ -172,7 +201,7 @@ const LinearChart = ({
     <ChartErrorBoundary>
       <div
         className={classes.chartContainer}
-        style={{ height: dimensions?.height ?? '400px' }}
+        style={{ height: isMobile ? '350px' : dimensions?.height ?? '500px' }}
       >
         {/* <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}> */}
         <ResponsiveLine {...chartProps} />

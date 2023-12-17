@@ -6,7 +6,6 @@ export const calculatePriceChanges = (data) => {
   const latestTime = new Date(latestDataPoint.x).getTime();
   const twentyFourHoursAgo = latestTime - 24 * 60 * 60 * 1000;
 
-  // Find the data point closest to 24 hours before the latest data point
   let closestIndex = -1;
   let closestTimeDifference = Number.MAX_SAFE_INTEGER;
 
@@ -22,12 +21,8 @@ export const calculatePriceChanges = (data) => {
 
   if (closestIndex !== -1) {
     const pastPrice = sortedData[closestIndex].y;
-    // console.log('pastPrice', pastPrice);
     const priceChange = latestDataPoint.y - pastPrice;
-    // console.log('priceChange', priceChange);
     const percentageChange = ((priceChange / pastPrice) * 100).toFixed(2);
-    // console.log('percentageChange', percentageChange);
-
     return [
       {
         startDate: sortedData[closestIndex].x,

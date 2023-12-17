@@ -9,7 +9,7 @@ import {
   ListItemText,
   Divider,
 } from '@mui/material';
-import { useStyles } from './dialogStyles';
+import { useStyles } from '../../components/dialogs/dialogStyles';
 
 const CollectionSelectorDialog = ({
   open,

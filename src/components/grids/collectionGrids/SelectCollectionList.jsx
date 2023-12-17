@@ -20,7 +20,7 @@ import { useMode } from '../../../context/hooks/colormode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LongMenu from '../../reusable/LongMenu';
-import { roundToNearestTenth } from '../../../context/ChartContext/helpers';
+import { roundToNearestTenth } from '../../../context/Helpers';
 const useStyles = makeStyles((theme) => ({
   listItemText: {
     flex: 1,
@@ -99,7 +99,7 @@ const SelectCollectionList = ({
   const classes = useStyles();
   const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
     useCollectionStore();
-  const { stats } = useStatisticsStore();
+  const { statsByCollectionId } = useStatisticsStore();
   const [isLoading, setIsLoading] = useState(false);
   const handleSelect = useCallback(
     (selectedId) => {
@@ -111,7 +111,7 @@ const SelectCollectionList = ({
         return;
       }
       setSelectedCollection(selected);
-      // handleSelectCollection(selected?._id);
+      handleSelectCollection(selected?._id);
       onSave(selected);
     },
     [allCollections, onSave, setSelectedCollection]
@@ -134,7 +134,8 @@ const SelectCollectionList = ({
       ) : (
         <List>
           {allCollections?.map((collection, index) => {
-            const twentyFourHourChange = stats?.twentyFourHourAverage; // Adjust according to your actual data structure
+            const twentyFourHourChange =
+              statsByCollectionId[collection?._id]?.twentyFourHourAverage; // Adjust according to your actual data structure
             const isPlaceholder = index >= allCollections?.length;
 
             return (

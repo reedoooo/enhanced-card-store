@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   mainContainer: {
     padding: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -234,5 +234,25 @@ const useStyles = makeStyles((theme) => ({
     opacity: '0.6',
   },
 }));
+
+export const gridContainerStyles = {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  height: '100%',
+  minHeight: '100%',
+  // padding: theme.spacing(3),
+  // background: theme.palette.background.dark,
+  // color: theme.palette.text.primary,
+};
+export const gridItemStyles = {
+  width: '100%',
+  // background: theme.palette.background.dark,
+  // padding: theme.spacing(3),
+  // margin: theme.spacing(3),
+  // borderRadius: theme.shape.borderRadius,
+};
 
 export default useStyles;

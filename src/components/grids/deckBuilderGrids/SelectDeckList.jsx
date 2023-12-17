@@ -1,32 +1,37 @@
 import React, { useContext } from 'react';
 import { Grid, Button, Typography } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { DeckContext } from '../../../context/DeckContext/DeckContext';
-import { useDeckButtonListStyles } from '../gridStyles';
+import { useDeckStore } from '../../../context/DeckContext/DeckContext';
+import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
+import { useTheme } from '@mui/styles';
 
-const SelectDeckList = ({ userDecks, handleSelectDeck }) => {
-  const classes = useDeckButtonListStyles();
-  const { selectedDeck } = useContext(DeckContext);
-  // console.log('SELECTED DECK:', selectedDeck.name);
-  // console.log('userDecks', userDecks);
-  console.log('userDecks', userDecks);
-  console.log('selectedDeck', selectedDeck);
+const SelectDeckList = ({ handleSelectDeck }) => {
+  const { selectedDeck, allDecks } = useDeckStore();
+
+  const theme = useTheme();
   return (
-    <Grid container spacing={1} className={classes.grid}>
-      {userDecks?.map((deck) => (
-        <Grid item xs={3} sm={2} key={deck?._id}>
+    <Grid container spacing={2}>
+      {allDecks?.map((deck) => (
+        <Grid item xs={12} sm={6} md={4} lg={3} key={deck?._id}>
           <Button
             variant="outlined"
             color="primary"
-            className={`${classes.deckButton} ${
-              selectedDeck?._id === deck?._id ? 'selected' : ''
-            }`}
+            fullWidth
             onClick={() => handleSelectDeck(deck?._id)}
-            startIcon={<RadioButtonUncheckedIcon className={classes.icon} />}
+            startIcon={
+              <DeckBuilderIcon
+                style={{ fontSize: 20 }} // Adjust the size as needed
+                color="primary" // This sets the color of the icon
+              />
+            }
+            sx={{
+              textTransform: 'none',
+              justifyContent: 'flex-start',
+              padding: 1,
+              borderRadius: theme.shape.borderRadius,
+            }}
           >
-            <Typography variant="caption" className={classes.text}>
-              {deck?.name || 'Unnamed'}
-            </Typography>
+            <Typography variant="caption">{deck?.name || 'Unnamed'}</Typography>
           </Button>
         </Grid>
       ))}

@@ -1,5 +1,3 @@
-// ErrorBoundary.js
-
 import React from 'react';
 
 class ErrorBoundary extends React.Component {
@@ -9,19 +7,50 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can log the error to an error reporting service
-    console.log(error, errorInfo);
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    });
+    console.error('Uncaught error:', error, errorInfo);
   }
+
+  handleReload = () => {
+    window.location.reload();
+  };
 
   render() {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <h1>Something went wrong.</h1>;
+      // Custom error page
+      return (
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <h1>Oops! Something went wrong.</h1>
+          <p>
+            We&apos;re sorry for the inconvenience. Please try reloading the
+            page.
+          </p>
+          <button
+            onClick={this.handleReload}
+            style={{ padding: '10px 20px', cursor: 'pointer' }}
+          >
+            Reload
+          </button>
+          <details
+            style={{
+              whiteSpace: 'pre-wrap',
+              marginTop: '20px',
+              textAlign: 'left',
+            }}
+          >
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo?.componentStack}
+          </details>
+        </div>
+      );
     }
 
     return this.props.children;

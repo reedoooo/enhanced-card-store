@@ -11,55 +11,54 @@ export const usePageContext = () => useContext(PageContext);
 
 // Provider component
 export const PageProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageError, setPageError] = useState(null);
   const [loadingTimeoutExpired, setLoadingTimeoutExpired] = useState(false);
 
-  // Function to log page data
   const logPageData = (page, data) => {
     console.log(`${page} DATA LOADED:`, data);
   };
 
-  // Method to handle errors
   const handleError = (e) => {
     setPageError(e);
     setIsPageLoading(false); // Optionally stop loading if an error occurs
   };
 
-  // Method to clear errors
   const clearError = () => {
     setPageError(null);
   };
 
-  // Method to display error indicator
   const displayErrorIndicator = () => {
     if (error) return <ErrorIndicator error={error} />;
   };
 
-  // Method to handle loading timeout
   const handleLoadingTimeout = () => {
     setLoadingTimeoutExpired(true);
     setIsPageLoading(false);
   };
 
-  // Method to clear loading timeout
   const clearLoadingTimeout = () => {
     setLoadingTimeoutExpired(false);
   };
 
-  // Method to display loading indicator
   const displayLoadingIndicator = () => {
     if (isLoading) return <LoadingIndicator />;
   };
 
-  // Method to display splash page
   const displaySplashPage = () => {
     if (isPageLoading) return <SplashPage />;
   };
 
-  // Values to be provided in the context
+  // const setLoader = (isLoading) => {
+  //   if (typeof isLoading !== 'boolean') {
+  //     console.error('Invalid argument type for setLoader: Expected boolean');
+  //     return;
+  //   }
+  //   setState((prev) => ({ ...prev, isLoading }));
+  // };
+
   const value = {
     isPageLoading,
     pageError,

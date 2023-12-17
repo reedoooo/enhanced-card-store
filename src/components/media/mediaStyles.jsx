@@ -13,7 +13,5 @@ export const useStyles = makeStyles({
   media: {
     width: '100%',
     flexGrow: 1, // Allow the media part to fill the space
-    // paddingTop: '140%', // Aspect ratio 7:10 (height 10, width 7)
-    // backgroundSize: 'cover',
   },
 });

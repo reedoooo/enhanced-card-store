@@ -76,8 +76,6 @@ const CardList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const selectedCards = selectedCollection?.cards;
-  console.log('SELCTED', selectedCards);
-  const chartContainerRef = useRef(null);
   const count = selectedCards?.length || 0;
   const [chartDimensions, setChartDimensions] = useState({
     width: 0,
@@ -102,12 +100,12 @@ const CardList = () => {
 
   const handleRemoveCard = (card) => {
     removeOneFromCollection(card, selectedCollection);
-    cardLogger.logCardAction('Remove Card', card);
+    cardLogger.logCardAction('remove', card);
   };
 
   const handleAddCard = (card) => {
     addOneToCollection(card, selectedCollection);
-    cardLogger.logCardAction('Add Card', card);
+    cardLogger.logCardAction('add', card);
   };
 
   return (

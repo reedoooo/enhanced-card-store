@@ -1,39 +1,43 @@
 import React from 'react';
-import { Typography, useTheme } from '@mui/material';
-import { useCartStore } from '../../context/CartContext/CartContext';
+import { Typography, Skeleton, Box } from '@mui/material';
 import CartContainer from './CartContainer';
 import CartItem from '../../components/grids/CartItem';
 import CartTotal from '../../components/other/dataDisplay/CartTotal';
-import { useMode } from '../../context';
+import { useCartStore } from '../../context/CartContext/CartContext';
 
 const CartContent = () => {
-  const { theme } = useMode();
-  const { cartData, getTotalCost } = useCartStore();
+  const { cartData, getTotalCost, isLoading } = useCartStore();
 
   return (
     <CartContainer>
-      {cartData?.cart && cartData?.cart.length > 0 ? (
-        cartData.cart.map(
-          (card, index) =>
-            card && (
-              <CartItem
-                key={card.id + index}
-                index={index}
-                card={card}
-                context={'Cart'}
-              />
-            )
-        )
+      {isLoading ? (
+        <SkeletonCartItem />
+      ) : cartData?.cart?.length > 0 ? (
+        cartData.cart.map((card, index) => (
+          <CartItem
+            key={card.id + index}
+            index={index}
+            card={card}
+            context={'Cart'}
+          />
+        ))
       ) : (
-        <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
+        <Typography variant="h6" color="text.secondary">
           Your cart is empty.
         </Typography>
       )}
-      {cartData?.cart && cartData?.cart.length > 0 && (
-        <CartTotal total={getTotalCost()} />
-      )}
+      {cartData?.cart?.length > 0 && <CartTotal total={getTotalCost()} />}
     </CartContainer>
   );
 };
 
 export default CartContent;
+
+const SkeletonCartItem = () => (
+  <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
+    <Skeleton variant="rectangular" width="100%" height={118} />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+  </Box>
+);

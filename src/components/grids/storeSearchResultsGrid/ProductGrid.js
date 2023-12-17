@@ -1,106 +1,72 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Grid } from '@mui/material';
-import GenericCard from '../../cards/GenericCard';
-import { useCardStore } from '../../../context/CardContext/CardStore';
-import StoreItem from '../StoreItem';
-import { useCartStore } from '../../../context/CartContext/CartContext';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Grid, Container } from '@mui/material';
+import StoreItem from '../StoreItem'; // Ensure StoreItem is wrapped with React.memo
 import CustomPagination from '../../reusable/CustomPagination';
-import { Box } from '@mui/system';
-import { useMode } from '../../../context';
+import { useCardStore, useMode } from '../../../context';
+import SkeletonStoreItem from '../SkeletonStoreItem'; // A new component for skeleton screens
 
-const ProductGrid = () => {
+const ProductGrid = ({ updateHeight }) => {
   const { theme } = useMode();
-  const {
-    searchData,
-    setSlicedAndMergedSearchData,
-    slicedAndMergedSearchData,
-    slicedSearchData,
-    isCardDataValid,
-  } = useCardStore();
-  const { cart } = useCartStore();
+  const { searchData, setSlicedAndMergedSearchData, isCardDataValid } =
+    useCardStore();
   const [page, setPage] = useState(1);
-  const [currentStoreSearchData, setCurrentStoreSearchData] = useState();
-
-  const handlePagination = (event, value) => setPage(value);
-
   const itemsPerPage = 12;
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  // const currentStoreSearchData = searchData?.slice(start, end);
+  const containerRef = useRef(null);
 
-  const mergedData = useMemo(() => {
-    if (!isCardDataValid || !searchData) return null;
+  const handlePagination = (event, value) => setPage(value);
 
-    return slicedSearchData.map((card) => {
-      const cardId = parseInt(card.id, 10);
-      const cartItem = cart.find(
-        (cartCard) => parseInt(cartCard.id, 10) === cardId
-      );
-      if (cartItem) {
-        console.log('CART_ITEM: ', cartItem);
-      }
-      return cartItem ? cartItem : card; // Use cart item if it exists, else use original card data
-    });
-  }, [slicedSearchData, cart]);
-
+  const currentStoreSearchData = useMemo(
+    () => searchData?.slice(start, end),
+    [searchData, page]
+  );
   useEffect(() => {
-    if (!mergedData) return;
-    setSlicedAndMergedSearchData(mergedData);
-    setCurrentStoreSearchData(slicedAndMergedSearchData?.slice(start, end));
-  }, [mergedData, setSlicedAndMergedSearchData]);
+    setSlicedAndMergedSearchData(currentStoreSearchData);
+    if (containerRef.current) {
+      const height = containerRef.current.clientHeight;
+      updateHeight(height);
+    }
+  }, [currentStoreSearchData, updateHeight]);
 
   return (
-    <>
-      <Grid
-        container
-        spacing={3}
-        sx={{
-          maxWidth: '90%',
-          justifyContent: 'center',
-          margin: '0 auto',
-        }}
-      >
-        {isCardDataValid &&
-          slicedAndMergedSearchData.map((card, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              key={`${card.id}-${index}`}
-              sx={{
-                padding: (theme) => theme.spacing(2),
-                height: 'auto', // Set a specific value if required
-                width: '100%',
-              }}
-            >
-              {/* <GenericCard card={card} context="Cart" page="storepage" /> */}
-              <StoreItem
-                card={card}
-                context={'Cart'}
-                page={'StorePage'}
-                // onAddToCart={(cardId) => handleAddToCart(cardId)}
-                // onQuantityChange={(cardId, operation) =>
-                //   handleModifyItemInCart(cardId, operation)
-                // }
-              />
-            </Grid>
-          ))}
+    <Container
+      ref={containerRef}
+      sx={{
+        maxWidth: 'lg',
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: theme.spacing(4),
+      }}
+    >
+      <Grid container spacing={3}>
+        {isCardDataValid
+          ? currentStoreSearchData?.map((card, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <StoreItem
+                  card={card}
+                  context="Cart"
+                  page="Store"
+                  index={index}
+                />
+              </Grid>
+            ))
+          : Array(itemsPerPage)
+              .fill(0)
+              .map((_, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <SkeletonStoreItem />
+                </Grid>
+              ))}
       </Grid>
-      <Box
-        sx={{
-          borderColor: theme.palette.success.dark,
-        }}
-      >
-        <CustomPagination
-          totalCount={searchData?.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={page}
-          handlePagination={handlePagination}
-        />
-      </Box>
-    </>
+      <CustomPagination
+        totalCount={searchData?.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={page}
+        handlePagination={handlePagination}
+      />
+    </Container>
   );
 };
 
