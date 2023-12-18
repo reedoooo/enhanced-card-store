@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -25,51 +32,38 @@ import GenericCard from '../../cards/GenericCard';
 
 const GenericCardModal = ({ open, card, context, imgUrl }) => {
   const classes = useStyles();
-  const theme = useTheme();
-  const isXSmall = useMediaQuery(theme.breakpoints.down('xs'));
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
-  const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { openModalWithCard, closeModal, isModalOpen, modalContent } =
     useContext(ModalContext);
-  const [currentIndex, setCurrentIndex] = useState(2); // Start with the middle card
+  const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
+  const [hasLoggedCard, setHasLoggedCard] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(2);
   const middleRef = useRef(null);
-  const carouselCards = [card, card, card, card, card];
-  const computeTransform = (index) => {
-    const isActive = index === currentIndex;
-    const isNext = index === (currentIndex + 1) % carouselCards.length;
-    const isPrev =
-      index ===
-      (currentIndex - 1 + carouselCards.length) % carouselCards.length;
-
-    if (isActive) return 'translateX(-50%) scale(1.2)';
-    if (isNext) return 'translateX(0%) scale(0.8)';
-    if (isPrev) return 'translateX(-100%) scale(0.8)';
-    return 'translateX(-200%)'; // Hide non-active slides
-  };
+  const carouselCards = useMemo(() => [card, card, card, card, card], [card]);
 
   useEffect(() => {
     if (open && card && !hasLoggedCard) {
-      console.log('Modal opened with card:', card);
       handleSnackbar('Card details loaded successfully.', 'success');
       setHasLoggedCard(true);
     }
-  }, [open, card, hasLoggedCard, handleSnackbar]);
+  }, [open, card, handleSnackbar, hasLoggedCard]);
 
   useEffect(() => {
     if (!open) {
-      setHasLoggedCard(false); // Reset hasLoggedCard when modal closes
+      setHasLoggedCard(false);
     }
-  }, [open]); // Removed hasLoggedCard from dependency array
+  }, [open]);
 
-  const handleActionSuccess = () => {
+  const handleActionSuccess = useCallback(() => {
     handleSnackbar('Action was successful!', 'success');
-  };
+  }, [handleSnackbar]);
 
-  const handleActionFailure = (error) => {
-    console.error('Action failed:', error);
-    handleSnackbar('Action failed. Please try again.', 'error');
-  };
+  const handleActionFailure = useCallback(
+    (error) => {
+      console.error('Action failed:', error);
+      handleSnackbar('Action failed. Please try again.', 'error');
+    },
+    [handleSnackbar]
+  );
 
   // Updated Grid layout styles for responsiveness
   const gridStyles = {
@@ -100,40 +94,123 @@ const GenericCardModal = ({ open, card, context, imgUrl }) => {
     },
   }));
 
-  const StyledCarousel = styled('div')(() => ({
+  // const StyledCarousel = styled('div')(() => ({
+  //   bottom: theme.spacing(2),
+  //   right: theme.spacing(2),
+  //   width: isSmall ? '100%' : 300,
+  //   height: isSmall ? 150 : 180,
+  //   perspective: '1200px',
+  // }));
+  const StyledCarousel = styled('div')(({ theme }) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(2),
-    width: isSmall ? '100%' : 300,
-    height: isSmall ? 150 : 180,
+    width: '100%', // Adjust based on your design requirements
+    height: 180, // Adjust based on your design requirements
     perspective: '1200px',
   }));
-  const swiperSettings = {
-    effect: 'coverflow',
-    grabCursor: true,
-    centeredSlides: true,
-    slidesPerView: 'auto',
-    coverflowEffect: {
-      rotate: 50,
-      stretch: 0,
-      depth: 200,
-      modifier: 1,
-      slideShadows: true,
-    },
-    loop: true,
-    pagination: { clickable: true },
-  };
-
+  // const swiperSettings = {
+  //   effect: 'coverflow',
+  //   grabCursor: true,
+  //   centeredSlides: true,
+  //   slidesPerView: 'auto',
+  //   coverflowEffect: {
+  //     rotate: 50,
+  //     stretch: 0,
+  //     depth: 200,
+  //     modifier: 1,
+  //     slideShadows: true,
+  //   },
+  //   loop: true,
+  //   pagination: { clickable: true },
+  // };
+  const swiperSettings = useMemo(
+    () => ({
+      effect: 'coverflow',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      coverflowEffect: {
+        rotate: 50,
+        stretch: 0,
+        depth: 200,
+        modifier: 1,
+        slideShadows: true,
+      },
+      loop: true,
+      pagination: { clickable: true },
+    }),
+    []
+  );
   return (
+    // <Dialog open={open} onClose={closeModal} fullWidth maxWidth="md">
+    //   <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
+    //   <DialogContent className={classes.dialogContent}>
+    //     <Container maxWidth="md">
+    //       {/* Add a Container */}
+    //       <Grid container spacing={2}>
+    //         <Grid item xs={12} md={6} style={gridStyles.mediaAndDetails}>
+    //           <CardMediaAndDetails card={card} imgUrl={imgUrl} />
+    //         </Grid>
+    //         <Grid item xs={12} md={6} style={gridStyles.carousel}>
+    //           <StyledCarousel>
+    //             <Swiper {...swiperSettings}>
+    //               {carouselCards.map((carouselCard, index) => (
+    //                 <SwiperSlide key={index}>
+    //                   <StyledSwiperSlide>
+    //                     <GenericCard card={carouselCard} context="Carousel" />
+    //                   </StyledSwiperSlide>
+    //                 </SwiperSlide>
+    //               ))}
+    //             </Swiper>
+    //           </StyledCarousel>
+    //         </Grid>
+    //         <Grid item xs={12} md={6} style={gridStyles.actionButtons}>
+    //           {/* Action buttons can be further styled or wrapped in their own component */}
+    //           <GenericActionButtons
+    //             card={card}
+    //             context="Deck"
+    //             onSuccess={handleActionSuccess}
+    //             onFailure={handleActionFailure}
+    //           />
+    //           <GenericActionButtons
+    //             card={card}
+    //             context="Collection"
+    //             onSuccess={handleActionSuccess}
+    //             onFailure={handleActionFailure}
+    //           />
+    //           <GenericActionButtons
+    //             card={card}
+    //             context="Cart"
+    //             onSuccess={handleActionSuccess}
+    //             onFailure={handleActionFailure}
+    //           />
+    //         </Grid>
+    //       </Grid>
+    //     </Container>
+    //   </DialogContent>
+    //   <Snackbar
+    //     open={snackbar.open}
+    //     autoHideDuration={6000}
+    //     onClose={handleCloseSnackbar}
+    //   >
+    //     <Alert
+    //       onClose={handleCloseSnackbar}
+    //       severity={snackbar.severity}
+    //       sx={{ width: '100%' }}
+    //     >
+    //       {snackbar.message}
+    //     </Alert>
+    //   </Snackbar>
+    // </Dialog>
     <Dialog open={open} onClose={closeModal} fullWidth maxWidth="md">
       <DialogTitle className={classes.dialogTitle}>{card?.name}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <Container maxWidth="md">
-          {/* Add a Container */}
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6} style={gridStyles.mediaAndDetails}>
+            <Grid item xs={12} md={6} className={classes.flexCenter}>
               <CardMediaAndDetails card={card} imgUrl={imgUrl} />
             </Grid>
-            <Grid item xs={12} md={6} style={gridStyles.carousel}>
+            <Grid item xs={12} md={6} className={classes.flexCenter}>
               <StyledCarousel>
                 <Swiper {...swiperSettings}>
                   {carouselCards.map((carouselCard, index) => (
@@ -146,8 +223,11 @@ const GenericCardModal = ({ open, card, context, imgUrl }) => {
                 </Swiper>
               </StyledCarousel>
             </Grid>
-            <Grid item xs={12} md={6} style={gridStyles.actionButtons}>
-              {/* Action buttons can be further styled or wrapped in their own component */}
+            <Grid
+              item
+              xs={12}
+              className={`${classes.flexCenter} ${classes.actionButtons}`}
+            >
               <GenericActionButtons
                 card={card}
                 context="Deck"
