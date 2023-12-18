@@ -2,189 +2,149 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/958aa5a1-dc96-4fc5-910b-b8274ddfbdd6/deploy-status)](https://app.netlify.com/sites/enhanced-cardstore/deploys)
 
-## About
-
-TCG Enhanced Retailer is a comprehensive online platform built with React, enabling users to search for, collect, and purchase popular trading cards. Users can compile their unique collections, create decks, and shop for cards. The seamless integration with Stripe facilitates secure transactions. The responsive design of the application also lays a foundation for its potential expansion to mobile platforms in the future.
-
-![Image of Front](https://github.com/reedoooo/enhanced-card-store/raw/c24679dcb33207a7868f3395a681dfcfee7b77c9/public/screenshot.png)
-
-## Author
-
-Reed Vogt
-
-## Features
-
-### User Features
-
-1. **Search Functionality**
-
-   Users can search for their favorite cards by name. The search functionality returns all the cards matching the search query, helping users quickly find the desired cards to add to their decks.
-
-2. **Collection Management**
-
-   Avid collectors can view their comprehensive collection of cards, providing them an overview and helping identify any missing pieces.
-
-3. **Online Shop**
-
-   Business owners can leverage the platform to sell their cards and generate revenue. A wide range of cards available for purchase are displayed to the users.
-
-4. **Shopping Cart**
-
-   Shoppers can add their favorite cards to the cart and proceed with the purchase.
-
-5. **Cost Exploration**
-
-   Newcomers to card collection can explore the vast inventory of cards along with their associated costs, providing them an understanding of the financial implications of building a deck.
-
-6. **In-Depth Analysis of Card Performance**
-
-   The collection section of the app provides users a variety of statistics about their collection performance as well as specific cards which enable users to make advanced insights into trends and patterns.
-
-### Developer Features
-
-1.  **Backend Cronjob**
-
-    The backend of the application is integrated with a cronjob that updates the card database every 10 minutes, ensuring that the application is always up-to-date with the latest cards.
-
-2.  **Secure Payment Processing**
-
-    The application is integrated with Stripe, enabling developers to leverage the secure payment processing capabilities of Stripe.
-
-3.  **Responsive Design**
-
-    The application is built with a responsive design, enabling developers to leverage the vast ecosystem of responsive design libraries and packages.
-
-4.  **Secure File Conversion**
-
-    The application is integrated with Convertio, enabling developers to leverage the secure file conversion capabilities of Convertio.
-
-### Frontend Technologies
-
-1.  **React**
-
-    The application is built with React, enabling developers to leverage the vast ecosystem of React libraries and packages.
-
-2.  **Stripe**
-
-    The application is integrated with Stripe, enabling developers to leverage the secure payment processing capabilities of Stripe.
-
-3.  **mui**
-
-    The application is built with mui, enabling developers to leverage the vast ecosystem of mui libraries and packages.
-
-4.  **Convertio**
-
-    The application is integrated with Convertio, enabling developers to leverage the secure file conversion capabilities of Convertio.
-
-5.  **YGOProDeck-api**
-
-The application is built with YGOProDeck-api, enabling developers to leverage the vast ecosystem of YGOProDeck-api libraries and packages.
-
-6.  **MongoDB**
-
-    The application is built with MongoDB, enabling developers to leverage the vast ecosystem of MongoDB libraries and packages.
-
-7.  **Netlify**
-
-    The application is deployed with Netlify, enabling developers to leverage the vast ecosystem of Netlify libraries and packages.
-
-8.  **Nivo Charts**
-
-    The application is built with Nivo Charts, enabling developers to leverage the vast ecosystem of Nivo Charts libraries and packages.
-
-### Backend Technologies
-
-1.  **Node.js**
-
-    The application is built with Node.js, enabling developers to leverage the vast ecosystem of Node.js libraries and packages.
-
-2.  **Express.js**
-
-    The application is built with Express.js, enabling developers to leverage the vast ecosystem of Express.js libraries and packages.
-
-3.  **MongoDB**
-
-    The application is built with MongoDB, enabling developers to leverage the vast ecosystem of MongoDB libraries and packages.
-
-4.  **Netlify**
-
-    The application is deployed with Netlify, enabling developers to leverage the vast ecosystem of Netlify libraries and packages.
-
-5.  **Heroku**
-
-    The application is deployed with Heroku, enabling developers to leverage the vast ecosystem of Heroku libraries and packages.
-
-6.  **Cronjob**
-
-    The application is integrated with a cronjob that updates the card database every 24 hours, ensuring that the application is always up-to-date with the latest cards.
-
-## Acceptance Tests
-
-To ensure the best user experience and seamless functionality, the following acceptance tests are in place:
-
-1. **Search Functionality**
-
-   - Given that a user enters a card name into the search bar and clicks the search button, the cards matching the search term will be displayed.
-
-2. **Collection Management**
-
-   - Given that a user is logged in and clicks the "My Collection" button, they will be taken to a page that displays all of the cards they have collected.
-
-3. **Online Shop**
-
-   - Given that a user is logged in and clicks the "Shop" button, they will be taken to a page that displays all of the cards available for purchase.
-
-4. **Shopping Cart**
-
-   - Given that a user is logged in and clicks the "Add to Cart" button, the card will be added to their cart.
-
-5. **Cost Exploration**
-
-   - Given that a user is logged in and searches through the card APIs, they should be provided all necessary information to understand cost associated with an individual card.
-
+## Overview
+
+TCG Enhanced Cardstore is a full-stack web application designed for trading card game enthusiasts. It offers a seamless experience for users to manage their card collections, build decks, and purchase cards online. With a focus on responsive design and secure transactions, this platform is a one-stop-shop for both casual collectors and serious traders.
+
+### Key Features
+
+- **Card Search & Management**: Robust search capabilities and collection management tools.
+- **E-Commerce Functionality**: Integrated online store with secure checkout.
+- **Deck Building**: Intuitive interface for creating and managing custom decks.
+- **Responsive Design**: Mobile-friendly layout for on-the-go access.
+- **Real-Time Updates**: Backend cron jobs ensure the latest card data.
+
+### Technologies
+
+- **Frontend**: React, Stripe, MUI, Convertio, YGOProDeck-API, Nivo Charts.
+- **Backend**: Node.js, Express.js, MongoDB, scheduled data updates.
+
+## Gallery
+
+Here's a glimpse of what TCG Enhanced Cardstore offers:
+
+```html
+<!-- Add carousel or gallery of screenshots here -->
+<div class="carousel">
+  <div class="carousel-images">
+    <img src="path-to-image-1.jpg" alt="Image 1 Description" />
+    <img src="path-to-image-2.jpg" alt="Image 2 Description" />
+    <img src="path-to-image-3.jpg" alt="Image 3 Description" />
+    <!-- Add more images as needed -->
+  </div>
+  <button class="prev" onclick="moveSlide(-1)">❮</button>
+  <button class="next" onclick="moveSlide(1)">❯</button>
+</div>
+```
+
+```css
+.carousel {
+    position: relative;
+    max-width: 600px; /* Adjust as needed */
+    margin: auto;
+    overflow: hidden;
+}
+
+.carousel-images img {
+    width: 100%;
+    display: none;
+}
+
+.carousel .prev, .carousel .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+.carousel .next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.carousel .prev:hover, .carousel .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+```
+
+```js
+let slideIndex = 0;
+showSlides(slideIndex);
+
+function moveSlide(n) {
+  showSlides(slideIndex += n);
+}
+
+function showSlides(n) {
+  let i;
+  let slides = document.getElementsByClassName("carousel-images")[0].getElementsByTagName("img");
+  if (n >= slides.length) {slideIndex = 0}    
+  if (n < 0) {slideIndex = slides.length - 1}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex].style.display = "block";  
+}
+```
 ## Installation
 
-To get started with the enhanced card store, follow these steps:
+Get started with these simple steps:
 
-1. Clone the repository with `git clone https://github.com/your_username_/Project-Name.git`.
-2. Navigate to the project directory with `cd Project-Name`.
-3. Install the dependencies with `npm install`.
-4. Start the application with `npm start`.
+```bash
+git clone https://github.com/your_username_/TCG-Enhanced-Cardstore.git
+cd TCG-Enhanced-Cardstore
+npm install
+npm start
+```
 
-The application will be available at `http://localhost:3000`.
+Navigate to `http://localhost:3000` to explore the app.
+
+## Testing
+
+Our comprehensive suite of acceptance tests ensures a flawless user experience:
+
+1. **Search & Discover**: Validate search functionality and card discovery.
+2. **Deck Building**: Test deck creation and editing capabilities.
+3. **Collection Management**: Confirm seamless collection tracking.
+4. **Purchasing Process**: Assess the shopping cart and checkout flow.
 
 ## Contributing
 
-We welcome contributions to the TCG eCommerce-frontEnd project. Please follow these steps to contribute:
+We value community contributions. Here’s how you can help:
 
-1. Fork the Project.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+1. Fork the repo.
+2. Create a feature branch: `git checkout -b feature/YourFeature`.
+3. Commit changes: `git commit -m 'Add YourFeature'`.
+4. Push to the branch: `git push origin feature/YourFeature`.
+5. Submit a pull request.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Contact
 
-Reed Vogt -
-<a href="https://www.linkedin.com/in/reed-vogt-student/">
-<img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flinkedin_174857&psig=AOvVaw1F9U7jlNJPTJpYUU2wdKLW&ust=1691527142102000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCPjpk-Wzy4ADFQAAAAAdAAAAABAJ" alt="LinkedIn" style="width:24px;height:24px;">
-</a>
+Reed Vogt - [LinkedIn Profile](https://www.linkedin.com/in/reed-vogt-student/)
 
-Project Site: <https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/>
-
-Project Repo: <https://github.com/reedoooo/enhanced-card-store#readme>
+- Project Site: [TCG Enhanced Cardstore](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)
+- GitHub Repo: [TCG-Enhanced-Cardstore](https://github.com/reedoooo/enhanced-card-store#readme)
 
 ## Acknowledgements
 
 - [React](https://reactjs.org/)
 - [Stripe](https://stripe.com/)
-- [mui](https://mui.com/)
-- [Convertio](https://convertio.co/download/bde422f6082917756106e52b556e7245cfcfbe/)
-- [YGOProDeck-api](https://ygoprodeck.com/api-guide/)
-- [MongoDB](https://cloud.mongodb.com/v2#/org/641ca5d870f5f76cbe646c47/projects)
-- [Netlify](https://app.netlify.com/teams/reedoooo/overview)
+- [MUI](https://mui.com/)
+- [Convertio](https://convertio.co/)
+- [YGOProDeck-API](https://ygoprodeck.com/api-guide/)
+- [MongoDB](https://www.mongodb.com/)
+- [Netlify](https://www.netlify.com/)
 - [Nivo Charts](https://nivo.rocks/)
