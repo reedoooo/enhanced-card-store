@@ -23,60 +23,73 @@ TCG Enhanced Cardstore is a full-stack web application designed for trading card
 
 Here's a glimpse of what TCG Enhanced Cardstore offers:
 
-```html
-<!-- Add carousel or gallery of screenshots here -->
+### Deck Builder
+
+![Deck Builder](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/deckBuilder.png)
+
+### Portfolio
+
+![Portfolio](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/portfolio.png)
+
+### Cart
+
+![Cart](public/images/pages/deckBuilder.png)
+
+_For an interactive experience, visit the [Live Demo](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)._
+
+<!-- ```html
 <div class="carousel">
   <div class="carousel-images">
-    <img src="path-to-image-1.jpg" alt="Image 1 Description" />
-    <img src="path-to-image-2.jpg" alt="Image 2 Description" />
-    <img src="path-to-image-3.jpg" alt="Image 3 Description" />
-    <!-- Add more images as needed -->
+    <img src="https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/deckBuilder.png" alt="Deck Builder" />
+    <img src="https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/portfolio.png" alt="Portfolio" />
+    <img src="https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/cart.png" alt="Cart" />
   </div>
   <button class="prev" onclick="moveSlide(-1)">❮</button>
   <button class="next" onclick="moveSlide(1)">❯</button>
 </div>
-```
+``` -->
 
-```css
+<!-- ```css
 .carousel {
-    position: relative;
-    max-width: 600px; /* Adjust as needed */
-    margin: auto;
-    overflow: hidden;
+  position: relative;
+  max-width: 600px; /* Adjust as needed */
+  margin: auto;
+  overflow: hidden;
 }
 
 .carousel-images img {
-    width: 100%;
-    display: none;
+  width: 100%;
+  display: none;
 }
 
-.carousel .prev, .carousel .next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    width: auto;
-    padding: 16px;
-    margin-top: -22px;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    transition: 0.6s ease;
-    border-radius: 0 3px 3px 0;
-    user-select: none;
+.carousel .prev,
+.carousel .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
 }
 
 .carousel .next {
-    right: 0;
-    border-radius: 3px 0 0 3px;
+  right: 0;
+  border-radius: 3px 0 0 3px;
 }
 
-.carousel .prev:hover, .carousel .next:hover {
-    background-color: rgba(0,0,0,0.8);
+.carousel .prev:hover,
+.carousel .next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
+``` -->
 
-```
-
-```js
+<!-- ````js
 let slideIndex = 0;
 showSlides(slideIndex);
 
@@ -87,24 +100,25 @@ function moveSlide(n) {
 function showSlides(n) {
   let i;
   let slides = document.getElementsByClassName("carousel-images")[0].getElementsByTagName("img");
-  if (n >= slides.length) {slideIndex = 0}    
+  if (n >= slides.length) {slideIndex = 0}
   if (n < 0) {slideIndex = slides.length - 1}
   for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";  
+      slides[i].style.display = "none";
   }
-  slides[slideIndex].style.display = "block";  
+  slides[slideIndex].style.display = "block";
 }
-```
+``` -->
+
 ## Installation
 
 Get started with these simple steps:
 
-```bash
+`````bash
 git clone https://github.com/your_username_/TCG-Enhanced-Cardstore.git
 cd TCG-Enhanced-Cardstore
 npm install
 npm start
-```
+```` -->
 
 Navigate to `http://localhost:3000` to explore the app.
 
@@ -148,3 +162,4 @@ Reed Vogt - [LinkedIn Profile](https://www.linkedin.com/in/reed-vogt-student/)
 - [MongoDB](https://www.mongodb.com/)
 - [Netlify](https://www.netlify.com/)
 - [Nivo Charts](https://nivo.rocks/)
+`````
