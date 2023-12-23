@@ -73,10 +73,30 @@ export const DeckProvider = ({ children }) => {
   const updateAndSyncDeck = async (newDeckData) => {
     try {
       if (Array.isArray(newDeckData)) {
-        // If newDeckData is an array, update all decks
-        setAllDecks(newDeckData);
+        // Handle array of deck data
+        newDeckData.forEach(async (deck) => {
+          // Update each deck in the array
+          setAllDecks((prevDecks) => {
+            const updatedDecks = prevDecks.map((d) =>
+              d._id === deck._id ? deck : d
+            );
+            return prevDecks.some((d) => d._id === deck._id)
+              ? updatedDecks
+              : [...updatedDecks, deck];
+          });
+
+          // Synchronize each deck with backend
+          if (deck._id && userId) {
+            const url = `${BASE_API_URL}/${userId}/decks/${deck._id}/updateDeck`;
+            console.log('Updating deck in backend:', deck);
+            await fetchWrapper(url, 'PUT', { deck });
+          } else {
+            console.error('No deck ID or user ID found.');
+          }
+        });
+        setSelectedDeck(newDeckData[0]);
       } else if (newDeckData && typeof newDeckData === 'object') {
-        // If newDeckData is an object, update the selected deck and sync it with allDecks
+        // Handle single deck object
         setSelectedDeck(newDeckData);
         setDeckData(newDeckData);
         setAllDecks((prevDecks) => {
@@ -87,6 +107,15 @@ export const DeckProvider = ({ children }) => {
             ? newAllDecks
             : [...newAllDecks, newDeckData];
         });
+
+        // Synchronize with backend
+        if (newDeckData._id && userId) {
+          const url = `${BASE_API_URL}/${userId}/decks/${newDeckData._id}/updateDeck`;
+          console.log('Updating deck in backend:', newDeckData);
+          await fetchWrapper(url, 'PUT', { deck: newDeckData });
+        } else {
+          console.error('No deck ID or user ID found.');
+        }
       } else {
         console.warn(
           'Unable to determine the type of deck data for update.',
@@ -94,17 +123,6 @@ export const DeckProvider = ({ children }) => {
         );
         return;
       }
-
-      if (!userId) {
-        console.error('No user ID found.');
-        return;
-      }
-
-      const deckId = newDeckData._id || selectedDeck._id;
-      // Synchronize with backend
-      console.log('Updating deck in backend:', newDeckData);
-      const url = `${BASE_API_URL}/${userId}/decks/${deckId}/updateDeck`;
-      await fetchWrapper(url, 'PUT', { allDecks: [newDeckData] });
     } catch (error) {
       console.error(`Failed to update deck in backend: ${error.message}`);
     }
@@ -157,9 +175,14 @@ export const DeckProvider = ({ children }) => {
   };
 
   const addCardToDeck = async (newCard, deckId) => {
-    if (!deckId || !newCard || !newCard.id) {
-      console.error('Invalid card data', deckId, newCard);
+    if (!newCard) {
+      console.error('Invalid card data', newCard);
       return;
+    }
+    if (!deckId) {
+      setSelectedDeck(allDecks[0]);
+      console.warn('No deck ID provided. Adding card to first deck in list.');
+      deckId = allDecks[0]._id;
     }
     try {
       // Update deck data locally

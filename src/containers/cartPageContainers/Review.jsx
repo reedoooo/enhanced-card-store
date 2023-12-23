@@ -4,30 +4,31 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
+import { useCartStore } from '../../context';
 
-const products = [
-  {
-    name: 'Product 1',
-    desc: 'A nice thing',
-    price: '$9.99',
-  },
-  {
-    name: 'Product 2',
-    desc: 'Another thing',
-    price: '$3.45',
-  },
-  {
-    name: 'Product 3',
-    desc: 'Something else',
-    price: '$6.51',
-  },
-  {
-    name: 'Product 4',
-    desc: 'Best thing of all',
-    price: '$14.11',
-  },
-  { name: 'Shipping', desc: '', price: 'Free' },
-];
+// const products = [
+//   {
+//     name: 'Product 1',
+//     desc: 'A nice thing',
+//     price: '$9.99',
+//   },
+//   {
+//     name: 'Product 2',
+//     desc: 'Another thing',
+//     price: '$3.45',
+//   },
+//   {
+//     name: 'Product 3',
+//     desc: 'Something else',
+//     price: '$6.51',
+//   },
+//   {
+//     name: 'Product 4',
+//     desc: 'Best thing of all',
+//     price: '$14.11',
+//   },
+//   { name: 'Shipping', desc: '', price: 'Free' },
+// ];
 
 const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
 const payments = [
@@ -38,14 +39,16 @@ const payments = [
 ];
 
 export default function Review() {
+  const { cartData } = useCartStore();
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
         Order summary
       </Typography>
       <List disablePadding>
-        {products.map((product) => (
-          <ListItem key={product.name} sx={{ py: 1, px: 0 }}>
+        {cartData?.cart?.map((product, index) => (
+          <ListItem key={index} sx={{ py: 1, px: 0 }}>
             <ListItemText primary={product.name} secondary={product.desc} />
             <Typography variant="body2">{product.price}</Typography>
           </ListItem>

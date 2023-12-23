@@ -48,11 +48,21 @@ const DeckSearch = ({ userDecks }) => {
           height: '100%',
         }}
       >
-        <SearchForm
-          searchTerm={searchTerm}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: '100%',
+            marginBottom: 2, // Add some margin below the search form
+          }}
+        >
+          <SearchForm
+            searchTerm={searchTerm}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+          />
+        </Box>
         <DeckSearchCardGrid
           // cards={currentDeckSearchData}
           cards={currentStoreSearchData}

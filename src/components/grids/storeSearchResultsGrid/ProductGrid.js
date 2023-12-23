@@ -4,9 +4,12 @@ import StoreItem from '../StoreItem'; // Ensure StoreItem is wrapped with React.
 import CustomPagination from '../../reusable/CustomPagination';
 import { useCardStore, useMode } from '../../../context';
 import SkeletonStoreItem from '../SkeletonStoreItem'; // A new component for skeleton screens
+import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
 
 const ProductGrid = ({ updateHeight }) => {
   const { theme } = useMode();
+  const { getProductGridContainerStyle } = useResponsiveStyles(theme); // Use the hook
+  const containerStyles = getProductGridContainerStyle(); // Get the styles
   const { searchData, setSlicedAndMergedSearchData, isCardDataValid } =
     useCardStore();
   const [page, setPage] = useState(1);
@@ -32,13 +35,7 @@ const ProductGrid = ({ updateHeight }) => {
   return (
     <Container
       ref={containerRef}
-      sx={{
-        maxWidth: 'lg',
-        maxHeight: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(4),
-      }}
+      sx={containerStyles} // Apply the styles
     >
       <Grid container spacing={3}>
         {isCardDataValid

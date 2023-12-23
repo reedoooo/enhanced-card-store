@@ -44,7 +44,8 @@ export const getMenuItemsData = (isLoggedIn) => {
         icon: (
           <Badge
             badgeContent={cartCardQuantity}
-            color="secondary"
+            color="primary"
+            // backgroundColor="primary"
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'left',
