@@ -2,7 +2,7 @@ import React, { useCallback, useContext } from 'react';
 import { Box, Container, Typography, Grid } from '@mui/material';
 import { useCartStore } from '../../../context/CartContext/CartContext';
 import CustomerInfoFields from './CustomerInfoFields';
-import StripeCheckoutModal from '../../modals/stripeModal/StripeCheckoutModal';
+import StripeCheckoutModal from '../../dialogs/stripeModal/StripeCheckoutModal';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
 import CartSummary from '../../other/dataDisplay/CartSummary';
 import OrderSubmitButton from '../../buttons/other/OrderSubmitButton';

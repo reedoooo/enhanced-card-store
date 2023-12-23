@@ -36,10 +36,10 @@ const DeckBuilderContainer = () => {
 
   return (
     <RootGrid container>
-      <SearchGrid item xs={12} md={6} lg={4}>
+      <SearchGrid item xs={12} md={6} lg={5}>
         <DeckSearch />
       </SearchGrid>
-      <DisplayGrid item xs={12} md={6} lg={8}>
+      <DisplayGrid item xs={12} md={6} lg={7}>
         <DeckDisplay />
       </DisplayGrid>
     </RootGrid>

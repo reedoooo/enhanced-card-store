@@ -1,8 +1,7 @@
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Box, Button, Grid, Typography, useMediaQuery } from '@mui/material';
-import { makeStyles, styled } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import SimpleReusableButton from '../reusable/SimpleReusableButton';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
 import CreateOrEditCollectionDialog from '../dialogs/CreateOrEditCollectionDialog';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
@@ -11,39 +10,46 @@ import {
   ListContainer,
   MiddleContainer,
   RootContainer,
-  buttonStyle,
 } from '../../pages/pageStyles/StyledComponents';
 
-const SelectCollection = ({
-  handleSelectCollection,
-  // setShowCollections,
-  // setShowPortfolio,
-}) => {
+const useSelectCollectionStyles = makeStyles((theme) => ({
+  boxStyle: {
+    p: 2,
+    justifyContent: 'center',
+    margin: 'auto',
+  },
+  typographyStyle: {
+    fontWeight: 'bold',
+    color: 'black',
+    m: 'auto',
+  },
+  button: {
+    variant: 'outlined',
+    '& .MuiTypography-root': {
+      variant: 'button',
+      [theme.breakpoints.down('sm')]: {
+        variant: 'caption',
+      },
+    },
+  },
+}));
+
+const SelectCollection = ({ handleSelectCollection }) => {
   const { theme } = useMode();
+  const classes = useSelectCollectionStyles(theme);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { setSelectedCollection, selectedCollection } = useCollectionStore();
-  // const [editedName, setEditedName] = useState('');
-  // const [editedDescription, setEditedDescription] = useState('');
-  const isXSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
-  const isSmallCard = useMediaQuery(theme.breakpoints.down('sm'));
-  const isMediumCard = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const isMediumLargeCard = useMediaQuery(
-    theme.breakpoints.between('md', 'lg')
-  );
-  const buttonSize = isSmallCard ? 'small' : isMediumCard ? 'medium' : 'large';
+
   const handleOpenCollectionModal = useCallback(() => {
     setDialogOpen(true);
     setIsNew(true);
-    // No need to set editedName and editedDescription here
   }, []);
 
   const closeDialog = useCallback(() => setDialogOpen(false), []);
   const handleSave = useCallback(
     (collection) => {
       setSelectedCollection(collection);
-      // setShowCollections(false);
-      // setShowPortfolio(true);
       closeDialog();
     },
     [setSelectedCollection, closeDialog]
@@ -52,7 +58,6 @@ const SelectCollection = ({
   const openDialog = useCallback((isNewCollection) => {
     setDialogOpen(true);
     setIsNew(isNewCollection);
-    // No need to set editedName and editedDescription here
   }, []);
 
   return (
@@ -60,31 +65,19 @@ const SelectCollection = ({
       <RootContainer>
         <Grid container>
           <Grid item xs={6}>
-            <Box sx={{ p: 2, justifyContent: 'center', margin: 'auto' }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 'bold',
-                  color: 'black',
-                  m: 'auto',
-                }}
-              >
+            <Box className={classes.boxStyle}>
+              <Typography variant="h5" className={classes.typographyStyle}>
                 Choose a Collection
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={6}>
-            <Box sx={{ p: 2, justifyContent: 'center', margin: 'auto' }}>
+            <Box className={classes.boxStyle}>
               <Button
-                variant={'outlined'}
+                className={classes.button}
                 onClick={handleOpenCollectionModal}
-                sx={buttonStyle(theme, buttonSize)}
               >
-                <Typography
-                  variant={buttonSize === 'small' ? 'caption' : 'button'}
-                >
-                  Add New Collection
-                </Typography>
+                <Typography variant="button">Add New Collection</Typography>
               </Button>
             </Box>
           </Grid>
@@ -93,20 +86,17 @@ const SelectCollection = ({
           <SelectCollectionList
             handleSelectCollection={handleSelectCollection}
             onSave={handleSave}
-            openDialog={() => openDialog(false)} // Indicate that this is not a new collection
-            isXSmallScreen={isXSmallScreen} // Pass this prop to adjust styles inside the list
+            openDialog={() => openDialog(false)}
           />
         </ListContainer>
         <CreateOrEditCollectionDialog
-          {...{
-            isDialogOpen,
-            closeDialog,
-            onOpen: handleOpenCollectionModal,
-            onSave: handleSave,
-            isNew,
-            initialName: isNew ? '' : selectedCollection?.name, // Pass initial values
-            initialDescription: isNew ? '' : selectedCollection?.description,
-          }}
+          isDialogOpen={isDialogOpen}
+          closeDialog={closeDialog}
+          onOpen={handleOpenCollectionModal}
+          onSave={handleSave}
+          isNew={isNew}
+          initialName={isNew ? '' : selectedCollection?.name}
+          initialDescription={isNew ? '' : selectedCollection?.description}
         />
       </RootContainer>
     </MiddleContainer>

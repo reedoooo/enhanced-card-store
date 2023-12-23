@@ -7,16 +7,15 @@ import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import HeroCenter from './pageStyles/HeroCenter';
 import { useModalContext, useMode, usePageContext } from '../context';
 import { gridContainerStyles, gridItemStyles } from './pageStyles/styles';
-import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
 import PageLayout from '../layout/PageLayout';
+import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 
 const StorePage = () => {
   const { theme } = useMode();
   const { isPageLoading, pageError } = usePageContext();
   const [containerHeight, setContainerHeight] = useState(0);
   const [searchBarFocused, setSearchBarFocused] = useState(false);
-  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
-    useModalContext();
+  const { openModalWithCard, isModalOpen, modalContent } = useModalContext();
 
   if (isPageLoading) return <LoadingIndicator />;
   if (pageError) return <ErrorIndicator error={pageError} />;
@@ -95,9 +94,9 @@ const StorePage = () => {
         </Container>
       </PageLayout>
       {isModalOpen && (
-        <GenericCardModal
+        <GenericCardDialog
           open={isModalOpen}
-          closeModal={closeModal}
+          context={'Cart'}
           card={modalContent}
         />
       )}

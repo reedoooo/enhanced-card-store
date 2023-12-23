@@ -2,8 +2,11 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
   Container,
   IconButton,
+  ListItemText,
+  Paper,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/styles';
@@ -127,25 +130,25 @@ export const MainContainer3 = styled('div')(({ theme }) => ({
   boxShadow: theme.shadows[3],
   borderRadius: theme.shape.borderRadius,
 }));
-export const SecondaryContainer = styled('div')(({ theme }) => ({
-  background: '#b7ebde',
-  padding: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  maxHeight: '100%',
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  boxShadow: theme.shadows[3],
-  borderRadius: theme.shape.borderRadius,
-}));
-export const TertiaryContainer = styled('div')(({ theme }) => ({
-  padding: 3,
-  borderRadius: 2,
-  background: theme.palette.success.main,
-  boxShadow: theme.shadows[10],
-  mb: 4,
-}));
+// export const SecondaryContainer = styled('div')(({ theme }) => ({
+//   background: '#b7ebde',
+//   padding: theme.spacing(2),
+//   marginBottom: theme.spacing(2),
+//   maxHeight: '100%',
+//   width: '100%',
+//   display: 'flex',
+//   flexDirection: 'column',
+//   alignItems: 'center',
+//   boxShadow: theme.shadows[3],
+//   borderRadius: theme.shape.borderRadius,
+// }));
+// export const TertiaryContainer = styled('div')(({ theme }) => ({
+//   padding: 3,
+//   borderRadius: 2,
+//   background: theme.palette.success.main,
+//   boxShadow: theme.shadows[10],
+//   mb: 4,
+// }));
 export const MainPaperContainer = styled('div')(({ theme }) => ({
   elevation: 3,
   borderRadius: 2,
@@ -191,7 +194,6 @@ export const DeckBuilderBanner = styled(Box)(({ theme }) => ({
 //   align-items: center;
 //   background-color: #f9f9f9;
 //   width: 100%;
-//   max-width: 1600px;
 //   margin: auto;
 // `;
 export const AvatarStyled = styled(Avatar)({
@@ -404,3 +406,84 @@ export const ProfileFormContainer = styled(Box)({
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   borderRadius: '8px',
 });
+
+// HOME PAGE STYLED COMPONENTS
+export const HomePageBox = styled(Box)(({ theme }) => ({
+  background: theme.palette.primary.light,
+  padding: theme.spacing(2, 4, 8),
+  margin: theme.spacing(1, 2, 4),
+  borderRadius: theme.shape.borderRadius,
+}));
+
+export const CarouselContainer = styled(Paper)(({ theme }) => ({
+  boxShadow: theme.shadows[10],
+  overflow: 'hidden', // ensuring the carousel stays within bounds
+  '&:hover': {
+    transform: 'scale(1.02)', // slightly reduced scale for subtlety
+    transition: 'transform 0.3s ease-in-out',
+  },
+}));
+
+export const FeatureCard = styled(Card)(({ theme }) => ({
+  background: theme.palette.success.light,
+  boxShadow: theme.shadows[5],
+  transition: 'box-shadow 0.3s ease-in-out', // smooth transition for shadow
+  '&:hover': {
+    boxShadow: theme.shadows[15], // more prominent shadow on hover
+    transform: 'translateY(-3px)', // slight upward lift
+  },
+}));
+
+export const ActionButton = styled(Button)(({ theme }) => ({
+  color: 'white', // Ensuring text is white for better contrast
+  background: theme.palette.success.main,
+  '&:hover': {
+    background: theme.palette.success.dark, // Darken button on hover for feedback
+  },
+}));
+
+export const MainContentContainer = styled(Container)(({ theme }) => ({
+  padding: theme.spacing(2, 4, 6),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[10],
+  margin: theme.spacing(2, 0), // added vertical spacing
+}));
+
+export const SecondaryContentContainer = styled('div')(({ theme }) => ({
+  background: theme.palette.secondary.light,
+  padding: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  boxShadow: theme.shadows[3],
+  borderRadius: theme.shape.borderRadius,
+  transition: 'background-color 0.3s', // smooth background color transition
+}));
+
+export const TertiaryContentContainer = styled('div')(({ theme }) => ({
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius,
+  background: theme.palette.success.main,
+  boxShadow: theme.shadows[10],
+  marginBottom: theme.spacing(4),
+  transition: 'all 0.3s ease-in-out', // smooth all transitions
+}));
+
+// Define a styled component for the unordered list
+export const CardUnorderedList = styled('ul')(({ theme }) => ({
+  listStyleType: 'disc', // or 'circle' or 'square' for different bullet styles
+  paddingLeft: theme.spacing(4), // Adjust based on theme spacing for indentation
+  margin: 0, // Remove default margins
+}));
+
+// Define a styled component for the list item text
+export const CardListItem = styled('li')(({ theme }) => ({
+  // Apply your desired typography styles
+  color: theme.palette.text.primary,
+  paddingBottom: theme.spacing(1), // Space between list items
+  textAlign: 'left', // Align text to the left
+  fontSize: '1rem', // Adjust font size as needed
+}));

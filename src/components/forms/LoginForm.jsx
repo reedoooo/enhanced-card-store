@@ -1,5 +1,11 @@
-import React from 'react';
-import { FormWrapper, StyledTextField, StyledButton } from './styled';
+import React, { useState } from 'react';
+import {
+  FormWrapper,
+  StyledTextField,
+  StyledButton,
+  StyledBorderContainer,
+} from './styled'; // Ensure this path is correct for your project
+import { useMode } from '../../context'; // Ensure this path is correct for your project
 
 const LoginForm = ({
   username,
@@ -15,6 +21,8 @@ const LoginForm = ({
   setRoleData,
   handleSubmit,
 }) => {
+  const { theme } = useMode(); // Ensure your context provides theme correctly
+
   return (
     <FormWrapper onSubmit={handleSubmit}>
       <StyledTextField
@@ -24,7 +32,10 @@ const LoginForm = ({
         onChange={(e) => setUsername(e.target.value)}
         variant="outlined"
         required
+        theme={theme}
       />
+
+      {/* Additional fields appear if in signup mode */}
       {signupMode && (
         <>
           <StyledTextField
@@ -35,6 +46,7 @@ const LoginForm = ({
             variant="outlined"
             type="email"
             required
+            theme={theme}
           />
           <StyledTextField
             label="Role Data"
@@ -43,9 +55,11 @@ const LoginForm = ({
             onChange={(e) => setRoleData(e.target.value)}
             variant="outlined"
             required
+            theme={theme}
           />
         </>
       )}
+
       <StyledTextField
         label="Password"
         placeholder="Enter your password"
@@ -54,8 +68,11 @@ const LoginForm = ({
         onChange={(e) => setPassword(e.target.value)}
         variant="outlined"
         required
+        theme={theme}
       />
-      <StyledButton type="submit" variant="contained" color="primary">
+
+      {/* Submit Button */}
+      <StyledButton type="submit" variant="contained" theme={theme}>
         {signupMode ? 'Sign Up' : 'Login'}
       </StyledButton>
     </FormWrapper>

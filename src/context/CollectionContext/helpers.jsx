@@ -22,6 +22,7 @@ export const initialCollectionState = {
   priceDifference: 0, // Initialize as 0 if not provided
   priceChange: 0, // Initialize as 0 if not provided
   collectionPriceHistory: [],
+  dailyCollectionPriceHistory: [],
   cards: [], // Initialize as empty array if not provided
   currentChartDataSets2: [], // Initialize as empty array if not provided
   chartData: {
@@ -523,11 +524,17 @@ export const constructCardDifferencesPayload = (
 };
 
 export const determineMethod = (operation, cardUpdate, collection) => {
-  if (operation === 'remove' && cardUpdate?.quantity === 1) {
-    return 'DELETE';
-  } else if (collection?.cards?.some((card) => card?.id === cardUpdate?.id)) {
+  console.log('CARD UPDATE QUANTITY TEST', cardUpdate);
+  if (operation === 'remove' && cardUpdate?.quantity >= 1) {
     return 'PUT';
-  } else {
+    // } else if (collection?.cards?.some((card) => card?.id === cardUpdate?.id)) {
+  } else if (operation === 'remove') {
+    return 'DELETE';
+  } else if (operation === 'update') {
+    return 'PUT';
+  } else if (operation === 'add' && cardUpdate?.quantity >= 1) {
+    return 'PUT';
+  } else if (operation === 'add') {
     return 'POST';
   }
 };
@@ -889,13 +896,15 @@ export const getAllCardPrices = (cards) =>
 export const determineCardPrice = (card, update) => {
   let price = 0;
   // console.log('CARD UPDATE:', update);
-  if (card?.price) {
+  if (card?.price !== update?.price) {
+    price = update?.price;
+  } else {
     price = card?.price;
   }
 
-  if (update?.latestPrice?.num) {
-    price = update?.latestPrice?.num;
-  }
+  // if (update?.latestPrice?.num) {
+  //   price = update?.latestPrice?.num;
+  // }
   return price || card?.card_prices[0]?.tcgplayer_price;
 };
 
@@ -908,3 +917,11 @@ export const convertToXYLabelData = (collectionPriceHistory) => {
     ).toLocaleTimeString()}`, // Combines price and time for the label
   }));
 };
+
+// export const convertToXYLabelData = (collectionPriceHistory) => {
+//   return collectionPriceHistory?.map((entry) => ({
+//     label: entry._id,
+//     x: new Date(entry.timestamp),
+//     y: entry.num,
+//   }));
+// };

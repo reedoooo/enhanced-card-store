@@ -357,10 +357,8 @@ export const CombinedProvider = ({ children }) => {
       // console.log('userId', user.userId);
       setDataFunctions.retrievedListOfMonitoredCards(listOfMonitoredCards);
     }
-  }, [user]);
+  }, [user, listOfMonitoredCards]);
   // ----------- CONTEXT VALUE -----------
-  // if (state?.allCardPrices && state?.allCollectionData?.length > 0) {
-  // }
   const value = useMemo(
     () => ({
       ...state,
@@ -390,7 +388,9 @@ export const CombinedProvider = ({ children }) => {
     userId,
     setDataFunctions.allCollectionData,
     state.updatedCollection,
-    state,
+    // state.allCollectionData,
+    // state.collectionData,
+    state.cardPrices,
   ]);
 
   return (

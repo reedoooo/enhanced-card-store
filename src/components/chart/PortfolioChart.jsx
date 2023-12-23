@@ -113,14 +113,22 @@ const PortfolioChart = () => {
   const nivoReadyData2 = useMemo(() => {
     return rawData2?.length > 0 ? convertDataForNivo2(rawData2) : [];
   }, [rawData2]);
+  // useMemo for expensive calculations
+
+  // Debounced window resize handler
+  const debouncedCalculateChartDimensions = useMemo(
+    () => debounce(calculateChartDimensions, 100),
+    []
+  );
+
   useEffect(() => {
-    const handleResize = debounce(calculateChartDimensions, 100);
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', debouncedCalculateChartDimensions);
     return () => {
-      window.removeEventListener('resize', handleResize);
-      handleResize.cancel();
+      window.removeEventListener('resize', debouncedCalculateChartDimensions);
+      debouncedCalculateChartDimensions.cancel();
     };
-  }, []);
+  }, [debouncedCalculateChartDimensions]);
+
   if (!dataReady) {
     return LoadingIndicator();
   }

@@ -5,7 +5,6 @@ import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import DeckBuilderContainer from '../containers/deckBuilderPageContainers/DeckBuilderContainer';
 import { Box, Grid, Typography } from '@mui/material';
 import { ModalContext } from '../context/ModalContext/ModalContext';
-import GenericCardModal from '../components/modals/cardModal/GenericCardModal';
 import { useMode } from '../context/hooks/colormode';
 import { DeckBuilderBanner } from './pageStyles/StyledComponents';
 import UserContext, {
@@ -15,6 +14,7 @@ import { usePageContext } from '../context/PageContext/PageContext';
 import HeroCenter from './pageStyles/HeroCenter';
 import { Container } from 'react-bootstrap';
 import PageLayout from '../layout/PageLayout';
+import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 
 const DeckBuilderPage = () => {
   const [userDecks, setUserDecks] = useState([]);
@@ -28,8 +28,7 @@ const DeckBuilderPage = () => {
     logPageData,
   } = usePageContext();
   const { user } = useUserContext();
-  const { openModalWithCard, closeModal, isModalOpen, modalContent } =
-    useContext(ModalContext);
+  const { isModalOpen, modalContent } = useContext(ModalContext);
   const userId = user?.id;
   useEffect(() => {
     fetchAllDecksForUser().catch((err) =>
@@ -67,9 +66,9 @@ const DeckBuilderPage = () => {
         {pageError && <ErrorIndicator error={pageError} />}
 
         {isModalOpen && (
-          <GenericCardModal
+          <GenericCardDialog
             open={isModalOpen}
-            closeModal={closeModal}
+            context={'Deck'}
             card={modalContent}
           />
         )}

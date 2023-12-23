@@ -33,7 +33,7 @@ Here's a glimpse of what TCG Enhanced Cardstore offers:
 
 ### Cart
 
-![Cart](public/images/pages/deckBuilder.png)
+![Cart](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/cart.png)
 
 _For an interactive experience, visit the [Live Demo](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)._
 

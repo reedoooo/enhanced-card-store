@@ -28,9 +28,7 @@ const CardsGrid = ({ isLoading }) => {
     }
   }, [selectedCards]);
 
-  const skeletonCount = 12; // Adjust this number based on your layout/grid
-
-  // Show error message if error is present
+  const skeletonCount = 12;
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
