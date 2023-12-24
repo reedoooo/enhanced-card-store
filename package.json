@@ -44,6 +44,7 @@
     "react-scripts": "5.0.1",
     "react-slick": "^0.29.0",
     "react-spinners": "^0.13.8",
+    "react-spring": "^9.7.3",
     "react-stripe-checkout": "^2.6.3",
     "react-swipeable-views": "^0.14.0",
     "slick-carousel": "^1.8.1",

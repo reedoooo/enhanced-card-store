@@ -1,52 +1,24 @@
-import React, { useCallback, useState } from 'react';
-import { Box, Button, Grid, Typography, useMediaQuery } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+// SelectCollection.jsx
+import React, { useState, useCallback } from 'react';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import SelectCollectionList from '../grids/collectionGrids/SelectCollectionList';
 import CreateOrEditCollectionDialog from '../dialogs/CreateOrEditCollectionDialog';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useMode } from '../../context/hooks/colormode';
-import {
-  ListContainer,
-  MiddleContainer,
-  RootContainer,
-} from '../../pages/pageStyles/StyledComponents';
-
-const useSelectCollectionStyles = makeStyles((theme) => ({
-  boxStyle: {
-    p: 2,
-    justifyContent: 'center',
-    margin: 'auto',
-  },
-  typographyStyle: {
-    fontWeight: 'bold',
-    color: 'black',
-    m: 'auto',
-  },
-  button: {
-    variant: 'outlined',
-    '& .MuiTypography-root': {
-      variant: 'button',
-      [theme.breakpoints.down('sm')]: {
-        variant: 'caption',
-      },
-    },
-  },
-}));
+import usePortfolioStyles from '../../context/hooks/usePortfolioStyles';
+import { useMode } from '../../context';
 
 const SelectCollection = ({ handleSelectCollection }) => {
   const { theme } = useMode();
-  const classes = useSelectCollectionStyles(theme);
+  const classes = usePortfolioStyles(theme);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { setSelectedCollection, selectedCollection } = useCollectionStore();
 
-  const handleOpenCollectionModal = useCallback(() => {
-    setDialogOpen(true);
-    setIsNew(true);
-  }, []);
-
+  const handleDialogToggle = useCallback(() => {
+    setDialogOpen(!isDialogOpen);
+  }, [isDialogOpen]);
   const closeDialog = useCallback(() => setDialogOpen(false), []);
+
   const handleSave = useCallback(
     (collection) => {
       setSelectedCollection(collection);
@@ -54,57 +26,42 @@ const SelectCollection = ({ handleSelectCollection }) => {
     },
     [setSelectedCollection, closeDialog]
   );
-
-  const openDialog = useCallback((isNewCollection) => {
-    setDialogOpen(true);
-    setIsNew(isNewCollection);
-  }, []);
+  const openNewDialog = () => {
+    setIsNew(true);
+    handleDialogToggle();
+  };
 
   return (
-    <MiddleContainer>
-      <RootContainer>
-        <Grid container>
-          <Grid item xs={6}>
-            <Box className={classes.boxStyle}>
-              <Typography variant="h5" className={classes.typographyStyle}>
-                Choose a Collection
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box className={classes.boxStyle}>
-              <Button
-                className={classes.button}
-                onClick={handleOpenCollectionModal}
-              >
-                <Typography variant="button">Add New Collection</Typography>
-              </Button>
-            </Box>
-          </Grid>
+    <Box className={classes.portfolioBoxB}>
+      <Grid container className={classes.gridContainer}>
+        <Grid item xs={12} sm={6}>
+          <Typography className={classes.typography}>
+            Choose a Collection
+          </Typography>
         </Grid>
-        <ListContainer>
-          <SelectCollectionList
-            handleSelectCollection={handleSelectCollection}
-            onSave={handleSave}
-            openDialog={() => openDialog(false)}
-          />
-        </ListContainer>
-        <CreateOrEditCollectionDialog
-          isDialogOpen={isDialogOpen}
-          closeDialog={closeDialog}
-          onOpen={handleOpenCollectionModal}
+        <Grid item xs={12} sm={6} className={classes.gridItem}>
+          <Button className={classes.button} onClick={openNewDialog}>
+            Add New Collection
+          </Button>
+        </Grid>
+      </Grid>
+      <Box className={classes.listContainer}>
+        <SelectCollectionList
+          handleSelectCollection={handleSelectCollection}
           onSave={handleSave}
-          isNew={isNew}
-          initialName={isNew ? '' : selectedCollection?.name}
-          initialDescription={isNew ? '' : selectedCollection?.description}
+          openDialog={handleDialogToggle}
         />
-      </RootContainer>
-    </MiddleContainer>
+      </Box>
+      <CreateOrEditCollectionDialog
+        isDialogOpen={isDialogOpen}
+        closeDialog={handleDialogToggle}
+        onSave={handleSave}
+        isNew={isNew}
+        initialName={isNew ? '' : selectedCollection?.name}
+        initialDescription={isNew ? '' : selectedCollection?.description}
+      />
+    </Box>
   );
-};
-
-SelectCollection.propTypes = {
-  handleSelectCollection: PropTypes.func.isRequired,
 };
 
 export default SelectCollection;

@@ -19,6 +19,7 @@ const DetailsModal = () => {
   const { featureData, detailsModalShow, closeDetailsModal } =
     useModalContext();
 
+  console.log('featureData', featureData);
   return (
     <Dialog
       open={detailsModalShow}
@@ -65,9 +66,24 @@ const DetailsModal = () => {
         >
           {featureData?.description}
         </Typography>
-        <ImageList cols={2} gap={8}>
+        <ImageList
+          cols={2}
+          gap={8}
+          sx={{ width: '100%', height: 'auto', justifyContent: 'center' }}
+        >
           {featureData?.images?.map((imgSrc, idx) => (
-            <ImageListItem key={idx}>
+            <ImageListItem
+              key={idx}
+              style={{
+                display: 'flex',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain', // ensures the aspect ratio is preserved
+                margin: 'auto',
+              }}
+            >
               <img
                 src={`${imgSrc}`}
                 alt={`Image of ${featureData?.title} ${idx}`}
@@ -75,6 +91,10 @@ const DetailsModal = () => {
                 style={{
                   borderRadius: '8px',
                   boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain', // ensures the aspect ratio is preserved
+                  margin: 'auto',
                 }}
               />
             </ImageListItem>

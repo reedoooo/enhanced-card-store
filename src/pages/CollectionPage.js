@@ -41,7 +41,6 @@ const CollectionPage = () => {
   if (pageError) displayErrorIndicator();
 
   const handleCollectionSelected = (selected) => {
-    console.log('selected', selected);
     setIsCollectionSelected(!!selected);
   };
   return (

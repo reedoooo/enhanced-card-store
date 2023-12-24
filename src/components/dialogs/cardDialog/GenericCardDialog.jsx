@@ -13,7 +13,6 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTheme } from '@mui/styles';
-import axios from 'axios';
 import useSnackbar from '../../../context/hooks/useSnackBar';
 import useSelectedContext from '../../../context/hooks/useSelectedContext';
 import {
@@ -22,13 +21,12 @@ import {
   useUserContext,
 } from '../../../context';
 import CardMediaSection from '../../cards/media/CardMediaSection';
-import CardCarousel from './CardCarousel';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
-import CardDetailsContainer from '../../../containers/CardDetailsContainer';
 import CloseIcon from '@mui/icons-material/Close';
 import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
 import CardDetail from './CardDetail';
 import { FaRegCopy } from 'react-icons/fa';
+import CardDetailsContainer from './CardDetailsContainer';
 
 const GenericCardDialog = (props) => {
   const theme = useTheme();
@@ -134,8 +132,12 @@ const GenericCardDialog = (props) => {
           </IconButton>
         )}
       </DialogTitle>{' '}
-      <DialogContent>
-        <Container maxWidth="md">
+      <DialogContent
+        sx={{
+          padding: 0,
+        }}
+      >
+        <Container maxWidth="lg">
           <Grid container spacing={2}>
             {/* these two grid items are for the card media and card details */}
             <Grid item xs={12} sm={6} md={6} lg={6}>
@@ -148,7 +150,7 @@ const GenericCardDialog = (props) => {
             <Grid item xs={6} sm={6} md={6} lg={6}>
               <CardDetail
                 className={'card-detail'}
-                icon={<FaRegCopy />}
+                // icon={<FaRegCopy />}
                 title="Description"
                 value={card?.desc}
               />
@@ -158,7 +160,6 @@ const GenericCardDialog = (props) => {
             </Grid>
 
             {/* these two grid items are for the card carousel and action buttons */}
-
             <Grid item xs={12} sm={6} md={6} lg={6}>
               {['Deck', 'Collection', 'Cart'].map((mappedContext) => (
                 <GenericActionButtons
