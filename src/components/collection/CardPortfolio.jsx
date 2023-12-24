@@ -5,56 +5,62 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context';
 import { makeStyles } from '@mui/styles';
-const useCardPortfolioStyles = makeStyles((theme) => ({
-  boxStyle: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: theme.shape.borderRadius,
-    flexGrow: 1,
-    background: '#333',
-    padding: {
-      xs: theme.spacing(1),
-      sm: theme.spacing(1),
-      md: theme.spacing(2.5),
-      lg: theme.spacing(2.5),
-    },
-    height: '100%',
-    width: '100%',
-  },
-}));
+import { usePortfolioStyles } from '../../context/hooks/usePortfolioStyles';
+// const useCardPortfolioStyles = makeStyles((theme) => ({
+//   boxStyle: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     borderRadius: theme.shape.borderRadius,
+//     flexGrow: 1,
+//     background: '#333',
+//     padding: {
+//       xs: theme.spacing(1),
+//       sm: theme.spacing(1),
+//       md: theme.spacing(2.5),
+//       lg: theme.spacing(2.5),
+//     },
+//     height: '100%',
+//     width: '100%',
+//   },
+// }));
 const CardPortfolio = ({ allCollections, onCollectionSelect }) => {
   const { theme } = useMode();
-  const classes = useCardPortfolioStyles(theme);
-
+  const classes = usePortfolioStyles(theme);
   const [showCollections, setShowCollections] = useState(true);
-  const [showPortfolio, setShowPortfolio] = useState(false);
   const [selectedCards, setSelectedCards] = useState([]);
   const { selectedCollection } = useCollectionStore();
-
   useEffect(() => {
     setSelectedCards(selectedCollection?.cards?.slice(0, 30));
   }, [selectedCollection]);
+  useEffect(() => {
+    if (selectedCollection && !showCollections) {
+      onCollectionSelect(true);
+    }
+  }, [selectedCollection, showCollections, onCollectionSelect]);
 
   const handleSelectCollection = (collectionId) => {
-    const foundCollection = allCollections.find(
-      (collection) => collection._id === collectionId
+    const foundCollection = allCollections?.find(
+      (collection) => collection?._id === collectionId
     );
     if (foundCollection) {
       setShowCollections(false);
-      setShowPortfolio(true);
-      onCollectionSelect(true);
     }
   };
+
   return (
-    <Box className={classes.boxStyle}>
+    <Box className={classes.portfolioBox}>
       {showCollections ? (
-        <SelectCollection handleSelectCollection={handleSelectCollection} />
-      ) : showPortfolio ? (
-        <PortfolioContent selectedCollection={selectedCollection} />
+        <SelectCollection
+          handleSelectCollection={handleSelectCollection}
+          selectedCards={selectedCards}
+        />
       ) : (
-        <Typography variant="h6">No Collection Selected</Typography>
+        <PortfolioContent
+          selectedCollection={selectedCollection}
+          selectedCards={selectedCards}
+        />
       )}
     </Box>
   );

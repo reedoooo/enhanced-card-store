@@ -129,9 +129,6 @@ export const CollectionProvider = ({ children }) => {
           setAllCollections(newData);
         }
         if (newData && typeof newData === 'object') {
-          console.log(
-            'SETTING SELECTED CO IN UPDATEDCOLLECTIONDATA --------->'
-          );
           if (newData.cards && !isEqual(newData, selectedCollection)) {
             setSelectedCollection(newData);
             setTotalPrice(calculateCollectionValue(newData));

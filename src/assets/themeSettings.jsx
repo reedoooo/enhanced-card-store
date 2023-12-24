@@ -1,7 +1,41 @@
 import { tokens } from './tokens';
+// Utility function to convert Hex to RGBA
+function hexToRgba(hex, alpha = 1) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
 
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+        result[3],
+        16
+      )}, ${alpha})`
+    : null;
+}
 export const themeSettings = (mode) => {
   const colors = tokens(mode);
+
+  const backgroundA = {
+    darkest: '#70d8bd', // '#70d8bd',
+    darker: '#70d8bd',
+    dark: '#70d8bd',
+    default: '#4cceac', // '#4cceac',
+    light: '#4cceac',
+    lighter: '#4cceac',
+    lightest: '#4cceac',
+  };
+  const backgroundB = {
+    darkest: '#111',
+    darker: '#222',
+    dark: '#333',
+    default: '#444',
+    light: '#555',
+    lighter: '#666',
+    lightest: '#777',
+  };
 
   return {
     width: '100vw',
@@ -60,6 +94,45 @@ export const themeSettings = (mode) => {
         paper: colors.greenAccent[100],
         disabled: colors.grey[200],
         // paper: mode === 'dark' ? colors.grey[300] : '#ffffff',
+      },
+      backgroundA: {
+        darkest: '#70d8bd', // '#70d8bd',
+        darker: '#70d8bd',
+        dark: '#70d8bd',
+        default: '#4cceac', // '#4cceac',
+        light: '#4cceac',
+        lighter: '#4cceac',
+        lightest: '#4cceac',
+      },
+      backgroundB: {
+        darkest: '#111',
+        darker: '#222',
+        dark: '#333',
+        default: '#444',
+        light: '#555',
+        lighter: '#666',
+        lightest: '#777',
+        contrastText: '#FBFAF2',
+      },
+      backgroundC: {
+        darkest: hexToRgba(backgroundB.darkest, 0.9),
+        darker: hexToRgba(backgroundB.darker, 0.8),
+        dark: hexToRgba(backgroundB.dark, 0.7),
+        default: hexToRgba(backgroundB.default, 0.6),
+        light: hexToRgba(backgroundB.light, 0.5),
+        lighter: hexToRgba(backgroundB.lighter, 0.4),
+        lightest: hexToRgba(backgroundB.lightest, 0.3),
+        contrastText: '#FBFAF2',
+      },
+      backgroundD: {
+        darkest: hexToRgba(backgroundA.darkest, 0.9),
+        darker: hexToRgba(backgroundA.darker, 0.7),
+        dark: hexToRgba(backgroundA.dark, 0.6),
+        default: hexToRgba(backgroundA.default, 0.5),
+        light: hexToRgba(backgroundA.light, 0.4),
+        lighter: hexToRgba(backgroundA.lighter, 0.3),
+        lightest: hexToRgba(backgroundA.lightest, 0.2),
+        contrastText: '#FBFAF2',
       },
       error: {
         main: colors.redAccent[500],

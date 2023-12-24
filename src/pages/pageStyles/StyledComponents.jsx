@@ -413,6 +413,10 @@ export const HomePageBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2, 4, 8),
   margin: theme.spacing(1, 2, 4),
   borderRadius: theme.shape.borderRadius,
+  elevation: 3,
+  boxShadow: theme.shadows[7],
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 export const CarouselContainer = styled(Paper)(({ theme }) => ({
@@ -445,24 +449,28 @@ export const ActionButton = styled(Button)(({ theme }) => ({
 export const MainContentContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2, 4, 6),
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.backgroundD.dark,
   boxShadow: theme.shadows[10],
   margin: theme.spacing(2, 0), // added vertical spacing
 }));
 
 export const SecondaryContentContainer = styled('div')(({ theme }) => ({
-  background: theme.palette.secondary.light,
-  padding: theme.spacing(2),
+  background: theme.palette.backgroundD.dark,
   marginBottom: theme.spacing(2),
   width: '100%',
-  display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
   boxShadow: theme.shadows[3],
   borderRadius: theme.shape.borderRadius,
-  transition: 'background-color 0.3s', // smooth background color transition
+  transition: 'background-color 0.3s',
+  position: 'relative',
+  paddingTop: '0', // Remove top padding to align the animation at the top
+  paddingBottom: '0', // Remove bottom padding
+  minHeight: '70vh', // Adjust the height as needed to fit the animation
+  display: 'flex',
+  justifyContent: 'center', // Center the animation horizontally
+  alignItems: 'center', // Center the animation vertically
+  overflow: 'hidden', // Prevent overflow
 }));
-
 export const TertiaryContentContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,

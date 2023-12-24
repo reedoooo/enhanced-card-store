@@ -27,10 +27,7 @@ export const ModalProvider = ({ children }) => {
       url: 'https://github.com/reedoooo/enhanced-card-store',
       readmeurl: 'deck-builder-frontend/README.md',
       images: [
-        'public/images/pages/deckBuilder.png',
-
-        // eslint-disable-next-line max-len
-        // 'https://github.com/reedoooo/enhanced-card-store/blob/6af330ab4f553bb3279dfa8ed7d30bce098e770f/public/images/pages/deckBuilder.png',
+        'https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/deckBuilder.png?raw=true',
       ],
       startDate: 'August 2021',
       endDate: 'September 2021',
@@ -44,9 +41,7 @@ export const ModalProvider = ({ children }) => {
       url: 'https://github.com/reedoooo/enhanced-card-store',
       readmeurl: 'collection-tracker-frontend/README.md',
       images: [
-        'public/images/pages/portfolio.png',
-        // eslint-disable-next-line max-len
-        // 'https://github.com/reedoooo/enhanced-card-store/blob/6af330ab4f553bb3279dfa8ed7d30bce098e770f/public/images/pages/portfolio.png',
+        'https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/portfolio.png?raw=true,',
       ],
       startDate: 'August 2021',
       endDate: 'September 2021',
@@ -60,11 +55,7 @@ export const ModalProvider = ({ children }) => {
       url: 'https://github.com/reedoooo/enhanced-card-store',
       readmeurl: 'store-frontend/README.md',
       images: [
-        'public/images/pages/cart.png',
-        // eslint-disable-next-line max-len
-        // 'https://github.com/reedoooo/enhanced-card-store/blob/6af330ab4f553bb3279dfa8ed7d30bce098e770f/public/images/pages/cart.png',
-        // eslint-disable-next-line max-len
-        // '../assets/images/pages/cart.png',
+        'https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/cart.png?raw=true', // eslint-disable-next-line max-len
       ],
       startDate: 'August 2021',
       endDate: 'September 2021',

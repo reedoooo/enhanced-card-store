@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext } from 'react';
 import { SplashPage } from '../../pages';
 import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
+import SplashPage2 from '../../pages/otherPages/SplashPage2';
 
 // Creating the context
 const PageContext = createContext();
@@ -48,7 +49,8 @@ export const PageProvider = ({ children }) => {
   };
 
   const displaySplashPage = () => {
-    if (isPageLoading) return <SplashPage />;
+    // if (isPageLoading) return <SplashPage />;
+    if (isPageLoading) return <SplashPage2 />;
   };
 
   // const setLoader = (isLoading) => {
