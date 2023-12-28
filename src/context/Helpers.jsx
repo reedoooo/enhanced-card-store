@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
+export const BASE_URL = `${process.env.REACT_APP_SERVER}/api`;
+
+export const createUrl = (path) => `${BASE_URL}/${path}`;
 /**
  * The base URL for all API calls.
  * @type {String}
@@ -29,34 +32,6 @@ const lastRequestTime = {
  */
 const updateLastRequestTime = (method) => {
   lastRequestTime[method] = Date.now();
-};
-/**
- * Wraps fetch API calls and implements a rate limit for each HTTP method type.
- * @param {String} url - The API URL to make the request to.
- * @param {String} method - The HTTP method for the request.
- * @param {Object} [body=null] - The request payload if needed.
- * @returns {Promise<Object>} - The response from the API call.
- */
-export const fetchWrapper = async (url, method, body = null) => {
-  const options = {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    ...(body && { body: JSON.stringify(body) }),
-  };
-
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      // We handle non-ok responses immediately
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    updateLastRequestTime(method); // Assumed to be a function that updates some kind of state
-    return await response.json(); // Directly returning the JSON response
-  } catch (error) {
-    console.error(`Fetch failed: ${error}`);
-    console.trace();
-    throw error; // Re-throwing the error for upstream catch blocks to handle
-  }
 };
 
 export const removeDuplicateCollections = (collections) => {
@@ -97,11 +72,11 @@ export const getCardQuantity = (collectionId, allCollections) => {
 
 // Custom Hook to get the userId from cookies
 export const useUserId = () => {
-  const [cookies] = useCookies(['user']);
+  const [cookies] = useCookies(['authUser']);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    setUserId(cookies.user?.id);
+    setUserId(cookies?.authUser?.id);
   }, [cookies]);
 
   return userId;

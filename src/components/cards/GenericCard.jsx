@@ -20,6 +20,7 @@ import {
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
 
+  // console.log('ref', ref);
   const { theme } = useMode();
   const theme2 = useTheme();
   const cardRef = useRef(null);
@@ -30,7 +31,6 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
     useContext(PopoverContext);
 
-  // Event handlers and callbacks
   const handleClick = useCallback(() => {
     openModalWithCard(card);
     setModalOpen(true);
@@ -157,7 +157,7 @@ const GenericCard = React.forwardRef((props, ref) => {
 
   // Function to render the card's media section
   const renderCardMediaSection = () => (
-    <AspectRatioBox ref={ref} theme={theme}>
+    <AspectRatioBox ref={cardRef} theme={theme}>
       <CardMediaSection
         isRequired={true}
         imgUrl={imgUrl}
@@ -168,6 +168,7 @@ const GenericCard = React.forwardRef((props, ref) => {
         isHovered={hoveredCard === card}
         handleInteraction={handleInteraction}
         handleClick={handleClick}
+        ref={cardRef}
       />
     </AspectRatioBox>
   );

@@ -448,17 +448,20 @@ export const ActionButton = styled(Button)(({ theme }) => ({
 
 export const MainContentContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2, 4, 6),
+  // minHeight: '100%',
+  // minHeight: '35vh',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: theme.palette.backgroundD.dark,
   boxShadow: theme.shadows[10],
-  margin: theme.spacing(2, 0), // added vertical spacing
+  marginTop: theme.spacing(2),
+  margin: theme.spacing(4, 0), // added vertical spacing
 }));
 
 export const SecondaryContentContainer = styled('div')(({ theme }) => ({
   background: theme.palette.backgroundD.dark,
   marginBottom: theme.spacing(2),
   width: '100%',
-  flexDirection: 'column',
+  flexDirection: 'row',
   boxShadow: theme.shadows[3],
   borderRadius: theme.shape.borderRadius,
   transition: 'background-color 0.3s',
@@ -467,8 +470,9 @@ export const SecondaryContentContainer = styled('div')(({ theme }) => ({
   paddingBottom: '0', // Remove bottom padding
   minHeight: '70vh', // Adjust the height as needed to fit the animation
   display: 'flex',
-  justifyContent: 'center', // Center the animation horizontally
+  justifyContent: 'space-evenly', // Center the animation horizontally
   alignItems: 'center', // Center the animation vertically
+  alignContent: 'center', // Center the animation vertically
   overflow: 'hidden', // Prevent overflow
 }));
 export const TertiaryContentContainer = styled('div')(({ theme }) => ({

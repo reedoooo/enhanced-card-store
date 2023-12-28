@@ -1,7 +1,8 @@
 import React from 'react';
 import { useMode } from '../../context/hooks/colormode';
 import { StyledButton, StyledPaper, StyledTextField } from './styled';
-import SearchButton from '../buttons/other/SearchButton';
+
+import { Button, Grid } from '@mui/material';
 
 const SearchForm = ({
   searchTerm,
@@ -9,6 +10,7 @@ const SearchForm = ({
   onFocus,
   onBlur,
   handleSubmit,
+  handleKeyPress,
 }) => {
   const { theme } = useMode();
 
@@ -31,12 +33,29 @@ const SearchForm = ({
           label="Search for cards"
           variant="outlined"
           fullWidth
+          onKeyDown={handleKeyPress} // Add keydown listener here
           theme={theme}
         />
-        <SearchButton handleSubmit={handleSubmit} />
-        {/* <StyledButton type="submit" fullWidth theme={theme}>
-          Search
-        </StyledButton> */}
+        <Grid item xs={12}>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{
+              mt: 1,
+              mb: 1,
+              background: theme.palette.primary.main,
+              '&:hover': {
+                background: theme.palette.primary.dark,
+                boxShadow: 6,
+              },
+            }}
+            onClick={() => handleSubmit()} // Corrected onClick
+          >
+            Search
+          </Button>
+        </Grid>
       </form>
     </StyledPaper>
   );

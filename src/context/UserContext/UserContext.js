@@ -7,47 +7,62 @@ import React, {
 } from 'react';
 import { useCookies } from 'react-cookie';
 import { useAuthContext } from '../hooks/auth';
-import { useCollectionStore } from '../CollectionContext/CollectionContext';
-
+import { createUrl } from '../Helpers';
+import useFetchWrapper from '../hooks/useFetchWrapper';
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [cookies, setCookie] = useCookies(['user']);
-  const [isCronJobTriggered, setIsCronJobTriggered] = useState(false);
-  const [allCollections, setAllCollections] = useState([]);
-  const { authUser, setUser } = useAuthContext(); // Use the useAuthContext hook
+  const { authUser, user, setUser, isLoggedIn } = useAuthContext(); // Use the useAuthContext hook
+  const fetchWrapper = useFetchWrapper();
+  const userId = authUser?.id;
 
-  const triggerCronJob = async () => {
-    // Add your code here
+  // const fetchUserData = useCallback(async () => {
+  //   // Get request to fetch user data
+  //   const endpoint = `/users/${user.id}/userData`;
+  //   const url = createUrl(endpoint);
+  //   const response = await useFetchWrapper(url);
+  //   // const response = await fetchWrapper.get(`/api/users/${userId}`);
+  //   // const userData = response.data;
+  // }, []);
+
+  const updateUser = async (updatedUser) => {
+    try {
+      console.log('User Data Sent to Server:', updatedUser);
+      const endpoint = `users/${userId}/userData/update`;
+      const url = createUrl(endpoint);
+      const response = await fetchWrapper(url, 'PUT', updatedUser);
+      const updatedUserResponse = response?.data?.user;
+      setUser(updatedUserResponse);
+      console.log('User Data Sent to Server and Cookie Updated:', updatedUser);
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
   };
 
   useEffect(() => {
-    const userId = authUser?.id;
-    const username = authUser?.username;
     if (userId) {
-      const updatedUser = { userId, username };
-      setUser(updatedUser);
+      const updatedUser = {
+        ...user,
+        userSecurityData: {
+          ...user.userSecurityData,
+          userId: userId,
+        },
+        userBasicData: {
+          ...user.userBasicData,
+          userId: userId,
+        },
+      };
+      updateUser(updatedUser);
     }
-  }, [cookies]);
-
-  const updateUser = (userData) => {
-    setUser(userData);
-    setCookie('user', userData, { path: '/' });
-    console.log('User Data Sent to Server and Cookie Updated:', userData);
-  };
+  }, [userId]);
 
   return (
     <UserContext.Provider
       value={{
         user: authUser,
-        userId: authUser.id,
+        userId: authUser?.id,
         setUser,
-        allCollections,
-        setCookie,
         updateUser,
-        triggerCronJob,
-        isCronJobTriggered,
-        setIsCronJobTriggered,
       }}
     >
       {children}

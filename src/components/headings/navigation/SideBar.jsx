@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Drawer,
+  SwipeableDrawer,
   List,
   Divider,
   Hidden,
   ListItemIcon,
   ListItemText,
   ListItem,
+  ListItemButton,
+  Box,
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -34,58 +36,61 @@ const SideBar = ({
   handleLogout,
 }) => {
   const classes = useStyles();
-  const [selected, setSelected] = useState('Dashboard');
   const { isLoggedIn } = useAuthContext();
   const menuItemsData = getMenuItemsData(isLoggedIn);
 
-  const handleItemClick = (name) => {
-    setSelected(name);
-    handleDrawerState();
-  };
+  const iOS =
+    typeof navigator !== 'undefined' &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
     <Hidden smDown implementation="css">
-      <Drawer
-        anchor="right"
+      <SwipeableDrawer
+        anchor="right" // Drawer opens from the right
         open={isOpen}
         onClose={handleDrawerState}
+        onOpen={handleDrawerState} // Handle opening the drawer
         classes={{ paper: classes.drawerPaper }}
+        disableBackdropTransition={!iOS}
+        disableDiscovery={iOS}
+        edge="right" // Optimize swiping from the right
       >
-        <List>
-          {menuItemsData.map((item) => (
-            <MenuItemComponent
-              key={item.name}
-              name={item.name}
-              item={item}
-              onClick={() => handleItemClick(item.name)}
-            />
-          ))}
-          <Divider />
-          {isLoggedIn ? (
-            <ListItem
-              button
-              className={classes.listItem}
-              onClick={handleLogout}
-            >
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItem>
-          ) : (
-            <ListItem
-              button
-              className={classes.listItem}
-              onClick={handleLoginDialogState}
-            >
-              <ListItemIcon>
-                <LoginIcon />
-              </ListItemIcon>
-              <ListItemText primary="Login" />
-            </ListItem>
-          )}
-        </List>
-      </Drawer>
+        <Box sx={{ width: 250 }} role="presentation">
+          <List>
+            {menuItemsData.map((item) => (
+              <MenuItemComponent
+                key={item.name}
+                name={item.name}
+                item={item}
+                onClick={() => handleDrawerState()}
+              />
+            ))}
+            <Divider />
+            {isLoggedIn ? (
+              <ListItem className={classes.listItem} onClick={handleLogout}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <LogoutIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout" />
+                </ListItemButton>
+              </ListItem>
+            ) : (
+              <ListItem
+                className={classes.listItem}
+                onClick={handleLoginDialogState}
+              >
+                <ListItemButton>
+                  <ListItemIcon>
+                    <LoginIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Login" />
+                </ListItemButton>
+              </ListItem>
+            )}
+          </List>
+        </Box>
+      </SwipeableDrawer>
     </Hidden>
   );
 };

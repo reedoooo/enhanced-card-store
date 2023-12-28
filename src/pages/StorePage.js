@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Container, Grid } from '@mui/material';
-import SearchBar from '../components/search/SearchBar';
-import ProductGrid from '../components/grids/storeSearchResultsGrid/ProductGrid';
+import SearchBar from '../components/other/search/SearchBar';
+import ProductGrid from '../components/grids/searchResultsGrids/ProductGrid';
 import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import HeroCenter from './pageStyles/HeroCenter';
@@ -12,13 +12,10 @@ import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialo
 
 const StorePage = () => {
   const { theme } = useMode();
-  const { isPageLoading, pageError } = usePageContext();
+  const { setLoading, loadingStatus } = usePageContext();
   const [containerHeight, setContainerHeight] = useState(0);
   const [searchBarFocused, setSearchBarFocused] = useState(false);
-  const { openModalWithCard, isModalOpen, modalContent } = useModalContext();
-
-  if (isPageLoading) return <LoadingIndicator />;
-  if (pageError) return <ErrorIndicator error={pageError} />;
+  const { isModalOpen, modalContent } = useModalContext();
 
   const updateContainerHeight = (height) => {
     setContainerHeight(height);
@@ -26,19 +23,6 @@ const StorePage = () => {
 
   return (
     <React.Fragment>
-      {' '}
-      {/* <Box
-        sx={{
-          flexGrow: 1,
-          zIndex: -1,
-          height: '100%',
-          width: '100%',
-          margin: '50px',
-          minHeight: '100%',
-          background: theme.palette.background.dark,
-          // position: 'absolute',
-        }}
-      /> */}
       <PageLayout>
         <Box
           sx={{
@@ -47,9 +31,7 @@ const StorePage = () => {
             height: '100%',
             width: '100%',
             margin: '10%',
-            // minHeight: '100%',
             background: theme.palette.background.dark,
-            // position: 'absolute',
           }}
         />
         <HeroCenter

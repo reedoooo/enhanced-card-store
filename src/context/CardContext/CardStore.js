@@ -17,7 +17,7 @@ const CardContext = createContext();
 
 export const CardProvider = ({ children }) => {
   const { user } = useUserContext();
-  const [cookies, setCookie] = useCookies(['cart'], ['deckData']);
+  const [cookies, setCookie] = useCookies(['deckData']);
   const initialStore = cookies.store || [];
   const [cardsArray, setCardsArray] = useState(initialStore);
   const { allCollections, setAllCollections } = useCollectionStore();

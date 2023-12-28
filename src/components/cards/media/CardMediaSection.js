@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { CardMedia, Popover } from '@mui/material';
+import { CardMedia, Popover, Popper } from '@mui/material';
 import CardToolTip from '../CardToolTip';
 import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
@@ -12,11 +12,16 @@ const useStyles = makeStyles((theme) => ({
   },
   popover: {
     pointerEvents: 'none',
+    height: 'auto',
+    width: 'auto',
+    maxWidth: '300px',
+    maxHeight: 'auto',
   },
   media: {
     width: '100%',
     height: 'auto',
     flexGrow: 1,
+    alignItems: 'flex-end',
     [theme.breakpoints.down('xs')]: {
       padding: theme.spacing(1),
     },
@@ -36,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const anchorOrigin = {
-  vertical: 'bottom',
-  horizontal: 'left',
+  vertical: 'top',
+  horizontal: 'right',
 };
 
 const transformOrigin = {
@@ -52,7 +57,8 @@ const CardMediaSection = forwardRef(
   ) => {
     const classes = useStyles();
     const { setModalImgUrl, clickedCard, setClickedCard } = useModalContext();
-
+    const { isPopoverOpen } = usePopoverContext();
+    const [anchorEl, setAnchorEl] = React.useState(ref?.current || null);
     const eventHandlers = isRequired
       ? {
           onMouseEnter: () => handleInteraction?.(true),
@@ -70,12 +76,20 @@ const CardMediaSection = forwardRef(
       }
     }, [imgUrl, clickedCard, setModalImgUrl]);
 
+    useEffect(() => {
+      if (isHovered && ref?.current) {
+        setAnchorEl(ref?.current);
+      } else {
+        setAnchorEl(null);
+      }
+    }, [isHovered, ref]);
+
     return (
       <div
         className={classes.mediaContainer}
         ref={ref}
         {...eventHandlers}
-        onClick={() => handleClick?.()}
+        // onClick={() => handleClick?.()}
       >
         <CardMedia
           className={classes.media}
@@ -83,18 +97,19 @@ const CardMediaSection = forwardRef(
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
         />
-        {isRequired && isHovered && (
-          <Popover
+        {anchorEl && isHovered && (
+          <Popper
             className={classes.popover}
-            open={isHovered}
-            anchorEl={ref?.current} // Make sure this is not undefined
+            open={isHovered || isPopoverOpen}
+            anchorEl={anchorEl} // Make sure this is not undefined
             onClose={() => handleInteraction(false)}
-            anchorOrigin={anchorOrigin}
-            transformOrigin={transformOrigin}
-            disableRestoreFocus
+            // anchorOrigin={anchorOrigin}
+            // transformOrigin={transformOrigin}
+            placement="right-start"
+            // disableRestoreFocus
           >
             <CardToolTip card={card} />
-          </Popover>
+          </Popper>
         )}
       </div>
     );

@@ -32,10 +32,12 @@ import { useSpring, animated } from 'react-spring';
 import SplashPage2 from './otherPages/SplashPage2';
 import pages from '../assets/pages.json';
 import { useTheme } from '@emotion/react';
-import SplashPage3 from './otherPages/SplashPage3';
-import SingleCardRowAnimation from '../assets/animations/SingleCardRowAnimation';
 import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
 import { useCollectionStore } from '../context';
+import CardChart from '../tests/CardChart';
+import CardComponent from '../tests/CardComponent';
+import useCardCronJob from '../tests/useCardCronJob';
+import initialCardData from '../tests/initialCardData';
 
 const AnimatedBox = animated(Box);
 
@@ -43,6 +45,8 @@ const HomePage = () => {
   const { theme } = useMode();
   const theme2 = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
+  const { cardData, startUpdates, pauseUpdates, resetData } =
+    useCardCronJob(initialCardData);
 
   const { isModalOpen, modalContent } = useContext(ModalContext);
   const { selectedCollection } = useCollectionStore();
@@ -61,14 +65,17 @@ const HomePage = () => {
   const splashRef = useRef(null);
   useEffect(() => {
     if (splashRef.current) {
-      splashRef.current.style.position = 'fixed';
-      splashRef.current.style.top = '0';
-      splashRef.current.style.left = '0';
-      splashRef.current.style.width = '100%';
-      splashRef.current.style.height = '100%';
-      splashRef.current.style.zIndex = '-1';
+      Object.assign(splashRef.current.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: '-1',
+      });
     }
   }, []);
+
   const titleStyles = {
     padding: theme.spacing(2), // consistent padding with the theme
     textAlign: 'center',
@@ -83,7 +90,6 @@ const HomePage = () => {
     <React.Fragment>
       <CssBaseline />
       <div ref={splashRef}>
-        {/* <SplashPage2 /> */}
         <SplashPage2 />
       </div>
       <TertiaryContentContainer theme={theme}>
@@ -108,13 +114,105 @@ const HomePage = () => {
         </HomePageBox>
       </TertiaryContentContainer>
       <SecondaryContentContainer theme={theme}>
-        <Typography
-          variant={isSmUp ? 'h4' : 'h5'} // Responsive font size
-          style={titleStyles}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30%',
+            height: 'auto',
+            '@media (max-width: 600px)': {
+              width: '150%', // Adjust width for mobile screens
+              height: '300px', // Adjust height for mobile screens
+              transform: 'translateX(10%)', // Shift the chart to the right by 50%
+            },
+          }}
+        ></Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: 'auto',
+            '@media (max-width: 600px)': {
+              width: '150%', // Adjust width for mobile screens
+              height: '300px', // Adjust height for mobile screens
+              transform: 'translateX(10%)', // Shift the chart to the right by 50%
+            },
+          }}
         >
-          Top Performing Cards
-        </Typography>
-        <SingleCardAnimation card={selectedCollection?.cards[0]} />
+          <Typography
+            variant={isSmUp ? 'h4' : 'h5'} // Responsive font size
+            style={titleStyles}
+          >
+            Top Performing Cards
+          </Typography>
+          <SingleCardAnimation cardImage={cardData?.image} />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            // mt: 2,
+            // mb: '20vh',
+            width: '100%',
+            height: 'auto',
+            '@media (max-width: 600px)': {
+              width: '150%', // Adjust width for mobile screens
+              height: '300px', // Adjust height for mobile screens
+              transform: 'translateX(10%)', // Shift the chart to the right by 50%
+            },
+          }}
+        >
+          {cardData && cardData?.dailyPriceHistory && (
+            <CardChart cardData={cardData} />
+          )}
+          <Box
+            // max height should be about 30% of container
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: theme.spacing(2), // Consistent padding
+
+              justifyContent: 'center',
+              width: '100%',
+              height: 'auto', // Adjust height as needed
+              // scroll: 'auto',
+              // height: '30%',
+              mb: '20vh',
+
+              // height: 'auto',
+              '@media (max-width: 600px)': {
+                width: '150%', // Adjust width for mobile screens
+                // height: '300px', // Adjust height for mobile screens
+                transform: 'translateX(10%)', // Shift the chart to the right by 50%
+              },
+            }}
+          >
+            <CardComponent cardData={cardData} />
+          </Box>{' '}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '30%',
+            height: 'auto',
+            '@media (max-width: 600px)': {
+              width: '150%', // Adjust width for mobile screens
+              height: '300px', // Adjust height for mobile screens
+              transform: 'translateX(10%)', // Shift the chart to the right by 50%
+            },
+          }}
+        ></Box>
         {/* <SingleCardRowAnimation /> This is your animation component */}
       </SecondaryContentContainer>
       <MainContentContainer maxWidth="100%" theme={theme}>

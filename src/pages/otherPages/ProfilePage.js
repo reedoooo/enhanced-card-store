@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -8,8 +7,8 @@ import {
   IconButton,
   Container,
   Snackbar,
-  styled,
-  TextField,
+  Grid,
+  Paper,
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import placeholder from '../../assets/images/placeholder.jpeg';
@@ -17,142 +16,70 @@ import UserStats from '../../components/other/dataDisplay/UserStats';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../../components/buttons/other/ThemeToggleButton';
-import { useCombinedContext } from '../../context/CombinedContext/CombinedProvider';
-import {
-  AvatarStyled,
-  TypographyStyled,
-  IconButtonStyled,
-  ButtonStyled,
-  ButtonsContainer,
-  CustomButton,
-  ProfileFormContainer,
-} from '../pageStyles/StyledComponents';
 import ProfileForm from '../../components/forms/ProfileForm';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import useResponsiveStyles from '../../context/hooks/useResponsiveStyles';
+import { useMode } from '../../context';
 
 const ProfilePage = () => {
-  const { selectedCollection } = useCollectionStore();
-  const { user, updateUser } = useUserContext();
+  const { updateUser } = useUserContext();
+  const { theme } = useMode();
+  const { isLarge } = useResponsiveStyles(theme);
+  // const isLarge = useMediaQuery(theme.breakpoints.up('lg'));
   const [cookies] = useCookies(['user']);
+  const user = cookies?.user;
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     message: '',
   });
 
-  const {
-    handleSend,
-    handleRequestChartData,
-    handleRequestCollectionData,
-    handleRequestCronStop,
-  } = useCombinedContext();
-
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };
-  // const userId = user?.id;
-  const userId = cookies.user?.id;
-  console.log('USER ID:', userId);
-  // console.log('USER:', user);
-  const handleSaveChanges = useCallback(
-    (data) => {
-      updateUser(data);
-      openSnackbar('Saved changes.');
-    },
-    [updateUser]
-  );
 
-  const handleSendMessage = () => {
-    handleSend('Hello, Server!');
-    openSnackbar('Sent message to the server.');
+  const openEdit = () => {
+    openSnackbar('Edit mode enabled');
   };
 
-  const handleRequestCollectionDataFunction = () => {
-    if ((userId, selectedCollection)) {
-      handleRequestCollectionData(userId, selectedCollection);
-      console.log('REQUESTING COLLECTION DATA');
-      openSnackbar('Requested collection data.');
-    }
-  };
-
-  const handleRequestChartDataFunction = () => {
-    if (userId && selectedCollection) {
-      handleRequestChartData(userId, selectedCollection);
-      openSnackbar('Requested chart data.');
-    }
-  };
-
-  const handleStopCronJob = () => {
-    if (userId && typeof userId === 'string') {
-      handleRequestCronStop(userId);
-      console.log('STOPPING CRON JOB');
-    }
-
-    openSnackbar('Cron job stopped.');
+  const handleSaveChanges = (data) => {
+    updateUser(data);
+    openSnackbar('Saved changes.');
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box mt={5} display="flex" flexDirection="column" alignItems="center">
-        <AvatarStyled src={placeholder} alt="User Avatar" />
-        <TypographyStyled variant="h4" gutterBottom>
-          Profile
-        </TypographyStyled>
-        <IconButtonStyled>
+    <Container maxWidth={isLarge ? 'lg' : 'md'}>
+      <Box my={5} display="flex" flexDirection="column" alignItems="center">
+        <Avatar
+          sx={{ width: 120, height: 120 }}
+          src={placeholder}
+          alt="User Avatar"
+        />
+        <Typography variant="h4" gutterBottom>
+          {user?.userBasicData?.firstName || 'User Profile'}
+        </Typography>
+        <IconButton color="primary" onClick={() => openEdit()}>
           <EditIcon />
-        </IconButtonStyled>
+        </IconButton>
       </Box>
 
-      <ButtonsContainer>
-        <CustomButton
-          variant="contained"
-          color="primary"
-          onClick={handleSendMessage}
-        >
-          Send Message to Server
-        </CustomButton>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Personal Information
+            </Typography>
+            <ProfileForm {...user} onSave={handleSaveChanges} />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Statistics
+            </Typography>
+            <UserStats />
+          </Paper>
+        </Grid>
+      </Grid>
 
-        <CustomButton
-          variant="contained"
-          color="primary"
-          onClick={handleRequestCollectionDataFunction}
-        >
-          Request Collection Data
-        </CustomButton>
-
-        <CustomButton
-          variant="contained"
-          color="primary"
-          onClick={handleRequestChartDataFunction}
-        >
-          Request Chart Data
-        </CustomButton>
-
-        {/* <CustomButton
-          variant="contained"
-          color="primary"
-          onClick={handleTriggerCronJob}
-        >
-          Trigger Cron Job
-        </CustomButton> */}
-        <CustomButton
-          variant="contained"
-          color="secondary"
-          onClick={handleStopCronJob}
-        >
-          Stop Cron Job
-        </CustomButton>
-      </ButtonsContainer>
-
-      <ProfileFormContainer>
-        <ProfileForm
-          {...user}
-          userName={cookies?.user?.username}
-          onSave={handleSaveChanges}
-        />
-      </ProfileFormContainer>
-
-      <UserStats />
-      <ThemeToggleButton />
       <Snackbar
         open={snackbarData.open}
         autoHideDuration={6000}

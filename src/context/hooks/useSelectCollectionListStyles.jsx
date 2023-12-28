@@ -21,6 +21,35 @@ const useSelectCollectionListStyles = () => {
         backgroundColor: theme.palette.primary.dark,
       },
     },
+    collectionListItem: {
+      backgroundColor: theme.palette.background.paper,
+      transition: theme.transitions.create(['background-color', 'box-shadow']),
+      '&:hover': {
+        backgroundColor: theme.palette.grey[100],
+        boxShadow: theme.shadows[1],
+      },
+      padding: theme.spacing(2),
+    },
+    listItemSkeleton: {
+      margin: theme.spacing(1, 0),
+      borderRadius: theme.shape.borderRadius,
+    },
+    skeletonCard: {
+      width: '100%',
+      borderRadius: theme.shape.borderRadius,
+      // For shimmer effect
+      // eslint-disable-next-line max-len
+      background: `linear-gradient(to right, ${theme.palette.background.paper} 40%, ${theme.palette.grey[300]} 70%, ${theme.palette.background.paper} 100%)`,
+      animation: '$shimmer 2s infinite',
+    },
+    '@keyframes shimmer': {
+      '0%': {
+        backgroundPosition: '-200%',
+      },
+      '100%': {
+        backgroundPosition: '200%',
+      },
+    },
     listItem: {
       position: 'relative', // Added to position the menu button absolutely
       display: 'flex',

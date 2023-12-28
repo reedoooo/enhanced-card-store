@@ -4,18 +4,14 @@ import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
 import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import CustomerForm from '../components/forms/customerCheckoutForm/CustomerForm';
-import CartContent from '../layout/CartContent';
+import CartContent from '../layout/cart/CartContent';
 import { useCartStore, useMode, usePageContext } from '../context';
 import PageLayout from '../layout/PageLayout';
 import Checkout from '../containers/cartPageContainers/Checkout';
 import CartSummary from '../components/other/dataDisplay/CartSummary';
 
 const CartPage = () => {
-  const [cookies] = useCookies(['user']);
   const { theme } = useMode();
-  const { user } = cookies;
-  const userId = user?.id;
-
   const {
     cartData,
     addOneToCart,
@@ -25,50 +21,40 @@ const CartPage = () => {
     cartCardQuantity,
     totalCost,
   } = useCartStore();
+  const { loadingStatus, returnDisplay, setLoading } = usePageContext();
 
-  const {
-    isPageLoading,
-    setIsPageLoading,
-    pageError,
-    setPageError,
-    logPageData,
-  } = usePageContext();
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading('isPageLoading', true);
+      try {
+        await fetchUserCart(); // Assuming fetchUserCart updates cartData
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
+      } finally {
+        setLoading('isPageLoading', false);
+      }
+    };
 
-  // useEffect(() => {
-  //   if (!userId) return;
+    // Fetch cart data if not already loaded
+    if (!cartData) {
+      fetchData();
+    }
+  }, [cartData, fetchUserCart, setLoading]);
 
-  //   const initializeCart = () => {
-  //     setIsPageLoading(true);
-  //     try {
-  //       if (!cartData || Object.keys(cartData).length === 0) {
-  //         fetchUserCart();
-  //       }
-  //       logPageData('CartPage', cartData);
-  //     } catch (e) {
-  //       setPageError(e);
-  //     } finally {
-  //       setIsPageLoading(false);
-  //     }
-  //   };
-
-  //   initializeCart();
-  // }, [cartData?.cart]);
-
+  // Modify this function based on how your cart store manages items
   const handleModifyItemInCart = async (cardId, operation) => {
     try {
       operation === 'add' ? addOneToCart(cardId) : removeOneFromCart(cardId);
     } catch (e) {
       console.error('Failed to adjust quantity in cart:', e);
-      setPageError(e);
     }
   };
-
-  if (isPageLoading) return <LoadingIndicator />;
-  if (pageError) return <ErrorIndicator error={pageError} />;
 
   const calculateTotalPrice = getTotalCost();
   return (
     <PageLayout>
+      {loadingStatus?.isPageLoading && returnDisplay()}
+
       <Box
         sx={{
           overflow: 'auto',
@@ -92,7 +78,6 @@ const CartPage = () => {
               height: '100%',
               backgroundColor: theme.palette.background.paper,
             }}
-            f
           >
             <Grid container spacing={3}>
               <Grid item xs={6} lg={6}>
@@ -103,8 +88,7 @@ const CartPage = () => {
                 />
               </Grid>
               <Grid item xs={6} lg={6}>
-                {/* <CustomerForm /> */}
-                <Checkout /> {/* Include Checkout component */}
+                <Checkout />
                 <Box
                   sx={{
                     display: 'flex',
@@ -120,7 +104,6 @@ const CartPage = () => {
                     quantity={cartCardQuantity}
                     totalCost={totalCost}
                   />
-                  {/* <OrderSubmitButton onClick={handleModalToggle} /> */}
                 </Box>
               </Grid>
             </Grid>

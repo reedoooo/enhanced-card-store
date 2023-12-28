@@ -19,13 +19,13 @@ export const themeSettings = (mode) => {
   const colors = tokens(mode);
 
   const backgroundA = {
-    darkest: '#70d8bd', // '#70d8bd',
-    darker: '#70d8bd',
-    dark: '#70d8bd',
-    default: '#4cceac', // '#4cceac',
-    light: '#4cceac',
-    lighter: '#4cceac',
-    lightest: '#4cceac',
+    darkest: '#2e7c67', // '#70d8bd',
+    darker: '#3da58a',
+    dark: '#4cceac',
+    default: '#70d8bd', // '#4cceac',
+    light: '#94e2cd',
+    lighter: '#b7ebde',
+    lightest: '#dbf5ee',
   };
   const backgroundB = {
     darkest: '#111',
@@ -96,13 +96,15 @@ export const themeSettings = (mode) => {
         // paper: mode === 'dark' ? colors.grey[300] : '#ffffff',
       },
       backgroundA: {
-        darkest: '#70d8bd', // '#70d8bd',
-        darker: '#70d8bd',
-        dark: '#70d8bd',
-        default: '#4cceac', // '#4cceac',
-        light: '#4cceac',
-        lighter: '#4cceac',
-        lightest: '#4cceac',
+        darkest: '#2e7c67', // '#70d8bd',
+        darker: '#3da58a',
+        dark: '#4cceac',
+        default: '#70d8bd', // '#4cceac',
+        light: '#94e2cd',
+        lighter: '#b7ebde',
+        lightest: '#dbf5ee',
+        contrastTextA: '#FBFAF2',
+        contrastTextB: '#333',
       },
       backgroundB: {
         darkest: '#111',
@@ -133,6 +135,22 @@ export const themeSettings = (mode) => {
         lighter: hexToRgba(backgroundA.lighter, 0.3),
         lightest: hexToRgba(backgroundA.lightest, 0.2),
         contrastText: '#FBFAF2',
+      },
+      rarity: {
+        common: '#C0C0C0', // Silver
+        uncommon: '#B8860B', // DarkGoldenRod
+        rare: '#FFD700', // Gold
+        super: '#00BFFF', // DeepSkyBlue
+        ultra: '#FF6347', // Tomato
+        secret: '#800080', // Purple
+        ghost: '#F8F8FF', // GhostWhite
+        starlight: '#F0E68C', // Khaki
+        prismatic: '#E6E6FA', // Lavender
+        collector: '#DAA520', // GoldenRod
+        shortPrint: '#778899', // LightSlateGrey
+        parallel: '#BA55D3', // MediumOrchid
+        qcr: '#FF4500', // OrangeRed
+        // Add more rarities as needed
       },
       error: {
         main: colors.redAccent[500],

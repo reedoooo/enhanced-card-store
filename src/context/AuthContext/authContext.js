@@ -1,194 +1,141 @@
 import React, {
   useState,
   useEffect,
-  useRef,
   useCallback,
+  useRef,
   useContext,
 } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { debounce } from 'lodash';
-import {
-  AUTH_COOKIE,
-  LOGGED_IN_COOKIE,
-  USER_COOKIE,
-  processResponseData,
-} from './helpers';
+import { processResponseData } from './helpers';
+import { usePageContext } from '../PageContext/PageContext';
 
 export const AuthContext = React.createContext();
-export default function AuthProvider({ children, serverUrl }) {
-  const [cookies, setCookie, removeCookie] = useCookies([
-    LOGGED_IN_COOKIE,
-    AUTH_COOKIE,
-    USER_COOKIE,
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [user, setUser] = useState({
-    username: '',
-    email: '',
-    id: '',
-    role: '',
-    cart: [],
-    decks: [],
-    collections: [],
-  });
-  const [updatedUser, setUpdatedUser] = useState({});
-  const [token, setToken] = useState(null);
-  const [error, setError] = useState(null);
-  // const logoutTimerRef = useRef(null);
+export default function AuthProvider({ children, serverUrl }) {
+  const { setLoading } = usePageContext();
+  const [cookies, setCookie, removeCookie] = useCookies([
+    'user',
+    'isLoggedIn',
+    'userId',
+    'authUser',
+    'authToken',
+  ]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
+  const [responseData, setResponseData] = useState(null);
+  const [token, setToken] = useState(cookies.authToken);
+  const logoutTimerRef = useRef(null);
 
   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
 
   const executeAuthAction = async (actionType, url, requestData) => {
-    setIsLoading(true);
+    setLoading('isPageLoading', true);
     try {
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/${url}`,
         requestData
       );
-      const processedData = processResponseData(response.data, actionType);
-      if (processedData) {
-        const { token, user, newUser } = processedData;
-        setCookie(AUTH_COOKIE, token, { path: '/' });
-        setCookie(USER_COOKIE, user || newUser, { path: '/' });
-        setCookie(LOGGED_IN_COOKIE, true, { path: '/' });
-        setIsLoggedIn(true);
+      console.log('Response:', response);
+      const processedData = processResponseData(response, actionType);
+      if (response.status === 200 || response.status === 201) {
+        const { token, userData, authData, message, data } = processedData;
+        console.log('Processed Data Message: ', message);
+        console.log('Processed User Data: ', userData);
         setToken(token);
-        setUser(user || newUser);
+        setUser(userData);
+        setAuthUser(authData);
+        setResponseData(data);
+        setIsLoggedIn(true);
+        setCookie('authToken', token, { path: '/' });
+        setCookie('authUser', authData, { path: '/' });
+        setCookie('user', userData, { path: '/' });
+        setCookie('isLoggedIn', true, { path: '/' });
+        setCookie('userId', authData?.id, { path: '/' });
       }
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      console.error('Auth error:', error);
     } finally {
-      setIsLoading(false);
+      setLoading('isPageLoading', false);
     }
   };
 
-  axios.interceptors.request.use(
-    (config) => {
-      const token = cookies[AUTH_COOKIE];
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
+  const logout = useCallback(() => {
+    removeCookie('authToken');
+    removeCookie('user');
+    removeCookie('authUser');
+    removeCookie('isLoggedIn');
+    removeCookie('userId');
 
-  // Login function
+    setIsLoggedIn(false);
+    setUser(null);
+    setToken(null);
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+  }, [removeCookie]);
+
+  const resetLogoutTimer = useCallback(() => {
+    clearTimeout(logoutTimerRef.current);
+    logoutTimerRef.current = setTimeout(logout, 2700000); // 45 minutes
+  }, [logout]);
+
+  useEffect(() => {
+    if (token) {
+      resetLogoutTimer();
+    }
+  }, [token, resetLogoutTimer]);
+
+  useEffect(() => {
+    axios.interceptors.request.use(
+      (config) => {
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+  }, [token]);
+
   const login = async (username, password) => {
-    await executeAuthAction('Login', 'signin', { username, password });
-  };
-
-  // Signup function
-  const signup = async (loginData, basicInfo, otherInfo) => {
-    await executeAuthAction('Signup', 'signup', {
-      login_data: loginData,
-      basic_info: basicInfo,
-      ...otherInfo,
+    await executeAuthAction('signin', 'signin', {
+      userSecurityData: { username, password },
     });
   };
 
-  // Logout function
-  const logout = () => {
-    removeCookie(AUTH_COOKIE);
-    setIsLoggedIn(false);
-    setToken(null);
-    setUser({});
+  const signup = async (securityData, basicData) => {
+    await executeAuthAction('signup', 'signup', {
+      userSecurityData: securityData,
+      userBasicData: basicData,
+    });
   };
 
-  const logoutTimerRef = useRef(null);
-
-  // Function to start the logout timer
-  const startLogoutTimer = () => {
-    // Clear existing timer if any
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-
-    // Set a new timer for 30 minutes (1800000 milliseconds)
-    logoutTimerRef.current = setTimeout(() => {
-      logout(); // Call your logout function
-    }, 1800000);
-  };
-
-  const debouncedLogout = useCallback(
-    debounce(() => {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
-      }
-      logoutTimerRef.current = setTimeout(logout, 1800000); // 30 minutes
-    }, 500),
-    [logout] // Dependency for useCallback
-  );
-
-  const resetLogoutTimer = useCallback(() => {
-    debouncedLogout();
-  }, [debouncedLogout]);
-
-  // Attach debounced event listeners for user activity
   useEffect(() => {
-    const events = ['mousemove', 'keypress', 'scroll', 'click'];
-    events.forEach((event) => window.addEventListener(event, resetLogoutTimer));
-
-    return () => {
-      clearTimeout(logoutTimerRef.current);
-      events.forEach((event) =>
-        window.removeEventListener(event, resetLogoutTimer)
-      );
-    };
-  }, [resetLogoutTimer]);
-
-  // Attach event listeners for user activity
-  useEffect(() => {
-    startLogoutTimer();
-
-    window.addEventListener('mousemove', resetLogoutTimer);
-    window.addEventListener('keypress', resetLogoutTimer);
-    window.addEventListener('scroll', resetLogoutTimer);
-    window.addEventListener('click', resetLogoutTimer);
-
-    return () => {
-      clearTimeout(logoutTimerRef.current);
-      window.removeEventListener('mousemove', resetLogoutTimer);
-      window.removeEventListener('keypress', resetLogoutTimer);
-      window.removeEventListener('scroll', resetLogoutTimer);
-      window.removeEventListener('click', resetLogoutTimer);
-    };
-  }, []);
-  useEffect(() => {
-    const storedToken = cookies[AUTH_COOKIE];
-    const storedUser = cookies[USER_COOKIE];
+    const storedToken = cookies['authToken'];
+    const storedUser = cookies['user'];
+    const storedAuthUser = cookies['authUser'];
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(storedUser);
       setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
+      resetLogoutTimer();
     }
-  }, [cookies]);
+  }, [cookies, resetLogoutTimer]);
+
   return (
     <AuthContext.Provider
       value={{
-        isLoading,
         isLoggedIn,
-        authUser: user,
-        error,
+        authUser,
         token,
-        updatedUser,
-        logoutTimerRef,
-        debouncedLogout,
+        user,
+        responseData,
 
-        resetLogoutTimer,
-        setIsLoading,
-        setIsLoggedIn,
-        setError,
-        setToken,
-        startLogoutTimer,
-        setUpdatedUser,
-        setUser,
         login,
         signup,
         logout,
+        resetLogoutTimer,
+        setUser,
+        setIsLoggedIn,
+        setAuthUser,
       }}
     >
       {children}
@@ -196,20 +143,232 @@ export default function AuthProvider({ children, serverUrl }) {
   );
 }
 
-// // Custom hook to use the AuthContext
+export const useAuthContext = () => useContext(AuthContext);
+
+// import React, {
+//   useState,
+//   useEffect,
+//   useRef,
+//   useCallback,
+//   useContext,
+// } from 'react';
+// import axios from 'axios';
+// import { useCookies } from 'react-cookie';
+// import { debounce } from 'lodash';
+// import {
+//   AUTH_COOKIE,
+//   AUTH_USER_COOKIE,
+//   LOGGED_IN_COOKIE,
+//   USER_COOKIE,
+//   USER_ID_COOKIE,
+//   processResponseData,
+// } from './helpers';
+// import { usePageContext } from '../PageContext/PageContext';
+
+// export const AuthContext = React.createContext();
+
+// export default function AuthProvider({ children, serverUrl }) {
+//   const { setLoading, loadingStatus } = usePageContext();
+//   const [cookies, setCookie, removeCookie] = useCookies([
+//     LOGGED_IN_COOKIE,
+//     AUTH_COOKIE,
+//     USER_COOKIE,
+//     USER_ID_COOKIE,
+//     AUTH_USER_COOKIE,
+//   ]);
+//   // const [isLoading, setIsLoading] = useState(false);
+//   const [isLoggedIn, setIsLoggedIn] = useState(false);
+//   const [user, setUser] = useState({
+//     username: '',
+//     userBasicData: {
+//       firstName: '',
+//       lastName: '',
+//       userId: '',
+//     },
+//     userSecurityData: {
+//       username: '',
+//       password: '',
+//       email: '',
+//       phone: '',
+//       role_data: {
+//         name: '',
+//         capabilities: [],
+//       },
+//     },
+//     allDecks: [],
+//     allCollections: [],
+//     cart: {},
+//   });
+//   const [updatedUser, setUpdatedUser] = useState({});
+//   const [token, setToken] = useState(null);
+//   const [error, setError] = useState(null);
+//   const [minutes, setMinutes] = useState(0);
+//   const [logoutExpires, setLogoutExpires] = useState();
+//   const logoutTimerRef = useRef(null);
+//   const expires = new Date();
+//   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
+
+//   // Logout Function
+//   const logout = useCallback(() => {
+//     console.log('User is logged out');
+//     removeCookie(AUTH_COOKIE);
+//     removeCookie(USER_COOKIE);
+//     removeCookie(AUTH_USER_COOKIE);
+//     removeCookie(LOGGED_IN_COOKIE);
+//     removeCookie(USER_ID_COOKIE);
+//     setIsLoggedIn(false);
+//     setUser({});
+//     setToken(null);
+//     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+//   }, [removeCookie]);
+
+//   // Reset Logout Timer
+//   const resetLogoutTimer = useCallback(() => {
+//     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+//     logoutTimerRef.current = setTimeout(logout, 45 * 60 * 1000); // 45 minutes
+//   }, [logout]);
+
+//   // Execute Authentication Action
+//   const executeAuthAction = async (actionType, url, requestData) => {
+//     try {
+//       const response = await axios.post(
+//         `${serverUrl}/api/users/${url}`,
+//         requestData
+//       );
+//       const processedData = processResponseData(response, actionType);
+
+//       console.log('Processed Data: ', processedData);
+//       if (response.status === 200 || response.status === 201) {
+//         const { token, authData } = processedData; // Make sure this data is correctly retrieved
+//         setCookie(AUTH_COOKIE, token, { path: '/' });
+//         setCookie(USER_COOKIE, authData, { path: '/' });
+//         setCookie(AUTH_USER_COOKIE, authData.userSecurityData, { path: '/' });
+//         setCookie(LOGGED_IN_COOKIE, true, { path: '/' });
+//         setCookie(USER_ID_COOKIE, authData.userSecurityData.userId, {
+//           path: '/',
+//         });
+//         setIsLoggedIn(true);
+//         setUser(authData);
+//         setToken(token);
+//         resetLogoutTimer();
+//       }
+//       return processedData;
+//     } catch (error) {
+//       setError(error);
+//     }
+//   };
+//   // Set axios interceptors
+//   axios.interceptors.request.use(
+//     (config) => {
+//       const authToken = cookies[AUTH_COOKIE];
+//       if (authToken) config.headers.Authorization = `Bearer ${authToken}`;
+//       return config;
+//     },
+//     (error) => Promise.reject(error)
+//   );
+
+//   useEffect(() => {
+//     if (isLoggedIn) {
+//       resetLogoutTimer();
+//     }
+//   }, [isLoggedIn, resetLogoutTimer]);
+
+//   const signup = async (securityData, basicData) => {
+//     const data = await executeAuthAction('signup', 'signup', {
+//       userSecurityData: securityData,
+//       userBasicData: basicData,
+//     });
+//     // resetLogoutTimer();
+//     return data;
+//   };
+//   const login = async (username, password) => {
+//     const data = await executeAuthAction('signin', 'signin', {
+//       userSecurityData: { username: username, password: password },
+//     });
+//     console.log('User ' + username + ' is logged in');
+//     // resetLogoutTimer();
+//     return data;
+//   };
+
+//   useEffect(() => {
+//     const handleUserActivity = debounce(resetLogoutTimer, 1000);
+//     const events = ['mousemove', 'keypress', 'scroll', 'click'];
+
+//     events.forEach((event) =>
+//       window.addEventListener(event, handleUserActivity)
+//     );
+
+//     return () => {
+//       events.forEach((event) =>
+//         window.removeEventListener(event, handleUserActivity)
+//       );
+//       handleUserActivity.cancel();
+//       if (logoutTimerRef?.current) clearTimeout(logoutTimerRef?.current);
+//     };
+//   }, [resetLogoutTimer, logoutTimerRef]);
+//   // Check for stored tokens and user data in cookies
+//   // Initialize user and token from cookies
+//   useEffect(() => {
+//     const storedToken = cookies[AUTH_COOKIE];
+//     const storedUser = cookies[USER_COOKIE];
+//     if (storedToken && storedUser) {
+//       setToken(storedToken);
+//       setUser(storedUser);
+//       setIsLoggedIn(true);
+//       resetLogoutTimer();
+//     }
+//   }, [cookies, resetLogoutTimer]);
+
+//   return (
+//     <AuthContext.Provider
+//       value={{
+//         isLoggedIn,
+//         authUser: user,
+//         error,
+//         token,
+//         updatedUser,
+//         logoutTimerRef,
+//         // debouncedLogout,
+//         resetLogoutTimer,
+//         // startLogoutTimer,
+//         logout,
+//         setIsLoggedIn,
+//         setError,
+//         setToken,
+//         setUpdatedUser,
+//         setUser,
+//         login,
+//         signup,
+//       }}
+//     >
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }
+
 // export const useAuthContext = () => {
-//   const context = React.useContext(AuthContext);
-//   if (context === undefined) {
-//     throw new Error('useAuthContext must be used within a AuthProvider');
+//   const context = useContext(AuthContext);
+
+//   if (!context) {
+//     throw new Error('useAuth must be used within an AuthProvider');
 //   }
+
 //   return context;
 // };
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
+// // Attach event listeners for user activity
+// // useEffect(() => {
+// //   startLogoutTimer();
 
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+// //   window.addEventListener('mousemove', resetLogoutTimer);
+// //   window.addEventListener('keypress', resetLogoutTimer);
+// //   window.addEventListener('scroll', resetLogoutTimer);
+// //   window.addEventListener('click', resetLogoutTimer);
 
-  return context;
-};
+// //   return () => {
+// //     clearTimeout(logoutTimerRef.current);
+// //     window.removeEventListener('mousemove', resetLogoutTimer);
+// //     window.removeEventListener('keypress', resetLogoutTimer);
+// //     window.removeEventListener('scroll', resetLogoutTimer);
+// //     window.removeEventListener('click', resetLogoutTimer);
+// //   };
+// // }, []);

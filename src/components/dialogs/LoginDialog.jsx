@@ -1,88 +1,75 @@
 import React, { useEffect } from 'react';
 import {
+  Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
+  Typography,
 } from '@mui/material';
 import LoginForm from '../forms/LoginForm';
-import SignupSwitch from '../buttons/other/SignupSwitch';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useMode } from '../../context/hooks/colormode';
-import { useLoginForm } from '../../context/hooks/useLoginForm';
+import {
+  useAuthContext,
+  useFormContext,
+  useMode,
+  usePageContext,
+} from '../../context';
 
 function LoginDialog({ open, onClose, onLogin }) {
-  const {
-    username,
-    setUsername,
-    password,
-    setPassword,
-    email,
-    setEmail,
-    name,
-    setName,
-    roleData,
-    setRoleData,
-    signupMode,
-    setSignupMode,
-    handleSubmit,
-    handleLogout,
-    isLoggedIn,
-    error,
-    isLoading,
-    cookies,
-  } = useLoginForm(onLogin);
-
   const { toggleColorMode, mode } = useMode();
+  const { logout, isLoggedIn } = useAuthContext();
+  const { returnDisplay, loadingStatus, setLoading } = usePageContext(); // Access loading display or error status
+  const { forms } = useFormContext();
+  const loginValues = forms?.loginForm;
+  const signupValues = forms?.signupForm;
+  const signupMode = signupValues?.signupMode;
+  const currentValues = signupMode ? signupValues : loginValues;
 
+  // Close dialog on successful login
   useEffect(() => {
-    if (isLoggedIn) {
-      onLogin(isLoggedIn, cookies['userId']);
+    if (isLoggedIn && open) {
+      onClose();
     }
-  }, [isLoggedIn, onLogin, cookies]);
+  }, [isLoggedIn, open, onClose]); // Make sure dependencies are accurate
+
+  // Update pagecontext error state if authcontext error state changes
+  // useEffect(() => {
+  //   if (formErrors) {
+  //     setLoading(formErrors, false);
+  //   }
+  // }, [formErrors]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{signupMode ? 'Sign Up' : 'Login'}</DialogTitle>
-      <IconButton
-        onClick={toggleColorMode}
-        style={{ position: 'absolute', right: '16px', top: '16px' }}
-      >
-        {mode ? <Brightness7Icon /> : <Brightness4Icon />}
-      </IconButton>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          {currentValues === signupMode ? 'Sign Up' : 'Login'}
+          <IconButton onClick={toggleColorMode} color="inherit">
+            {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent dividers>
         {isLoggedIn ? (
-          <Button color="primary" variant="outlined" onClick={handleLogout}>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={logout}
+            fullWidth
+          >
             Log Out
           </Button>
         ) : (
           <>
-            <LoginForm
-              {...{
-                username,
-                password,
-                email,
-                name,
-                roleData,
-                signupMode,
-                setUsername,
-                setPassword,
-                setEmail,
-                setName,
-                setRoleData,
-                handleSubmit,
-              }}
-            />
-            <SignupSwitch
-              signupMode={signupMode}
-              setSignupMode={setSignupMode}
-            />
+            <LoginForm />
+            {/* {loadingStatus?.error && returnDisplay()} */}
           </>
         )}
-        {error && <p>{error}</p>}
-        {isLoading && <p>Loading...</p>}
+        {/* {loadingStatus?.isFormDataLoading && returnDisplay()} */}
       </DialogContent>
     </Dialog>
   );

@@ -39,40 +39,52 @@ export const calculatePriceChanges = (data) => {
   return [];
 };
 
-export const calculateStatistics = (data, timeRange) => {
+const getTopCollection = (collections) => {
+  return collections?.reduce(
+    (max, collection) =>
+      max.totalPrice > collection.totalPrice ? max : collection,
+    collections[0]
+  );
+};
+
+const getTopCard = (cards) => {
+  return cards?.reduce(
+    (max, card) => (max.price > card.price ? max : card),
+    cards[0]
+  );
+};
+
+const calculateTotalPriceOfAllCollections = (collections) => {
+  return collections
+    ?.reduce((total, collection) => total + collection.totalPrice, 0)
+    .toFixed(2);
+};
+
+export const calculateStatistics = (data, timeRange, allCollections, cards) => {
   if (!data || !Array.isArray(data.data) || data.data.length === 0) return {};
 
   const filteredData = data?.data?.filter(
     (item) => new Date(item?.x).getTime() >= Date.now() - timeRange
   );
   if (filteredData.length === 0) return {};
-  let highPoint = 0;
-  let lowPoint = 0;
-  let sum = 0;
-  let averageData = 0;
-  let average = 0;
-  let volume = 0;
-  let mean = 0;
-  let squaredDiffs = 0;
-  let volatility = 0;
-  // const filteredData2 = getFilteredData2(data, timeRange);
-  // console.log('filteredData2', filteredData2);
-  // console.log('filteredData', filteredData);
-  for (const data of filteredData) {
-    // console.log('data', data);
-    highPoint = Math.max(...filteredData.map((item) => item.y));
-    lowPoint = Math.min(...filteredData.map((item) => item.y));
-    sum = filteredData.reduce((acc, curr) => acc + curr.y, 0);
-    averageData = calculatePriceChanges(filteredData);
-    average = sum / filteredData.length || 0;
-    volume = filteredData.length;
-    mean = sum / volume;
-    squaredDiffs = filteredData.map((item) => {
-      const diff = item.y - mean;
-      return diff * diff;
-    });
-    volatility = Math.sqrt(squaredDiffs.reduce((a, b) => a + b, 0) / volume);
-  }
+
+  let highPoint = Math.max(...filteredData.map((item) => item.y));
+  let lowPoint = Math.min(...filteredData.map((item) => item.y));
+  let sum = filteredData.reduce((acc, curr) => acc + curr.y, 0);
+  let averageData = calculatePriceChanges(filteredData);
+  let average = sum / filteredData.length || 0;
+  let volume = filteredData.length;
+  let mean = sum / volume;
+  let squaredDiffs = filteredData.map((item) => {
+    const diff = item.y - mean;
+    return diff * diff;
+  });
+  let volatility = Math.sqrt(squaredDiffs.reduce((a, b) => a + b, 0) / volume);
+
+  const topCollection = getTopCollection(allCollections);
+  const topCard = getTopCard(cards);
+  const totalPriceAllCollections =
+    calculateTotalPriceOfAllCollections(allCollections);
 
   return {
     highPoint: highPoint.toFixed(2),
@@ -86,8 +98,13 @@ export const calculateStatistics = (data, timeRange) => {
       percentageChange: averageData[0]?.percentageChange,
       priceIncreased: averageData[0]?.priceIncreased,
     },
-    average: average?.toFixed(2),
+    average: average.toFixed(2),
     volume,
-    volatility: volatility?.toFixed(2),
+    volatility: volatility.toFixed(2),
+    general: {
+      totalPrice: totalPriceAllCollections,
+      topCard: topCard?.name, // or any other identifier for the card
+      topCollection: topCollection?.name, // or any other identifier for the collection
+    },
   };
 };

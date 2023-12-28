@@ -1,7 +1,7 @@
 // useDialog.js
 import { useState, useCallback } from 'react';
 
-const useDialog = (handleSnackbar, onClose) => {
+const useDialog = (handleSnackBar, onClose) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const openDialog = useCallback(() => {
@@ -19,11 +19,11 @@ const useDialog = (handleSnackbar, onClose) => {
         reason &&
         (reason === 'backdropClick' || reason === 'escapeKeyDown')
       ) {
-        handleSnackbar('Operation cancelled, no changes were made.');
+        handleSnackBar('Operation cancelled, no changes were made.');
       }
       closeDialog();
     },
-    [closeDialog, handleSnackbar]
+    [closeDialog, handleSnackBar]
   );
 
   return { isOpen, openDialog, handleCloseDialog, closeDialog };

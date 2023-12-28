@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Grid, useTheme, useMediaQuery } from '@mui/material';
-import PortfolioChart from '../../components/chart/PortfolioChart';
+import PortfolioChart from '../../components/other/dataDisplay/chart/PortfolioChart';
 import TimeRangeSelector from '../../components/other/InputComponents/TimeRangeSelector';
 import UpdateStatusBox2 from '../../components/other/InputComponents/UpdateStatusBox2';
 import TopCardsDisplay from '../../components/other/dataDisplay/TopCardsDisplay';

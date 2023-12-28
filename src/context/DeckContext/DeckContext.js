@@ -7,7 +7,7 @@ import React, {
   useContext,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { createApiUrl, fetchWrapper } from '../Helpers.jsx';
+import { createApiUrl } from '../Helpers.jsx';
 import { BASE_API_URL } from '../Helpers.jsx';
 import {
   calculateAndUpdateTotalPrice,
@@ -17,16 +17,19 @@ import {
   handleCardAddition,
   handleCardUpdate,
 } from './helpers.jsx';
+import useFetchWrapper from '../hooks/useFetchWrapper.jsx';
 
 export const DeckContext = createContext(defaultContextValue);
 
 export const DeckProvider = ({ children }) => {
-  const [cookies] = useCookies(['user']);
+  const [cookies] = useCookies(['authUser']);
+  const fetchWrapper = useFetchWrapper();
+
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
   const [selectedCards, setSelectedCards] = useState(selectedDeck?.cards || []);
-  const userId = cookies?.user?.id;
+  const userId = cookies?.authUser?.id;
 
   const fetchDecksForUser = useCallback(async () => {
     if (!userId) {
@@ -269,8 +272,9 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to update card in deck: ${error.message}`);
     }
   };
-  const updateDeckDetails = async (userId, deckId, updatedInfo) => {
+  const updateDeckDetails = async (deckId, updatedInfo) => {
     const { name, description, tags, color } = updatedInfo;
+    console.log('Updating deck details:', updatedInfo);
     if (!userId) {
       console.error('User ID is missing.');
       return;
@@ -331,8 +335,8 @@ export const DeckProvider = ({ children }) => {
     removeOneFromDeck: (card, deckId) => removeCardFromDeck(card, deckId),
     updateOneInDeck: (card, deckId, userId) =>
       updateCardInDeck(card, deckId, userId),
-    updateDeckDetails: (userId, deckId, updatedInfo) =>
-      updateDeckDetails(userId, deckId, updatedInfo),
+    updateDeckDetails: (deckId, updatedInfo) =>
+      updateDeckDetails(deckId, updatedInfo),
     createUserDeck,
     deleteUserDeck,
 

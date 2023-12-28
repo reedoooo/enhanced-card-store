@@ -12,7 +12,7 @@ export const StatisticsProvider = ({ children }) => {
   const { allCollections, allXYValues } = useCollectionStore();
 
   const stats = useMemo(
-    () => calculateStatistics({ data: allXYValues }, timeRange),
+    () => calculateStatistics({ data: allXYValues }, timeRange, allCollections),
     [allXYValues, timeRange]
   );
 

@@ -19,9 +19,9 @@ import { useUnsavedCardsEffect } from '../hooks/useUnsavedCardsEffect';
 export const CombinedContext = createContext();
 
 export const CombinedProvider = ({ children }) => {
-  const [cookies] = useCookies(['user']);
+  const [cookies] = useCookies(['authUser']);
   const [state, setState] = useState(initialState);
-  const user = cookies.user;
+  const user = cookies?.authUser;
   const userId = user?.id;
   const {
     selectedCollection,

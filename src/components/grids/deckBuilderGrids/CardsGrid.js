@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import DeckItem from '../DeckItem';
+import DeckItem from '../gridItems/DeckItem';
 import { useDeckStore } from '../../../context/DeckContext/DeckContext';
-import SkeletonDeckItem from '../SkeletonDeckItem';
+import SkeletonDeckItem from '../gridItems/SkeletonDeckItem';
 const CardsGrid = ({ isLoading }) => {
   const { selectedCards } = useDeckStore();
   const [error, setError] = useState('');

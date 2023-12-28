@@ -11,6 +11,17 @@ import {
   Slide,
   Fade,
   IconButton,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  Typography,
+  Card,
+  CardHeader,
+  List,
+  CardContent,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import useSnackbar from '../../../context/hooks/useSnackBar';
@@ -24,13 +35,14 @@ import CardMediaSection from '../../cards/media/CardMediaSection';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
 import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
-import CardDetail from './CardDetail';
+import CardDetail from '../../cards/CardDetail';
 import { FaRegCopy } from 'react-icons/fa';
-import CardDetailsContainer from './CardDetailsContainer';
+import CardDetailsContainer from '../../cards/CardDetailsContainer';
+import { FormControl } from 'react-bootstrap';
+import CardDetails from '../../cards/CardDetails';
 
 const GenericCardDialog = (props) => {
   const theme = useTheme();
-
   const {
     open = false,
     transition = false,
@@ -41,7 +53,7 @@ const GenericCardDialog = (props) => {
     actions = '',
     dividers = false,
     closeIcon = true,
-    fullScreen = false,
+    // fullScreen = false,
     actionPosition = 'left',
     closeIconSx = {
       position: 'absolute',
@@ -53,22 +65,20 @@ const GenericCardDialog = (props) => {
     context,
     ...other
   } = props || {};
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const { closeModal } = useModalContext();
-  const { user } = useUserContext();
-  // const { updateCollection, selectedCollection } = useCollectionStore();
   const { getHeaderStyle, isMobile } = useResponsiveStyles(theme);
-  // const [updatedCard, setUpdatedCard] = useState(card);
   const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
-  const [snackbar, handleSnackbar, handleCloseSnackbar] = useSnackbar();
+  const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackbar();
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { setContext, setIsContextSelected } = useSelectedContext();
-  // Helper function to handle successful and failed actions
   const handleAction = useCallback(
     (message, severity, error) => {
-      handleSnackbar(message, severity);
+      handleSnackBar(message, severity);
       if (error) console.error('Action failed:', error);
     },
-    [handleSnackbar]
+    [handleSnackBar]
   );
   // Update card data from the server if necessary
   // useEffect(() => {
@@ -97,13 +107,13 @@ const GenericCardDialog = (props) => {
   // Snackbar handling for loading card details
   useEffect(() => {
     if (open && card && !hasLoggedCard) {
-      handleSnackbar('Card details loaded successfully.', 'success');
+      handleSnackBar('Card details loaded successfully.', 'success');
       setHasLoggedCard(true);
     }
     return () => {
       if (!open) setHasLoggedCard(false);
     };
-  }, [open, card, handleSnackbar, hasLoggedCard]);
+  }, [open, card, handleSnackBar, hasLoggedCard]);
   // Context selection handling
   const handleContextSelect = useCallback(
     (newContext) => {
@@ -119,10 +129,19 @@ const GenericCardDialog = (props) => {
       TransitionComponent={transition ? Slide : Fade}
       keepMounted
       onClose={closeModal}
-      hideBackdrop={hideBackdrop}
       fullScreen={fullScreen}
       aria-describedby="alert-dialog-slide-description"
-      {...other}
+      maxWidth="md" // Adjust this value as per your requirement
+      // fullWidth
+      PaperProps={{
+        style: {
+          width: '75%', // Set dialog width to 75% of screen width
+          height: 'auto', // Set height to auto
+          maxHeight: '90vh', // Optional: Set max height to 90% of view height
+          borderRadius: theme.shape.borderRadius, // Use theme's border radius
+          // Add more PaperProps styles if needed
+        },
+      }}
     >
       <DialogTitle sx={getHeaderStyle(theme)}>
         {title}
@@ -154,32 +173,69 @@ const GenericCardDialog = (props) => {
                 title="Description"
                 value={card?.desc}
               />
+              <CardDetail
+                className={'card-detail'}
+                // icon={<FaRegCopy />}
+                title="Price"
+                value={card?.price}
+              />
+              <CardDetail
+                className={'card-detail'}
+                title="Rarity"
+                values={card?.card_sets?.map((set) => set.set_rarity)}
+                onRarityClick={(rarity) => {
+                  // Handle the click event here
+                  console.log(`Rarity ${rarity} was clicked.`);
+                }}
+              />
+
+              {/* Price History Dropdown */}
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                {/* Price History Dropdown */}
+              </Grid>
             </Grid>
             <Grid item xs={6} sm={6} md={6} lg={6}>
               <CardDetailsContainer card={card} className={'card-detail'} />
             </Grid>
 
-            {/* these two grid items are for the card carousel and action buttons */}
+            {/* these two grid items are for the related user inventory data and action buttons */}
             <Grid item xs={12} sm={6} md={6} lg={6}>
-              {['Deck', 'Collection', 'Cart'].map((mappedContext) => (
-                <GenericActionButtons
-                  key={mappedContext}
-                  card={card}
-                  context={mappedContext}
-                  originalContext={context}
-                  onClick={() => handleContextSelect(mappedContext)}
-                  onSuccess={() =>
-                    handleAction('Action was successful!', 'success')
-                  }
-                  onFailure={(error) =>
-                    handleAction(
-                      'Action failed. Please try again.',
-                      'error',
-                      error
-                    )
-                  }
-                />
-              ))}
+              <Stack>
+                <Card>
+                  <CardHeader>
+                    <Typography variant="h6">Inventory</Typography>
+                  </CardHeader>
+                  <CardContent>
+                    <List>
+                      {/* <ListItemText primary="Deck" secondary="Deck" /> */}
+                      <ListItem>{'Cart'}</ListItem>
+                      <ListItem>{'Deck'}</ListItem>
+                      <ListItem>{'Collection'}</ListItem>
+                    </List>
+                  </CardContent>
+                </Card>
+              </Stack>
+              <Stack>
+                {['Deck', 'Collection', 'Cart'].map((mappedContext) => (
+                  <GenericActionButtons
+                    key={mappedContext}
+                    card={card}
+                    context={mappedContext}
+                    originalContext={context}
+                    onClick={() => handleContextSelect(mappedContext)}
+                    onSuccess={() =>
+                      handleAction('Action was successful!', 'success')
+                    }
+                    onFailure={(error) =>
+                      handleAction(
+                        'Action failed. Please try again.',
+                        'error',
+                        error
+                      )
+                    }
+                  />
+                ))}
+              </Stack>
             </Grid>
           </Grid>
         </Container>

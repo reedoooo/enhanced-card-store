@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useCombinedContext } from '../../../context/CombinedProvider';
 import { useCookies } from 'react-cookie';
 
@@ -8,7 +8,7 @@ const UpdateStatusBox = ({ socket }) => {
     useCombinedContext();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [updateStatus, setUpdateStatus] = useState('Waiting for updates...');
-  const [cookies] = useCookies(['user']);
+  const [cookies] = useCookies(['authUser']);
 
   useEffect(() => {
     const timeInterval = setInterval(() => {
@@ -83,7 +83,7 @@ const UpdateStatusBox = ({ socket }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <Box style={styles.container}>
       <Typography variant="subtitle1">
         Current Time: {currentTime.toLocaleTimeString()}
       </Typography>
@@ -93,7 +93,7 @@ const UpdateStatusBox = ({ socket }) => {
       <button style={styles.button} onClick={sendUpdateRequest}>
         Request Update
       </button>
-    </div>
+    </Box>
   );
 };
 

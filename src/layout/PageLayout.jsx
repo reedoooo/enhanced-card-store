@@ -6,10 +6,10 @@ import { usePageContext } from '../context';
 
 const PageLayout = ({ children }) => {
   const classes = useCommonStyles();
-  const { isLoading } = usePageContext();
+  const { activelyLoading } = usePageContext();
   return (
     <React.Fragment>
-      <Skeleton loading={isLoading} variant="overlay">
+      <Skeleton loading={!activelyLoading} variant="overlay">
         <Paper className={classes.paperBackground} />
         <Box
           sx={{

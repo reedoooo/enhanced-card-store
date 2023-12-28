@@ -10,8 +10,8 @@ import React, {
 } from 'react';
 import { useCookies } from 'react-cookie';
 import { useUserContext } from '../UserContext/UserContext';
-import { fetchWrapper } from '../Helpers';
 import { getCardQuantity } from './helpers';
+import useFetchWrapper from '../hooks/useFetchWrapper';
 
 export const CartContext = createContext({
   cartData: {
@@ -33,19 +33,20 @@ export const CartContext = createContext({
 export const CartProvider = ({ children }) => {
   // const { user, setUser } = useUserContext();
   // const userId = user?.id;
+  const fetchWrapper = useFetchWrapper();
   const [cartData, setCartData] = useState({
     _id: '',
     cart: [],
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   });
-  const [cookies, setCookies] = useCookies(['user', 'cart']);
-  const userId = cookies?.user?.id;
+  const [cookies, setCookie] = useCookies(['authUser', 'cart', 'cartData']);
+  const userId = cookies?.authUser?.id;
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const getTotalCost = () => {
-    return cartData.cart.reduce(
+    return cartData?.cart?.reduce(
       (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
       0
     );
@@ -53,7 +54,7 @@ export const CartProvider = ({ children }) => {
 
   const totalCost = useMemo(
     () =>
-      cartData.cart.reduce(
+      cartData?.cart?.reduce(
         (total, item) =>
           total + item.quantity * item.card_prices[0].tcgplayer_price,
         0
@@ -66,11 +67,10 @@ export const CartProvider = ({ children }) => {
       const newCartData = await fetchWrapper(
         // `${process.env.REACT_APP_SERVER}/api/carts/createEmptyCart`,
         `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/createCart`,
-
         'POST',
         JSON.stringify({ userId })
       );
-
+      console.log('NEW CART DATA:', newCartData);
       setCartDataAndCookie(newCartData);
     } catch (error) {
       console.error('Error creating cart:', error);
@@ -92,6 +92,7 @@ export const CartProvider = ({ children }) => {
         `${process.env.REACT_APP_SERVER}${`/api/users/${userId}/cart`}`,
         'GET'
       );
+      console.log('FETCHED USER CART:', response);
       setCartDataAndCookie(response);
     } catch (error) {
       console.error('Error fetching user cart:', error);
@@ -99,21 +100,26 @@ export const CartProvider = ({ children }) => {
         await createUserCart();
       }
     }
-  }, [userId, setCookies]);
+  }, [userId, setCookie]);
 
   // Set cart data and cookie
   const setCartDataAndCookie = useCallback(
     (newCartData) => {
-      if (newCartData && Array.isArray(newCartData.cart)) {
+      if (newCartData && Array.isArray(newCartData?.cart)) {
         setCartData(newCartData);
-        setCookies('cart', newCartData.cart, {
+        setCookie('cartData', newCartData, {
+          path: '/',
+          secure: true,
+          sameSite: 'none',
+        });
+        setCookie('cart', newCartData?.cart, {
           path: '/',
           secure: true,
           sameSite: 'none',
         });
       }
     },
-    [setCookies]
+    [setCookie]
   );
 
   // useEffect to fetch and set cart data
@@ -219,7 +225,7 @@ export const CartProvider = ({ children }) => {
         (acc, card) => acc + card.quantity,
         0
       ),
-      cartCardCount: cartData.cart?.length,
+      cartCardCount: cartData?.cart?.length,
       cartValue: cartData?.cart?.reduce(
         (acc, card) =>
           acc + card.card_prices[0].tcgplayer_price * card.quantity,

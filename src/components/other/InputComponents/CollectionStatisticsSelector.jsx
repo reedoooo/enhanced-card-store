@@ -12,23 +12,37 @@ const CollectionStatisticsSelector = () => {
 
   const specificCollectionStats =
     statsByCollectionId[selectedCollection?._id] || {};
-
+  const styles = {
+    container: {
+      padding: '15px',
+      border: '2px solid #444',
+      borderRadius: '8px',
+      backgroundColor: '#222',
+      color: '#fff',
+      // margin: '20px auto',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      maxWidth: '400px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: '100%', // Adjust height here
+      width: '100%', // Adjust width here
+    },
+  };
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 2,
-        width: '100%',
-        height: '100%',
-      }}
-    >
+    <Box style={styles.container}>
       <Select
         value={selectedStat}
         onChange={handleChange}
         displayEmpty
-        sx={{ width: '100%', marginBottom: 2 }}
+        sx={{
+          width: '100%',
+          marginBottom: 2,
+          color: '#fff',
+          border: '1px solid #fff',
+        }}
       >
         <MenuItem value="" disabled>
           Select Statistic

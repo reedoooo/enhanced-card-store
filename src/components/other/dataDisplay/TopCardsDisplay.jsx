@@ -129,7 +129,6 @@ const TopCardsDisplay = () => {
                 disabled={activeStep === maxSteps - 1}
                 sx={{
                   color: theme.palette.success.main,
-                  // backGround: theme.palette.success.main,
                 }}
               >
                 {theme.direction === 'rtl' ? (

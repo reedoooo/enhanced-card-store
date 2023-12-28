@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Dialog,
-  DialogContent,
-  Button,
-  TextField,
-  Typography,
-  Alert,
-} from '@mui/material';
+import { Dialog, DialogContent, Typography, Alert } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { StyledButton, StyledTextField } from '../forms/styled';
+import { useMode } from '../../context';
 
 const CreateOrEditCollectionDialog = ({
   isDialogOpen,
@@ -23,6 +18,7 @@ const CreateOrEditCollectionDialog = ({
   // editedDescription,
   // setEditedDescription,
 }) => {
+  const { theme } = useMode();
   const [error, setError] = useState('');
   const [editedName, setEditedName] = useState(initialName);
   const [editedDescription, setEditedDescription] =
@@ -34,8 +30,8 @@ const CreateOrEditCollectionDialog = ({
     selectedCollection,
     updateCollectionDetails,
   } = useCollectionStore();
-  const [cookies] = useCookies(['user']);
-  const userId = cookies.user?.id;
+  const [cookies] = useCookies(['authUser']);
+  const userId = cookies?.authUser?.id;
 
   useEffect(() => {
     setError('');
@@ -86,15 +82,16 @@ const CreateOrEditCollectionDialog = ({
             {error}
           </Alert>
         )}
-        <TextField
+        <StyledTextField
           label="Collection Name"
           value={editedName}
           onChange={(e) => setEditedName(e.target.value)}
           variant="outlined"
           fullWidth
           margin="normal"
+          theme={theme}
         />
-        <TextField
+        <StyledTextField
           label="Collection Description"
           value={editedDescription}
           onChange={(e) => setEditedDescription(e.target.value)}
@@ -103,6 +100,7 @@ const CreateOrEditCollectionDialog = ({
           rows={4}
           fullWidth
           margin="normal"
+          theme={theme}
         />
         <div
           style={{
@@ -111,18 +109,24 @@ const CreateOrEditCollectionDialog = ({
             marginTop: '16px',
           }}
         >
-          <Button variant="contained" onClick={handleSave} color="primary">
+          <StyledButton
+            variant="contained"
+            onClick={handleSave}
+            color="primary"
+            theme={theme}
+          >
             {isNew ? 'Create Collection' : 'Save Changes'}
-          </Button>
+          </StyledButton>
           {!isNew && (
-            <Button
+            <StyledButton
               variant="outlined"
               onClick={handleRemove}
               color="secondary"
               style={{ marginLeft: '16px' }}
+              theme={theme}
             >
               Delete
-            </Button>
+            </StyledButton>
           )}
         </div>
       </DialogContent>

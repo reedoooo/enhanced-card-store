@@ -3,39 +3,17 @@ import { Box, Grid, Paper } from '@mui/material';
 import CardList from '../../components/grids/collectionGrids/CardList';
 import { useTheme } from '@mui/material/styles';
 import { useMode } from '../../context/hooks/colormode';
+import usePortfolioStyles from '../../context/hooks/usePortfolioStyles';
 
 const CollectionPortfolioListContainer = ({ selectedCards, removeCard }) => {
   const theme2 = useTheme();
   const { theme } = useMode();
+  const classes = usePortfolioStyles(theme);
 
   return (
-    <Box
-      sx={{
-        maxWidth: '100%',
-        background: theme.palette.background.dark,
-        borderRadius: theme.shape.borderRadius,
-        width: {
-          xs: '100%', // Full width on mobile screens
-          md: '100%', // Full width on mobile screens
-        },
-        padding: theme.spacing(1), // Reduced padding for mobile screens
-      }}
-    >
-      <Grid item xs={12} sx={{ maxHeight: '100vh', width: '100%' }}>
-        <Paper
-          elevation={3}
-          sx={{
-            background: theme.palette.background.dark,
-            borderRadius: theme.shape.borderRadius,
-            padding: theme.spacing(1), // Reduced padding for mobile screens
-            maxHeight: '100%',
-            height: 'auto',
-            width: '100%',
-            boxShadow: theme.shadows[3],
-          }}
-        >
-          <CardList selectedCards={selectedCards} removeCard={removeCard} />
-        </Paper>
+    <Box className={classes.cardListContainerBox}>
+      <Grid className={classes.cardListContainerGrid}>
+        <CardList selectedCards={selectedCards} removeCard={removeCard} />
       </Grid>
     </Box>
   );
