@@ -23,15 +23,15 @@ import {
   LoginPage,
 } from './pages';
 import {
-  useUserContext,
   useCollectionStore,
   useDeckStore,
   useAuthContext,
   usePageContext,
-  useMode,
 } from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
 import { useCookies } from 'react-cookie';
+import useDialog from './context/hooks/useDialog';
+import useSnackBar from './context/hooks/useSnackBar';
 
 const Main = () => {
   const [cookies] = useCookies(['authUser']);
@@ -40,57 +40,60 @@ const Main = () => {
   const { loadingStatus, returnDisplay, setLoading } = usePageContext();
   const { fetchAllCollectionsForUser } = useCollectionStore();
   const { fetchAllDecksForUser } = useDeckStore();
-  // const navigate = useNavigate(); // Use the useNavigate hook
+  const handleSnackBar = useSnackBar()[1];
 
-  const [showLoginDialog, setShowLoginDialog] = useState(!isLoggedIn);
+  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
+    useDialog(handleSnackBar); // Assuming false represents the logged-in state
 
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    if (!authUser) return;
-
-    const fetchData = async () => {
-      if (isLoggedIn && authUser) {
-        setLoading('isPageLoading', true);
-        try {
-          await Promise.all([
-            fetchAllCollectionsForUser(),
-            fetchAllDecksForUser(),
-          ]);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        } finally {
-          setLoading('isPageLoading', false);
-        }
-      }
-    };
-    fetchData();
-  }, [isLoggedIn, authUser, fetchAllCollectionsForUser, fetchAllDecksForUser]);
-
-  // Manage logout timer reset
-  useEffect(() => {
-    if (isLoggedIn) resetLogoutTimer();
-  }, [isLoggedIn, resetLogoutTimer]);
-
-  // Manage login dialog visibility
-  useEffect(() => {
-    if (isLoggedIn) {
-      setShowLoginDialog(false);
+  const routeConfig = [
+    { path: '/', component: HomePage, isPrivate: false },
+    { path: '/home', component: HomePage, isPrivate: false },
+    { path: '/store', component: StorePage, isPrivate: false },
+    { path: '/cart', component: CartPage, isPrivate: true },
+    { path: '/userprofile', component: ProfilePage, isPrivate: true },
+    { path: '/collection', component: CollectionPage, isPrivate: true },
+    { path: '/deckbuilder', component: DeckBuilderPage, isPrivate: true },
+    { path: '/profile', component: ProfilePage, isPrivate: false },
+    { path: '/login', component: LoginPage, isPrivate: false },
+    { path: '*', component: NotFoundPage, isPrivate: false },
+  ];
+  // const [showLoginDialog, setShowLoginDialog] = useState(!isLoggedIn);
+  const fetchData = async () => {
+    setLoading('isPageLoading', true);
+    try {
+      await Promise.all([fetchAllCollectionsForUser(), fetchAllDecksForUser()]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading('isPageLoading', false);
     }
-    if (!isLoggedIn) {
-      setShowLoginDialog(true);
-    }
-    setShowLoginDialog(window.location.pathname === '/login' || !isLoggedIn);
-  }, [isLoggedIn]);
-  // useEffect(() => {
-  //   // Redirects user to the homepage if they are already logged in
-  //   if (isLoggedIn) {
-  //     navigate('/');
-  //   }
-  // }, [isLoggedIn, navigate]); // Add navigate to the dependency array
-
-  return (
-    <>
+  };
+  const renderHelmet = () => {
+    console.log('Rendering helmet...');
+    return (
       <Helmet>
+        {/* Basic */}
+        <title>Your Website Title</title>
+        <meta name="description" content="Description of your site or page" />
+        <link rel="canonical" href="http://mysite.com/example" />
+        <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+
+        {/* SEO */}
+        <meta name="keywords" content="your, tags" />
+        {/* Social Media */}
+        <meta property="og:title" content="Title Here" />
+        <meta property="og:description" content="Description Here" />
+        <meta
+          property="og:image"
+          content="http://mysite.com/path/to/image.jpg"
+        />
+        <meta property="og:url" content="http://mysite.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* Responsive and mobile */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Additional links and styles */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -101,59 +104,72 @@ const Main = () => {
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
           rel="stylesheet"
         />
+
+        {/* Specify language and character set */}
+        <html lang="en" />
+        <meta charSet="utf-8" />
+
+        {/* Scripts */}
+        {/* Example: Add a script needed for a service or functionality */}
+        {/* <script src="https://cdn.service.com/library.js"></script> */}
       </Helmet>
-      {/* {loadingStatus?.isPageLoading && returnDisplay()} */}
-      {!authUser ? (
-        <LoginDialog
-          open={showLoginDialog}
-          onClose={() => setShowLoginDialog(false)}
-          onLogin={() => setShowLoginDialog(false)} // This might need to be updated based on the login logic
+    );
+  };
+  const renderRoutes = () => (
+    <Routes>
+      {routeConfig.map(({ path, component: Component, isPrivate }, index) => (
+        <Route
+          key={index}
+          path={path}
+          element={
+            isPrivate ? (
+              <PrivateRoute>
+                <Component />
+              </PrivateRoute>
+            ) : (
+              <Component />
+            )
+          }
         />
+      ))}
+    </Routes>
+  );
+  const renderLoginDialog = () => {
+    console.log('Auth user not found, rendering login dialog...', authUser);
+    return <LoginDialog />;
+  };
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     resetLogoutTimer();
+  //     fetchData(); // Fetch data when the user is logged in
+  //   }
+  // }, [isLoggedIn, resetLogoutTimer, fetchData]); // Remove authUser from dependencies
+
+  // useEffect(() => {
+  //   // Manage login dialog based on isLoggedIn status
+  //   if (isLoggedIn && isLoginDialogOpen) {
+  //     closeLoginDialog();
+  //   } else if (!isLoggedIn && !isLoginDialogOpen) {
+  //     openLoginDialog();
+  //   }
+  // }, [isLoggedIn, isLoginDialogOpen, openLoginDialog, closeLoginDialog]);
+
+  return (
+    <>
+      {renderHelmet()}
+      {!authUser ? (
+        renderLoginDialog()
       ) : (
         <AppContainer>
+          {/* {authUser} */}
+
           <Header />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/store" element={<StorePage />} />
-            <Route
-              path="/cart"
-              element={
-                <PrivateRoute>
-                  <CartPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/userprofile"
-              element={
-                <PrivateRoute>
-                  <ProfilePage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/collection"
-              element={
-                <PrivateRoute>
-                  <CollectionPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/deckbuilder"
-              element={
-                <PrivateRoute>
-                  <DeckBuilderPage />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            {/* <Route path="/threejs" element={<ThreeJsCube />} /> */}
-            {/* <Route path="/cardDeck" element={<CardDeckAnimation />} /> */}
-            <Route path="*" element={<NotFoundPage />} />{' '}
-          </Routes>
+          {/* {returnDisplay()} */}
+          {renderRoutes()}
+          {/* <Routes>
+            {renderRoutes(routeConfig)} {/* Use the renderRoutes function */}
+          {/* </Routes>  */}
+          {/* {snackbar} */}
         </AppContainer>
       )}
     </>
@@ -168,3 +184,46 @@ export default Main;
 //     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
 //   };
 // }, [userId, resetLogoutTimer]);
+// // Manage loading display
+// useEffect(() => {
+//   if (!isLoggedIn) return;
+//   if (!authUser) return;
+
+//   const fetchData = async () => {
+//     if (isLoggedIn && authUser) {
+//       setLoading('isPageLoading', true);
+//       try {
+//         await Promise.all([
+//           fetchAllCollectionsForUser(),
+//           fetchAllDecksForUser(),
+//         ]);
+//       } catch (error) {
+//         console.error('Error fetching data:', error);
+//       } finally {
+//         setLoading('isPageLoading', false);
+//       }
+//     }
+//   };
+//   fetchData();
+// }, [isLoggedIn, authUser, fetchAllCollectionsForUser, fetchAllDecksForUser]);
+// // Manage logout timer reset
+// useEffect(() => {
+//   if (isLoggedIn) resetLogoutTimer();
+// }, [isLoggedIn, resetLogoutTimer]);
+// // Manage login dialog visibility
+// useEffect(() => {
+//   if (isLoggedIn && isLoginDialogOpen) {
+//     console.log('Closing login dialog...');
+//     closeLoginDialog();
+//   }
+//   if (!isLoggedIn && !isLoginDialogOpen) {
+//     console.log('Opening login dialog...');
+//     openLoginDialog();
+//   }
+//   // if (!isLoggedIn) {
+//   // }
+//   // setShowLoginDialog(
+//   //   // window.location.pathname === '/login' ||
+//   //   !isLoggedIn
+//   // );
+// }, [isLoggedIn]);

@@ -6,46 +6,60 @@ import TopBar from '../navigation/TopBar';
 import SideBar from '../navigation/SideBar';
 import LoginDialog from '../../dialogs/LoginDialog';
 import { useMode } from '../../../context';
+import useSnackBar from '../../../context/hooks/useSnackBar';
+import useDialog from '../../../context/hooks/useDialog';
+import getMenuItemsData from './menuItemsData';
 
 const Header = () => {
   const { theme } = useMode();
   const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
   const { isLoggedIn, logout } = useAuthContext();
-  const [isLoginDialogOpen, setLoginDialogOpen] = useState(false);
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'));
+  const handleSnackBar = useSnackBar()[1];
+  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
+    useDialog(handleSnackBar); // Assuming false represents the logged-in state
 
+  const isMobileView = useMediaQuery(theme.breakpoints.down('md'));
+  const menuItemsData = getMenuItemsData(isLoggedIn);
   useEffect(() => {
     if (isMobileView) setIsOpen(false);
   }, [isMobileView, setIsOpen]);
 
-  const toggleLoginDialog = () => setLoginDialogOpen((prevState) => !prevState);
-  const closeLoginDialog = () => setLoginDialogOpen(false);
-  const handleLogout = () => {
-    logout();
-  };
   return (
     <>
       <TopBar
-        handleDrawerState={toggleSidebar}
-        handleLoginDialogState={toggleLoginDialog}
+        // dialog management
+        isDialogOpen={isLoginDialogOpen}
+        openDialog={openLoginDialog}
+        closeDialog={closeLoginDialog}
+        // login management
+        isLoggedIn={isLoggedIn}
+        handleLogout={logout}
+        // drawer management
+        handleDrawer={toggleSidebar}
         isOpen={isOpen}
         isMobileView={isMobileView}
-        isLoggedIn={isLoggedIn}
-        handleLogoutt={handleLogout}
+        menuItemsData={menuItemsData}
       />
       <SideBar
-        handleDrawerState={toggleSidebar}
-        handleLoginDialogState={toggleLoginDialog}
+        // dialog management
+        isDialogOpen={isLoginDialogOpen}
+        openDialog={openLoginDialog}
+        closeDialog={closeLoginDialog}
+        // login management
+        isLoggedIn={isLoggedIn}
+        handleLogout={logout}
+        // drawer management
+        handleDrawer={toggleSidebar}
         isOpen={isOpen}
         isMobileView={isMobileView}
-        isLoggedIn={isLoggedIn}
-        handleLogout={handleLogout}
+        menuItemsData={menuItemsData}
       />
       <LoginDialog
-        open={isLoginDialogOpen}
-        onClose={closeLoginDialog}
-        onLogin={closeLoginDialog}
+      // open={isLoginDialogOpen}
+      // onClose={handleToggleLoginDialog('Close')}
+      // onLogin={handleToggleLoginDialog('Close')}
       />
+      {/* {snackbar} */}
     </>
   );
 };

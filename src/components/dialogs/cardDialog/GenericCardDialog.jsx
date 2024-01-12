@@ -37,7 +37,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
 import CardDetail from '../../cards/CardDetail';
 import { FaRegCopy } from 'react-icons/fa';
-import CardDetailsContainer from '../../cards/CardDetailsContainer';
+import CardDetailsContainer from '../../../layout/CardDetailsContainer';
 import { FormControl } from 'react-bootstrap';
 import CardDetails from '../../cards/CardDetails';
 
@@ -166,6 +166,8 @@ const GenericCardDialog = (props) => {
                 imgUrl={imageUrl}
               />
             </Grid>
+
+            {/* these two grid items are for the card details */}
             <Grid item xs={6} sm={6} md={6} lg={6}>
               <CardDetail
                 className={'card-detail'}

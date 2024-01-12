@@ -1,13 +1,15 @@
 import React from 'react';
-import { PageProvider } from '.';
+import { FormProvider, PageProvider } from '.';
 
 // Higher Order Component for PageProvider
 const WithPageProvider = (WrappedComponent) => {
   const WithPageProvider = (props) => {
     return (
-      <PageProvider>
-        <WrappedComponent {...props} />
-      </PageProvider>
+      <FormProvider>
+        <PageProvider>
+          <WrappedComponent {...props} />
+        </PageProvider>
+      </FormProvider>
     );
   };
   return WithPageProvider;

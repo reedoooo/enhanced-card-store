@@ -34,9 +34,10 @@ const defaultTheme = createTheme();
 
 export default function LoginPage() {
   const { theme } = useMode();
-  const { isLoggedIn } = useAuthContext();
+  const [cookie, setCookie] = React.useState('isLoggedIn');
+  // const { isLoggedIn } = useAuthContext();
 
-  if (isLoggedIn) return <Navigate to="/" />;
+  if (cookie.isLoggedIn) return <Navigate to="/" />;
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>

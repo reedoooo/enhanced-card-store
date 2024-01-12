@@ -45,7 +45,7 @@ const useResponsiveStyles = (theme) => {
     }
   };
 
-  const getProductGridContainerStyle = () => ({
+  const getProductGridContainerStyle = (theme) => ({
     maxWidth: 'lg',
     maxHeight: '100%',
     display: 'flex',

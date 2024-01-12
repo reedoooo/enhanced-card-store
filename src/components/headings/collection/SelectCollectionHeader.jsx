@@ -5,11 +5,11 @@ import { useMode } from '../../../context';
 const SelectCollectionHeader = ({ openNewDialog }) => {
   const { theme } = useMode();
   return (
-    <Grid container sx={{ paddingBottom: 2, alignItems: 'center' }}>
+    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
       <Grid item xs={12} sm={6}>
         <Typography
           variant="h5"
-          sx={{ fontWeight: 'bold', color: theme.palette.backgroundA.light }}
+          sx={{ fontWeight: 'bold', color: theme.palette.backgroundA.lighter }}
         >
           Choose a Collection
         </Typography>
@@ -23,7 +23,7 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
         <Button
           variant="contained"
           sx={{
-            color: theme.palette.backgroundA.contrastTextB,
+            color: theme.palette.backgroundA.contrastTextC,
             background: theme.palette.backgroundA.dark,
             '&:hover': {
               background: theme.palette.backgroundA.darkest,

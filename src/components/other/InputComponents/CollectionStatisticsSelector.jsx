@@ -4,9 +4,9 @@ import { useCollectionStore } from '../../../context/CollectionContext/Collectio
 import { useStatisticsStore } from '../../../context/StatisticsContext/StatisticsContext';
 import StatCard from '../dataDisplay/StatCard';
 const CollectionStatisticsSelector = () => {
-  const [selectedStat, setSelectedStat] = useState('');
   const { selectedCollection } = useCollectionStore();
-  const { statsByCollectionId, stats } = useStatisticsStore();
+  const { statsByCollectionId, stats, selectedStat, setSelectedStat } =
+    useStatisticsStore();
 
   const handleChange = (event) => setSelectedStat(event.target.value);
 

@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import placeholder from '../../assets/images/placeholder.jpeg';
-import UserStats from '../../components/other/dataDisplay/UserStats';
+import UserStats from '../../layout/UserStats';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../../components/buttons/other/ThemeToggleButton';

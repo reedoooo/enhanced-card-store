@@ -1,33 +1,70 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, {
   useState,
   useEffect,
   useCallback,
   useRef,
   useContext,
+  createContext,
+  useMemo,
 } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { processResponseData } from './helpers';
 import { usePageContext } from '../PageContext/PageContext';
 
-export const AuthContext = React.createContext();
-
+// export const AuthContext = React.createContext();
+export const AuthContext = createContext({
+  isLoggedIn: false,
+  authUser: null,
+  token: null,
+  user: null,
+  responseData: null,
+  login: () => {},
+  signup: () => {},
+  logout: () => {},
+  resetLogoutTimer: () => {},
+  setUser: () => {},
+  setIsLoggedIn: () => {},
+  setAuthUser: () => {},
+});
 export default function AuthProvider({ children, serverUrl }) {
   const { setLoading } = usePageContext();
   const [cookies, setCookie, removeCookie] = useCookies([
+    'basicData',
+    'securityData',
     'user',
     'isLoggedIn',
     'userId',
     'authUser',
     'authToken',
+    'lastLogin',
+    'lastLogout',
   ]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authUser, setAuthUser] = useState(null);
-  const [responseData, setResponseData] = useState(null);
+  const [basicData, setBasicData] = useState(cookies.basicData);
+  const [securityData, setSecurityData] = useState(cookies.securityData);
+  const [user, setUser] = useState(cookies.user);
+  const [authUser, setAuthUser] = useState(cookies.authUser);
   const [token, setToken] = useState(cookies.authToken);
+  const [responseData, setResponseData] = useState(null);
+  const lastLogin = useRef(null);
   const logoutTimerRef = useRef(null);
-
+  // function to set login times for tracking
+  const setLoginTimes = useCallback(() => {
+    lastLogin.current = new Date();
+    setCookie('lastLogin', lastLogin.current, { path: '/' });
+    setCookie('lastLogout', logoutTimerRef.current, { path: '/' });
+  }, [setCookie, logoutTimerRef]);
+  // value for tracking changes in login status
+  const [loginStatus, setLoginStatus] = useState({
+    isLoggedIn: isLoggedIn,
+    lastLogin: lastLogin.current,
+    lastLogout: logoutTimerRef.current,
+    authUser: authUser,
+    token: token,
+    user: user,
+  });
   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
 
   const executeAuthAction = async (actionType, url, requestData) => {
@@ -40,19 +77,48 @@ export default function AuthProvider({ children, serverUrl }) {
       console.log('Response:', response);
       const processedData = processResponseData(response, actionType);
       if (response.status === 200 || response.status === 201) {
-        const { token, userData, authData, message, data } = processedData;
+        const {
+          token,
+          userData,
+          authData,
+          message,
+          data,
+          securityData,
+          basicData,
+        } = processedData;
+        // console.log('Processed Data: ', data);
         console.log('Processed Data Message: ', message);
         console.log('Processed User Data: ', userData);
+        console.log('Processed Auth Data', authData);
+        console.log('Processed Token: ', token);
+        console.log('Processed Security Data: ', securityData);
+        console.log('Processed Basic Data: ', basicData);
         setToken(token);
-        setUser(userData);
+        setBasicData(basicData);
+        setSecurityData(securityData);
+        setUser(data);
         setAuthUser(authData);
         setResponseData(data);
         setIsLoggedIn(true);
+        setLoginTimes();
+        setLoginStatus({
+          isLoggedIn: isLoggedIn,
+          lastLogin: lastLogin.current,
+          lastLogout: logoutTimerRef.current,
+          authUser: authUser,
+          token: token,
+          user: user,
+        });
+
         setCookie('authToken', token, { path: '/' });
-        setCookie('authUser', authData, { path: '/' });
+        setCookie('basicData', basicData, { path: '/' });
+        setCookie('securityData', securityData, { path: '/' });
         setCookie('user', userData, { path: '/' });
+        setCookie('authUser', authData, { path: '/' });
         setCookie('isLoggedIn', true, { path: '/' });
         setCookie('userId', authData?.id, { path: '/' });
+        setCookie('lastLogin', lastLogin.current, { path: '/' });
+        setCookie('lastLogout', logoutTimerRef.current, { path: '/' });
       }
     } catch (error) {
       console.error('Auth error:', error);
@@ -60,86 +126,150 @@ export default function AuthProvider({ children, serverUrl }) {
       setLoading('isPageLoading', false);
     }
   };
-
+  // LOGIC FOR LOGOUT, TOKEN EXPIRATION, AND USER ACTIVITY
   const logout = useCallback(() => {
     removeCookie('authToken');
     removeCookie('user');
     removeCookie('authUser');
     removeCookie('isLoggedIn');
     removeCookie('userId');
+    removeCookie('lastLogin');
+    removeCookie('lastLogout');
 
     setIsLoggedIn(false);
+    setLoginStatus({
+      isLoggedIn: isLoggedIn,
+      lastLogin: lastLogin.current,
+      lastLogout: logoutTimerRef.current,
+    });
     setUser(null);
     setToken(null);
     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
   }, [removeCookie]);
-
   const resetLogoutTimer = useCallback(() => {
     clearTimeout(logoutTimerRef.current);
     logoutTimerRef.current = setTimeout(logout, 2700000); // 45 minutes
   }, [logout]);
-
   useEffect(() => {
     if (token) {
+      console.log('Token found, resetting logout timer...');
       resetLogoutTimer();
     }
   }, [token, resetLogoutTimer]);
-
   useEffect(() => {
-    axios.interceptors.request.use(
+    const interceptorId = axios.interceptors.request.use(
       (config) => {
         if (token) config.headers.Authorization = `Bearer ${token}`;
         return config;
       },
       (error) => Promise.reject(error)
     );
+
+    return () => axios.interceptors.request.eject(interceptorId);
   }, [token]);
 
+  // LOGIC FOR LOGIN AND SIGNUP
   const login = async (username, password) => {
     await executeAuthAction('signin', 'signin', {
       userSecurityData: { username, password },
     });
   };
-
   const signup = async (securityData, basicData) => {
     await executeAuthAction('signup', 'signup', {
       userSecurityData: securityData,
       userBasicData: basicData,
     });
   };
-
   useEffect(() => {
+    console.log('Auth Context: ');
     const storedToken = cookies['authToken'];
+    // const storedUserId = cookies['userId'];
+    const storedUserBasicData = cookies['basicData'];
+    const storedUserSecurityData = cookies['securityData'];
     const storedUser = cookies['user'];
     const storedAuthUser = cookies['authUser'];
     if (storedToken && storedUser) {
       setToken(storedToken);
+      setBasicData(storedUserBasicData);
+      setSecurityData(storedUserSecurityData);
       setUser(storedUser);
+      setAuthUser(storedAuthUser);
       setIsLoggedIn(true);
+      setLoginTimes();
+      setLoginStatus({
+        isLoggedIn: isLoggedIn,
+        lastLogin: lastLogin.current,
+        lastLogout: logoutTimerRef.current,
+        authUser: authUser,
+        token: token,
+        user: user,
+      });
       resetLogoutTimer();
     }
-  }, [cookies, resetLogoutTimer]);
+  }, [
+    cookies['authToken'],
+    cookies['basicData'],
+    cookies['securityData'],
+    cookies['user'],
+    cookies['authUser'],
+    resetLogoutTimer,
+  ]);
+  const contextValue = useMemo(
+    () => ({
+      isLoggedIn,
+      authUser,
+      token,
+      user,
+      basicData,
+      securityData,
+      responseData,
+      loginStatus,
 
+      login,
+      signup,
+      logout,
+      resetLogoutTimer,
+      setUser,
+      setIsLoggedIn,
+      setAuthUser,
+    }),
+    [
+      loginStatus,
+      isLoggedIn,
+      authUser,
+      token,
+      user,
+      responseData,
+      login,
+      signup,
+      logout,
+      resetLogoutTimer,
+      setUser,
+      setIsLoggedIn,
+      setAuthUser,
+    ]
+  );
+  useEffect(() => {
+    console.log('AUTH CONTEXT:', {
+      isLoggedIn,
+      authUser,
+      token,
+      user,
+      responseData,
+      loginStatus,
+    });
+  }, [
+    // login,
+    // signup,
+    // logout,
+    // resetLogoutTimer,
+    setUser,
+    setIsLoggedIn,
+    setLoginStatus,
+    setAuthUser,
+  ]);
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        authUser,
-        token,
-        user,
-        responseData,
-
-        login,
-        signup,
-        logout,
-        resetLogoutTimer,
-        setUser,
-        setIsLoggedIn,
-        setAuthUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

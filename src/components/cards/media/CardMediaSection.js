@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef } from 'react';
+import React, { useEffect, forwardRef, useState } from 'react';
 import { CardMedia, Popover, Popper } from '@mui/material';
 import CardToolTip from '../CardToolTip';
 import { makeStyles } from '@mui/styles';
@@ -52,33 +52,31 @@ const transformOrigin = {
 
 const CardMediaSection = forwardRef(
   (
-    { imgUrl, card, isHovered, handleInteraction, handleClick, isRequired },
+    {
+      imgUrl,
+      card,
+      isHovered,
+      handleInteraction,
+      handleClick,
+      isRequired,
+      isModalOpen,
+    },
     ref
   ) => {
     const classes = useStyles();
-    const { setModalImgUrl, clickedCard, setClickedCard } = useModalContext();
-    const { isPopoverOpen } = usePopoverContext();
-    const [anchorEl, setAnchorEl] = React.useState(ref?.current || null);
-    const eventHandlers = isRequired
-      ? {
-          onMouseEnter: () => handleInteraction?.(true),
-          onMouseLeave: () => handleInteraction?.(false),
-          onClick: () => {
-            handleClick?.();
-            setClickedCard?.(card);
-          },
-        }
-      : {};
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    useEffect(() => {
-      if (imgUrl && clickedCard) {
-        setModalImgUrl(imgUrl);
-      }
-    }, [imgUrl, clickedCard, setModalImgUrl]);
+    // Handle overlay state and interaction
+    const [overlay, setOverlay] = useState(null);
+
+    const handleOverlayChange = (newOverlay) => {
+      // Logic to change overlay based on rarity or other property
+      setOverlay(newOverlay);
+    };
 
     useEffect(() => {
       if (isHovered && ref?.current) {
-        setAnchorEl(ref?.current);
+        setAnchorEl(ref.current);
       } else {
         setAnchorEl(null);
       }
@@ -88,8 +86,14 @@ const CardMediaSection = forwardRef(
       <div
         className={classes.mediaContainer}
         ref={ref}
-        {...eventHandlers}
-        // onClick={() => handleClick?.()}
+        {...(isRequired && {
+          onMouseEnter: () => handleInteraction(!isModalOpen ? true : false),
+          onMouseLeave: () => handleInteraction(false),
+          onClick: () => {
+            handleClick?.();
+            handleOverlayChange('newOverlayValue'); // Replace with actual value or function call
+          },
+        })}
       >
         <CardMedia
           className={classes.media}
@@ -97,16 +101,22 @@ const CardMediaSection = forwardRef(
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
         />
+
+        {/* Potentially additional elements for overlays and interactivity */}
+        {overlay && (
+          <div className={classes.overlay}>
+            {' '}
+            {/* Add styles and logic for overlay */}
+            {overlay}
+          </div>
+        )}
+
         {anchorEl && isHovered && (
           <Popper
             className={classes.popover}
-            open={isHovered || isPopoverOpen}
-            anchorEl={anchorEl} // Make sure this is not undefined
-            onClose={() => handleInteraction(false)}
-            // anchorOrigin={anchorOrigin}
-            // transformOrigin={transformOrigin}
+            open={isHovered}
+            anchorEl={anchorEl}
             placement="right-start"
-            // disableRestoreFocus
           >
             <CardToolTip card={card} />
           </Popper>

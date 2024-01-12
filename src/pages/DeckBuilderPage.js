@@ -69,39 +69,64 @@ const DeckBuilderPage = () => {
     }
   }, [userId]);
 
+  // Function to render the Hero banner
+  const renderHeroBanner = () => (
+    <DeckBuilderBanner>
+      <Container>
+        <HeroCenter
+          title="Welcome to Deck Builder"
+          subtitle="Craft, refine, and explore your deck strategies in one place."
+        />
+      </Container>
+    </DeckBuilderBanner>
+  );
+
+  // Function to render the deck search section
+  const renderDeckSearch = () => (
+    <SearchGrid item xs={12} md={6} lg={5}>
+      <DeckSearch />
+    </SearchGrid>
+  );
+
+  // Function to render the deck display section
+  const renderDeckDisplay = () => (
+    <DisplayGrid item xs={12} md={6} lg={7}>
+      <DeckDisplay />
+    </DisplayGrid>
+  );
+
+  // Function to render the deck builder's main content
+  const renderDeckBuilderContent = () => (
+    <Grid container>
+      <Grid item xs={12}>
+        <RootGrid container>
+          {renderDeckSearch()}
+          {renderDeckDisplay()}
+        </RootGrid>
+      </Grid>
+    </Grid>
+  );
+
+  // Function to render the card dialog
+  const renderCardDialog = () => {
+    return (
+      isModalOpen && (
+        <GenericCardDialog
+          open={isModalOpen}
+          context={'Deck'}
+          card={modalContent}
+        />
+      )
+    );
+  };
+
   return (
     <React.Fragment>
       <PageLayout>
         {loadingStatus?.isPageLoading && returnDisplay()}
-
-        <DeckBuilderBanner>
-          <Container>
-            <HeroCenter
-              title="Welcome to Deck Builder"
-              subtitle="Craft, refine, and explore your deck strategies in one place."
-            />
-          </Container>
-          <Grid container>
-            <Grid item xs={12}>
-              <RootGrid container>
-                <SearchGrid item xs={12} md={6} lg={5}>
-                  <DeckSearch />
-                </SearchGrid>
-                <DisplayGrid item xs={12} md={6} lg={7}>
-                  <DeckDisplay />
-                </DisplayGrid>
-              </RootGrid>
-            </Grid>
-          </Grid>
-        </DeckBuilderBanner>
-
-        {isModalOpen && (
-          <GenericCardDialog
-            open={isModalOpen}
-            context={'Deck'}
-            card={modalContent}
-          />
-        )}
+        {renderHeroBanner()}
+        {renderDeckBuilderContent()}
+        {renderCardDialog()}
       </PageLayout>
     </React.Fragment>
   );

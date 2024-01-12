@@ -1,4 +1,8 @@
-// ... (imports)
+import { Box, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { makeStyles, useTheme } from '@mui/styles';
+import { ResponsiveLine } from '@nivo/line';
+import { useCallback, useMemo, useState } from 'react';
+import { useMode } from '../context';
 const useStyles = makeStyles((theme) => ({
   axisLabel: {
     position: 'absolute',
@@ -48,7 +52,14 @@ const CustomTooltip = ({ point }) => {
     </Tooltip>
   );
 };
-
+const parseDate = (dateString) => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error(`Invalid date: ${dateString}`);
+    return null; // or a sensible default, or throw an error, depending on your needs
+  }
+  return date;
+};
 export const useEventHandlers = () => {
   const [hoveredData, setHoveredData] = useState(null);
   const handleMouseMove = useCallback((point) => {
@@ -57,62 +68,74 @@ export const useEventHandlers = () => {
   const handleMouseLeave = useCallback(() => setHoveredData(null), []);
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
-import { Box, Tooltip, Typography, useMediaQuery } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
-import { ResponsiveLine } from '@nivo/line';
-import { useCallback, useMemo, useState } from 'react';
-import { useMode } from '../context';
 
 const CardLinearChart = ({ nivoReadyData, dimensions }) => {
-  console.log('nivoReadyData', nivoReadyData);
-  const { theme } = useMode(); // or useTheme() based on your context setup
+  const { theme } = useMode();
   const classes = useStyles(theme);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [isZoomed, setIsZoomed] = useState(false); // If you need zoom functionality
-  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-
-  // Error handling for empty or invalid data
-  if (
-    !nivoReadyData ||
-    nivoReadyData?.length === 0 ||
-    !Array.isArray(nivoReadyData)
-  ) {
-    return <Typography>No data available</Typography>;
-  }
-
   // Ensure all data points have valid dates
-  nivoReadyData?.forEach((series) => {
-    series?.data?.forEach((point) => {
-      if (!(point?.x instanceof Date)) {
-        // Convert to date or handle error
-        console.warn('Invalid date found in chart data');
+  const processedData = useMemo(() => {
+    return nivoReadyData?.map((series) => ({
+      ...series,
+      data: series?.data?.map((point) => ({
+        ...point,
+        x: parseDate(point?.x) || point?.x, // Use the parsed date or fallback to the original value
+      })),
+    }));
+  }, [nivoReadyData]);
+  // const { theme } = useMode();
+  // const classes = useStyles(theme);
+  // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // const [isZoomed, setIsZoomed] = useState(false);
+  // const { handleMouseMove, handleMouseLeave } = useEventHandlers();
 
-        // Example of converting to date
-        const date = new Date(point?.x);
-        if (date instanceof Date && !isNaN(date)) {
-          point.x = date;
-        }
-      }
-    });
-  });
+  // if (
+  //   !nivoReadyData ||
+  //   nivoReadyData.length === 0 ||
+  //   !Array.isArray(nivoReadyData)
+  // ) {
+  //   return <Typography>No data available</Typography>;
+  // }
+
+  // // Correct the date parsing logic
+  // const processedData = nivoReadyData.map((series) => ({
+  //   ...series,
+  //   data: series.data.map((point) => ({
+  //     ...point,
+  //     x: parseDate(point.x) || point.x, // Use the parsed date or fallback to the original value
+  //   })),
+  // }));
+
+  // // Ensure all data points have valid dates
+  // nivoReadyData?.forEach((series) => {
+  //   series?.data?.forEach((point) => {
+  //     const date = parseDate(point?.x);
+  //     if (!(date instanceof Date)) {
+  //       // Convert to date or handle error
+  //       console.warn('Invalid date found in chart data', date);
+
+  //       // Example of converting to date
+  //       const date = new Date(date);
+  //       if (date instanceof Date && !isNaN(date)) {
+  //         point.x = date;
+  //       }
+  //     }
+  //   });
+  // });
 
   // Calculate chart properties based on nivoReadyData and dimensions
+  // Minimal chart properties for testing
   const chartProps = useMemo(
     () => ({
-      data: nivoReadyData,
-      margin: { top: 50, right: 110, bottom: 50, left: 60 },
+      data: processedData,
+      margin: { top: 20, right: 20, bottom: 20, left: 35 },
       xScale: {
         type: 'time',
         format: 'time:%Y-%m-%dT%H:%M:%S.%LZ',
         useUTC: false,
         precision: 'second',
       },
-      xFormat: 'time:%Y-%m-%d %H:%M:%S',
-      yScale: { type: 'linear', min: 'auto', max: 'auto' },
-      animate: true,
-      motionStiffness: 90,
-      motionDamping: 15,
       axisBottom: {
         tickRotation: 0,
         legend: 'Time',
@@ -123,28 +146,67 @@ const CardLinearChart = ({ nivoReadyData, dimensions }) => {
         tickValues: 'every 2 days',
         format: '%b %d',
       },
-      axisLeft: {
-        orient: 'left',
-        legend: 'Price',
-        legendOffset: -40,
-        legendPosition: 'middle',
-        tickSize: 5,
-        tickPadding: 5,
-      },
-      pointSize: 10,
-      pointColor: { theme: 'background' },
-      pointBorderWidth: 2,
-      pointBorderColor: { from: 'serieColor' },
-      useMesh: true,
+      //     animate: true,
+      //     motionStiffness: 90,
+      //     motionDamping: 15,
+      //     axisLeft: {
+      //       orient: 'left',
+      //       legend: 'Price',
+      //       legendOffset: -40,
+      //       legendPosition: 'middle',
+      //       tickSize: 5,
+      //       tickPadding: 5,
+      //     },
+      //     pointSize: 10,
+      //     pointColor: { theme: 'background' },
+      //     pointBorderWidth: 2,
+      //     pointBorderColor: { from: 'serieColor' },
+      //     useMesh: true,
       enableSlices: 'x',
+      yScale: { type: 'linear', min: 'auto', max: 'auto' },
     }),
-    [nivoReadyData, theme, isMobile]
-  ); // Add other dependencies as needed
+    [nivoReadyData, processedData]
+  );
+  // const chartProps = useMemo(
+  //   () => ({
+  //     data: processedData,
+  //     margin: { top: 50, right: 110, bottom: 50, left: 60 },
+  //     xScale: {
+  //       type: 'time',
+  //       format: 'time:%Y-%m-%dT%H:%M:%S.%LZ',
+  //       useUTC: false,
+  //       precision: 'second',
+  //     },
+  //     xFormat: 'time:%Y-%m-%d %H:%M:%S',
+  //     yScale: { type: 'linear', min: 'auto', max: 'auto' },
+  //     animate: true,
+  //     motionStiffness: 90,
+  //     motionDamping: 15,
+  //     axisLeft: {
+  //       orient: 'left',
+  //       legend: 'Price',
+  //       legendOffset: -40,
+  //       legendPosition: 'middle',
+  //       tickSize: 5,
+  //       tickPadding: 5,
+  //     },
+  //     pointSize: 10,
+  //     pointColor: { theme: 'background' },
+  //     pointBorderWidth: 2,
+  //     pointBorderColor: { from: 'serieColor' },
+  //     useMesh: true,
+  //     enableSlices: 'x',
+  //   }),
+  //   [processedData, theme, isMobile] // Add other dependencies as needed
+  // ); // Add other dependencies as needed
 
-  // Responsive container
-  const containerHeight = isMobile ? '200px' : dimensions.height || '300px';
-  const containerWidth = '100%'; // Always take the full width of the parent
+  // console.log('Nivo Ready Data:', nivoReadyData);
+  // console.log('Processed Data:', processedData);
+  // console.log('Chart Dimensions:', dimensions);
 
+  if (!processedData || !processedData?.length) {
+    return <Typography>No data available</Typography>;
+  }
   return (
     <Box
       className={classes.chartContainer}

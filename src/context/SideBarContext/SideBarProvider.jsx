@@ -1,24 +1,17 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useAuthContext } from '../AuthContext/authContext';
 
 const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {
+  const { login, logout, isLoggedIn } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setisLoggedIn] = useState(false);
   const [sidebarBackgroundColor, setSidebarBackgroundColor] =
     useState('#FFFFFF');
   const [sidebarImage, setSidebarImage] = useState(null);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
-  };
-
-  const login = () => {
-    setisLoggedIn(true);
-  };
-
-  const logout = () => {
-    setisLoggedIn(false);
   };
 
   return (

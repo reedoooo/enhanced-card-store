@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
 import { Tooltip } from '@mui/material';
-import { useStyles } from './cardStyles';
+import { useStyles } from './styles/cardStyles';
 
 const formatKey = (key) => {
   return key

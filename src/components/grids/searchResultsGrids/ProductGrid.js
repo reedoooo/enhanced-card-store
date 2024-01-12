@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Grid, Container } from '@mui/material';
-import StoreItem from '../gridItems/StoreItem'; // Ensure StoreItem is wrapped with React.memo
 import CustomPagination from '../../reusable/CustomPagination';
 import { useCardStore, useMode } from '../../../context';
 import SkeletonStoreItem from '../gridItems/SkeletonStoreItem'; // A new component for skeleton screens
 import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
+import GridLayout from './GridLayout';
+import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
+import StoreItem from '../gridItems/StoreItem';
 
 const ProductGrid = ({ updateHeight }) => {
   const { theme } = useMode();
   const { getProductGridContainerStyle } = useResponsiveStyles(theme); // Use the hook
-  const containerStyles = getProductGridContainerStyle(); // Get the styles
+  const containerStyles = getProductGridContainerStyle(theme); // Get the styles
   const { searchData, setSlicedAndMergedSearchData, isCardDataValid } =
     useCardStore();
   const [page, setPage] = useState(1);
@@ -33,37 +35,27 @@ const ProductGrid = ({ updateHeight }) => {
   }, [currentStoreSearchData, updateHeight]);
 
   return (
-    <Container
-      ref={containerRef}
-      sx={containerStyles} // Apply the styles
-    >
-      <Grid container spacing={3}>
-        {isCardDataValid
-          ? currentStoreSearchData?.map((card, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <StoreItem
-                  card={card}
-                  context="Cart"
-                  page="Store"
-                  index={index}
-                />
-              </Grid>
-            ))
-          : Array(itemsPerPage)
-              .fill(0)
-              .map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <SkeletonStoreItem />
-                </Grid>
-              ))}
-      </Grid>
+    <GridLayout containerRef={containerRef} containerStyles={containerStyles}>
+      {/* Define the grid item size for 3 columns layout */}
+      {isCardDataValid ? (
+        currentStoreSearchData?.map((card, index) => (
+          <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
+            <StoreItem card={card} context="Cart" page="Store" index={index} />
+          </Grid>
+        ))
+      ) : (
+        <ReusableSkeletonItem
+          count={itemsPerPage}
+          gridItemProps={{ xs: 12, sm: 6, md: 4, lg: 4 }}
+        />
+      )}
       <CustomPagination
         totalCount={searchData?.length}
         itemsPerPage={itemsPerPage}
         currentPage={page}
         handlePagination={handlePagination}
       />
-    </Container>
+    </GridLayout>
   );
 };
 

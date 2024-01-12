@@ -14,107 +14,146 @@ export const commonPaperStyles = (theme) => ({
 
 // SearchBar.jsx
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Container, Paper } from '@mui/material';
-import { Button, TextField } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
 
-import { useCardStore, useDeckStore, useMode } from '../../../context';
-// import SearchForm from '../../forms/SearchForm';
-import search from './search.json';
-// import { commonPaperStyles } from '../../../path/to/commonStyles'; // import common styles
+import {
+  Container,
+  Paper,
+  Typography,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+import {
+  useCardStore,
+  useDeckStore,
+  useFormContext,
+  useMode,
+} from '../../../context';
+import SearchForm from '../../forms/SearchForm';
+import SearchSettings from './SearchSettings';
 
-const SearchBar = ({ onSearchFocus, onSearchBlur, searchTerm }) => {
+const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
   const { theme } = useMode();
-  const { initialState, filters } = search;
-  const { selectedDeck } = useDeckStore();
   const { handleRequest } = useCardStore();
-  const [searchParams, setSearchParams] = useState(initialState);
+  const { forms, handleChange, handleSubmit } = useFormContext(); // Consume context
+  useEffect(
+    () => {
+      console.log('SearchBar forms', forms);
+      if (!forms?.searchForm?.searchTerm) return;
+      handleRequest(forms?.searchForm?.searchTerm);
+    },
+    [forms?.searchForm?.searchTerm],
+    handleSubmit
+  ); // Watch for changes in the form data
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    if (selectedDeck) {
-      Object.entries(selectedDeck).forEach(([key, value]) => {
-        setSearchParams((prev) => ({ ...prev, [key]: value || '' }));
-      });
-    }
-  }, [selectedDeck]);
-
-  const handleChange = (name, newValue) => {
-    setSearchParams((prev) => ({ ...prev, [name]: newValue }));
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleSubmit = () => {
-    handleRequest(searchParams);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
-
   return (
-    <Paper elevation={3} sx={commonPaperStyles(theme)}>
-      <Container>
-        {/* eslint-disable-next-line max-len */}
-        <Typography
-          variant="h4"
-          align="center"
+    <React.Fragment>
+      <Paper elevation={3} sx={commonPaperStyles(theme)}>
+        <Box
           sx={{
-            mb: 3,
-            fontWeight: 'bold',
-            color: theme.palette.background.main,
-            textTransform: 'uppercase',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: theme.spacing(2),
           }}
         >
-          Search Cards
-        </Typography>
-        <SearchForm
-          searchTerm={searchParams.name}
-          handleChange={(e) => handleChange('name', e.target.value)}
-          handleSubmit={handleSubmit}
-          handleKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
-          theme={theme}
-        />
-      </Container>
-    </Paper>
+          <Typography
+            variant="h4"
+            align="left"
+            sx={{
+              fontWeight: 'bold',
+              color: theme.palette.background.main,
+              textTransform: 'uppercase',
+            }}
+          >
+            Search Cards
+          </Typography>
+          <IconButton aria-label="settings" onClick={handleClick} size="large">
+            <SettingsIcon />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            <MenuItem onClick={handleClose}>Option 1</MenuItem>
+            <MenuItem onClick={handleClose}>Option 2</MenuItem>
+            {/* Add more menu items as needed */}
+          </Menu>
+        </Box>
+        <Container>
+          {/* eslint-disable-next-line max-len */}
+          <SearchForm
+            searchTerm={forms?.searchForm?.searchTerm}
+            handleChange={handleChange('searchForm', 'searchTerm')} // Pass handleChange for specific form field
+            handleSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit('searchForm')(e); // Pass the event to the handleSubmit function
+            }}
+            handleKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit('searchForm')(e);
+              }
+            }}
+            onFocus={onSearchFocus}
+            onBlur={onSearchBlur}
+          />
+        </Container>
+      </Paper>
+    </React.Fragment>
   );
 };
 
 export default SearchBar;
 
-// // SearchForm.jsx
-// import React from 'react';
-// import { Button, TextField, Paper } from '@mui/material';
+// // // SearchForm.jsx
+// // import React from 'react';
+// // import { Button, TextField, Paper } from '@mui/material';
 
-const SearchForm = ({
-  searchTerm,
-  handleChange,
-  handleSubmit,
-  handleKeyPress,
-}) => {
-  const { theme } = useMode();
-  return (
-    <Paper sx={{ padding: theme.spacing(2) }}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-      >
-        <TextField
-          value={searchTerm}
-          onChange={handleChange}
-          label="Search for cards"
-          variant="outlined"
-          fullWidth
-          onKeyDown={handleKeyPress}
-        />
-        <Button
-          fullWidth
-          variant="contained"
-          // color={theme.palette.backgroundA.default}
-          // background={theme.palette.backgroundA.default}
-          type="submit"
-          sx={{ mt: 1, mb: 1, background: theme.palette.backgroundA.default }}
-        >
-          Search
-        </Button>
-      </form>
-    </Paper>
-  );
-};
+// const SearchForm = ({
+//   searchTerm,
+//   handleChange,
+//   handleSubmit,
+//   handleKeyPress,
+// }) => {
+//   const { theme } = useMode();
+//   return (
+//     <Paper sx={{ padding: theme.spacing(2) }}>
+//       <form
+//         onSubmit={(e) => {
+//           e.preventDefault();
+//           handleSubmit();
+//         }}
+//       >
+//         <TextField
+//           value={searchTerm}
+//           onChange={handleChange}
+//           label="Search for cards"
+//           variant="outlined"
+//           fullWidth
+//           onKeyDown={handleKeyPress}
+//         />
+//         <Button
+//           fullWidth
+//           variant="contained"
+//           // color={theme.palette.backgroundA.default}
+//           // background={theme.palette.backgroundA.default}
+//           type="submit"
+//           sx={{ mt: 1, mb: 1, background: theme.palette.backgroundA.default }}
+//         >
+//           Search
+//         </Button>
+//       </form>
+//     </Paper>
+//   );
+// };
 
-// export default SearchForm;
+// // export default SearchForm;

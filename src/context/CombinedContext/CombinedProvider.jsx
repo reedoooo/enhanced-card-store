@@ -22,7 +22,7 @@ export const CombinedProvider = ({ children }) => {
   const [cookies] = useCookies(['authUser']);
   const [state, setState] = useState(initialState);
   const user = cookies?.authUser;
-  const userId = user?.id;
+  const userId = user?.userId;
   const {
     selectedCollection,
     updateCollection,

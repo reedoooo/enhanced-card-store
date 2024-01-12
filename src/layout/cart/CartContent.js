@@ -11,7 +11,7 @@ import { useMode } from '../../context';
 const CartContent = () => {
   const { theme } = useMode();
   const { getProductGridContainerStyle } = useResponsiveStyles(theme);
-  const containerStyles = getProductGridContainerStyle();
+  const containerStyles = getProductGridContainerStyle(theme);
   const { cartData, isLoading } = useCartStore();
 
   const renderCartItems = () => {

@@ -23,13 +23,13 @@ export const DeckContext = createContext(defaultContextValue);
 
 export const DeckProvider = ({ children }) => {
   const [cookies] = useCookies(['authUser']);
+  const userId = cookies?.authUser?.userId;
   const fetchWrapper = useFetchWrapper();
-
+  const [prevUserId, setPrevUserId] = useState(null);
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
   const [selectedCards, setSelectedCards] = useState(selectedDeck?.cards || []);
-  const userId = cookies?.authUser?.id;
 
   const fetchDecksForUser = useCallback(async () => {
     if (!userId) {
@@ -46,15 +46,17 @@ export const DeckProvider = ({ children }) => {
   }, [userId]);
   const fetchAndSetDecks = useCallback(async () => {
     try {
-      const userDecks = await fetchDecksForUser();
+      const { message, data } = await fetchDecksForUser();
+      console.log('Response from server for fetch decks:', message, data);
 
-      if (userDecks.data && userDecks.data.length > 0) {
-        const uniqueDecks = removeDuplicateDecks(userDecks.data);
+      if (data && data?.length > 0) {
+        const uniqueDecks = removeDuplicateDecks(data);
         setAllDecks((prevDecks) =>
           removeDuplicateDecks([...prevDecks, ...uniqueDecks])
         );
         setDeckData(uniqueDecks[0] || {});
       } else {
+        console.log('No decks found for user.', data.data);
         // No decks found for user
         const shouldCreateDeck = window.confirm(
           'No decks found. Would you like to create a new one?'
@@ -130,7 +132,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to update deck in backend: ${error.message}`);
     }
   };
-
   const createUserDeck = async (userId, newDeckInfo) => {
     try {
       const url = `${BASE_API_URL}/${userId}/decks/createDeck`;
@@ -141,10 +142,10 @@ export const DeckProvider = ({ children }) => {
       const data = await fetchWrapper(url, 'POST', {
         cards: [],
         totalPrice: 0,
-        description: newDeckInfo.updatedInfo.description || '',
-        name: newDeckInfo.updatedInfo.name || '',
-        tags: newDeckInfo.updatedInfo.tags || [],
-        color: newDeckInfo.updatedInfo.color || '',
+        description: newDeckInfo?.description || '',
+        name: newDeckInfo?.name || '',
+        tags: newDeckInfo?.tags || [],
+        color: newDeckInfo?.color || '',
       });
       console.log('NEW DECK DATA:', data);
       setDeckData(data.data);
@@ -185,7 +186,7 @@ export const DeckProvider = ({ children }) => {
     if (!deckId) {
       setSelectedDeck(allDecks[0]);
       console.warn('No deck ID provided. Adding card to first deck in list.');
-      deckId = allDecks[0]._id;
+      deckId = allDecks[0]?._id;
     }
     try {
       // Update deck data locally
@@ -227,7 +228,7 @@ export const DeckProvider = ({ children }) => {
         const updatedDeck = responseData.allDecks.find(
           (deck) => deck._id === deckId
         ).cards;
-        const updatedCards = updatedDeck.cards;
+        const updatedCards = updatedDeck?.cards;
         setSelectedDeck({ ...selectedDeck, cards: updatedCards });
       }
     } catch (error) {
@@ -246,7 +247,7 @@ export const DeckProvider = ({ children }) => {
         throw new Error('Deck not found locally');
       }
 
-      const originalCard = currentDeck.cards.find(
+      const originalCard = currentDeck?.cards?.find(
         (card) => card.id === updatedCard.id
       );
       if (originalCard && originalCard.quantity === updatedCard.quantity) {
@@ -312,8 +313,13 @@ export const DeckProvider = ({ children }) => {
     }
   };
   const getCardQuantity = (cardId) => {
-    const foundCard = selectedDeck?.cards?.find((item) => item.id === cardId);
+    const foundCard = selectedDeck?.cards.find((item) => item.id === cardId);
     return foundCard?.quantity || 0;
+  };
+  const shouldFetchDecks = (prevUserId, currentUserId) => {
+    // Fetch decks if there was no previous user and now there is one
+    // or if the user has changed
+    return (!prevUserId && currentUserId) || prevUserId !== currentUserId;
   };
 
   const contextValue = {
@@ -349,8 +355,16 @@ export const DeckProvider = ({ children }) => {
 
   useEffect(() => {
     console.log('DECKCONTEXT:', contextValue);
-    if (userId && typeof userId === 'string') {
+  }, [
+    contextValue.deckData,
+    contextValue.allDecks,
+    contextValue.selectedDeck,
+    contextValue.selectedCards,
+  ]);
+  useEffect(() => {
+    if (shouldFetchDecks(prevUserId, userId)) {
       fetchAndSetDecks();
+      setPrevUserId(userId); // Update the previous userId
     }
   }, [userId, fetchAndSetDecks]);
 

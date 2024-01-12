@@ -1,6 +1,10 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuthContext } from '../AuthContext/authContext';
 import { usePageContext } from '../PageContext/PageContext';
+import { useCardStore } from '../CardContext/CardStore';
+// import { params: initialState } from './search.json';
+// import as dif name from ./search.json
+import { initialState } from './search.json';
 import { defaultContextValue } from './helpers';
 
 // Define the context
@@ -29,6 +33,14 @@ const formValidations = {
     // Example: Add validations specific to user data update form
     if (!values.firstName) errors.firstName = 'First name is required';
     if (!values.lastName) errors.lastName = 'Last name is required';
+    // ... more validations
+    return errors;
+  },
+  updateCollectionForm: (values) => {
+    let errors = {};
+    // Example: Add validations specific to collection update form
+    if (!values.name) errors.name = 'Collection name is required';
+    if (!values.description) errors.description = 'Description is required';
     // ... more validations
     return errors;
   },
@@ -79,8 +91,21 @@ const initialFormStates = {
     name: '',
     description: '',
   },
+  addCollectionForm: {
+    // New form with same initial values as updateCollectionForm
+    name: '',
+    description: '',
+  },
   searchForm: {
     searchTerm: '',
+    searchParams: {
+      name: '',
+      type: '',
+      race: '',
+      archetype: '',
+      attribute: '',
+      level: '',
+    },
   },
   customerInfoFields: {
     firstName: '',
@@ -108,6 +133,7 @@ export const FormProvider = ({ children }) => {
     setLoading, // Use setLoading instead of individual state setters
     returnDisplay,
   } = usePageContext();
+  // const { handleRequest } = useCardStore();
   const [forms, setForms] = useState(initialFormStates);
   const [currentForm, setCurrentForm] = useState({}); // For multiple forms
   const [formErrors, setFormErrors] = useState(null); // For a single form
@@ -191,6 +217,12 @@ export const FormProvider = ({ children }) => {
     }
     setLoading('isFormDataLoading', false); // indicate form submission is done
   };
+
+  // useEffect(() => {
+  //   if (initialFormStates?.searchForm?.searchTerm) {
+  //     handleRequest(initialFormStates?.searchForm?.searchTerm);
+  //   }
+  // }, [returnDisplay]);
 
   // Provide each form's data, handleChange, and handleSubmit through context
   const contextValue = {

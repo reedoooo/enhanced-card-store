@@ -30,14 +30,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SideBar = ({
-  handleDrawerState,
-  isOpen,
-  handleLoginDialogState,
+  // dialog management
+  isDialogOpen,
+  openDialog,
+  closeDialog,
+  // login management
+  isLoggedIn,
   handleLogout,
+  // drawer management
+  handleDrawer,
+  isOpen,
+  isMobileView,
+  menuItemsData,
 }) => {
   const classes = useStyles();
-  const { isLoggedIn } = useAuthContext();
-  const menuItemsData = getMenuItemsData(isLoggedIn);
 
   const iOS =
     typeof navigator !== 'undefined' &&
@@ -48,8 +54,8 @@ const SideBar = ({
       <SwipeableDrawer
         anchor="right" // Drawer opens from the right
         open={isOpen}
-        onClose={handleDrawerState}
-        onOpen={handleDrawerState} // Handle opening the drawer
+        onClose={handleDrawer}
+        onOpen={handleDrawer} // Handle opening the drawer
         classes={{ paper: classes.drawerPaper }}
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
@@ -62,12 +68,19 @@ const SideBar = ({
                 key={item.name}
                 name={item.name}
                 item={item}
-                onClick={() => handleDrawerState()}
+                // toggles the drawer state
+                onClick={() => handleDrawer()}
               />
             ))}
             <Divider />
             {isLoggedIn ? (
-              <ListItem className={classes.listItem} onClick={handleLogout}>
+              <ListItem
+                className={classes.listItem}
+                onClick={() => {
+                  handleDrawer();
+                  handleLogout();
+                }}
+              >
                 <ListItemButton>
                   <ListItemIcon>
                     <LogoutIcon />
@@ -78,7 +91,10 @@ const SideBar = ({
             ) : (
               <ListItem
                 className={classes.listItem}
-                onClick={handleLoginDialogState}
+                onClick={() => {
+                  handleDrawer();
+                  openDialog();
+                }}
               >
                 <ListItemButton>
                   <ListItemIcon>

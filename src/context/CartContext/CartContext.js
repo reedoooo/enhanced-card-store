@@ -41,7 +41,7 @@ export const CartProvider = ({ children }) => {
     totalPrice: 0, // Total price of items
   });
   const [cookies, setCookie] = useCookies(['authUser', 'cart', 'cartData']);
-  const userId = cookies?.authUser?.id;
+  const userId = cookies?.authUser?.userId;
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -70,8 +70,10 @@ export const CartProvider = ({ children }) => {
         'POST',
         JSON.stringify({ userId })
       );
-      console.log('NEW CART DATA:', newCartData);
-      setCartDataAndCookie(newCartData);
+      const { message, data } = newCartData;
+      console.log('CREATE CART: -----> response message', message);
+      console.log('CART DATA: -----> response data', data);
+      setCartDataAndCookie(data);
     } catch (error) {
       console.error('Error creating cart:', error);
 
@@ -100,7 +102,7 @@ export const CartProvider = ({ children }) => {
         await createUserCart();
       }
     }
-  }, [userId, setCookie]);
+  }, [userId]);
 
   // Set cart data and cookie
   const setCartDataAndCookie = useCallback(
@@ -131,78 +133,145 @@ export const CartProvider = ({ children }) => {
     }
   }, [userId, fetchUserCart]);
   useEffect(() => {
-    const newTotalQuantity = cartData.cart.reduce(
-      (total, item) => total + item.quantity,
+    const newTotalQuantity = cartData?.cart?.reduce(
+      (total, item) => total + item?.quantity,
       0
     );
     setTotalQuantity(newTotalQuantity);
     setTotalPrice(totalCost);
   }, [cartData.cart, totalCost]);
+
   const updateCart = useCallback(
-    async (cartId, updatedCart) => {
-      if (!userId) return;
-      if (!cartId) return;
+    async (cartId, updatedCart, method) => {
+      if (!userId || !cartId) return;
+
       const formattedCartData = {
-        cartItems: updatedCart.map((item) => ({
-          ...item,
-          id: item.id,
-          quantity: item.quantity,
-        })),
         userId: userId,
+        cart: updatedCart.map((item) => ({
+          id: item.id, // assuming id is the unique identifier for each cart item
+          quantity: item.quantity, // ensure this is the current quantity to be updated in the cart
+          price: item.price, // ensure this is the current price of the item
+          // Include other necessary fields as per your cart item structure
+        })),
+        method: method, // 'POST' for adding items, 'DELETE' for removing items, 'PUT' for updating items
+        // Calculating total quantity and total price outside of the cart array
+        quantity: updatedCart.reduce((total, item) => total + item.quantity, 0),
+        totalPrice: updatedCart.reduce(
+          (total, item) => total + item.quantity * item.price,
+          0
+        ),
       };
-      // const response = await fetchWrapper(
-      //   `${process.env.REACT_APP_SERVER}${`/api/carts/userCart/${userId}`}`,
-      //   'GET'
-      // );
-      const data = await fetchWrapper(
-        `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/${cartId}/update`,
-        'PUT',
-        formattedCartData
-        // JSON.stringify(formattedCartData)
-      );
-      setCartDataAndCookie(data);
-      return data;
+
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/${cartId}/update`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formattedCartData),
+          }
+        );
+
+        const { message, data } = await response.json();
+        console.log('PUT: /cart -----> response message', message);
+        if (response.ok) {
+          console.log('PUT: /cart -----> response data', data);
+          setCartDataAndCookie(data); // Update your cart state and cookie here
+        } else {
+          console.error(
+            'Failed to update cart: ',
+            data?.error || 'Error occurred'
+          );
+          // Handle errors appropriately (e.g., show an error message to the user)
+        }
+      } catch (error) {
+        console.error('Error updating cart: ', error);
+        // Handle errors appropriately (e.g., show an error message to the user)
+      }
     },
-    [fetchWrapper, setCartDataAndCookie]
+    [userId, setCartDataAndCookie] // dependencies array
   );
   const addOneToCart = useCallback(
     async (cardInfo) => {
       if (!cartData._id) return;
-      console.log('Adding one to cart', cardInfo);
-      const { quantityOfSameId, totalItems } = getCardQuantity(
-        cartData,
-        cardInfo.id
+
+      const existingItem = cartData?.cart?.find(
+        (item) => item.id === cardInfo.id
       );
-      if (quantityOfSameId >= 3) return;
-      let updatedCart = cartData.cart.map((item) =>
-        item.id === cardInfo.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-      if (!cartData.cart.some((item) => item.id === cardInfo.id)) {
-        updatedCart = [...updatedCart, { ...cardInfo, quantity: 1 }];
+      const updatedExistingItem = {
+        ...cardInfo,
+        quantity: existingItem ? existingItem.quantity + 1 : 1,
+        totalPrice: existingItem
+          ? existingItem.totalPrice + existingItem.price
+          : 1,
+      };
+      const updatedCart = cartData?.cart?.map((item) => {
+        return item.id === cardInfo.id ? updatedExistingItem : item;
+      });
+
+      let newItem = {
+        ...cardInfo,
+        quantity: 1,
+        totalPrice: cardInfo.price,
+      };
+      if (!existingItem) {
+        updatedCart.push(newItem); // New item
       }
-      const updatedCartData = await updateCart(cartData._id, updatedCart);
-      console.log('UPDATED CART DATA:', updatedCartData);
+
+      const method = existingItem ? 'PUT' : 'POST'; // Decide method based on whether the item exists
+      const updatedCartData = await updateCart(
+        cartData._id,
+        updatedCart,
+        method
+        // updatedExistingItem ? updatedExistingItem : newItem
+      );
       if (updatedCartData) setCartData(updatedCartData);
     },
-    [cartData._id, cartData.cart, getCardQuantity, updateCart]
+    [cartData, updateCart, setCartData]
   );
   const removeOneFromCart = useCallback(
     async (cardInfo) => {
-      if (cartData.cart.some((item) => item.id === cardInfo.id)) {
-        const updatedCart = cartData.cart
-          .map((item) =>
-            item.id === cardInfo.id && item.quantity > 0
-              ? { ...item, quantity: item.quantity - 1 }
-              : item
-          )
-          .filter((item) => item.quantity > 0);
-        const updatedCartData = await updateCart(cartData._id, updatedCart);
-        if (updatedCartData) setCartData(updatedCartData);
+      const existingItemIndex = cartData.cart.findIndex(
+        (item) => item.id === cardInfo.id
+      );
+
+      if (existingItemIndex === -1) {
+        console.error('Item not found in cart');
+        return; // Item not found in cart
       }
+
+      const existingItem = cartData.cart[existingItemIndex];
+
+      // Decrement quantity or remove item from cart
+      let updatedCart;
+      let method;
+      if (existingItem.quantity > 1) {
+        // Decrement quantity by 1
+        updatedCart = cartData?.cart?.map((item, index) =>
+          index === existingItemIndex
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+        method = 'PUT'; // Update the item quantity
+      } else {
+        // Remove item from cart as its quantity will be 0
+        updatedCart = cartData.cart.filter(
+          (item, index) => index !== existingItemIndex
+        );
+        method = 'DELETE'; // Remove the item from the cart
+      }
+
+      // Update the cart with new data
+      const updatedCartData = await updateCart(
+        cartData._id,
+        updatedCart,
+        method
+      );
+      if (updatedCartData) setCartData(updatedCartData);
     },
-    [cartData._id, cartData.cart, updateCart]
+    [cartData, updateCart, setCartData] // dependencies array
   );
   const deleteFromCart = useCallback(
     async (cardInfo) => {
@@ -236,7 +305,7 @@ export const CartProvider = ({ children }) => {
       addOneToCart,
       removeOneFromCart,
       deleteFromCart,
-      fetchUserCart,
+      fetchCartForUser: fetchUserCart,
       createUserCart,
     }),
     [

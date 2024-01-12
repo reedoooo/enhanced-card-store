@@ -21,7 +21,8 @@ import LongMenu from '../../reusable/LongMenu';
 import { roundToNearestTenth } from '../../../context/Helpers';
 import useSelectCollectionListStyles from '../../../context/hooks/useSelectCollectionListStyles';
 import { styled } from '@mui/styles';
-import { useMode } from '../../../context';
+import { useMode, usePageContext } from '../../../context';
+import CollectionListItem from './CollectionListItem';
 
 const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   // Use the same styles as in StyledCard
@@ -47,39 +48,6 @@ const AspectRatioBoxSkeleton = styled('div')(({ theme }) => ({
 }));
 
 // eslint-disable-next-line react/display-name
-// const ListItemSkeleton = memo(
-//   () => {
-//     const classes = useSelectCollectionListStyles();
-//     return (
-//       <ListItem className={classes.listItem}>
-//         <StyledSkeletonCard>
-//           <AspectRatioBoxSkeleton>
-//             <Skeleton variant="rectangular" height={50} />
-//           </AspectRatioBoxSkeleton>
-//         </StyledSkeletonCard>
-//       </ListItem>
-//     );
-//   },
-//   () => true
-// );
-// eslint-disable-next-line react/display-name
-// const ListItemSkeleton = memo(
-//   () => {
-//     const { theme } = useMode();
-
-//     const classes = useSelectCollectionListStyles(theme);
-
-//     return (
-//       <ListItem className={classes.listItemSkeleton}>
-//         <Card className={classes.skeletonCard}>
-//           <Skeleton variant="rectangular" animation="wave" height={100} />
-//         </Card>
-//       </ListItem>
-//     );
-//   },
-//   () => true
-// );
-// eslint-disable-next-line react/display-name
 const ListItemSkeleton = memo(
   () => {
     const { theme } = useMode();
@@ -98,89 +66,88 @@ const ListItemSkeleton = memo(
 );
 
 // eslint-disable-next-line react/display-name
-const CollectionListItem = memo(
-  ({
-    collection,
-    handleSelect,
-    handleOpenDialog,
-    isSelected,
-    statsByCollectionId,
-    isPlaceholder,
-  }) => {
-    const { theme } = useMode();
-    const classes = useSelectCollectionListStyles(theme);
-
-    const twentyFourHourChange =
-      statsByCollectionId[collection?._id]?.twentyFourHourAverage;
-    return (
-      <React.Fragment>
-        <ListItem
-          className={classes.collectionListItem}
-          // className={`${classes.listItem} ${
-          //   isSelected ? classes.selectedListItem : ''
-          // }`}
-          style={{ opacity: 1 }}
-        >
-          <ButtonBase
-            sx={{ width: '100%' }}
-            disabled={isPlaceholder}
-            onClick={() => !isPlaceholder && handleSelect(collection?._id)}
-          >
-            <Grid container spacing={1}>
-              <Grid item xs={6} sm={3} className={classes.gridItem}>
-                <Typography className={classes.gridItemText}>Name:</Typography>
-                <Typography>{collection?.name}</Typography>
-              </Grid>
-              <Grid item xs={6} sm={3} className={classes.gridItem}>
-                <Typography className={classes.gridItemText}>Value:</Typography>
-                <Typography>
-                  ${roundToNearestTenth(collection?.totalPrice)}
-                </Typography>
-              </Grid>
-              <Grid item xs={6} sm={3} className={classes.gridItem}>
-                <Typography className={classes.gridItemText}>
-                  Performance:
-                </Typography>
-                <Typography
-                  component="div"
-                  sx={{ display: 'flex', alignItems: 'center' }}
-                >
-                  {twentyFourHourChange?.priceChange > 0 ? (
-                    <ArrowUpwardIcon className={classes.positivePerformance} />
-                  ) : (
-                    <ArrowDownwardIcon
-                      className={classes.negativePerformance}
-                    />
-                  )}
-                  {twentyFourHourChange?.percentageChange}
-                </Typography>
-              </Grid>
-              <Grid item xs={6} sm={3} className={classes.gridItem}>
-                <Typography className={classes.gridItemText}>Cards:</Typography>
-                <Typography>{collection?.totalQuantity}</Typography>
-              </Grid>
-            </Grid>
-          </ButtonBase>
-          <div className={classes.menuButton}>
-            <LongMenu
-              onEdit={() => handleOpenDialog(collection)}
-              onStats={() => console.log('Stats:', collection)}
-              onView={() => console.log('View:', collection)}
-            />
-          </div>
-        </ListItem>
-        <Divider />
-      </React.Fragment>
-    );
-  },
-  (prevProps, nextProps) => {
-    // Only re-render if specific props have changed
-    return (
-      prevProps.collection._id === nextProps.collection._id &&
-      prevProps.isSelected === nextProps.isSelected
-    );
-  }
-);
+// const CollectionListItem = memo(
+//   ({
+//     collection,
+//     handleSelect,
+//     handleOpenDialog,
+//     isSelected,
+//     statsByCollectionId,
+//     isPlaceholder,
+//   }) => {
+//     const { theme } = useMode();
+//     const classes = useSelectCollectionListStyles(theme);
+//     console.log('statsByCollectionId', statsByCollectionId);
+//     const twentyFourHourChange = statsByCollectionId?.twentyFourHourAverage;
+//     return (
+//       <React.Fragment>
+//         <ListItem
+//           className={classes.collectionListItem}
+//           // className={`${classes.listItem} ${
+//           //   isSelected ? classes.selectedListItem : ''
+//           // }`}
+//           style={{ opacity: 1 }}
+//         >
+//           <ButtonBase
+//             sx={{ width: '100%' }}
+//             disabled={isPlaceholder}
+//             onClick={() => !isPlaceholder && handleSelect(collection?._id)}
+//           >
+//             <Grid container spacing={1}>
+//               <Grid item xs={6} sm={3} className={classes.gridItem}>
+//                 <Typography className={classes.gridItemText}>Name:</Typography>
+//                 <Typography>{collection?.name}</Typography>
+//               </Grid>
+//               <Grid item xs={6} sm={3} className={classes.gridItem}>
+//                 <Typography className={classes.gridItemText}>Value:</Typography>
+//                 <Typography>
+//                   ${roundToNearestTenth(collection?.totalPrice)}
+//                 </Typography>
+//               </Grid>
+//               <Grid item xs={6} sm={3} className={classes.gridItem}>
+//                 <Typography className={classes.gridItemText}>
+//                   Performance:
+//                 </Typography>
+//                 <Typography
+//                   component="div"
+//                   sx={{ display: 'flex', alignItems: 'center' }}
+//                 >
+//                   {twentyFourHourChange?.priceChange > 0 ? (
+//                     <ArrowUpwardIcon className={classes.positivePerformance} />
+//                   ) : (
+//                     <ArrowDownwardIcon
+//                       className={classes.negativePerformance}
+//                     />
+//                   )}
+//                   {twentyFourHourChange?.percentageChange}
+//                 </Typography>
+//               </Grid>
+//               <Grid item xs={6} sm={3} className={classes.gridItem}>
+//                 <Typography className={classes.gridItemText}>Cards:</Typography>
+//                 <Typography>{collection?.totalQuantity}</Typography>
+//               </Grid>
+//             </Grid>
+//           </ButtonBase>
+//           <div className={classes.menuButton}>
+//             <LongMenu
+//               onEdit={() => handleOpenDialog(collection)}
+//               onStats={() => console.log('Stats:', collection)}
+//               onView={() => console.log('View:', collection)}
+//             />
+//           </div>
+//         </ListItem>
+//         <Divider />
+//       </React.Fragment>
+//     );
+//   },
+//   (prevProps, nextProps) => {
+//     // Only re-render if specific props have changed
+//     return (
+//       prevProps.collection._id === nextProps.collection._id &&
+//       prevProps.isSelected === nextProps.isSelected
+//     );
+//   }
+// );
 
 const SelectCollectionList = ({
   onSave,
@@ -188,14 +155,14 @@ const SelectCollectionList = ({
   handleSelectCollection,
   isLoadingNewCollection,
 }) => {
-  const classes = useSelectCollectionListStyles();
+  const { theme } = useMode();
+  const classes = useSelectCollectionListStyles(theme);
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [loadingCollectionIds, setLoadingCollectionIds] = useState([]);
-
   const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
     useCollectionStore();
+  const { setLoading } = usePageContext();
   const { statsByCollectionId } = useStatisticsStore();
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSelect = useCallback(
     (selectedId) => {
@@ -221,21 +188,13 @@ const SelectCollectionList = ({
     },
     [openDialog, setSelectedCollection]
   );
-  // useEffect(() => {
-  //   if (isLoadingNewCollection) {
-  //     // Assume new collection is the last one added
-  //     const newCollectionId = allCollections[allCollections.length - 1]?._id;
-  //     if (newCollectionId) {
-  //       setLoadingCollectionIds((prev) => [...prev, newCollectionId]);
-  //     }
-  //   }
-  // }, [isLoadingNewCollection, allCollections]);
   useEffect(() => {
     if (isLoadingNewCollection) {
-      // Assume new collection is the last one added
-      const newCollectionId = allCollections[allCollections.length - 1]?._id;
+      setLoading('isLoading', true);
+      const newCollectionId = allCollections[allCollections?.length - 1]?._id;
       if (newCollectionId) {
         setLoadingCollectionIds((prev) => [...prev, newCollectionId]);
+        setLoading('isLoading', false);
       }
     }
   }, [isLoadingNewCollection, allCollections]);
@@ -247,18 +206,21 @@ const SelectCollectionList = ({
         prev.filter((id) => id !== collectionId)
       );
     };
-
-    // Simulate loading each collection after a certain time
-    loadingCollectionIds.forEach((collectionId) => {
+    loadingCollectionIds?.forEach((collectionId) => {
       setTimeout(() => loadCollection(collectionId), 1000); // simulate delay
     });
   }, [loadingCollectionIds]);
+  // useEffect(() => {
+  //   fetchAllCollectionsForUser().catch((err) =>
+  //     console.error('Failed to get all collections:', err)
+  //   );
+  // }. [fetchAllCollectionsForUser]);
+
   return (
     <List>
-      {allCollections.map((collection) => {
-        const isSelected = collection._id === selectedCollectionId;
-        const isLoading = loadingCollectionIds.includes(collection._id);
-
+      {allCollections?.map((collection) => {
+        const isSelected = collection?._id === selectedCollectionId;
+        const isLoading = loadingCollectionIds?.includes(collection?._id);
         return isLoading ? (
           // Render skeleton if the collection is still loading
           <ListItemSkeleton key={`loading-${collection?._id}`} />
@@ -269,6 +231,7 @@ const SelectCollectionList = ({
             collection={collection}
             handleSelect={handleSelect}
             handleOpenDialog={handleOpenDialog}
+            roundToNearestTenth={roundToNearestTenth}
             isSelected={isSelected}
             classes={classes}
             statsByCollectionId={statsByCollectionId}
@@ -284,6 +247,8 @@ SelectCollectionList.propTypes = {
   onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
   handleSelectCollection: PropTypes.func.isRequired,
+  isLoadingNewCollection: PropTypes.bool,
+  allCollections: PropTypes.array.isRequired, // Ensure this is passed or obtained from context
 };
 
 export default SelectCollectionList;

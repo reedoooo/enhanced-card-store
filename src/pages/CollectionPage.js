@@ -34,36 +34,42 @@ const CollectionPage = () => {
     }
   }, []);
 
-  // if (isLoading) displayLoadingIndicator();
-  // if (pageError) displayErrorIndicator();
+  // Function to render the hero center
+  const renderHeroCenter = () =>
+    !isCollectionView && (
+      <HeroCenter
+        title="Your Collection's Home"
+        subtitle="Welcome to your collection! ..."
+      />
+    );
 
-  // const handleCollectionSelected = (selected) => {
-  //   setIsCollectionSelected(!!selected);
-  // };
+  // Function to render the collection portfolio
+  const renderCollectionPortfolio = () => (
+    <CollectionPortfolio
+      allCollections={allCollections}
+      onCollectionSelect={
+        selectedCollection ? showCollectionContent : showCollectionView
+      }
+    />
+  );
+
+  // Function to render the card dialog
+  const renderCardDialog = () =>
+    isModalOpen && (
+      <GenericCardDialog
+        open={isModalOpen}
+        context={'Collection'}
+        closeModal={closeModal}
+        card={modalContent}
+      />
+    );
+
   return (
     <PageLayout>
       {loadingStatus?.isPageLoading && returnDisplay()}
-
-      {!isCollectionView && (
-        <HeroCenter
-          title="Your Collection's Home"
-          subtitle="Welcome to your collection! ..."
-        />
-      )}
-      <CollectionPortfolio
-        allCollections={allCollections}
-        onCollectionSelect={
-          selectedCollection ? showCollectionContent : showCollectionView
-        }
-      />
-      {isModalOpen && (
-        <GenericCardDialog
-          open={isModalOpen}
-          context={'Collection'}
-          closeModal={closeModal}
-          card={modalContent}
-        />
-      )}
+      {renderHeroCenter()}
+      {renderCollectionPortfolio()}
+      {renderCardDialog()}
     </PageLayout>
   );
 };

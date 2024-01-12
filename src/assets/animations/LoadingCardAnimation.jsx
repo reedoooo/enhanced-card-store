@@ -1,228 +1,93 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useCardImages } from '../../context/CardImagesContext/CardImagesContext';
-import placeholderImage from '../images/placeholder.jpeg'; // Adjust the path as necessary
-function LoadingCardAnimation() {
-  const { cards, isLoading, error } = useCardImages();
-  const [randomCardImage, setRandomCardImage] = useState();
+
+const sizes = {
+  extraSmall: { width: 0.3, height: 0.4 },
+  small: { width: 0.5, height: 0.7 },
+  medium: { width: 1, height: 1.4 },
+  large: { width: 2, height: 2.8 },
+  extraLarge: { width: 3, height: 4.2 },
+};
+
+function LoadingCardAnimation({ selected, size = 'medium' }) {
+  const mount = useRef(null);
+  const placeholderImage = '../../assets/images/placeholder.png'; // Replace with your placeholder image path
+  const placeholderTexture = new THREE.TextureLoader().load(placeholderImage);
 
   useEffect(() => {
-    if (cards && cards.length > 0) {
-      const randomCard = cards[Math.floor(Math.random() * cards.length)];
-      if (randomCard.card_images && randomCard.card_images.length > 0) {
-        // Constructing the local file name
-        const name = randomCard.name.replace(/[/\\?%*:|"<>]/g, '');
-        console.log('name', name);
-        const folder = 'images';
-        console.log('folder', folder);
-        const folder2 = 'cards';
-        const folder3 = `${
-          randomCard?.type === 'Spell Card' || randomCard?.type === 'Trap Card'
-            ? 'spell_trap'
-            : 'monster'
-        }`;
-        console.log('folder2', folder2);
-        const extension = 'jpg'; // Assuming all images are jpg
-        console.log('naextensionme', extension);
-        const fullName = `${name}_${randomCard.race}_${randomCard.type}${
-          randomCard.level ? '_lvl' + randomCard.level : ''
-        }${
-          randomCard.attribute ? '_' + randomCard.attribute : ''
-        }.${extension}`;
-        console.log('fullName', fullName);
-        const filePath = `../${folder}/${folder2}/${folder3}/${fullName}`;
-        console.log('filePath', filePath);
-        console.log('placeholderImage', placeholderImage);
-        setRandomCardImage(filePath);
-      }
-    }
-    console.log('cards', cards);
-    console.log('randomCardImage', randomCardImage);
-  }, [cards]);
+    if (!selected) return;
 
-  useEffect(() => {
-    if (!randomCardImage) return;
+    const currentMount = mount.current;
 
+    // Get dimensions from the sizes object
+    const { width, height } = sizes[size];
+
+    // Scene, Camera, and Renderer setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    // Smaller FOV can make objects appear larger within the same canvas size
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    const loadingIconContainer = document.getElementById('loadingIcon');
-    if (!loadingIconContainer) return;
+    // Keep the canvas size the same but make the content appear larger
+    renderer.setSize(width * 100, height * 100); // Keeping canvas size
 
-    loadingIconContainer.appendChild(renderer.domElement);
+    currentMount.appendChild(renderer.domElement);
 
-    // Load the placeholder texture
-    const placeholderTexture = new THREE.TextureLoader().load(placeholderImage);
+    // Geometry and Material setup
+    const cardGeometry = new THREE.BoxGeometry(1, 1.4, 0.01); // Standard size for the geometry
+    const cardMaterial = new THREE.MeshBasicMaterial({
+      map: placeholderTexture,
+    });
 
-    // Load the card image texture
-    new THREE.TextureLoader().load(
-      randomCardImage,
-      (texture) => {
-        const cardMaterialFront = new THREE.MeshBasicMaterial({ map: texture });
-        const cardMaterialBack = new THREE.MeshBasicMaterial({
-          map: placeholderTexture,
-        });
+    const card = new THREE.Mesh(cardGeometry, [
+      cardMaterial,
+      cardMaterial,
+      cardMaterial,
+      cardMaterial,
+      cardMaterial,
+      cardMaterial,
+    ]);
 
-        const cardGeometry = new THREE.BoxGeometry(1, 1.4, 0.01);
-        const card = new THREE.Mesh(cardGeometry, [
-          cardMaterialBack, // Left side
-          cardMaterialBack, // Right side
-          cardMaterialBack, // Top side
-          cardMaterialBack, // Bottom side
-          cardMaterialFront, // Front side
-          cardMaterialBack, // Back side
-        ]);
-        scene.add(card);
-        camera.position.z = 5;
+    // Scale the card based on size prop
+    card.scale.set(width, height, 1); // Scaling the card
 
-        const animate = () => {
-          requestAnimationFrame(animate);
-          card.rotation.y += 0.05;
-          renderer.render(scene, camera);
-        };
+    scene.add(card);
+    // Adjust the camera position closer to make the object appear larger
+    camera.position.z = 2;
 
-        animate();
-      },
-      undefined, // onProgress callback not supported
-      (err) => {
-        console.error('An error occurred while loading the texture:', err);
-      }
-    );
-
-    return () => {
-      if (loadingIconContainer.contains(renderer.domElement)) {
-        loadingIconContainer.removeChild(renderer.domElement);
-      }
+    const animate = function () {
+      requestAnimationFrame(animate);
+      card.rotation.y += 0.01; // Speed of rotation
+      renderer.render(scene, camera);
     };
-  }, [randomCardImage]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+    animate();
+
+    // Clean up
+    return () => {
+      currentMount.removeChild(renderer.domElement);
+      scene.remove(card);
+      cardMaterial.dispose();
+      cardGeometry.dispose();
+    };
+  }, [selected, size]); // Rerun effect if selected or size changes
+
+  if (!selected) {
+    return null;
+  }
 
   return (
-    <div id="loadingIcon" style={{ width: '100%', height: '400px' }}>
-      Three.js animation should appear here
-    </div>
+    <div
+      ref={mount}
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center', // Center horizontally
+        alignItems: 'center', // Center vertically
+      }}
+    />
   );
 }
 
 export default LoadingCardAnimation;
-
-// import * as THREE from 'three';
-// import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-// import placeholderImage from '../images/placeholder.jpeg';
-// import { useCardImages } from '../../context/CardImagesContext/CardImagesContext';
-
-// function LoadingCardAnimation() {
-//   const { selectedCollection, allCollections } = useCollectionStore();
-//   const [randomCardImage, setRandomCardImage] = useState(null);
-//   const { images, isLoading, error, downloadCardImages, getRandomCardImages } =
-//     useCardImages();
-
-//   if (isLoading) {
-//     console.log('Loading...');
-//     return <div>Loading...</div>;
-//   }
-
-//   if (error) {
-//     console.error(error);
-//     return <div>Error: {error}</div>;
-//   }
-
-//   if (images && images.length > 0) {
-//     return (
-//       <div>
-//         {images.map((image, index) => (
-//           <img src={image} alt="card" key={index} />
-//         ))}
-//       </div>
-//     );
-//   }
-
-//   useEffect(() => {
-//     const selectRandomCardImage = (collection) => {
-//       const filteredCards = collection.cards.filter(
-//         (card) => card.card_images && card.card_images.length > 0
-//       );
-//       if (filteredCards.length > 0) {
-//         const randomCard =
-//           filteredCards[Math.floor(Math.random() * filteredCards.length)];
-//         return randomCard.card_images[0].image_url;
-//       }
-//       return placeholderImage;
-//     };
-
-//     const collection =
-//       selectedCollection ||
-//       (allCollections.length > 0
-//         ? allCollections[Math.floor(Math.random() * allCollections.length)]
-//         : null);
-//     if (collection) {
-//       setRandomCardImage(selectRandomCardImage(collection));
-//     } else {
-//       setRandomCardImage(placeholderImage);
-//     }
-//   }, [selectedCollection, allCollections]);
-
-//   useEffect(() => {
-//     if (!randomCardImage) return;
-
-//     const loadingIconContainer = document.getElementById('loadingIcon');
-//     if (!loadingIconContainer) {
-//       console.error('Loading icon container not found');
-//       return;
-//     }
-
-//     const scene = new THREE.Scene();
-//     const camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
-//     const renderer = new THREE.WebGLRenderer({ alpha: true });
-//     renderer.setSize(400, 400);
-
-//     loadingIconContainer.appendChild(renderer.domElement);
-
-//     const placeholderTexture = new THREE.TextureLoader().load(placeholderImage);
-//     const randomCardTexture = new THREE.TextureLoader().load(randomCardImage);
-//     const cardMaterialFront = new THREE.MeshBasicMaterial({
-//       map: placeholderTexture,
-//     });
-//     const cardMaterialBack = new THREE.MeshBasicMaterial({
-//       map: randomCardTexture,
-//     });
-
-//     const cardGeometry = new THREE.BoxGeometry(1, 1.4, 0.01);
-//     const card = new THREE.Mesh(cardGeometry, [
-//       cardMaterialBack,
-//       cardMaterialBack,
-//       cardMaterialBack,
-//       cardMaterialBack,
-//       cardMaterialFront,
-//       cardMaterialBack,
-//     ]);
-//     scene.add(card);
-
-//     camera.position.z = 5;
-
-//     const animate = function () {
-//       requestAnimationFrame(animate);
-//       card.rotation.y += 0.05;
-//       renderer.render(scene, camera);
-//     };
-
-//     animate();
-
-//     return () => {
-//       loadingIconContainer.removeChild(renderer.domElement);
-//     };
-//   }, [randomCardImage]);
-
-//   return <div id="loadingIcon"></div>;
-// }
-
-// export default LoadingCardAnimation;

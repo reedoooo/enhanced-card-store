@@ -11,7 +11,7 @@ import {
 import { useMode } from '../../context/hooks/colormode';
 import { makeStyles, styled } from '@mui/styles';
 import { ModalContext } from '../../context/ModalContext/ModalContext';
-import GenericCard from './GenericCard';
+import GenericCard from '../../components/cards/GenericCard';
 import {
   MainContainer2,
   MainContainer,

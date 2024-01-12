@@ -1,5 +1,37 @@
 import styled, { keyframes, css } from 'styled-components';
-import { Box, Button, Paper, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  TextField,
+} from '@mui/material';
+
+export const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(4),
+    backgroundColor: theme.palette.background.default, // Choose a subtle color
+    color: theme.palette.text.primary,
+    boxShadow: theme.shadows[5],
+    '@media (max-width:600px)': {
+      margin: theme.spacing(2),
+    },
+  },
+  '& .MuiDialog-paperScrollPaper': {
+    maxHeight: '90vh', // Slightly more space
+  },
+}));
+
+export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+}));
 
 export const FormWrapper = styled('form')`
   display: 'flex';
@@ -78,4 +110,20 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   // backgroundColor: theme.palette.backgroundA.lightest,
   borderRadius: theme.shape.borderRadius,
   color: theme.palette.text.primary,
+}));
+
+export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  background: theme.palette.primary.main, // Or any other appropriate color
+  color: theme.palette.primary.contrastText,
+  padding: theme.spacing(2),
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`, // Only round the top corners
+  '& .MuiTypography-root': {
+    fontWeight: 'bold',
+  },
+  '& .MuiIconButton-root': {
+    color: theme.palette.primary.contrastText, // Ensure it stands out or matches
+  },
 }));

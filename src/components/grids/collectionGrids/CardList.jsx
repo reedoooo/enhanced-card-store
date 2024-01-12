@@ -166,16 +166,32 @@ const CardList = () => {
   };
 
   const renderTotalPriceBox = () => {
+    const renderTotalPrice = () => {
+      return (
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.backgroundA.light,
+            width: '100%',
+            marginLeft: 'auto',
+          }}
+        >
+          {`$${roundToNearestTenth(getTotalPrice())}`}
+        </Typography>
+      );
+    };
     return (
       <Box
         display="flex"
         justifyContent="flex-end"
         mt={2}
         className={classes.tablePriceBox}
+        sx={{ width: '100%', flexDirection: 'row', borderRadius: '5px' }}
       >
-        <Typography variant="h5">
-          Total: ${roundToNearestTenth(getTotalPrice())}
+        <Typography variant="h5" sx={{ width: '100%', marginLeft: '70%' }}>
+          Total:
         </Typography>
+        {renderTotalPrice()}
       </Box>
     );
   };

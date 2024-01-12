@@ -18,10 +18,22 @@ import {
   useMode,
   usePageContext,
 } from '../../context';
+import {
+  StyledDialog,
+  StyledDialogContent,
+  StyledDialogTitle,
+} from '../forms/styled';
+import useDialog from '../../context/hooks/useDialog';
+import useSnackBar from '../../context/hooks/useSnackBar';
 
-function LoginDialog({ open, onClose, onLogin }) {
+function LoginDialog() {
+  const { theme } = useMode(); // Ensures theme is applied correctly
   const { toggleColorMode, mode } = useMode();
   const { logout, isLoggedIn } = useAuthContext();
+  const handleSnackBar = useSnackBar()[1];
+  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
+    useDialog(handleSnackBar);
+
   const { returnDisplay, loadingStatus, setLoading } = usePageContext(); // Access loading display or error status
   const { forms } = useFormContext();
   const loginValues = forms?.loginForm;
@@ -29,36 +41,57 @@ function LoginDialog({ open, onClose, onLogin }) {
   const signupMode = signupValues?.signupMode;
   const currentValues = signupMode ? signupValues : loginValues;
 
-  // Close dialog on successful login
+  // console.log('LoginDialog', { currentValues });
+  // console.log('LoginDialog', { loadingStatus });
+  // console.log('LoginDialog', { isLoginDialogOpen });
+  // console.log('LoginDialog', { isLoggedIn });
+  // console.log('LoginDialog', { signupMode });
+  // useEffect for checking dialog status
   useEffect(() => {
-    if (isLoggedIn && open) {
-      onClose();
+    if (!isLoggedIn && !isLoginDialogOpen) {
+      openLoginDialog();
+      // closeLoginDialog();
     }
-  }, [isLoggedIn, open, onClose]); // Make sure dependencies are accurate
+    if (isLoggedIn && isLoginDialogOpen) {
+      closeLoginDialog();
+    }
+  }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
+  // console.log('LoginDialog', { theme });
+  // console.log('LoginDialog', { mode });
 
-  // Update pagecontext error state if authcontext error state changes
   // useEffect(() => {
-  //   if (formErrors) {
-  //     setLoading(formErrors, false);
+  //   if (isLoggedIn && isLoginDialogOpen) {
+  //     closeLoginDialog();
   //   }
-  // }, [formErrors]);
+  // }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>
+    <StyledDialog
+      open={isLoginDialogOpen}
+      onClose={closeLoginDialog}
+      maxWidth="lg"
+      fullWidth
+      theme={theme}
+    >
+      <StyledDialogTitle theme={theme}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          {currentValues === signupMode ? 'Sign Up' : 'Login'}
+          <Typography variant="h6">
+            {signupMode ? 'Sign Up' : 'Login'}
+          </Typography>
           <IconButton onClick={toggleColorMode} color="inherit">
             {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
         </Box>
-      </DialogTitle>
-      <DialogContent dividers>
+      </StyledDialogTitle>
+      <StyledDialogContent dividers theme={theme}>
         {isLoggedIn ? (
           <Button
             color="primary"
             variant="contained"
-            onClick={logout}
+            onClick={() => {
+              logout();
+              openLoginDialog();
+            }}
             fullWidth
           >
             Log Out
@@ -66,12 +99,10 @@ function LoginDialog({ open, onClose, onLogin }) {
         ) : (
           <>
             <LoginForm />
-            {/* {loadingStatus?.error && returnDisplay()} */}
           </>
         )}
-        {/* {loadingStatus?.isFormDataLoading && returnDisplay()} */}
-      </DialogContent>
-    </Dialog>
+      </StyledDialogContent>
+    </StyledDialog>
   );
 }
 

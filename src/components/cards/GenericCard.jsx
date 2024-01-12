@@ -16,7 +16,8 @@ import {
   QuantityLine,
   StyledCard,
   StyledCardContent,
-} from './cardStyledComponents';
+} from './styles/cardStyledComponents';
+import { getQuantity } from '../componentHelpers';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
 
@@ -27,7 +28,8 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { cartData } = useCartStore();
   const { selectedCollection, allCollections } = useCollectionStore();
   const { selectedDeck, allDecks } = useDeckStore();
-  const { openModalWithCard, setModalOpen, setClickedCard } = useModalContext();
+  const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
+    useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
     useContext(PopoverContext);
 
@@ -80,80 +82,51 @@ const GenericCard = React.forwardRef((props, ref) => {
     'N/A'
   }`;
   // Get the quantity of card across all contexts
-  const getQuantity = useCallback(() => {
-    const findCardQuantity = (collectionsOrDecks) =>
-      collectionsOrDecks?.reduce(
-        (acc, item) =>
-          acc + (item?.cards?.find((c) => c.id === card.id)?.quantity ?? 0),
-        0
-      ) ?? 0;
+  // const getQuantity = useCallback(() => {
+  //   const findCardQuantity = (collectionsOrDecks) =>
+  //     collectionsOrDecks?.reduce(
+  //       (acc, item) =>
+  //         acc + (item?.cards?.find((c) => c.id === card.id)?.quantity ?? 0),
+  //       0
+  //     ) ?? 0;
 
-    const cartQuantity = isInContext
-      ? cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0
-      : 0;
-    const collectionQuantity =
-      isInContext && selectedCollection
-        ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ??
-          0
-        : findCardQuantity(allCollections);
-    const deckQuantity =
-      isInContext && selectedDeck
-        ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-        : findCardQuantity(allDecks);
+  //   const cartQuantity = isInContext
+  //     ? cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0
+  //     : 0;
+  //   const collectionQuantity =
+  //     isInContext && selectedCollection
+  //       ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ??
+  //         0
+  //       : findCardQuantity(allCollections);
+  //   const deckQuantity =
+  //     isInContext && selectedDeck
+  //       ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
+  //       : findCardQuantity(allDecks);
 
-    return Math.max(cartQuantity, collectionQuantity, deckQuantity);
-  }, [
-    card,
-    cartData,
-    selectedCollection,
-    allCollections,
-    selectedDeck,
-    allDecks,
-  ]);
-
-  // let cartQuantity = isInContext
-  //   ? cartData?.cart?.find((c) => c?.id === card?.id)?.quantity
-  //   : 0;
-  // let storeQuantity = isInContext
-  //   ? cartData?.cart?.find((c) => c?.id === card?.id)?.quantity
-  //   : 0;
-
-  // // Modify the logic to calculate quantity across all decks or collections if none is selected
-  // let deckQuantity = selectedDeck
-  //   ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity
-  //   : allDecks?.reduce((acc, deck) => {
-  //       const foundCard = deck?.cards?.find((c) => c.id === card.id);
-  //       return foundCard ? acc + foundCard.quantity : acc;
-  //     }, 0);
-
-  // let collectionQuantity = selectedCollection
-  //   ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity
-  //   : allCollections?.reduce((acc, collection) => {
-  //       const foundCard = collection?.cards?.find((c) => c.id === card.id);
-  //       return foundCard ? acc + foundCard.quantity : acc;
-  //     }, 0);
-  // // Simplify the method to retrieve the relevant quantity
-  // let relevantQuantity = 0;
-  // switch (page) {
-  //   case 'Store':
-  //   case 'StorePage':
-  //     relevantQuantity = storeQuantity;
-  //     break;
-  //   case 'Cart':
-  //   case 'CartPage':
-  //     relevantQuantity = cartQuantity;
-  //     break;
-  //   case 'Deck':
-  //   case 'DeckPage':
-  //   case 'DeckBuilder':
-  //     relevantQuantity = deckQuantity;
-  //     break;
-  //   case 'Collection':
-  //     relevantQuantity = collectionQuantity;
-  //     break;
-  //   default:
-  //     relevantQuantity = card?.quantity;
-  // }
+  //   return Math.max(cartQuantity, collectionQuantity, deckQuantity);
+  // }, [
+  //   card,
+  //   cartData,
+  //   selectedCollection,
+  //   allCollections,
+  //   selectedDeck,
+  //   allDecks,
+  // ]);
+  // Use the getQuantity helper function
+  // const quantity = getQuantity({
+  //   card: card,
+  //   cartData: useCartStore().cartData, // assuming useCartStore returns cartData
+  //   selectedCollection: useCollectionStore().selectedCollection,
+  //   allCollections: useCollectionStore().allCollections,
+  //   selectedDeck: useDeckStore().selectedDeck,
+  //   allDecks: useDeckStore().allDecks,
+  // });
+  const cartQuantity = getQuantity({ card: card, cartData: cartData });
+  const collectionQuantity = getQuantity({
+    card: card,
+    collectionData: selectedCollection,
+  });
+  const deckQuantity = getQuantity({ card: card, deckData: selectedDeck });
 
   // Function to render the card's media section
   const renderCardMediaSection = () => (
@@ -164,10 +137,11 @@ const GenericCard = React.forwardRef((props, ref) => {
         card={card}
         context={context}
         page={page}
-        quantity={getQuantity()}
+        quantity={cartQuantity}
         isHovered={hoveredCard === card}
         handleInteraction={handleInteraction}
         handleClick={handleClick}
+        isModalOpen={isModalOpen}
         ref={cardRef}
       />
     </AspectRatioBox>
@@ -181,19 +155,11 @@ const GenericCard = React.forwardRef((props, ref) => {
         <Typography variant="body2" color="text.secondary" gutterBottom>
           {price}
         </Typography>
-        <QuantityLine theme={theme}>{`Cart: ${
-          cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0
-        }`}</QuantityLine>
-
-        <QuantityLine theme={theme}>
-          {`Collection: ${
-            selectedCollection?.cards?.find((c) => c.id === card.id)
-              ?.quantity ?? 0
-          }`}
-        </QuantityLine>
-        <QuantityLine>{`Deck: ${
-          selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-        }`}</QuantityLine>
+        <QuantityLine theme={theme}>{`Cart: ${cartQuantity}`}</QuantityLine>
+        <QuantityLine
+          theme={theme}
+        >{`Collection: ${collectionQuantity}`}</QuantityLine>
+        <QuantityLine theme={theme}>{`Deck: ${deckQuantity}`}</QuantityLine>
       </StyledCardContent>
     );
   };

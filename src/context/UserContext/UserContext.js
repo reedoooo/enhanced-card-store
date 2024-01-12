@@ -12,18 +12,23 @@ import useFetchWrapper from '../hooks/useFetchWrapper';
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const { authUser, user, setUser, isLoggedIn } = useAuthContext(); // Use the useAuthContext hook
+  const { setUser, isLoggedIn } = useAuthContext(); // Use the useAuthContext hook
+  const [cookies, setCookie] = useCookies(['authUser', 'user']);
   const fetchWrapper = useFetchWrapper();
-  const userId = authUser?.id;
-
-  // const fetchUserData = useCallback(async () => {
-  //   // Get request to fetch user data
-  //   const endpoint = `/users/${user.id}/userData`;
-  //   const url = createUrl(endpoint);
-  //   const response = await useFetchWrapper(url);
-  //   // const response = await fetchWrapper.get(`/api/users/${userId}`);
-  //   // const userData = response.data;
-  // }, []);
+  const authUser = cookies?.authUser;
+  const user = cookies?.user;
+  const userId = cookies?.authUser?.userId;
+  const fetchUserData = useCallback(async () => {
+    // Get request to fetch user data
+    const endpoint = `/users/${userId}/userData`;
+    const url = createUrl(endpoint);
+    const response = await fetchWrapper(url, 'GET');
+    const { message, data } = response;
+    console.log('Response from server for fetch user:', message, data);
+    // setUser(data.userDoc);
+    // const response = await fetchWrapper.get(`/api/users/${userId}`);
+    // const userData = response.data;
+  }, []);
 
   const updateUser = async (updatedUser) => {
     try {
@@ -31,8 +36,9 @@ export const UserProvider = ({ children }) => {
       const endpoint = `users/${userId}/userData/update`;
       const url = createUrl(endpoint);
       const response = await fetchWrapper(url, 'PUT', updatedUser);
-      const updatedUserResponse = response?.data?.user;
-      setUser(updatedUserResponse);
+      const { message, data } = response;
+      console.log('Response from server for update user:', message, data);
+      setUser(data.updatedUserDoc);
       console.log('User Data Sent to Server and Cookie Updated:', updatedUser);
     } catch (error) {
       console.error('Error updating user data:', error);
@@ -41,6 +47,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId) {
+      console.log('User ID found, fetching user data...', cookies.user);
       const updatedUser = {
         ...user,
         userSecurityData: {
@@ -59,10 +66,11 @@ export const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        user: authUser,
-        userId: authUser?.id,
+        user: user,
+        userId: authUser?.userId,
         setUser,
         updateUser,
+        getUserData: fetchUserData,
       }}
     >
       {children}

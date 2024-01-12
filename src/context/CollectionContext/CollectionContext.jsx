@@ -44,7 +44,7 @@ export const CollectionProvider = ({ children }) => {
   const fetchWrapper = useFetchWrapper();
 
   const user = cookies?.authUser;
-  const userId = user?.id;
+  const userId = user?.userId;
   // state for the collection context
   const [allCollections, setAllCollections] = useState([]);
   const [collectionData, setCollectionData] = useState(initialCollectionState);
@@ -600,10 +600,10 @@ export const CollectionProvider = ({ children }) => {
   }, [selectedCollection?.chartData?.allXYValues]);
   // This useEffect is for fetching collections when the user ID changes
   useEffect(() => {
-    if (userId) {
+    if (userId && !allCollections?.length) {
       fetchAndSetCollections();
     }
-  }, [userId, fetchAndSetCollections]);
+  }, [userId, fetchAndSetCollections, allCollections]);
   const contextValue = useMemo(
     () => ({
       allCollections,

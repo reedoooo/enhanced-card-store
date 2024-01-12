@@ -57,7 +57,7 @@ const UpdateStatusBox2 = ({ socket }) => {
     open: false,
     message: '',
   });
-  const userId = cookies?.authUser?.id;
+  const userId = cookies?.authUser?.userId;
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };

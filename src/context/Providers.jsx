@@ -26,6 +26,7 @@ import {
   useMode,
   PageProvider,
   ErrorBoundary,
+  CardImagesProvider,
   // CardImagesProvider, // Uncomment if CardImagesProvider is used
 } from '.'; // Ensure this path is correctly pointing to where your context providers are defined
 
@@ -40,11 +41,11 @@ const Providers = ({ children }) => {
       <Router>
         <PageProvider>
           <AuthProvider>
-            <ColorModeProvider>
-              <SocketProvider>
-                <UserProvider>
-                  <ModalProvider>
-                    <FormProvider>
+            <FormProvider>
+              <ColorModeProvider>
+                <SocketProvider>
+                  <UserProvider>
+                    <ModalProvider>
                       <PopoverProvider>
                         <CollectionProvider>
                           <CombinedProvider>
@@ -52,24 +53,26 @@ const Providers = ({ children }) => {
                               <CronJobProvider>
                                 <DeckProvider>
                                   <CartProvider>
-                                    {/* <CardImagesProvider> */}
-                                    <ThemeProvider theme={theme}>
-                                      <ChartProvider>
-                                        <StatisticsProvider>
-                                          <SidebarProvider>
-                                            <AppContextProvider>
-                                              {/* <PageProvider> */}
-                                              <GlobalStyles />
-                                              <Elements stripe={stripePromise}>
-                                                {children}{' '}
-                                              </Elements>
-                                              {/* </PageProvider> */}
-                                            </AppContextProvider>
-                                          </SidebarProvider>
-                                        </StatisticsProvider>
-                                      </ChartProvider>
-                                    </ThemeProvider>
-                                    {/* </CardImagesProvider> */}
+                                    <CardImagesProvider>
+                                      <ThemeProvider theme={theme}>
+                                        <ChartProvider>
+                                          <StatisticsProvider>
+                                            <SidebarProvider>
+                                              <AppContextProvider>
+                                                {/* <PageProvider> */}
+                                                <GlobalStyles />
+                                                <Elements
+                                                  stripe={stripePromise}
+                                                >
+                                                  {children}{' '}
+                                                </Elements>
+                                                {/* </PageProvider> */}
+                                              </AppContextProvider>
+                                            </SidebarProvider>
+                                          </StatisticsProvider>
+                                        </ChartProvider>
+                                      </ThemeProvider>
+                                    </CardImagesProvider>
                                   </CartProvider>
                                 </DeckProvider>
                               </CronJobProvider>
@@ -77,11 +80,11 @@ const Providers = ({ children }) => {
                           </CombinedProvider>
                         </CollectionProvider>
                       </PopoverProvider>
-                    </FormProvider>
-                  </ModalProvider>
-                </UserProvider>
-              </SocketProvider>
-            </ColorModeProvider>
+                    </ModalProvider>
+                  </UserProvider>
+                </SocketProvider>
+              </ColorModeProvider>
+            </FormProvider>
           </AuthProvider>
         </PageProvider>
       </Router>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ResponsiveLine } from '@nivo/line';
 import {
   Typography,
@@ -10,6 +10,7 @@ import {
 import ChartErrorBoundary from '../../../reusable/ChartErrorBoundary';
 import { useMode } from '../../../../context/hooks/colormode';
 import { makeStyles } from '@mui/styles';
+import { useChartContext, useStatisticsStore } from '../../../../context';
 const useStyles = makeStyles((theme) => ({
   axisLabel: {
     position: 'absolute',
@@ -33,8 +34,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomTooltip = ({ point }) => {
+const CustomTooltipLayer = ({ points, xScale, yScale, specialPoints }) => {
+  console.log('CustomTooltipLayer points: ', specialPoints);
+  return (
+    <>
+      {points?.map((point, index) => {
+        // Render special marker for special points
+        if (
+          specialPoints?.some(
+            (sp) => sp.x === point.data.x && sp.y === point.data.y
+          )
+        ) {
+          const specialPoint = specialPoints?.find(
+            (sp) => sp.x === point.data.x && sp.y === point.data.y
+          );
+          return (
+            <g
+              key={index}
+              transform={`translate(${xScale(point?.data?.x)},${yScale(
+                point?.data?.y
+              )})`}
+            >
+              <circle r={10} fill="red" stroke="white" strokeWidth={2} />
+              <text
+                x={15}
+                y={5}
+                textAnchor="start"
+                alignmentBaseline="middle"
+                fill="#fff"
+              >
+                {specialPoint.label}
+              </text>
+            </g>
+          );
+        }
+        return null;
+      })}
+    </>
+  );
+};
+
+const CustomTooltip = ({ point, specialPoints }) => {
   const theme = useTheme();
+  const isSpecial = specialPoints?.some(
+    (sp) => sp.x === point.data.x && sp.y === point.data.y
+  );
+
   const { serieId, data: { label, xFormatted, yFormatted } = {} } = point;
   return (
     <Tooltip title={`Series: ${serieId}`}>
@@ -47,7 +92,7 @@ const CustomTooltip = ({ point }) => {
         border={1}
       >
         <Typography variant="subtitle1" color="textPrimary">
-          {`Card: ${label}`}
+          {`Card: ${label}` || `Collection: ${label}`}
         </Typography>
         <Typography variant="body2">
           {`Time: ${new Date(xFormatted).toLocaleString()}`}
@@ -55,6 +100,7 @@ const CustomTooltip = ({ point }) => {
         <Typography variant="h6" color="textSecondary">
           {`Value: $${parseFloat(yFormatted).toFixed(2)}`}
         </Typography>
+        {isSpecial && <Typography color="secondary">Special Point!</Typography>}
       </Box>
     </Tooltip>
   );
@@ -63,64 +109,42 @@ const CustomTooltip = ({ point }) => {
 export const useEventHandlers = () => {
   const [hoveredData, setHoveredData] = useState(null);
   const handleMouseMove = useCallback((point) => {
-    setHoveredData(point ? { x: point.data.x, y: point.data.y } : null);
+    setHoveredData(point ? { x: point?.data.x, y: point?.data.y } : null);
   }, []);
   const handleMouseLeave = useCallback(() => setHoveredData(null), []);
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
 
 const LinearChart = ({
-  filteredChartData,
   nivoReadyData,
   dimensions,
   timeRange,
+  specialPoints,
 }) => {
   const { theme } = useMode();
   const classes = useStyles(theme);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { statsByCollectionId, markers } = useStatisticsStore();
+  const { tickValues, xFormat } = useChartContext();
 
   const [isZoomed, setIsZoomed] = useState(false);
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-  if (
-    !Array.isArray(filteredChartData) ||
-    filteredChartData.some((d) => !d.x || !d.y)
-  ) {
-    return (
-      <Typography variant="body1" color="textSecondary">
-        No valid data available
-      </Typography>
-    );
-  }
-  const { tickValues, xFormat } = useMemo(() => {
-    let format, ticks;
-    switch (timeRange) {
-      case '2 hours':
-        format = '%H:%M';
-        ticks = 'every 15 minutes';
-        break;
-      case '24 hours':
-        format = '%H:%M';
-        ticks = 'every hour';
-        break;
-      case '7 days':
-        format = '%b %d';
-        ticks = 'every day';
-        break;
-      case '1 month':
-        format = '%b %d';
-        ticks = 'every 3 days';
-        break;
-      default:
-        format = '%b %d';
-        ticks = 'every day';
-    }
-    return { tickValues: ticks, xFormat: `time:${format}` };
-  }, [timeRange]);
+  // if (
+  //   !Array.isArray(filteredChartData) ||
+  //   filteredChartData.some((d) => !d?.x || !d?.y)
+  // ) {
+  //   return (
+  //     <Typography variant="body1" color="textSecondary">
+  //       No valid data available
+  //     </Typography>
+  //   );
+  // }
+
   const currentTime = new Date().getTime();
   const dataWithinTimeRange = useMemo(() => {
-    return nivoReadyData.map((series) => ({
+    return nivoReadyData?.map((series) => ({
       ...series,
-      data: series?.data.filter((dataPoint) => {
+      data: series?.data?.filter((dataPoint) => {
         const dataPointTime = new Date(dataPoint?.x).getTime();
         const isWithinRange = dataPointTime >= currentTime - timeRange;
         return isWithinRange;
@@ -130,7 +154,8 @@ const LinearChart = ({
 
   const chartProps = useMemo(
     () => ({
-      margin: { top: 50, right: 110, bottom: 50, left: 60 },
+      margin: { top: 10, right: 20, bottom: 30, left: 40 },
+      // border: { color: theme.palette.divider, lineWidth: 3 },
       data: dataWithinTimeRange,
       animate: true,
       motionStiffness: 90,
@@ -145,7 +170,7 @@ const LinearChart = ({
       xFormat: 'time:%Y-%m-%d %H:%M:%S',
       axisBottom: {
         tickRotation: 0,
-        legendOffset: -24,
+        legendOffset: -12,
         legend: 'Time',
         tickPadding: 10,
         tickSize: 1,
@@ -174,16 +199,52 @@ const LinearChart = ({
       onMouseMove: handleMouseMove,
       onMouseLeave: handleMouseLeave,
       onClick: () => setIsZoomed(!isZoomed),
-      tooltip: CustomTooltip,
+      // tooltip: CustomTooltip,
+      markers,
+
+      layers: [
+        'grid',
+        'markers',
+        'areas',
+        'lines',
+        'slices',
+        'points',
+        'axes',
+        'legends',
+        ({ points, xScale, yScale }) => (
+          <CustomTooltipLayer
+            points={points}
+            xScale={xScale}
+            yScale={yScale}
+            specialPoints={markers}
+          />
+        ),
+      ],
+      tooltip: ({ point }) => {
+        return (
+          <CustomTooltip
+            point={point}
+            // Pass additional props as needed, e.g., to show high point marker
+            isHighPoint={point.data.isHighPoint}
+          />
+        );
+      },
     }),
     [theme, nivoReadyData, timeRange]
   );
+
+  useEffect(() => {
+    console.log('Chart data: ', nivoReadyData);
+  }, [nivoReadyData]);
 
   return (
     <ChartErrorBoundary>
       <Box
         className={classes.chartContainer}
-        style={{ height: isMobile ? '350px' : dimensions?.height ?? '500px' }}
+        style={{
+          height: isMobile ? '350px' : dimensions?.height ?? '500px',
+          flexGrow: 1,
+        }}
       >
         {/* <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}> */}
         <ResponsiveLine {...chartProps} />

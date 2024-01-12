@@ -326,6 +326,10 @@ export const handleCardAddition = (currentCards, cardToAdd) => {
     const existingCard = currentCards[existingCardIndex];
     existingCard.quantity = (existingCard.quantity || 0) + 1;
     existingCard.totalPrice = existingCard.price * existingCard.quantity;
+    existingCard.chart_datasets = [
+      ...existingCard.chart_datasets,
+      createChartDataEntry(existingCard.totalPrice),
+    ];
 
     // Update the card in the currentCards array
     currentCards[existingCardIndex] = existingCard;

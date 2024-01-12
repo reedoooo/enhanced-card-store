@@ -105,6 +105,7 @@ export const themeSettings = (mode) => {
         lightest: '#dbf5ee',
         contrastTextA: '#FBFAF2',
         contrastTextB: '#333',
+        contrastTextC: '#555',
       },
       backgroundB: {
         darkest: '#111',
