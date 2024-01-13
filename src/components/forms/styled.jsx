@@ -1,11 +1,45 @@
 import styled, { keyframes, css } from 'styled-components';
-import { Button, Paper, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  TextField,
+} from '@mui/material';
+
+export const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(4),
+    backgroundColor: theme.palette.background.default, // Choose a subtle color
+    color: theme.palette.text.primary,
+    boxShadow: theme.shadows[5],
+    '@media (max-width:600px)': {
+      margin: theme.spacing(2),
+    },
+  },
+  '& .MuiDialog-paperScrollPaper': {
+    maxHeight: '90vh', // Slightly more space
+  },
+}));
+
+export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+}));
 
 export const FormWrapper = styled('form')`
   display: 'flex';
   flex-direction: column;
   gap: '20px';
-  max-width: '400px';
+  align-items: center;
+  padding: '20px';
+  ${'' /* max-width: '400px'; */}
   margin: auto;
 `;
 
@@ -13,7 +47,7 @@ export const StyledPaper = styled(Paper)(({ theme }) => ({
   width: '100%',
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.success.lighter,
+  background: theme.palette.backgroundA.lighter,
   boxShadow: theme.shadows[5],
   maxWidth: '550px',
   margin: 'auto',
@@ -24,13 +58,14 @@ export const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.success.lightish,
-  color: theme.palette.background.dark,
+  background: theme.palette.backgroundA.default,
+  color: theme.palette.backgroundA.contrastTextB,
   padding: theme.spacing(1.5),
-  fontWeight: 'bold',
+  // fontWeight: 'bold',
   marginTop: theme.spacing(2),
   '&:hover': {
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.backgroundA.darkest,
+    color: theme.palette.backgroundA.contrastTextA,
   },
 }));
 
@@ -46,72 +81,49 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
 
     // Change border color on hover
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.primary.light,
+      color: theme.palette.backgroundA.darker,
+      borderColor: theme.palette.backgroundA.darker,
     },
 
     // Change border color on focus
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.primary.main,
+      borderColor: theme.palette.backgroundA.darker,
       borderWidth: '2px', // or other width as you like
     },
   },
   borderRadius: theme.shape.borderRadius,
-  color: theme.palette.success.main,
+  color: theme.palette.backgroundA.darkest,
   width: '100%',
   backgroundColor: theme.palette.background.paper,
-  boxShadow: theme.shadows[1],
+  // boxShadow: theme.shadows[1],
+  boxShadow: `0px 2px 4px -1px ${theme.palette.grey[400]}`,
+  marginBottom: theme.spacing(2),
 }));
 
-// Define simple expand animations
-const expandWidth = keyframes`
-  from { width: 0%; }
-  to { width: 100%; }
-`;
+export const StyledBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: theme.spacing(3),
+  minHeight: '100%',
+  // backgroundColor: theme.palette.backgroundA.lightest,
+  borderRadius: theme.shape.borderRadius,
+  color: theme.palette.text.primary,
+}));
 
-const expandHeight = keyframes`
-  from { height: 0%; }
-  to { height: 100%; }
-`;
-
-export const StyledBorderContainer = styled('div')(({ theme }) => ({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  '&:before, &:after': {
-    content: '""',
-    position: 'absolute',
-    backgroundColor: theme.palette.primary.light,
-    zIndex: 1,
-    transition: 'all 0.5s ease',
+export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  background: theme.palette.primary.main, // Or any other appropriate color
+  color: theme.palette.primary.contrastText,
+  padding: theme.spacing(2),
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`, // Only round the top corners
+  '& .MuiTypography-root': {
+    fontWeight: 'bold',
   },
-  '&:before': {
-    top: 0,
-    left: 0,
-    height: '2px',
-    animation: css`
-      ${expandWidth} 0.5s ease forwards
-    `,
-  },
-  '&:after': {
-    bottom: 0,
-    right: 0,
-    height: '2px',
-    animation: css`
-      ${expandWidth} 0.5s 1.5s ease forwards
-    `,
-  },
-  '&::before': {
-    width: '2px',
-    top: 0,
-    animation: css`
-      ${expandHeight} 0.5s 0.5s ease forwards
-    `,
-  },
-  '&::after': {
-    width: '2px',
-    bottom: 0,
-    animation: css`
-      ${expandHeight} 0.5s 2s ease forwards
-    `,
+  '& .MuiIconButton-root': {
+    color: theme.palette.primary.contrastText, // Ensure it stands out or matches
   },
 }));

@@ -9,6 +9,7 @@ const useResponsiveStyles = (theme) => {
   const isSmallMedium = useMediaQuery(theme.breakpoints.up('sm'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
   const isMediumLarge = useMediaQuery(theme.breakpoints.up('md'));
+  const isMediumExtraLarge = useMediaQuery(theme.breakpoints.up('md'));
   const isLarge = useMediaQuery(theme.breakpoints.up('lg'));
 
   const getTypographyVariant = () => {
@@ -44,7 +45,7 @@ const useResponsiveStyles = (theme) => {
     }
   };
 
-  const getProductGridContainerStyle = () => ({
+  const getProductGridContainerStyle = (theme) => ({
     maxWidth: 'lg',
     maxHeight: '100%',
     display: 'flex',
@@ -109,6 +110,7 @@ const useResponsiveStyles = (theme) => {
     isSmallMedium,
     isMedium,
     isMediumLarge,
+    isMediumExtraLarge,
     isLarge,
     getTypographyVariant,
     getButtonTypographyVariant,

@@ -1,4 +1,6 @@
+import { makeStyles } from '@mui/styles';
 import { roundToNearestTenth } from '../Helpers';
+import { Tooltip, Typography } from '@mui/material';
 
 export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
   if (!data || data.length === 0) return [];
@@ -8,6 +10,7 @@ export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
 
   // console.log('Initial cluster with first data point: ', currentCluster);
 
+  // loop for each data point
   for (let i = 1; i < data.length; i++) {
     const prevTime = new Date(data[i - 1].x).getTime();
     const currentTime = new Date(data[i].x).getTime();
@@ -78,25 +81,72 @@ export const getTickValues = (timeRange) => {
   return mapping[timeRange] || 'every day'; // Default to 'every week' if no match
 };
 
+// export const convertDataForNivo2 = (rawData2) => {
+//   if (!Array.isArray(rawData2) || rawData2?.length === 0) {
+//     console.error('Invalid or empty rawData provided', rawData2);
+//     return [];
+//   }
+
+//   console.log('rawData2: ', rawData2);
+//   // console.log('rawData2: ', rawData2);
+//   // console.log('rawData2.data: ', rawData2[0]);
+//   // rawData is assumed to be an array of objects with 'label', 'x', and 'y' properties
+//   switch (rawData2) {
+//     case rawData2[0].x instanceof Date:
+//       return rawData2.map((dataPoint) => ({
+//         x: dataPoint[0]?.x, // x value is already an ISO date string
+//         y: dataPoint.y, // y value
+//       }));
+//     // equals array
+//     case typeof rawData2[0] === Array.isArray:
+//       return rawData2.map((dataPoint) => ({
+//         x: new Date(dataPoint.x).toISOString(), // x value is already an ISO date string
+//         y: dataPoint.y, // y value
+//       }));
+//     default:
+//       console.error(
+//         'Invalid rawData2 provided. Expected an array of objects with "x" and "y" properties',
+//         rawData2
+//       );
+//       return [];
+//   }
+//   const nivoData = rawData2?.map((dataPoint) => ({
+//     x: dataPoint[0]?.x, // x value is already an ISO date string
+//     y: dataPoint[0]?.y, // y value
+//   }));
+
+//   // Wrapping the data for a single series. You can add more series similarly
+//   return [
+//     {
+//       id: 'Averaged Data',
+//       color: '#4cceac',
+//       data: nivoData,
+//     },
+//   ];
+// };
 export const convertDataForNivo2 = (rawData2) => {
-  if (!Array.isArray(rawData2) || rawData2?.length === 0) {
+  if (!Array.isArray(rawData2) || rawData2.length === 0) {
     console.error('Invalid or empty rawData provided', rawData2);
     return [];
   }
 
-  // console.log('rawData2: ', rawData2);
-  // console.log('rawData2.data: ', rawData2[0]);
-  // rawData is assumed to be an array of objects with 'label', 'x', and 'y' properties
-  const nivoData = rawData2[0].map((dataPoint) => ({
-    x: dataPoint.x, // x value is already an ISO date string
-    y: dataPoint.y, // y value
-  }));
+  // Assuming rawData2 is an array of objects with 'x' and 'y' properties
+  const nivoData = rawData2?.map((dataPoint) => {
+    // Ensure the 'x' value is in ISO date string format
+    const xValue =
+      dataPoint[0]?.x instanceof Date
+        ? dataPoint[0]?.x?.toISOString()
+        : dataPoint[0]?.x;
+    const yValue = dataPoint[0]?.y; // Assuming y value is directly usable
+
+    return { x: xValue, y: yValue };
+  });
 
   // Wrapping the data for a single series. You can add more series similarly
   return [
     {
-      id: 'Averaged Data',
-      color: '#4cceac',
+      id: 'Your Data', // Replace with a meaningful id
+      color: 'hsl(252, 70%, 50%)', // Replace with color of your choice or logic for dynamic colors
       data: nivoData,
     },
   ];
@@ -127,4 +177,37 @@ export const formatDateToString = (date) => {
     .getHours()
     .toString()
     .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+};
+
+const useStyles = makeStyles((theme) => ({
+  tooltipTarget: {
+    cursor: 'pointer', // Change the cursor to indicate it's hoverable
+  },
+}));
+
+export const ChartTooltip = ({ point, lastData, hoveredData, latestData }) => {
+  const classes = useStyles();
+  if (!point) return null;
+  const formattedTime = hoveredData
+    ? new Date(hoveredData.x).toLocaleString()
+    : new Date((latestData || lastData).x).toLocaleString();
+
+  const formattedValue = `$${
+    hoveredData ? hoveredData.y : (latestData || lastData)?.y
+  }`;
+
+  return (
+    <>
+      <Tooltip title={`Time: ${formattedTime}`} arrow>
+        <Typography className={classes.tooltipTarget}>
+          {formattedTime}
+        </Typography>
+      </Tooltip>
+      <Tooltip title={`Value: ${formattedValue}`} arrow>
+        <Typography className={classes.tooltipTarget}>
+          {formattedValue}
+        </Typography>
+      </Tooltip>
+    </>
+  );
 };

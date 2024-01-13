@@ -14,7 +14,7 @@ import { useCollectionStore } from '../../../context/CollectionContext/Collectio
 import { useMode } from '../../../context/hooks/colormode';
 import { makeStyles, styled } from '@mui/styles';
 import { MainContainer } from '../../../pages/pageStyles/StyledComponents';
-import CarouselCard from '../../cards/CarouselCard';
+import CarouselCard from '../../../assets/cleanup/CarouselCard';
 import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
 const useStyles = makeStyles((theme) => ({
   stepper: {
@@ -129,7 +129,6 @@ const TopCardsDisplay = () => {
                 disabled={activeStep === maxSteps - 1}
                 sx={{
                   color: theme.palette.success.main,
-                  // backGround: theme.palette.success.main,
                 }}
               >
                 {theme.direction === 'rtl' ? (

@@ -4,25 +4,27 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import { useMode } from '../../../context/hooks/colormode';
-import getMenuItemsData from '../header/menuItemsData';
 import MenuItemComponent from '../header/MenuItemComponent';
 import { StyledToolbar } from './styled';
 
 const TopBar = ({
   handleDrawerState,
-  handleLoginDialogState,
+  toggleDialog,
   isMobileView,
   isLoggedIn,
   handleLogout,
+  menuItemsData,
 }) => {
   const { theme } = useMode();
-  const menuItemsData = getMenuItemsData(isLoggedIn);
-
   const handleUserIconClick = () => {
     if (isLoggedIn) {
-      handleLogout();
+      // handleLogout();
+      console.log('Clicked User Icon', isLoggedIn);
     } else {
-      handleLoginDialogState();
+      console.log('Clicked User Icon', isLoggedIn);
+      // toggles the drawer state and login dialog
+      handleDrawerState();
+      toggleDialog();
     }
   };
 
@@ -41,7 +43,7 @@ const TopBar = ({
               edge="start"
               color="inherit"
               aria-label="menu"
-              onClick={handleDrawerState}
+              onClick={() => handleDrawerState()}
             >
               <MenuIcon />
             </IconButton>
@@ -54,7 +56,7 @@ const TopBar = ({
             <MenuItemComponent
               key={item.name}
               item={item}
-              onClick={handleDrawerState}
+              onClick={() => handleDrawerState()}
             />
           ))
         )}

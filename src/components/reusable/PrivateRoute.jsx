@@ -1,18 +1,15 @@
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
-import { useAuthContext } from '../../context/hooks/auth';
+import { useAuthContext } from '../../context';
 
 const PrivateRoute = ({ children }) => {
-  const authContext = useAuthContext();
+  const { isLoggedIn } = useAuthContext();
 
-  // Use react-cookie's useCookies hook to read the 'isLoggedIn' cookie
-  const [cookies] = useCookies(['isLoggedIn']);
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
 
-  const isLoggedIn = authContext.isLoggedIn || cookies.isLoggedIn;
-
-  // If isLoggedIn from either cookie or context is true, proceed to the route
-  return isLoggedIn ? children : <Navigate to="/login" />;
+  return children;
 };
 
 export default PrivateRoute;

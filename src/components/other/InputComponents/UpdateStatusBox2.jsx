@@ -52,12 +52,12 @@ const UpdateStatusBox2 = ({ socket }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [updateStatus, setUpdateStatus] = useState('Waiting for cron...');
   // const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [cookies] = useCookies(['user']);
+  const [cookies] = useCookies(['authUser']);
   const [snackbarData, setSnackbarData] = useState({
     open: false,
     message: '',
   });
-  const userId = cookies.user?.id;
+  const userId = cookies?.authUser?.userId;
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };

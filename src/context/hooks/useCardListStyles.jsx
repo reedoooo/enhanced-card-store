@@ -12,11 +12,12 @@ const useCardListStyles = () => {
   const StyledContainer = styled(Container)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
+    height: '120%',
     width: '100%',
+    maxWidth: '100%',
     alignItems: 'center',
     // background: theme.palette.background.main,
-    background: theme.palette.background.dark,
+    background: theme.palette.backgroundA.dark,
     padding: theme.spacing(2),
     color: '#fff', // White text color
     // padding: 2,
@@ -34,11 +35,23 @@ const useCardListStyles = () => {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   }));
   const StyledTableHeader = styled(TableHead)(({ theme }) => ({
-    backgroundColor: '#555', // Darker shade for header
+    background: theme.palette.backgroundB.lightest,
     color: theme.palette.success.main,
   }));
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    color: '#ddd', // Lighter text for better readability
+    // color: '#ddd', // Lighter text for better readability
+    border: '1px solid',
+    borderColor: theme.palette.backgroundB.lightest,
+    [theme.breakpoints.up('md')]: {
+      // Styles that apply to medium screens and larger
+      padding: theme.spacing(2), // example of increasing padding
+      fontSize: '1rem', // example of increasing font size
+    },
+    [theme.breakpoints.down('sm')]: {
+      // Styles that apply to small screens and smaller
+      padding: theme.spacing(1), // example of decreasing padding
+      fontSize: '0.8rem', // example of decreasing font size
+    },
   }));
 
   // Return all styled components

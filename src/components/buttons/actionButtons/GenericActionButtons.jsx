@@ -24,18 +24,10 @@ import { useMode } from '../../../context/hooks/colormode';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../../context/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/CartContext/CartContext';
-import Logger from '../../reusable/Logger';
-import useSelectedContext from '../../../context/hooks/useSelectedContext';
 import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
 import { useGenericActionButtonStyles } from '../../../context/hooks/useGenericActionButtonStyles';
 import { useSelectionDialog } from '../../../context/hooks/useSelectionDialog';
 import { useCardActions } from '../../../context/hooks/useCardActions';
-const cardOtherLogger = new Logger([
-  'Action',
-  'Card Name',
-  'Quantity',
-  'Total Price',
-]);
 const GenericActionButtons = ({
   card,
   context,
@@ -138,34 +130,6 @@ const GenericActionButtons = ({
     // For large screens or when modal is not open, provide more detailed text
     return `Add to ${context}`;
   };
-
-  // const getButtonLabel = () => {
-  //   if (isXSmall && isModalOpen) {
-  //     return `${context}`; // Abbreviated text for medium-large screens
-  //   }
-  //   if (isMobile && isModalOpen) {
-  //     return `${context}`; // Abbreviated text for medium-large screens
-  //   }
-  //   if (isMedium && isModalOpen) {
-  //     return `${context}`; // Abbreviated text for medium-large screens
-  //   }
-  //   if (isLarge && isModalOpen) {
-  //     return `Add to ${context}`; // Full text for larger screens
-  //   }
-
-  //   if (isXSmall && !isModalOpen) {
-  //     return `${context}`; // Shortened text for small screens
-  //   }
-  //   if (isMobile && !isModalOpen) {
-  //     return `${context}`; // Shortened text for small screens
-  //   }
-  //   if (isMedium && !isModalOpen) {
-  //     return `Add to ${context}`; // Full text for larger screens
-  //   }
-  //   if (isLarge && !isModalOpen) {
-  //     return `${context}`; // Shortened text for small screens
-  //   }
-  // };
 
   return (
     <React.Fragment>

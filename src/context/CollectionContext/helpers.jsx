@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import moment from 'moment';
-import { createApiUrl, fetchWrapper, roundToNearestTenth } from '../Helpers';
+import { createApiUrl, roundToNearestTenth } from '../Helpers';
 
 export const initialCollectionState = {
   userId: '', // Assuming this is an ObjectId string
@@ -326,6 +326,10 @@ export const handleCardAddition = (currentCards, cardToAdd) => {
     const existingCard = currentCards[existingCardIndex];
     existingCard.quantity = (existingCard.quantity || 0) + 1;
     existingCard.totalPrice = existingCard.price * existingCard.quantity;
+    existingCard.chart_datasets = [
+      ...existingCard.chart_datasets,
+      createChartDataEntry(existingCard.totalPrice),
+    ];
 
     // Update the card in the currentCards array
     currentCards[existingCardIndex] = existingCard;
@@ -572,35 +576,17 @@ export const createCardsPayload = (operation, updatedCards, cardUpdate) => {
  * @param {String} operation - The operation to perform.
  * @returns {Promise<Object>} The updated collection.
  */
-export const updateChartData = async (
-  userId,
-  collectionId,
-  updatedChartData
-) => {
-  const chartDataPayload = { chartData: updatedChartData };
-  const chartDataEndpoint = createApiUrl(
-    `${userId}/collections/${collectionId}/updateChartData`
-  );
-  return await fetchWrapper(chartDataEndpoint, 'PUT', chartDataPayload);
-};
-
-/**
- * Handles the updating of a collection.
- * @param {Object} collection - The collection to update.
- * @param {Object} cardUpdate - The card update object.
- * @param {String} operation - The operation to perform.
- * @returns {Promise<Object>} The updated collection.
- */
-export const updateCollectionDataEndpoint = async (
-  userId,
-  collectionId,
-  updatedCollection
-) => {
-  const collectionEndpoint = createApiUrl(
-    `${userId}/collections/${collectionId}`
-  );
-  return await fetchWrapper(collectionEndpoint, 'PUT', { updatedCollection });
-};
+// export const updateChartData = async (
+//   userId,
+//   collectionId,
+//   updatedChartData
+// ) => {
+//   const chartDataPayload = { chartData: updatedChartData };
+//   const chartDataEndpoint = createApiUrl(
+//     `${userId}/collections/${collectionId}/updateChartData`
+//   );
+//   return await fetchWrapper(chartDataEndpoint, 'PUT', chartDataPayload);
+// };
 
 /**
  * Handles the updating of a collection.

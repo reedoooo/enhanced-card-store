@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 import {
   groupAndAverageData,
   convertDataForNivo2,
@@ -34,6 +34,33 @@ export const ChartProvider = ({ children }) => {
   const handleChange = (e) => {
     setTimeRange(e.target.value); // Update timeRange based on selection
   };
+
+  const { tickValues, xFormat } = useMemo(() => {
+    let format, ticks;
+    switch (timeRange) {
+      case '2 hours':
+        format = '%H:%M';
+        ticks = 'every 15 minutes';
+        break;
+      case '24 hours':
+        format = '%H:%M';
+        ticks = 'every hour';
+        break;
+      case '7 days':
+        format = '%b %d';
+        ticks = 'every day';
+        break;
+      case '1 month':
+        format = '%b %d';
+        ticks = 'every 3 days';
+        break;
+      default:
+        format = '%b %d';
+        ticks = 'every day';
+    }
+    return { tickValues: ticks, xFormat: `time:${format}` };
+  }, [timeRange]);
+
   return (
     <ChartContext.Provider
       value={{
@@ -41,6 +68,8 @@ export const ChartProvider = ({ children }) => {
         latestData,
         timeRange,
         timeRanges,
+        tickValues,
+        xFormat,
 
         groupAndAverageData,
         convertDataForNivo2,

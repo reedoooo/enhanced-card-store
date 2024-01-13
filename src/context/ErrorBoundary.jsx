@@ -15,6 +15,8 @@ class ErrorBoundary extends React.Component {
       error: error,
       errorInfo: errorInfo,
     });
+    // Log the error to an error reporting service
+    // logErrorToService(error, errorInfo);
     console.error('Uncaught error:', error, errorInfo);
   }
 
@@ -28,16 +30,28 @@ class ErrorBoundary extends React.Component {
       return (
         <div style={{ textAlign: 'center', padding: '50px' }}>
           <h1>Oops! Something went wrong.</h1>
-          <p>
-            We&apos;re sorry for the inconvenience. Please try reloading the
-            page.
-          </p>
-          <button
-            onClick={this.handleReload}
-            style={{ padding: '10px 20px', cursor: 'pointer' }}
-          >
-            Reload
-          </button>
+          <p>Were sorry for the inconvenience. Here are a few options:</p>
+          <div>
+            <button
+              onClick={this.handleReload}
+              style={{
+                padding: '10px 20px',
+                cursor: 'pointer',
+                marginRight: '10px',
+              }}
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() =>
+                this.props.onReport && this.props.onReport(this.state)
+              }
+              style={{ padding: '10px 20px', cursor: 'pointer' }}
+            >
+              Report Problem
+            </button>
+          </div>
+          {/* Additional navigation options can be added here */}
           <details
             style={{
               whiteSpace: 'pre-wrap',
@@ -45,7 +59,8 @@ class ErrorBoundary extends React.Component {
               textAlign: 'left',
             }}
           >
-            {this.state.error && this.state.error.toString()}
+            <summary>Details</summary>
+            {this.state.error && this.state.error?.toString()}
             <br />
             {this.state.errorInfo?.componentStack}
           </details>

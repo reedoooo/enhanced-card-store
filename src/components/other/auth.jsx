@@ -3,10 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthContext } from '../../context/Auth/authContext';
 
 function Auth({ children }) {
-  const { isLoggedIn, user, can } = useContext(AuthContext);
+  const { isLoggedIn, authUser, can } = useContext(AuthContext);
 
   console.log('isLoggedIn', isLoggedIn);
-  console.log('user', user);
+  console.log('authUser', authUser);
 
   return isLoggedIn ? (
     <Routes>

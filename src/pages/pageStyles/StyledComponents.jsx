@@ -18,33 +18,33 @@ export const AppContainer = styled('div')(({ theme }) => ({
   height: '100vh',
   // background: '#222',
 }));
-const StyledContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  // alignSelf: 'start',
-  alignItems: 'center',
-  justifyContent: 'center',
-  // marginLeft: theme.spacing(2),
-  borderRadius: theme.shape.borderRadiusLarge,
-  // marginRight: theme.spacing(2),
-  // minHeight: '250vh',
-  flexGrow: 1,
-  // minHeight: '100%',
-  background: '#333',
-  // backgroundColor: '#f1f1f1',
-  padding: {
-    xs: 0,
-    sm: theme.spacing(1),
-    md: theme.spacing(2.5),
-    lg: theme.spacing(2.5),
-  },
-  height: '100%',
-  width: '100%',
-}));
+// const StyledContainer = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   flexDirection: 'column',
+//   // alignSelf: 'start',
+//   alignItems: 'center',
+//   justifyContent: 'center',
+//   // marginLeft: theme.spacing(2),
+//   borderRadius: theme.shape.borderRadiusLarge,
+//   // marginRight: theme.spacing(2),
+//   // minHeight: '250vh',
+//   flexGrow: 1,
+//   // minHeight: '100%',
+//   background: '#333',
+//   // backgroundColor: '#f1f1f1',
+//   padding: {
+//     xs: 0,
+//     sm: theme.spacing(1),
+//     md: theme.spacing(2.5),
+//     lg: theme.spacing(2.5),
+//   },
+//   height: '100%',
+//   width: '100%',
+// }));
 
-export const CollectionContainer = ({ children }) => {
-  return <StyledContainer>{children}</StyledContainer>;
-};
+// export const AppContainer = ({ children }) => {
+//   return <ContainerForApp>{children}</ContainerForApp>;
+// };
 const StyledContainer2 = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -448,29 +448,48 @@ export const ActionButton = styled(Button)(({ theme }) => ({
 
 export const MainContentContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2, 4, 6),
+  // minHeight: '100%',
+  // minHeight: '35vh',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: theme.palette.backgroundD.dark,
   boxShadow: theme.shadows[10],
-  margin: theme.spacing(2, 0), // added vertical spacing
+  marginTop: theme.spacing(2),
+  margin: theme.spacing(4, 0), // added vertical spacing
 }));
 
-export const SecondaryContentContainer = styled('div')(({ theme }) => ({
-  background: theme.palette.backgroundD.dark,
-  marginBottom: theme.spacing(2),
-  width: '100%',
-  flexDirection: 'column',
-  boxShadow: theme.shadows[3],
-  borderRadius: theme.shape.borderRadius,
-  transition: 'background-color 0.3s',
-  position: 'relative',
-  paddingTop: '0', // Remove top padding to align the animation at the top
-  paddingBottom: '0', // Remove bottom padding
-  minHeight: '70vh', // Adjust the height as needed to fit the animation
+export const SecondaryContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'center', // Center the animation horizontally
-  alignItems: 'center', // Center the animation vertically
-  overflow: 'hidden', // Prevent overflow
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(2),
+  background: theme.palette.backgroundD.dark,
+  borderRadius: theme.shape.borderRadius,
+  // justifyContent: 'center',
+  // // marginBottom: theme.spacing(2),
+  // width: '100%',
+  // height: '100%',
+  // flexDirection: 'row',
+  // boxShadow: theme.shadows[3],
+  // borderRadius: theme.shape.borderRadius,
+  transition: 'background-color 0.3s',
+  // position: 'relative',
+  // paddingTop: theme.spacing(10), // Add top padding
+  // paddingBottom: theme.spacing(20), // Add bottom padding
+  // // marginBottom: theme.spacing(20),
+  // // paddingLeft: theme.spacing(10), // Add left padding
+  // // paddingRight: theme.spacing(10), // Add right padding
+  // minHeight: '70vh', // Adjust the height as needed to fit the animation
+  // maxHeight: '80vh',
+  // // alignItems: 'flex-start', // Center the animation vertically
+  // alignContent: 'center', // Center the animation vertically
+  // overflow: 'hidden', // Prevent overflow
+  // display: 'flex',
+  // alignItems: 'center', // Align children to the center horizontally
+  // justifyContent: 'space-between', // Distribute space between children
 }));
+
 export const TertiaryContentContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
