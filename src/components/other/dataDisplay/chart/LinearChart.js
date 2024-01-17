@@ -8,31 +8,22 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import ChartErrorBoundary from '../../../reusable/ChartErrorBoundary';
-import { useMode } from '../../../../context/hooks/colormode';
-import { makeStyles } from '@mui/styles';
-import { useChartContext, useStatisticsStore } from '../../../../context';
-const useStyles = makeStyles((theme) => ({
-  axisLabel: {
-    position: 'absolute',
-    textAlign: 'center',
-    margin: theme.spacing(2),
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    color: theme.palette.text.primary,
-  },
-  chartContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: 'auto',
-    '@media (max-width: 600px)': {
-      width: '150%', // Adjust width for mobile screens
-      height: '300px', // Adjust height for mobile screens
-      transform: 'translateX(10%)', // Shift the chart to the right by 50%
-    },
-  },
-}));
+import {
+  useChartContext,
+  useMode,
+  useStatisticsStore,
+} from '../../../../context';
+import { LinearChartContainer } from '../../../../pages/pageStyles/StyledComponents';
+// const useStyles = makeStyles((theme) => ({
+//   axisLabel: {
+//     position: 'absolute',
+//     textAlign: 'center',
+//     margin: theme.spacing(2),
+//     fontSize: '1rem',
+//     fontWeight: 'bold',
+//     color: theme.palette.text.primary,
+//   },
+// }));
 
 const CustomTooltipLayer = ({ points, xScale, yScale, specialPoints }) => {
   console.log('CustomTooltipLayer points: ', specialPoints);
@@ -75,7 +66,7 @@ const CustomTooltipLayer = ({ points, xScale, yScale, specialPoints }) => {
 };
 
 const CustomTooltip = ({ point, specialPoints }) => {
-  const theme = useTheme();
+  const { theme } = useMode();
   const isSpecial = specialPoints?.some(
     (sp) => sp.x === point.data.x && sp.y === point.data.y
   );
@@ -84,12 +75,24 @@ const CustomTooltip = ({ point, specialPoints }) => {
   return (
     <Tooltip title={`Series: ${serieId}`}>
       <Box
-        p={2}
-        boxShadow={3}
-        bgcolor={theme.palette.background.paper}
-        borderRadius={2}
-        borderColor={theme.palette.divider}
-        border={1}
+        sx={{
+          padding: theme.spacing(2),
+          boxShadow: theme.shadows[5],
+          border: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.backgroundA.lightest,
+          borderRadius: theme.shape.borderRadius,
+          borderColor: theme.palette.divider,
+          transition: 'transform 0.3s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.03)',
+          },
+        }}
+        // p={2}
+        // boxShadow={3}
+        // bgcolor={theme.palette.backgroundA.lightest}
+        // borderRadius={2}
+        // borderColor={theme.palette.divider}
+        // border={1}
       >
         <Typography variant="subtitle1" color="textPrimary">
           {`Card: ${label}` || `Collection: ${label}`}
@@ -122,8 +125,8 @@ const LinearChart = ({
   specialPoints,
 }) => {
   const { theme } = useMode();
-  const classes = useStyles(theme);
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const theme2 = useTheme();
+  const isMobile = useMediaQuery(theme2.breakpoints.down('sm'));
   const { statsByCollectionId, markers } = useStatisticsStore();
   const { tickValues, xFormat } = useChartContext();
 
@@ -189,9 +192,9 @@ const LinearChart = ({
       },
       pointSize: 10,
       pointBorderWidth: 2,
-      pointBorderColor: theme.palette.primary.main,
+      pointBorderColor: theme.palette.backgroundA.dark,
       pointColor: theme.palette.success.light,
-      colors: theme.palette.primaryDark.main,
+      colors: theme.palette.success.light,
       lineWidth: 3,
       curve: 'monotoneX',
       useMesh: true,
@@ -211,7 +214,7 @@ const LinearChart = ({
         'points',
         'axes',
         'legends',
-        ({ points, xScale, yScale }) => (
+        ({ points, xScale, yScale, markers }) => (
           <CustomTooltipLayer
             points={points}
             xScale={xScale}
@@ -239,16 +242,15 @@ const LinearChart = ({
 
   return (
     <ChartErrorBoundary>
-      <Box
-        className={classes.chartContainer}
-        style={{
+      <LinearChartContainer
+        sx={{
           height: isMobile ? '350px' : dimensions?.height ?? '500px',
           flexGrow: 1,
         }}
       >
         {/* <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}> */}
         <ResponsiveLine {...chartProps} />
-      </Box>
+      </LinearChartContainer>
     </ChartErrorBoundary>
   );
 };

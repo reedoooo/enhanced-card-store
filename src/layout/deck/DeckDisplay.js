@@ -13,7 +13,7 @@ import CardsGrid from '../../components/grids/deckBuilderGrids/CardsGrid';
 // import DeckEditPanel from '../../components/other/InputComponents/DeckEditPanel';
 import { useDeckStore } from '../../context/DeckContext/DeckContext';
 import { useUserContext } from '../../context';
-import useDeckStyles from '../../context/hooks/useDeckStyles';
+import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
 import DeckListToggle from './DeckListToggle';
 import DeckEditor from './DeckEditor';
 import CardsDisplay from './CardsDisplay';
@@ -166,7 +166,7 @@ const DeckDisplay = () => {
     //             maxWidth: 600,
     //             borderRadius: theme.shape.borderRadius,
     //             boxShadow: theme.shadows[3],
-    //             backgroundColor: theme.palette.background.paper,
+    //             backgroundColor: theme.palette.backgroundA.lightest,
     //             color: theme.palette.text.secondary,
     //           }}
     //         >
@@ -175,7 +175,7 @@ const DeckDisplay = () => {
     //             sx={{
     //               marginBottom: theme.spacing(3),
     //               fontWeight: theme.typography.fontWeightBold,
-    //               color: theme.palette.primary.main,
+    //               color: theme.palette.backgroundA.dark,
     //             }}
     //           >
     //             {isEditing ? 'Edit Deck' : 'Create New Deck'}

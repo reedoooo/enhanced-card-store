@@ -64,7 +64,7 @@ const SearchSettings = () => {
           sx={{
             mb: 3,
             fontWeight: 'bold',
-            color: theme.palette.background.main,
+            color: theme.palette.backgroundB.dark,
             textTransform: 'uppercase',
           }}
         >

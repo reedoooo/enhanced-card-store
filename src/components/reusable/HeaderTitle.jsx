@@ -1,7 +1,6 @@
 // components/reusable/HeaderTitle.jsx
 import { Typography, Container } from '@mui/material';
 import React from 'react';
-import { useMode } from '../../context/hooks/colormode';
 
 const HeaderTitle = ({ title, size = 'extraSmall', location = 'left' }) => {
   const { theme } = useMode();
@@ -21,7 +20,7 @@ const HeaderTitle = ({ title, size = 'extraSmall', location = 'left' }) => {
   };
 
   const containerStyles = {
-    backgroundColor: theme.palette.background.quaternary,
+    backgroundColor: theme.palette.backgroundB.lighter,
     width: '50%',
     border: `1px solid ${theme.palette.text.primary}`,
     borderRadius: theme.shape.borderRadius,

@@ -3,41 +3,93 @@ import moment from 'moment';
 import { createApiUrl, roundToNearestTenth } from '../Helpers';
 
 export const initialCollectionState = {
-  userId: '', // Assuming this is an ObjectId string
-  name: '', // Initialize as empty string if not provided
-  description: '', // Initialize as empty string if not provided
-  totalPrice: 0, // Initialize as 0 if not provided
-  quantity: 0, // Initialize as 0 if not provided
-  totalQuantity: 0, // Initialize as 0 if not provided
-  previousDayTotalPrice: 0, // Initialize as 0 if not provided
-  lastSavedPrice: {
-    num: 0,
-    timestamp: '',
-  }, // Initialize as 0 if not provided
-  latestPrice: {
-    num: 0,
-    timestamp: '',
-  }, // Initialize as 0 if not provided
-  dailyPriceChange: 0, // Initialize as 0 if not provided
-  priceDifference: 0, // Initialize as 0 if not provided
-  priceChange: 0, // Initialize as 0 if not provided
-  collectionPriceHistory: [],
-  dailyCollectionPriceHistory: [],
-  cards: [], // Initialize as empty array if not provided
-  currentChartDataSets2: [], // Initialize as empty array if not provided
-  chartData: {
-    name: '', // Initialize as empty string if not provided
-    userId: '', // Assuming this is an ObjectId string
-    datasets: [], // Initialize as empty array if not provided
-    // xys: [], // Initialize as empty array if not provided
-    allXYValues: [], // Initialize as empty array if not provided
+  userId: null,
+  name: '',
+  description: '',
+  totalPrice: 0,
+  quantity: 0,
+  totalQuantity: 0,
+  dailyPriceChange: 0,
+  dailyPercentageChange: '0%',
+  collectionStatistics: {
+    highPoint: 0,
+    lowPoint: 0,
+    twentyFourHourAverage: {
+      startDate: new Date(),
+      endDate: new Date(),
+      lowPoint: 0,
+      highPoint: 0,
+      priceChange: 0,
+      percentageChange: 0,
+      priceIncreased: false,
+    },
+    average: 0,
+    volume: 0,
+    volatility: 0,
+    general: {
+      totalPrice: 0,
+      topCard: '',
+      topCollection: '',
+    },
   },
+  latestPrice: {
+    // Assuming the structure of priceEntrySchema
+    price: 0,
+    date: new Date(),
+  },
+  lastSavedPrice: {
+    // Assuming the structure of priceEntrySchema
+    price: 0,
+    date: new Date(),
+  },
+  dailyCollectionPriceHistory: [],
+  collectionPriceHistory: [],
+  chartData: {
+    name: '',
+    userId: null,
+    allXYValues: [],
+  },
+  cards: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+export const initialAllCollectionsState = {
+  allCollections: [
+    {
+      cards: [
+        /* array of card objects */
+      ],
+      chartData: {
+        allXYValues: [],
+      },
+      collectionPriceHistory: [
+        /* array of price history objects */
+      ],
+      collectionStatistics: {
+        highPoint: 0.17,
+        lowPoint: 0.17,
+        average: 0.17,
+      },
+      createdAt: '2024-01-17T03:41:38.909Z',
+      dailyCollectionPriceHistory: [
+        /* array of daily price history objects */
+      ],
+      name: 'My First Collection',
+      totalPrice: 0.17,
+      totalQuantity: 1,
+      updatedAt: '2024-01-17T03:41:45.645Z',
+      userId: '65a74c7292453528177a150f',
+      __v: 1,
+      _id: '65a74c7292453528177a1513',
+    },
+    // ... more collection objects
+  ],
 };
 
 export const defaultContextValue = {
   allCollections: [],
   selectedCollection: {},
-  collectionData: initialCollectionState,
+  // collectionData: initialCollectionState,
 
   cards: [],
   currentChartDataSets2: [],
@@ -53,18 +105,18 @@ export const defaultContextValue = {
   updateCollection: () => {},
   calculateTotalPrice: () => {},
   getNewTotalPrice: () => {},
-  getTotalPrice: () => {},
+  // getTotalPrice: () => {},
   createUserCollection: () => {},
   removeCollection: () => {},
-  fetchAllCollectionsForUser: () => {},
+  getAllCollectionsForUser: () => {},
   setSelectedCollection: () => {},
   setAllCollections: () => {},
   addOneToCollection: () => {},
   removeOneFromCollection: () => {},
-  getCardQuantity: () => {},
-  externalOperationHandler: () => {},
-  externalCollectionUpdate: () => {},
-  updateAllCollectionState: () => {},
+  // getCardQuantity: () => {},
+  // externalOperationHandler: () => {},
+  // externalCollectionUpdate: () => {},
+  // updateAllCollectionState: () => {},
 };
 
 export const transformPriceHistoryToXY = (collectionPriceHistory) => {
@@ -826,41 +878,41 @@ export const getFilteredData = (data, timeRange) => {
     .map((d) => ({ ...d, y: roundToNearestTenth(d.y) }));
 };
 
-export const calculateCollectionValue = (cards) => {
-  if (
-    !cards?.cards &&
-    !Array.isArray(cards) &&
-    !cards?.name &&
-    !cards?.restructuredCollection
-  ) {
-    console.warn('Invalid or missing collection', cards);
-    return 0;
-  }
+// export const calculateCollectionValue = (cards) => {
+//   if (
+//     !cards?.cards &&
+//     !Array.isArray(cards) &&
+//     !cards?.name &&
+//     !cards?.restructuredCollection
+//   ) {
+//     console.warn('Invalid or missing collection', cards);
+//     return 0;
+//   }
 
-  if (cards?.tag === 'new') {
-    return 0;
-  }
-  if (cards?.restructuredCollection) {
-    return cards?.restructuredCollection?.cards.reduce((totalValue, card) => {
-      const cardPrice = card?.price || 0;
-      const cardQuantity = card?.quantity || 0;
-      return totalValue + cardPrice * cardQuantity;
-    }, 0);
-  }
-  if (cards?.cards && Array.isArray(cards?.cards)) {
-    return cards?.cards.reduce((totalValue, card) => {
-      const cardPrice = card?.price || 0;
-      const cardQuantity = card?.quantity || 0;
-      return totalValue + cardPrice * cardQuantity;
-    }, 0);
-  }
+//   if (cards?.tag === 'new') {
+//     return 0;
+//   }
+//   if (cards?.restructuredCollection) {
+//     return cards?.restructuredCollection?.cards.reduce((totalValue, card) => {
+//       const cardPrice = card?.price || 0;
+//       const cardQuantity = card?.quantity || 0;
+//       return totalValue + cardPrice * cardQuantity;
+//     }, 0);
+//   }
+//   if (cards?.cards && Array.isArray(cards?.cards)) {
+//     return cards?.cards.reduce((totalValue, card) => {
+//       const cardPrice = card?.price || 0;
+//       const cardQuantity = card?.quantity || 0;
+//       return totalValue + cardPrice * cardQuantity;
+//     }, 0);
+//   }
 
-  return cards.reduce((totalValue, card) => {
-    const cardPrice = card.price || 0;
-    const cardQuantity = card.quantity || 0;
-    return totalValue + cardPrice * cardQuantity;
-  }, 0);
-};
+//   return cards.reduce((totalValue, card) => {
+//     const cardPrice = card.price || 0;
+//     const cardQuantity = card.quantity || 0;
+//     return totalValue + cardPrice * cardQuantity;
+//   }, 0);
+// };
 
 /**
  * Ensures a value is a number, providing a default if not.

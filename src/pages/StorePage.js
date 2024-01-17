@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import SearchBar from '../components/other/search/SearchBar';
 import ProductGrid from '../components/grids/searchResultsGrids/ProductGrid';
-import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
 import HeroCenter from './pageStyles/HeroCenter';
 import { useModalContext, useMode, usePageContext } from '../context';
-import { gridContainerStyles, gridItemStyles } from './pageStyles/styles';
-import PageLayout from '../layout/PageLayout';
+import { gridItemStyles } from './pageStyles/styles';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 
 const StorePage = () => {
@@ -38,7 +35,7 @@ const StorePage = () => {
         alignItems: 'center',
         padding: theme.spacing(3),
         minHeight: '100%',
-        backgroundColor: theme.palette.background.secondary,
+        backgroundColor: theme.palette.backgroundB.default,
         borderRadius: theme.shape.borderRadius,
         color: theme.palette.text.primary,
       }}
@@ -48,7 +45,7 @@ const StorePage = () => {
         xs={12}
         sx={{
           ...gridItemStyles,
-          background: theme.palette.background.dark,
+          background: theme.palette.backgroundB.darker,
           padding: theme.spacing(3),
           margin: theme.spacing(3),
           borderRadius: theme.shape.borderRadius,
@@ -71,7 +68,7 @@ const StorePage = () => {
         height: `${containerHeight * 2.35}px`,
         width: '100%',
         minHeight: '100%',
-        background: theme.palette.background.dark,
+        background: theme.palette.backgroundB.darker,
         position: 'absolute',
       }}
     />
@@ -79,23 +76,23 @@ const StorePage = () => {
 
   return (
     <React.Fragment>
-      <PageLayout>
-        {/* Main content rendering */}
-        {renderHero()}
-        {renderSearchAndProducts()}
+      {/* <PageLayout> */}
+      {/* Main content rendering */}
+      {renderHero()}
+      {renderSearchAndProducts()}
 
-        {/* Modal for card details */}
-        {isModalOpen && (
-          <GenericCardDialog
-            open={isModalOpen}
-            context={'Cart'}
-            card={modalContent}
-          />
-        )}
+      {/* Modal for card details */}
+      {isModalOpen && (
+        <GenericCardDialog
+          open={isModalOpen}
+          context={'Cart'}
+          card={modalContent}
+        />
+      )}
 
-        {/* Background box for additional UI */}
-        {renderBackgroundBox()}
-      </PageLayout>
+      {/* Background box for additional UI */}
+      {renderBackgroundBox()}
+      {/* </PageLayout> */}
     </React.Fragment>
   );
 };

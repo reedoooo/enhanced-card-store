@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useContext,
+  useRef,
 } from 'react';
 import { useCookies } from 'react-cookie';
 import { createApiUrl } from '../Helpers.jsx';
@@ -18,14 +19,16 @@ import {
   handleCardUpdate,
 } from './helpers.jsx';
 import useFetchWrapper from '../hooks/useFetchWrapper.jsx';
+import { useAuthContext } from '../AuthContext/authContext.js';
 
 export const DeckContext = createContext(defaultContextValue);
 
 export const DeckProvider = ({ children }) => {
-  const [cookies] = useCookies(['authUser']);
-  const userId = cookies?.authUser?.userId;
+  // const { userId, authUser } = useAuthContext();
+  const [cookies] = useCookies(['userId']);
+  const { userId } = cookies;
   const fetchWrapper = useFetchWrapper();
-  const [prevUserId, setPrevUserId] = useState(null);
+  const prevUserIdRef = useRef(userId);
   const [deckData, setDeckData] = useState({});
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
@@ -317,9 +320,7 @@ export const DeckProvider = ({ children }) => {
     return foundCard?.quantity || 0;
   };
   const shouldFetchDecks = (prevUserId, currentUserId) => {
-    // Fetch decks if there was no previous user and now there is one
-    // or if the user has changed
-    return (!prevUserId && currentUserId) || prevUserId !== currentUserId;
+    return prevUserId !== currentUserId && currentUserId != null;
   };
 
   const contextValue = {
@@ -362,10 +363,10 @@ export const DeckProvider = ({ children }) => {
     contextValue.selectedCards,
   ]);
   useEffect(() => {
-    if (shouldFetchDecks(prevUserId, userId)) {
+    if (shouldFetchDecks(prevUserIdRef.current, userId)) {
       fetchAndSetDecks();
-      setPrevUserId(userId); // Update the previous userId
     }
+    prevUserIdRef.current = userId; // Update the previous userId
   }, [userId, fetchAndSetDecks]);
 
   return (

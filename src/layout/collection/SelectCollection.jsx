@@ -2,9 +2,12 @@ import React, { useState, useCallback } from 'react';
 import { Box, Grid } from '@mui/material';
 import SelectCollectionList from '../../components/grids/collectionGrids/SelectCollectionList';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import usePortfolioStyles from '../../context/hooks/usePortfolioStyles';
+import usePortfolioStyles, {
+  PortfolioBoxB,
+  SelectCollectionListContainer,
+} from '../../context/hooks/style-hooks/usePortfolioStyles';
 import { useMode, useStatisticsStore } from '../../context';
-import SelectCollectionHeader from '../../components/headings/collection/SelectCollectionHeader';
+import SelectCollectionHeader from '../headings/collection/SelectCollectionHeader';
 import PieChartStats from '../../components/other/dataDisplay/chart/PieChartStats';
 import TotalValueOfCollectionsDisplay from '../../components/other/dataDisplay/TotalValueOfCollectionsDisplay';
 import TopFiveExpensiveCards from '../../components/other/dataDisplay/TopFiveExpensiveCards';
@@ -12,7 +15,6 @@ import CollectionDialog from '../../components/dialogs/CollectionDialog';
 
 const SelectCollection = ({ handleSelectCollection }) => {
   const { theme } = useMode();
-  const classes = usePortfolioStyles(theme);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { setSelectedCollection, selectedCollection, allCollections } =
@@ -40,31 +42,28 @@ const SelectCollection = ({ handleSelectCollection }) => {
 
   // Function to render the header
   const renderHeader = () => (
-    <SelectCollectionHeader classes={classes} openNewDialog={openNewDialog} />
+    <SelectCollectionHeader openNewDialog={openNewDialog} />
   );
 
   // Function to render the statistics section
   const renderStatistics = () => (
     <Grid container spacing={2} sx={{ marginTop: theme.spacing(2) }}>
-      <PieChartStats classes={classes} chartData={chartData} />
-      <TotalValueOfCollectionsDisplay
-        classes={classes}
-        totalValue={totalValue}
-      />
-      <TopFiveExpensiveCards classes={classes} topFiveCards={topFiveCards} />
+      <PieChartStats chartData={chartData} />
+      <TotalValueOfCollectionsDisplay totalValue={totalValue} />
+      <TopFiveExpensiveCards topFiveCards={topFiveCards} />
     </Grid>
   );
 
   // Function to render the collection list
   const renderCollectionList = () => (
-    <Box className={classes.listContainer}>
+    <SelectCollectionListContainer theme={theme}>
       <SelectCollectionList
         handleSelectCollection={handleSelectCollection}
         onSave={handleSave}
         openDialog={handleDialogToggle}
         isLoadingNewCollection={isLoadingNewCollection}
       />
-    </Box>
+    </SelectCollectionListContainer>
   );
 
   // Function to render the dialog for collection
@@ -75,18 +74,20 @@ const SelectCollection = ({ handleSelectCollection }) => {
       closeDialog={handleDialogToggle}
       onSave={handleSave}
       isNew={isNew}
-      initialName={isNew ? '' : selectedCollection?.name}
-      initialDescription={isNew ? '' : selectedCollection?.description}
+      name={isNew ? '' : selectedCollection?.name}
+      description={isNew ? '' : selectedCollection?.description}
+      initialName={selectedCollection?.name || ''}
+      initialDescription={selectedCollection?.description || ''}
     />
   );
 
   return (
-    <Box className={classes.portfolioBoxB} sx={{ padding: theme.spacing(3) }}>
+    <PortfolioBoxB theme={theme} sx={{ padding: theme.spacing(3) }}>
       {renderHeader()}
       {renderStatistics()}
       {renderCollectionList()}
       {renderCollectionDialog()}
-    </Box>
+    </PortfolioBoxB>
   );
 };
 

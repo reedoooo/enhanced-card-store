@@ -23,52 +23,36 @@ import {
   StyledDialogContent,
   StyledDialogTitle,
 } from '../forms/styled';
-import useDialog from '../../context/hooks/useDialog';
-import useSnackBar from '../../context/hooks/useSnackBar';
+import useAuthDialog from '../../context/hooks/useAuthDialog';
 
 function LoginDialog() {
-  const { theme } = useMode(); // Ensures theme is applied correctly
-  const { toggleColorMode, mode } = useMode();
-  const { logout, isLoggedIn } = useAuthContext();
-  const handleSnackBar = useSnackBar()[1];
-  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
-    useDialog(handleSnackBar);
-
-  const { returnDisplay, loadingStatus, setLoading } = usePageContext(); // Access loading display or error status
+  const { theme } = useMode();
+  const { logout } = useAuthContext();
+  const { toggleLoginDialog, isLoggedIn } = useAuthDialog();
+  const { returnDisplay, loadingStatus, setLoading } = usePageContext();
   const { forms } = useFormContext();
   const loginValues = forms?.loginForm;
   const signupValues = forms?.signupForm;
   const signupMode = signupValues?.signupMode;
-  const currentValues = signupMode ? signupValues : loginValues;
 
-  // console.log('LoginDialog', { currentValues });
-  // console.log('LoginDialog', { loadingStatus });
-  // console.log('LoginDialog', { isLoginDialogOpen });
-  // console.log('LoginDialog', { isLoggedIn });
-  // console.log('LoginDialog', { signupMode });
-  // useEffect for checking dialog status
   useEffect(() => {
-    if (!isLoggedIn && !isLoginDialogOpen) {
-      openLoginDialog();
-      // closeLoginDialog();
+    if (!isLoggedIn) {
+      toggleLoginDialog();
     }
-    if (isLoggedIn && isLoginDialogOpen) {
-      closeLoginDialog();
-    }
-  }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
-  // console.log('LoginDialog', { theme });
-  // console.log('LoginDialog', { mode });
+  }, [isLoggedIn, toggleLoginDialog]);
 
-  // useEffect(() => {
-  //   if (isLoggedIn && isLoginDialogOpen) {
-  //     closeLoginDialog();
-  //   }
-  // }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
+  const handleLogout = () => {
+    logout();
+    toggleLoginDialog();
+  };
+
+  const toggleColorMode = useMode().toggleColorMode;
+  const mode = useMode().mode;
 
   return (
     <StyledDialog
-      open={isLoginDialogOpen}
-      onClose={closeLoginDialog}
+      open={!isLoggedIn}
+      onClose={toggleLoginDialog}
       maxWidth="lg"
       fullWidth
       theme={theme}
@@ -88,18 +72,13 @@ function LoginDialog() {
           <Button
             color="primary"
             variant="contained"
-            onClick={() => {
-              logout();
-              openLoginDialog();
-            }}
+            onClick={handleLogout}
             fullWidth
           >
             Log Out
           </Button>
         ) : (
-          <>
-            <LoginForm />
-          </>
+          <LoginForm />
         )}
       </StyledDialogContent>
     </StyledDialog>

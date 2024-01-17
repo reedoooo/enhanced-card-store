@@ -13,58 +13,140 @@ import {
   Card,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import { useStatisticsStore } from '../../../context/StatisticsContext/StatisticsContext';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LongMenu from '../../reusable/LongMenu';
 import { roundToNearestTenth } from '../../../context/Helpers';
-import useSelectCollectionListStyles from '../../../context/hooks/useSelectCollectionListStyles';
-import { styled } from '@mui/styles';
-import { useMode, usePageContext } from '../../../context';
+import styled from 'styled-components';
+import {
+  useCollectionStore,
+  useMode,
+  usePageContext,
+  useStatisticsStore,
+} from '../../../context';
 import CollectionListItem from './CollectionListItem';
-
-const StyledSkeletonCard = styled(Card)(({ theme }) => ({
-  // Use the same styles as in StyledCard
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: '109px',
-  maxWidth: '100%',
-  width: 'auto',
-  maxHeight: '80vh',
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[5],
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'scale(1.03)',
-  },
-}));
-
-const AspectRatioBoxSkeleton = styled('div')(({ theme }) => ({
-  width: '100%',
-  position: 'relative',
-  paddingTop: '56.25%', // 16:9 aspect ratio
-}));
+import {
+  StyledSkeletonCard,
+  AspectRatioBoxSkeleton,
+} from '../../../pages/pageStyles/StyledComponents';
+import useList from '../../../context/hooks/useList';
+import useMap from '../../../context/hooks/useMap';
 
 // eslint-disable-next-line react/display-name
 const ListItemSkeleton = memo(
   () => {
     const { theme } = useMode();
-    const classes = useSelectCollectionListStyles(theme);
     return (
-      <ListItem className={classes.listItemSkeleton}>
+      <ListItemSkeleton theme={theme}>
         <StyledSkeletonCard theme={theme}>
           <AspectRatioBoxSkeleton theme={theme}>
             <Skeleton variant="rectangular" animation="wave" height={50} />
           </AspectRatioBoxSkeleton>
         </StyledSkeletonCard>
-      </ListItem>
+      </ListItemSkeleton>
     );
   },
   () => true
 );
 
+const SelectCollectionList = ({
+  onSave,
+  openDialog,
+  handleSelectCollection,
+  isLoadingNewCollection,
+}) => {
+  const { theme } = useMode();
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+  const [loadingCollectionIds, setLoadingCollectionIds] = useState([]);
+  const { allCollections, setSelectedCollection, selectedCollection } =
+    useCollectionStore();
+  const { setLoading } = usePageContext();
+  const { statsByCollectionId } = useStatisticsStore();
+  // const { list: allCollections } = useList(); // Assuming allCollections is initially fetched
+  const { mapData: loadingCollectionMap, setMap, deleteKey } = useMap();
+
+  const handleSelect = useCallback(
+    (selectedId) => {
+      console.log('selectedId', selectedId);
+      setSelectedCollectionId(selectedId); // Keep track of the selected collection ID
+      const selected = allCollections?.find(
+        (collection) => collection._id === selectedId
+      );
+      if (!selected) {
+        console.error('Collection not found with ID:', selectedId);
+        return;
+      }
+      // setSelectedCollection(selected);
+      setMap(selected?._id, true); // Set loading state for the selected collection
+      handleSelectCollection(selected?._id);
+      onSave(selected);
+      setLoadingCollectionIds((prev) => [...prev, selectedId]);
+    },
+    [setMap, allCollections, onSave, handleSelectCollection] // Dependencies
+  );
+  const handleOpenDialog = useCallback(
+    (collection) => {
+      setSelectedCollection(collection);
+      openDialog(true);
+    },
+    [openDialog, setSelectedCollection]
+  );
+
+  useEffect(() => {
+    if (isLoadingNewCollection) {
+      setLoading('isLoading', true);
+      const newCollectionId = allCollections[allCollections?.length - 1]?._id;
+      if (newCollectionId) {
+        setMap(newCollectionId, true); // Set loading state for new collection
+        setLoading('isLoading', false);
+      }
+    }
+  }, [isLoadingNewCollection, allCollections, setMap, setLoading]);
+
+  useEffect(() => {
+    loadingCollectionMap.forEach((_, collectionId) => {
+      setTimeout(() => deleteKey(collectionId), 1000); // Simulate delay and delete loading state
+    });
+  }, [loadingCollectionMap, deleteKey]);
+
+  return (
+    <List>
+      {allCollections?.map((collection) => {
+        const isSelected = collection?._id === selectedCollectionId;
+        {
+          /* const isLoading = loadingCollectionIds?.includes(collection?._id); */
+        }
+        const isLoading = loadingCollectionMap.has(collection?._id);
+
+        return isLoading ? (
+          // Render skeleton if the collection is still loading
+          <ListItemSkeleton key={`loading-${collection?._id}`} />
+        ) : (
+          // Render actual collection item if it's not in loading state
+          <CollectionListItem
+            key={collection?._id}
+            collection={collection}
+            handleSelect={handleSelect}
+            handleOpenDialog={handleOpenDialog}
+            roundToNearestTenth={roundToNearestTenth}
+            isSelected={isSelected}
+            statsByCollectionId={statsByCollectionId}
+            isPlaceholder={false}
+          />
+        );
+      })}
+    </List>
+  );
+};
+
+SelectCollectionList.propTypes = {
+  onSave: PropTypes.func.isRequired,
+  openDialog: PropTypes.func.isRequired,
+  handleSelectCollection: PropTypes.func.isRequired,
+  isLoadingNewCollection: PropTypes.bool,
+};
+
+export default SelectCollectionList;
 // eslint-disable-next-line react/display-name
 // const CollectionListItem = memo(
 //   ({
@@ -148,107 +230,31 @@ const ListItemSkeleton = memo(
 //     );
 //   }
 // );
-
-const SelectCollectionList = ({
-  onSave,
-  openDialog,
-  handleSelectCollection,
-  isLoadingNewCollection,
-}) => {
-  const { theme } = useMode();
-  const classes = useSelectCollectionListStyles(theme);
-  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [loadingCollectionIds, setLoadingCollectionIds] = useState([]);
-  const { allCollections, setSelectedCollection, fetchAllCollectionsForUser } =
-    useCollectionStore();
-  const { setLoading } = usePageContext();
-  const { statsByCollectionId } = useStatisticsStore();
-
-  const handleSelect = useCallback(
-    (selectedId) => {
-      setSelectedCollectionId(selectedId); // Keep track of the selected collection ID
-      const selected = allCollections?.find(
-        (collection) => collection._id === selectedId
-      );
-      if (!selected) {
-        console.error('Collection not found with ID:', selectedId);
-        return;
-      }
-      // setSelectedCollection(selected);
-      handleSelectCollection(selected?._id);
-      onSave(selected);
-      setLoadingCollectionIds((prev) => [...prev, selectedId]);
-    },
-    [allCollections, onSave, handleSelectCollection] // Dependencies
-  );
-  const handleOpenDialog = useCallback(
-    (collection) => {
-      setSelectedCollection(collection);
-      openDialog(true);
-    },
-    [openDialog, setSelectedCollection]
-  );
-  useEffect(() => {
-    if (isLoadingNewCollection) {
-      setLoading('isLoading', true);
-      const newCollectionId = allCollections[allCollections?.length - 1]?._id;
-      if (newCollectionId) {
-        setLoadingCollectionIds((prev) => [...prev, newCollectionId]);
-        setLoading('isLoading', false);
-      }
-    }
-  }, [isLoadingNewCollection, allCollections]);
-  // Effect to remove loading state once collection is considered "loaded"
-  useEffect(() => {
-    // Define a method to "load" collection, maybe after a fetch or certain condition
-    const loadCollection = (collectionId) => {
-      setLoadingCollectionIds((prev) =>
-        prev.filter((id) => id !== collectionId)
-      );
-    };
-    loadingCollectionIds?.forEach((collectionId) => {
-      setTimeout(() => loadCollection(collectionId), 1000); // simulate delay
-    });
-  }, [loadingCollectionIds]);
-  // useEffect(() => {
-  //   fetchAllCollectionsForUser().catch((err) =>
-  //     console.error('Failed to get all collections:', err)
-  //   );
-  // }. [fetchAllCollectionsForUser]);
-
-  return (
-    <List>
-      {allCollections?.map((collection) => {
-        const isSelected = collection?._id === selectedCollectionId;
-        const isLoading = loadingCollectionIds?.includes(collection?._id);
-        return isLoading ? (
-          // Render skeleton if the collection is still loading
-          <ListItemSkeleton key={`loading-${collection?._id}`} />
-        ) : (
-          // Render actual collection item if it's not in loading state
-          <CollectionListItem
-            key={collection._id}
-            collection={collection}
-            handleSelect={handleSelect}
-            handleOpenDialog={handleOpenDialog}
-            roundToNearestTenth={roundToNearestTenth}
-            isSelected={isSelected}
-            classes={classes}
-            statsByCollectionId={statsByCollectionId}
-            isPlaceholder={false}
-          />
-        );
-      })}
-    </List>
-  );
-};
-
-SelectCollectionList.propTypes = {
-  onSave: PropTypes.func.isRequired,
-  openDialog: PropTypes.func.isRequired,
-  handleSelectCollection: PropTypes.func.isRequired,
-  isLoadingNewCollection: PropTypes.bool,
-  allCollections: PropTypes.array.isRequired, // Ensure this is passed or obtained from context
-};
-
-export default SelectCollectionList;
+// useEffect(() => {
+//   if (isLoadingNewCollection) {
+//     setLoading('isLoading', true);
+//     const newCollectionId = allCollections[allCollections?.length - 1]?._id;
+//     if (newCollectionId) {
+//       setLoadingCollectionIds((prev) => [...prev, newCollectionId]);
+//       setLoading('isLoading', false);
+//     }
+//     setMap(newCollectionId, true); // Set loading state for new collection
+//   }
+// }, [isLoadingNewCollection, allCollections, setMap]);
+// Effect to remove loading state once collection is considered "loaded"
+// useEffect(() => {
+//   // Define a method to "load" collection, maybe after a fetch or certain condition
+//   const loadCollection = (collectionId) => {
+//     setLoadingCollectionIds((prev) =>
+//       prev.filter((id) => id !== collectionId)
+//     );
+//   };
+//   loadingCollectionIds?.forEach((collectionId) => {
+//     setTimeout(() => loadCollection(collectionId), 1000); // simulate delay
+//   });
+// }, [loadingCollectionIds]);
+// useEffect(() => {
+//   fetchAllCollectionsForUser().catch((err) =>
+//     console.error('Failed to get all collections:', err)
+//   );
+// }. [fetchAllCollectionsForUser]);

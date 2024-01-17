@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Box } from '@mui/material';
 import AppsIcon from '@mui/icons-material/Apps';
 import SelectDeckList from '../../components/grids/deckBuilderGrids/SelectDeckList';
-import useDeckStyles from '../../context/hooks/useDeckStyles';
+import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
 
 const DeckListToggle = ({
   showAllDecks,

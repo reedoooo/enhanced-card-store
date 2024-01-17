@@ -2,23 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogContent } from '@mui/material';
 import CollectionForm from '../forms/CollectionForm';
+import { useCollectionStore } from '../../context';
 
-const CollectionDialog = ({
-  isDialogOpen,
-  closeDialog,
-  onSave,
-  isNew,
-  initialName = '',
-  initialDescription = '',
-}) => {
+const CollectionDialog = ({ isDialogOpen, closeDialog, isNew }) => {
+  const { createUserCollection } = useCollectionStore();
+
   return (
     <Dialog open={isDialogOpen} onClose={closeDialog}>
       <DialogContent>
-        <CollectionForm
-          onSave={onSave}
-          isNew={isNew}
-          isDialogOpen={isDialogOpen}
-        />
+        <CollectionForm onSave={createUserCollection} isNew={isNew} />
       </DialogContent>
     </Dialog>
   );
@@ -27,10 +19,7 @@ const CollectionDialog = ({
 CollectionDialog.propTypes = {
   isDialogOpen: PropTypes.bool.isRequired,
   closeDialog: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
-  initialName: PropTypes.string,
-  initialDescription: PropTypes.string,
 };
 
 export default CollectionDialog;

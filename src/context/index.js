@@ -16,8 +16,8 @@ export { useStatisticsStore } from './StatisticsContext/StatisticsContext';
 export { useCardImages } from './CardImagesContext/CardImagesContext';
 export { useAuthContext } from './AuthContext/authContext';
 export { usePageContext } from './PageContext/PageContext';
-export { useMode } from './hooks/colormode';
 export { useFormContext } from './FormContext/FormContext';
+export { useMode } from './ColorModeContext/useMode';
 
 // Contexts
 export { default as ErrorBoundary } from './ErrorBoundary';

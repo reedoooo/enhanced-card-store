@@ -71,7 +71,6 @@ const CardChart = ({ cardData = initialCardData }) => {
   const { selectedCollection, allCollections } = useCollectionStore();
   const [imageUrl, setImageUrl] = useState(null);
   const [error, setError] = useState(null);
-
   const { startUpdates, pauseUpdates, resetData } =
     useCardCronJob(initialCardData);
   const formatTimestamp = (timestamp) =>
@@ -83,20 +82,30 @@ const CardChart = ({ cardData = initialCardData }) => {
   });
   const { setLoading, loadingStatus, returnDisplay } = usePageContext();
   if (!cardData || !cardData?.dailyPriceHistory) {
-    setLoading('isLoading', true);
+    console.log('Card data not found', cardData);
+    // setLoading('isLoading', true);
   }
   const safeCardData = cardData || { dailyPriceHistory: [] };
   const dailyPriceHistory = safeCardData?.dailyPriceHistory;
 
-  useEffect(() => {
-    const shouldLoad =
-      !cardData ||
-      !cardData?.dailyPriceHistory ||
-      !cardData.dailyPriceHistory.length;
-    if (shouldLoad !== loadingStatus.isLoading) {
-      setLoading('isLoading', shouldLoad);
-    }
-  }, [cardData, loadingStatus.isLoading, setLoading]); // Add loadingStatus.isLoading to dependencies
+  // effect for loading animation while data for chart is loading
+  // useEffect(() => {
+  //   // shouldLoad is true if cardData or cardData.dailyPriceHistory is null or empty
+  //   const shouldLoad =
+  //     !cardData ||
+  //     !cardData?.dailyPriceHistory ||
+  //     !cardData.dailyPriceHistory.length;
+  //   console.warn('Should load:', shouldLoad);
+  //   // Set loading status if shouldLoad is different from loadingStatus.isLoading
+  //   // if (shouldLoad !== loadingStatus.isLoading) {
+  //   //   setLoading('isLoading', shouldLoad);
+  //   // }
+  //   // if (shouldLoad) {
+  //   //   setLoading('isLoading', true);
+  //   // } else {
+  //   //   setLoading('isLoading', false);
+  //   // }
+  // }, [cardData, loadingStatus.isLoading, setLoading]); // Add loadingStatus.isLoading to dependencies
 
   // useEffect to set image state when cardData changes
   useEffect(() => {
@@ -113,14 +122,6 @@ const CardChart = ({ cardData = initialCardData }) => {
       })),
     [dailyPriceHistory] // dependency array
   );
-  // const chartData = useMemo(
-  //   () =>
-  //     cardData?.dailyPriceHistory?.map((entry) => ({
-  //       x: format(new Date(entry.timestamp), "MMM do, yyyy 'at' HH:mm"),
-  //       y: entry.num,
-  //     })) || [],
-  //   [cardData?.dailyPriceHistory]
-  // );
   const nivoReadyData = useMemo(
     () => [
       {
@@ -154,12 +155,7 @@ const CardChart = ({ cardData = initialCardData }) => {
   }, []); // Empty array ensures this effect runs only once after initial render
   // Simplified for demonstration
   const renderLoadingAnimation = () => {
-    return (
-      <LoadingCardAnimation
-        // ... your props for LoadingCardAnimation
-        selected={true}
-      />
-    );
+    return <LoadingCardAnimation selected={true} />;
   };
   const renderHeaderWithAnimation = () => {
     return (

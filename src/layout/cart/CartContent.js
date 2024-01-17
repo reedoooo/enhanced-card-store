@@ -5,7 +5,7 @@ import CartItem from '../../components/grids/gridItems/CartItem';
 import CartTotal from '../../components/other/dataDisplay/CartTotal';
 import { useCartStore } from '../../context/CartContext/CartContext';
 import Checkout from '../../containers/cartPageContainers/Checkout';
-import useResponsiveStyles from '../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
 
 const CartContent = () => {

@@ -1,6 +1,7 @@
 import jwt_decode from 'jwt-decode';
 
 // login status
+// export const LOGGED_IN_COOKIE = 'isLoggedIn';
 export const LOGGED_IN_COOKIE = false;
 // token
 export const AUTH_COOKIE = 'authToken';
@@ -27,19 +28,19 @@ export const validateData = (data, eventName, functionName) => {
 export const processResponseData = (response, type) => {
   // if (!validateData(data, `${type} Response`, `process${type}Data`))
   //   return null;
-  const { message, data } = response.data;
-  console.log('message --------------->', message);
-  const token = data?.token;
-  console.log('token --------------->', token);
-  if (!token) return null;
+  console.log('data --------------->', response);
+  if (!response.data.accessToken) return null;
   const processedData = {
-    token: token,
-    authData: jwt_decode(token),
-    basicData: data?.userBasicData,
-    securityData: data?.userSecurityData,
-    data: data,
-    message: message,
+    accessToken: response.data.accessToken,
+    refreshToken: response.data.refreshToken,
+    authData: jwt_decode(response.data.accessToken),
+    refreshData: jwt_decode(response.data.refreshToken),
+    basicData: response.data?.user?.userBasicData,
+    securityData: response.data?.user?.userSecurityData,
+    responseData: response.data,
   };
+  console.log('accessToken --------------->', processedData.accessToken);
+  console.log('refreshToken --------------->', processedData.refreshToken);
   console.log('processedData --------------->', processedData);
 
   return processedData;

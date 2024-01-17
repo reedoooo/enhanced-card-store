@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import { useMode } from '../../context/hooks/colormode';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { usePageContext } from '../../context/PageContext/PageContext';
-import { useTheme } from '@mui/styles';
+import { useTheme } from 'styled-components';
 import { useSpring, animated } from 'react-spring';
 import { PageLayout, PageHeader, PageContent } from '../../layout';
 import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
 import ThemeToggleButton from '../../components/reusable/buttons/ThemeToggleButton';
 import { FormWrapper, StyledTextField, StyledButton } from './styled';
-import { useFormContext } from '../../context';
+import { useFormContext, useMode } from '../../context';
 
 const EditUserProfileForm = () => {
   const { theme } = useMode();
@@ -27,27 +26,28 @@ const EditUserProfileForm = () => {
     event.preventDefault();
     handleSubmit('updateUserDataForm');
   };
-  useEffect(() => {
-    if (!userId) return;
+  // useEffect(() => {
+  //   if (!userId) return;
 
-    const initializeUser = async () => {
-      setIsPageLoading(true);
-      try {
-        if (!user || Object.keys(user).length === 0) {
-          await fetchUserData();
-        }
-      } catch (e) {
-        setPageError(e);
-      } finally {
-        setIsPageLoading(false);
-      }
-    };
+  //   const initializeUser = async () => {
+  //     setIsPageLoading(true);
+  //     try {
+  //       if (!user || Object.keys(user).length === 0) {
+  //         await fetchUserData();
+  //       }
+  //     } catch (e) {
+  //       setPageError(e);
+  //     } finally {
+  //       setIsPageLoading(false);
+  //     }
+  //   };
 
-    initializeUser();
-  }, [userId]);
+  //   initializeUser();
+  // }, [userId]);
 
   return (
-    <PageLayout>
+    <>
+      {/* <PageLayout> */}
       <PageHeader>
         <Typography variant="h4" color="primary">
           Edit User Settings
@@ -107,7 +107,8 @@ const EditUserProfileForm = () => {
           </StyledButton>
         </FormWrapper>
       </PageContent>
-    </PageLayout>
+      {/* </PageLayout> */}
+    </>
   );
 };
 

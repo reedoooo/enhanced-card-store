@@ -1,12 +1,19 @@
 import React from 'react';
-import { Box, Grid, Paper, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Grid,
+  Paper,
+  Skeleton,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import { useMode } from '../../../context';
 
 // Styled components
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
-  background: theme.palette.background.paper,
+  background: theme.palette.backgroundA.lightest,
   boxShadow: theme.shadows[2],
   borderRadius: theme.shape.borderRadius,
   transition: 'box-shadow 0.3s',
@@ -17,19 +24,26 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const StatisticHeader = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
-  color: theme.palette.primary.main,
+  color: theme.palette.backgroundA.dark,
   marginBottom: theme.spacing(1),
 }));
 
 const StatisticValue = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   fontSize: '2rem',
-  color: theme.palette.secondary.main,
+  color: theme.palette.backgroundA.lighter,
 }));
 
 const TotalValueOfCollectionsDisplay = ({ totalValue }) => {
-  // const theme = useTheme();
   const { theme } = useMode();
+
+  const renderValue = () => {
+    if (totalValue == null) {
+      // Checks if totalValue is null or undefined
+      return <Skeleton variant="text" width={200} height={60} />;
+    }
+    return `$${totalValue.toFixed(2)}`;
+  };
 
   return (
     <Grid item xs={12} sm={4}>
@@ -39,7 +53,7 @@ const TotalValueOfCollectionsDisplay = ({ totalValue }) => {
         </StatisticHeader>
         <Box sx={{ height: '100%' }}>
           <StatisticValue variant="h2" theme={theme}>
-            ${totalValue.toFixed(2)}
+            {renderValue()}
           </StatisticValue>
         </Box>
       </StyledPaper>

@@ -40,8 +40,8 @@ export const CartProvider = ({ children }) => {
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
   });
-  const [cookies, setCookie] = useCookies(['authUser', 'cart', 'cartData']);
-  const userId = cookies?.authUser?.userId;
+  const [cookies, setCookie] = useCookies(['authUser', 'isLoggedIn', 'userId']);
+  const { authUser, isLoggedIn, userId } = cookies;
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -98,9 +98,10 @@ export const CartProvider = ({ children }) => {
       setCartDataAndCookie(response);
     } catch (error) {
       console.error('Error fetching user cart:', error);
-      if (error.message.includes('404')) {
-        await createUserCart();
-      }
+      // if (error.message.includes('404')) {
+      //   console.log('404 ERROR', error);
+      //   // await createUserCart();
+      // }
     }
   }, [userId]);
 
@@ -126,7 +127,7 @@ export const CartProvider = ({ children }) => {
 
   // useEffect to fetch and set cart data
   useEffect(() => {
-    if (userId) {
+    if (userId && isLoggedIn) {
       fetchUserCart().catch((error) =>
         console.error('Failed to fetch or create cart:', error)
       );
@@ -193,39 +194,52 @@ export const CartProvider = ({ children }) => {
     },
     [userId, setCartDataAndCookie] // dependencies array
   );
+  const updateItemQuantity = (cart, cardInfo, increment = true) => {
+    const itemIndex = cart.findIndex((item) => item.id === cardInfo.id);
+
+    // If item is found in the cart
+    if (itemIndex !== -1) {
+      const existingItem = cart[itemIndex];
+      const updatedQuantity = increment
+        ? existingItem.quantity + 1
+        : existingItem.quantity - 1;
+
+      // Update item's quantity and total price or remove if quantity is 0
+      if (updatedQuantity > 0) {
+        cart[itemIndex] = {
+          ...existingItem,
+          quantity: updatedQuantity,
+          totalPrice: updatedQuantity * existingItem.price,
+        };
+      } else {
+        cart.splice(itemIndex, 1); // Remove the item if quantity becomes 0
+      }
+    } else if (increment) {
+      // Add new item if it doesn't exist in the cart
+      cart.push({
+        ...cardInfo,
+        quantity: 1,
+        totalPrice: cardInfo.price,
+      });
+    }
+
+    return cart;
+  };
   const addOneToCart = useCallback(
     async (cardInfo) => {
       if (!cartData._id) return;
 
-      const existingItem = cartData?.cart?.find(
-        (item) => item.id === cardInfo.id
+      const updatedCart = updateItemQuantity(
+        [...cartData.cart],
+        cardInfo,
+        true
       );
-      const updatedExistingItem = {
-        ...cardInfo,
-        quantity: existingItem ? existingItem.quantity + 1 : 1,
-        totalPrice: existingItem
-          ? existingItem.totalPrice + existingItem.price
-          : 1,
-      };
-      const updatedCart = cartData?.cart?.map((item) => {
-        return item.id === cardInfo.id ? updatedExistingItem : item;
-      });
+      const method = 'PUT'; // Always 'PUT' because we're updating the cart
 
-      let newItem = {
-        ...cardInfo,
-        quantity: 1,
-        totalPrice: cardInfo.price,
-      };
-      if (!existingItem) {
-        updatedCart.push(newItem); // New item
-      }
-
-      const method = existingItem ? 'PUT' : 'POST'; // Decide method based on whether the item exists
       const updatedCartData = await updateCart(
         cartData._id,
         updatedCart,
         method
-        // updatedExistingItem ? updatedExistingItem : newItem
       );
       if (updatedCartData) setCartData(updatedCartData);
     },
@@ -233,37 +247,14 @@ export const CartProvider = ({ children }) => {
   );
   const removeOneFromCart = useCallback(
     async (cardInfo) => {
-      const existingItemIndex = cartData.cart.findIndex(
-        (item) => item.id === cardInfo.id
+      const updatedCart = updateItemQuantity(
+        [...cartData.cart],
+        cardInfo,
+        false
       );
+      const method =
+        updatedCart.length < cartData.cart.length ? 'DELETE' : 'PUT';
 
-      if (existingItemIndex === -1) {
-        console.error('Item not found in cart');
-        return; // Item not found in cart
-      }
-
-      const existingItem = cartData.cart[existingItemIndex];
-
-      // Decrement quantity or remove item from cart
-      let updatedCart;
-      let method;
-      if (existingItem.quantity > 1) {
-        // Decrement quantity by 1
-        updatedCart = cartData?.cart?.map((item, index) =>
-          index === existingItemIndex
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        );
-        method = 'PUT'; // Update the item quantity
-      } else {
-        // Remove item from cart as its quantity will be 0
-        updatedCart = cartData.cart.filter(
-          (item, index) => index !== existingItemIndex
-        );
-        method = 'DELETE'; // Remove the item from the cart
-      }
-
-      // Update the cart with new data
       const updatedCartData = await updateCart(
         cartData._id,
         updatedCart,
@@ -271,7 +262,7 @@ export const CartProvider = ({ children }) => {
       );
       if (updatedCartData) setCartData(updatedCartData);
     },
-    [cartData, updateCart, setCartData] // dependencies array
+    [cartData, updateCart, setCartData]
   );
   const deleteFromCart = useCallback(
     async (cardInfo) => {

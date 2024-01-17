@@ -13,7 +13,7 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(4),
-    backgroundColor: theme.palette.background.default, // Choose a subtle color
+    backgroundColor: theme.palette.backgroundB.lightest, // Choose a subtle color
     color: theme.palette.text.primary,
     boxShadow: theme.shadows[5],
     '@media (max-width:600px)': {
@@ -30,7 +30,7 @@ export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   flexDirection: 'column',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.backgroundA.lightest,
 }));
 
 export const FormWrapper = styled('form')`
@@ -94,7 +94,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   color: theme.palette.backgroundA.darkest,
   width: '100%',
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.backgroundA.lightest,
   // boxShadow: theme.shadows[1],
   boxShadow: `0px 2px 4px -1px ${theme.palette.grey[400]}`,
   marginBottom: theme.spacing(2),
@@ -113,8 +113,8 @@ export const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background: theme.palette.primary.main, // Or any other appropriate color
-  color: theme.palette.primary.contrastText,
+  background: theme.palette.backgroundA.dark, // Or any other appropriate color
+  color: theme.palette.backgroundA.contrastTextA,
   padding: theme.spacing(2),
   display: 'flex',
   justifyContent: 'space-between',
@@ -124,6 +124,6 @@ export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     fontWeight: 'bold',
   },
   '& .MuiIconButton-root': {
-    color: theme.palette.primary.contrastText, // Ensure it stands out or matches
+    color: theme.palette.backgroundA.contrastTextA, // Ensure it stands out or matches
   },
 }));

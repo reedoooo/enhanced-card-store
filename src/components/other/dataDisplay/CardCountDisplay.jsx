@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 // Styled components
 const StyledGrid = styled(Grid)(({ theme }) => ({
   padding: theme.spacing(1),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.backgroundA.lightest,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[2],
   textAlign: 'center',

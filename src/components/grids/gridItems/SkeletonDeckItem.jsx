@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, CardContent, Skeleton } from '@mui/material';
-import { styled } from '@mui/styles';
+import styled from 'styled-components';
 const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   // Use the same styles as in StyledCard
   display: 'flex',
@@ -9,7 +9,7 @@ const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   maxWidth: '100%',
   width: 'auto',
   maxHeight: '80vh',
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.backgroundA.lightest,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
   transition: 'transform 0.3s ease-in-out',

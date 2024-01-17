@@ -3,7 +3,7 @@ import { Grid, Container } from '@mui/material';
 import CustomPagination from '../../reusable/CustomPagination';
 import { useCardStore, useMode } from '../../../context';
 import SkeletonStoreItem from '../gridItems/SkeletonStoreItem'; // A new component for skeleton screens
-import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import GridLayout from './GridLayout';
 import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
 import StoreItem from '../gridItems/StoreItem';

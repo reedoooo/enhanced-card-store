@@ -1,8 +1,15 @@
 import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
-import useResponsiveStyles from '../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../context/hooks/style-hooks/useResponsiveStyles';
+import { useTheme } from 'styled-components';
+
 import { useMode } from '../../context';
-import { useTheme } from '@mui/styles';
+import {
+  CardDetailContainer,
+  CardIconWrapper,
+  CardTitleStyle,
+  CardValueStyle,
+} from './styles/cardStyles';
 
 const CardDetail = ({
   title,
@@ -17,55 +24,6 @@ const CardDetail = ({
   const { getHeaderStyle, getButtonTypographyVariant } =
     useResponsiveStyles(theme);
 
-  const styles = {
-    cardDetailContainer: {
-      padding: theme.spacing(2),
-      borderRadius: theme.shape.borderRadius,
-      boxShadow: `0 4px 8px 0 ${theme2.palette.shadow}`,
-      backgroundColor: theme.palette.background.paper,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-      transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-      '&:hover': {
-        transform: 'scale(1.03)',
-        boxShadow: `0 6px 12px 0 ${theme.palette.shadow}`,
-      },
-    },
-    iconWrapper: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: theme.spacing(4),
-      width: theme.spacing(4),
-      borderRadius: '50%',
-      backgroundColor: theme.palette.secondary.main,
-      color: theme.palette.secondary.contrastText,
-      marginRight: theme.spacing(1),
-      '& svg': {
-        fontSize: theme.typography.pxToRem(20),
-      },
-    },
-    titleStyle: {
-      fontWeight: 700,
-      color: theme.palette.text.primary,
-      textTransform: 'uppercase',
-    },
-    valuesContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: theme.spacing(1),
-      backgroundColor: theme.palette.background.paper,
-    },
-    valueStyle: {
-      fontWeight: 400,
-      color: theme.palette.text.secondary,
-    },
-    chipStyle: {
-      // Additional styles for chips can go here
-    },
-  };
   const getChipColor = (rarity) => {
     switch (rarity) {
       case 'Common':
@@ -99,16 +57,16 @@ const CardDetail = ({
     }
   };
   return (
-    <Box className={className} sx={styles.cardDetailContainer}>
-      {icon && <Box sx={styles.iconWrapper}>{icon}</Box>}
+    <CardDetailContainer theme={theme}>
+      {icon && <CardIconWrapper theme={theme}>{icon}</CardIconWrapper>}
       <Typography variant="subtitle1">
-        <span style={styles.titleStyle}>{title}:</span>
-        <span style={styles.valueStyle}> {value || 'N/A'}</span>
+        <CardTitleStyle theme={theme}>{title}:</CardTitleStyle>
+        <CardValueStyle theme={theme}> {value || 'N/A'}</CardValueStyle>
       </Typography>
       {/* {value && <span style={styles.valueStyle}> {value || 'N/A'}</span>}
       {icon && <Box sx={styles.iconWrapper}>{icon}</Box>} */}
 
-      <Box sx={styles.valuesContainer}>
+      <Box>
         {values && Array.isArray(values)
           ? values.map((rarityvalue, index) => (
               <Chip
@@ -126,7 +84,7 @@ const CardDetail = ({
             ))
           : 'N/A'}
       </Box>
-    </Box>
+    </CardDetailContainer>
   );
 };
 

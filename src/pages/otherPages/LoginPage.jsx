@@ -10,7 +10,8 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginForm from '../../components/forms/LoginForm';
 import { useAuthContext, useMode } from '../../context';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 function Copyright(props) {
   return (
@@ -33,11 +34,28 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
-  const { theme } = useMode();
-  const [cookie, setCookie] = React.useState('isLoggedIn');
-  // const { isLoggedIn } = useAuthContext();
+  const navigate = useNavigate();
 
-  if (cookie.isLoggedIn) return <Navigate to="/" />;
+  const { theme } = useMode();
+  const { isLoggedIn } = useAuthContext();
+  const [cookies, setCookies, removeCookies] = useCookies(['authUser']);
+  const previousIsLoggedIn = React.useRef(isLoggedIn);
+
+  React.useEffect(() => {
+    // Check if isLoggedIn status has changed
+    if (isLoggedIn && !previousIsLoggedIn.current) {
+      // User just logged in
+      navigate('/');
+    } else if (!isLoggedIn && previousIsLoggedIn.current) {
+      // User just logged out
+      navigate('/login');
+    }
+    // Update the ref to the current isLoggedIn status
+    previousIsLoggedIn.current = isLoggedIn;
+  }, [isLoggedIn, navigate]);
+
+  if (isLoggedIn) return null; // Don't render anything if already logged in
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>

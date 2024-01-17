@@ -11,36 +11,38 @@ import {
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
-import { useMode } from '../../../context/hooks/colormode';
-import { makeStyles, styled } from '@mui/styles';
+import { styled } from 'styled-components';
+
 import { MainContainer } from '../../../pages/pageStyles/StyledComponents';
-import CarouselCard from '../../../assets/cleanup/CarouselCard';
+import CarouselCard from '../../cards/CarouselCard';
 import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
-const useStyles = makeStyles((theme) => ({
-  stepper: {
-    background: theme.palette.background.main,
-    border: `1px solid ${theme.palette.background.quaternary}`,
-    borderRadius: theme.shape.borderRadiusLarge,
-    color: theme.palette.success.light,
-    overflow: 'hidden',
-    padding: theme.spacing(1),
-    height: '100%',
-    '@media (max-width: 600px)': {
-      width: '100%', // Full width on mobile screens
-      padding: theme.spacing(0.5), // Reduced padding on mobile
-    },
+import { useMode } from '../../../context';
+
+const StyledStepper = styled(MobileStepper)(({ theme }) => ({
+  background: theme.palette.backgroundB.dark,
+  border: `1px solid ${theme.palette.backgroundB.lighter}`,
+  borderRadius: theme.shape.borderRadiusLarge,
+  color: theme.palette.success.light,
+  overflow: 'hidden',
+  padding: theme.spacing(1),
+  height: '100%',
+  '@media (max-width: 600px)': {
+    width: '100%', // Full width on mobile screens
+    padding: theme.spacing(0.5), // Reduced padding on mobile
   },
-  cardDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  swipeableView: {
-    '@media (max-width: 600px)': {
-      width: '100%', // Full width on mobile screens
-      overflow: 'hidden', // Hide overflow on mobile
-    },
+}));
+
+const StyledCardDetails = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
+const StyledSwipeableView = styled(SwipeableViews)(({ theme }) => ({
+  '@media (max-width: 600px)': {
+    width: '100%', // Full width on mobile screens
+    overflow: 'hidden', // Hide overflow on mobile
   },
 }));
 
@@ -49,7 +51,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   flexDirection: 'column',
   height: '100%',
   alignItems: 'center',
-  background: theme.palette.background.dark,
+  background: theme.palette.backgroundB.darker,
   borderRadius: theme.shape.borderRadiusLarge,
   padding: theme.spacing(3),
   color: '#fff',
@@ -64,7 +66,6 @@ const TopCardsDisplay = () => {
   const { selectedCollection } = useCollectionStore();
   const [top5Cards, setTop5Cards] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-  const classes = useStyles();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
@@ -100,28 +101,26 @@ const TopCardsDisplay = () => {
       <Grid item xs={12}>
         <Box
           sx={{
-            background: theme.palette.background.dark,
+            background: theme.palette.backgroundB.darker,
           }}
         >
-          <SwipeableViews
+          <StyledSwipeableView
             axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
             index={activeStep}
             onChangeIndex={setActiveStep}
             enableMouseEvents
-            className={classes.swipeableView}
           >
             {top5Cards?.map((card, index) => (
               <MainContainer key={index}>
                 <CarouselCard card={card} />
               </MainContainer>
             ))}
-          </SwipeableViews>
-          <MobileStepper
+          </StyledSwipeableView>
+          <StyledStepper
             steps={maxSteps}
             theme={theme}
             position="static"
             activeStep={activeStep}
-            className={classes.stepper}
             nextButton={
               <Button
                 size="small"

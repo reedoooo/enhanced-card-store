@@ -21,7 +21,7 @@ export const initialState = {
 export const generateListOfMonitoredCards = (allCollections) => {
   if (!allCollections) return [];
 
-  const cardsWithCollectionId = allCollections.flatMap((collection) =>
+  const cardsWithCollectionId = allCollections?.flatMap((collection) =>
     collection?.cards?.map((card) => ({
       ...card,
       collectionId: collection._id,

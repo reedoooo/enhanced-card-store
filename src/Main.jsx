@@ -1,15 +1,7 @@
-// Note: Main App Component
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  // useNavigate,
-} from 'react-router-dom';
-import { Helmet } from 'react-helmet';
-
-// Component and Page Imports
-import Header from './components/headings/header/Header';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useMediaQuery } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import PrivateRoute from './components/reusable/PrivateRoute';
 import LoginDialog from './components/dialogs/LoginDialog';
 import {
@@ -23,160 +15,254 @@ import {
   LoginPage,
 } from './pages';
 import {
-  useCollectionStore,
-  useDeckStore,
   useAuthContext,
   usePageContext,
+  useMode,
+  useSidebarContext,
 } from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
-import { useCookies } from 'react-cookie';
-import useDialog from './context/hooks/useDialog';
-import useSnackBar from './context/hooks/useSnackBar';
+
+// Layout imports
+import SideBar from './layout/headings/navigation/SideBar.jsx';
+import TopBar from './layout/headings/navigation/TopBar.jsx';
+import getMenuItemsData from './layout/headings/header/menuItemsData.jsx';
+
+const ROUTE_CONFIG = [
+  { path: '/', component: HomePage, isPrivate: false },
+  { path: '/home', component: HomePage, isPrivate: false },
+  { path: '/store', component: StorePage, isPrivate: false },
+  { path: '/cart', component: CartPage, isPrivate: true },
+  { path: '/userprofile', component: ProfilePage, isPrivate: true },
+  { path: '/collection', component: CollectionPage, isPrivate: true },
+  { path: '/deckbuilder', component: DeckBuilderPage, isPrivate: true },
+  { path: '/profile', component: ProfilePage, isPrivate: false },
+  { path: '/login', component: LoginPage, isPrivate: false },
+  { path: '*', component: NotFoundPage, isPrivate: false },
+];
 
 const Main = () => {
-  const [cookies] = useCookies(['authUser']);
-  const authUser = cookies?.authUser;
-  const { isLoggedIn, resetLogoutTimer } = useAuthContext();
-  const { loadingStatus, returnDisplay, setLoading } = usePageContext();
-  const { fetchAllCollectionsForUser } = useCollectionStore();
-  const { fetchAllDecksForUser } = useDeckStore();
-  const handleSnackBar = useSnackBar()[1];
+  const { theme } = useMode();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const { resetLogoutTimer, logout, authUser, userId, isLoggedIn } =
+    useAuthContext();
+  const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
+  const menuItemsData = getMenuItemsData(isLoggedIn);
 
-  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
-    useDialog(handleSnackBar); // Assuming false represents the logged-in state
-
-  const routeConfig = [
-    { path: '/', component: HomePage, isPrivate: false },
-    { path: '/home', component: HomePage, isPrivate: false },
-    { path: '/store', component: StorePage, isPrivate: false },
-    { path: '/cart', component: CartPage, isPrivate: true },
-    { path: '/userprofile', component: ProfilePage, isPrivate: true },
-    { path: '/collection', component: CollectionPage, isPrivate: true },
-    { path: '/deckbuilder', component: DeckBuilderPage, isPrivate: true },
-    { path: '/profile', component: ProfilePage, isPrivate: false },
-    { path: '/login', component: LoginPage, isPrivate: false },
-    { path: '*', component: NotFoundPage, isPrivate: false },
-  ];
-  // const [showLoginDialog, setShowLoginDialog] = useState(!isLoggedIn);
-  const fetchData = async () => {
-    setLoading('isPageLoading', true);
-    try {
-      await Promise.all([fetchAllCollectionsForUser(), fetchAllDecksForUser()]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading('isPageLoading', false);
-    }
+  const handleDrawerToggle = () => {
+    toggleSidebar();
   };
-  const renderHelmet = () => {
-    console.log('Rendering helmet...');
+  const renderRoutes = () => {
     return (
-      <Helmet>
-        {/* Basic */}
-        <title>Your Website Title</title>
-        <meta name="description" content="Description of your site or page" />
-        <link rel="canonical" href="http://mysite.com/example" />
-        <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
-
-        {/* SEO */}
-        <meta name="keywords" content="your, tags" />
-        {/* Social Media */}
-        <meta property="og:title" content="Title Here" />
-        <meta property="og:description" content="Description Here" />
-        <meta
-          property="og:image"
-          content="http://mysite.com/path/to/image.jpg"
-        />
-        <meta property="og:url" content="http://mysite.com" />
-        <meta name="twitter:card" content="summary_large_image" />
-
-        {/* Responsive and mobile */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        {/* Additional links and styles */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
-          rel="stylesheet"
-        />
-
-        {/* Specify language and character set */}
-        <html lang="en" />
-        <meta charSet="utf-8" />
-
-        {/* Scripts */}
-        {/* Example: Add a script needed for a service or functionality */}
-        {/* <script src="https://cdn.service.com/library.js"></script> */}
-      </Helmet>
+      <Routes>
+        {ROUTE_CONFIG.map(
+          ({ path, component: Component, isPrivate }, index) => (
+            <Route
+              key={index}
+              path={path}
+              element={
+                isPrivate ? (
+                  <PrivateRoute>
+                    <Component />
+                  </PrivateRoute>
+                ) : (
+                  <Component />
+                )
+              }
+            />
+          )
+        )}
+      </Routes>
     );
   };
-  const renderRoutes = () => (
-    <Routes>
-      {routeConfig.map(({ path, component: Component, isPrivate }, index) => (
-        <Route
-          key={index}
-          path={path}
-          element={
-            isPrivate ? (
-              <PrivateRoute>
-                <Component />
-              </PrivateRoute>
-            ) : (
-              <Component />
-            )
-          }
-        />
-      ))}
-    </Routes>
-  );
-  const renderLoginDialog = () => {
-    console.log('Auth user not found, rendering login dialog...', authUser);
-    return <LoginDialog />;
-  };
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     resetLogoutTimer();
-  //     fetchData(); // Fetch data when the user is logged in
-  //   }
-  // }, [isLoggedIn, resetLogoutTimer, fetchData]); // Remove authUser from dependencies
-
-  // useEffect(() => {
-  //   // Manage login dialog based on isLoggedIn status
-  //   if (isLoggedIn && isLoginDialogOpen) {
-  //     closeLoginDialog();
-  //   } else if (!isLoggedIn && !isLoginDialogOpen) {
-  //     openLoginDialog();
-  //   }
-  // }, [isLoggedIn, isLoginDialogOpen, openLoginDialog, closeLoginDialog]);
-
   return (
-    <>
-      {renderHelmet()}
+    <React.Fragment>
       {!authUser ? (
-        renderLoginDialog()
+        <LoginDialog open={!isLoggedIn} />
       ) : (
         <AppContainer>
-          {/* {authUser} */}
-
-          <Header />
-          {/* {returnDisplay()} */}
+          <TopBar
+            isMobileView={isMobileView}
+            isLoggedIn={isLoggedIn}
+            handleDrawer={handleDrawerToggle}
+          />
+          <SideBar
+            isLoggedIn={isLoggedIn}
+            handleLogout={logout}
+            handleDrawer={handleDrawerToggle}
+            isOpen={isOpen}
+            isMobileView={isMobileView}
+            menuItemsData={menuItemsData}
+          />
           {renderRoutes()}
-          {/* <Routes>
-            {renderRoutes(routeConfig)} {/* Use the renderRoutes function */}
-          {/* </Routes>  */}
-          {/* {snackbar} */}
         </AppContainer>
       )}
-    </>
+    </React.Fragment>
   );
 };
 
 export default Main;
+// useEffect(() => {
+//   if (isMobileView) setIsOpen(false);
+// }, [isMobileView, setIsOpen]);
+// useEffect(() => {
+//   if (!isLoggedIn) {
+//     // Option 1: Redirect to login page
+//     navigate('/login');
+
+//     // Option 2: Open login dialog
+//     toggleLoginDialog(); // Assuming toggleLoginDialog controls the dialog state
+//   }
+// }, [isLoggedIn, navigate, toggleLoginDialog]);
+// useEffect(() => {
+//   if (isLoggedIn && !prevIsLoggedInRef.current) {
+//     resetLogoutTimer();
+//     fetchDataIfLoggedIn();
+//   }
+//   prevIsLoggedInRef.current = isLoggedIn;
+// }, [isLoggedIn, resetLogoutTimer, fetchDataIfLoggedIn]);
+// const { isDialogOpen } = useDialog(handleSnackBar); // Assuming false represents the logged-in state
+// const { getAllCollectionsForUser } = useCollectionStore();
+// const { fetchAllDecksForUser } = useDeckStore();
+// const fetchDataIfLoggedIn = async () => {
+//   if (isLoggedIn && userId) {
+//     setLoading('isPageLoading', true);
+//     try {
+//       await Promise.all([getAllCollectionsForUser(), fetchAllDecksForUser()]);
+//     } catch (error) {
+//       console.error('Error fetching data:', error);
+//       // You might also want to handle the error state here
+//     } finally {
+//       setLoading('isPageLoading', false); // Ensure this is being called
+//     }
+//   }
+// };
+// const renderRoutes = () => {
+//   return (
+//     <Box sx={{ display: 'flex' }}>
+//       <CssBaseline />
+//       <StyledAppBar position="relative" theme={theme}>
+//         <StyledToolbar theme={theme}>
+//           {isMobileView ? (
+//             <Box
+//               sx={{
+//                 width: 228,
+//                 display: 'flex',
+//                 [theme.breakpoints.down('md')]: {
+//                   width: 'auto',
+//                 },
+//               }}
+//             >
+//               {/* logo section */}
+//               <Box
+//                 component="span"
+//                 sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}
+//               >
+//                 <LogoSection />
+//               </Box>
+//               {menuItemsData?.items?.map((item) => (
+//                 <MenuItemComponent
+//                   key={item?.id}
+//                   item={item}
+//                   onClick={modifiedToggleSidebar}
+//                 />
+//               ))}
+
+//               {/* user icon */}
+//               <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
+//                 <Avatar
+//                   variant="rounded"
+//                   sx={{
+//                     ...theme.typography.commonAvatar,
+//                     ...theme.typography.mediumAvatar,
+//                     transition: 'all .2s ease-in-out',
+//                     background: theme.palette.secondary.light,
+//                     color: theme.palette.secondary.dark,
+//                     '&:hover': {
+//                       background: theme.palette.secondary.dark,
+//                       color: theme.palette.secondary.light,
+//                     },
+//                   }}
+//                   onClick={modifiedToggleSidebar}
+//                   color="inherit"
+//                 ></Avatar>
+//               </ButtonBase>
+//               {/* menu icon */}
+//               <IconButton
+//                 edge="start"
+//                 color="inherit"
+//                 aria-label="menu"
+//                 onClick={modifiedToggleSidebar}
+//               >
+//                 <MenuIcon />
+//               </IconButton>
+//             </Box>
+//           ) : (
+//             menuItemsData?.items?.map((item) => (
+//               <MenuItemComponent
+//                 key={item?.id}
+//                 item={item}
+//                 onClick={modifiedToggleSidebar}
+//               />
+//             ))
+//           )}
+//           <IconButton
+//             edge="end"
+//             color="inherit"
+//             aria-label={isLoggedIn ? 'logout' : 'login'}
+//             onClick={logout}
+//           >
+//             {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+//           </IconButton>
+//           {/* <NotificationSection /> */}
+//           <ProfileSection />
+//         </StyledToolbar>
+//       </StyledAppBar>{' '}
+//       <SideBar
+//         // login management
+//         isLoggedIn={isLoggedIn}
+//         handleLogout={logout}
+//         // drawer management
+//         handleDrawer={modifiedToggleSidebar}
+//         // topBarUp={topBarUp} // Pass the topBarUp state
+//         isOpen={isOpen}
+//         isMobileView={isMobileView}
+//         menuItemsData={menuItemsData}
+//       />{' '}
+//       {/* main content */}
+//       {/* <Main theme={theme} open={leftDrawerOpened}>
+//       {/* breadcrumb */}
+//       {/* <Breadcrumbs
+//         separator={IconChevronRight}
+//         navigation={navigation}
+//         icon
+//         title
+//         rightAlign
+//       />
+//       <Outlet />
+//     </Main>
+//     <Customization /> */}{' '}
+//       {/* <Routes>
+//         {routeConfig.map(
+//           ({ path, component: Component, isPrivate }, index) => (
+//             <Route
+//               key={index}
+//               path={path}
+//               element={
+//                 isPrivate ? (
+//                   <PrivateRoute>
+//                     <Component />
+//                   </PrivateRoute>
+//                 ) : (
+//                   <Component />
+//                 )
+//               }
+//             />
+//           )
+//         )}
+//       </Routes> */}
+//     </Box>
+//   );
+// };
 // useEffect(() => {
 //   if (userId) setupEventListeners();
 //   return () => {

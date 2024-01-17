@@ -1,12 +1,8 @@
 import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
-import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
-import CustomerForm from '../components/forms/customerCheckoutForm/CustomerForm';
 import CartContent from '../layout/cart/CartContent';
 import { useCartStore, useMode, usePageContext } from '../context';
-import PageLayout from '../layout/PageLayout';
 import Checkout from '../containers/cartPageContainers/Checkout';
 import CartSummary from '../components/other/dataDisplay/CartSummary';
 
@@ -85,14 +81,14 @@ const CartPage = () => {
       sx={{
         width: '100%',
         height: '100%',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.backgroundA.lightest,
       }}
     >
       <CardContent
         sx={{
           width: '100%',
           height: '100%',
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.backgroundA.lightest,
         }}
       >
         <Grid container spacing={3}>
@@ -104,7 +100,8 @@ const CartPage = () => {
   );
 
   return (
-    <PageLayout>
+    <React.Fragment>
+      {/* <PageLayout> */}
       {loadingStatus?.isPageLoading && returnDisplay()}
       {loadingStatus?.isLoading && returnDisplay()}
       <Box
@@ -114,12 +111,13 @@ const CartPage = () => {
           m: 'auto',
           width: '100%',
           height: '100%',
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.backgroundA.lightest,
         }}
       >
         {renderCartLayout()}
       </Box>
-    </PageLayout>
+      {/* </PageLayout> */}
+    </React.Fragment>
   );
 };
 export default CartPage;

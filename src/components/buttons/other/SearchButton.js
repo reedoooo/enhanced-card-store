@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Grid } from '@mui/material';
 import { useCardStore } from '../../../context/CardContext/CardStore';
-import { useMode } from '../../../context/hooks/colormode';
 
 const SearchButton = ({ searchParams, handleSubmit }) => {
   // const { handleRequest } = useCardStore();
@@ -16,9 +15,9 @@ const SearchButton = ({ searchParams, handleSubmit }) => {
         sx={{
           mt: 1,
           mb: 1,
-          background: theme.palette.primary.main,
+          background: theme.palette.backgroundA.dark,
           '&:hover': {
-            background: theme.palette.primary.dark,
+            background: theme.palette.backgroundA.darker,
             boxShadow: 6,
           },
         }}

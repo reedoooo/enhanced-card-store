@@ -1,5 +1,5 @@
-import { useState, useMemo, createContext, useEffect } from 'react';
-import { createTheme } from '@mui/material/styles';
+import { useState, useMemo, createContext, useEffect, useContext } from 'react';
+import { createTheme } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { themeSettings } from '../../assets/themeSettings';
 

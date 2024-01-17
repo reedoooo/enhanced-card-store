@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 
 const useWindowSize = () => {
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 598);
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   useEffect(() => {
-    const updateView = () => {
-      setIsMobileView(window.innerWidth <= 598);
+    const handleResize = () => {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
     };
 
-    window.addEventListener('resize', updateView);
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      window.removeEventListener('resize', updateView);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  return isMobileView;
+  return size;
 };
 
 export default useWindowSize;

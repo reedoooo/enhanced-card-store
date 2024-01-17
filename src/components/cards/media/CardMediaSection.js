@@ -1,44 +1,14 @@
 import React, { useEffect, forwardRef, useState } from 'react';
 import { CardMedia, Popover, Popper } from '@mui/material';
 import CardToolTip from '../CardToolTip';
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { useModalContext, usePopoverContext } from '../../../context';
-
-const useStyles = makeStyles((theme) => ({
-  mediaContainer: {
-    cursor: 'pointer',
-    position: 'relative',
-  },
-  popover: {
-    pointerEvents: 'none',
-    height: 'auto',
-    width: 'auto',
-    maxWidth: '300px',
-    maxHeight: 'auto',
-  },
-  media: {
-    width: '100%',
-    height: 'auto',
-    flexGrow: 1,
-    alignItems: 'flex-end',
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(1),
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(1),
-    },
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(1),
-    },
-    [theme.breakpoints.down('lg')]: {
-      padding: theme.spacing(0.5),
-    },
-    [theme.breakpoints.down('xl')]: {
-      padding: theme.spacing(0.5),
-    },
-  },
-}));
+import {
+  MediaContainer,
+  Media,
+  MediaPopover,
+  Overlay,
+} from '../../../context/hooks/style-hooks/usePortfolioStyles';
 
 const anchorOrigin = {
   vertical: 'top',
@@ -63,7 +33,6 @@ const CardMediaSection = forwardRef(
     },
     ref
   ) => {
-    const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 
     // Handle overlay state and interaction
@@ -83,20 +52,18 @@ const CardMediaSection = forwardRef(
     }, [isHovered, ref]);
 
     return (
-      <div
-        className={classes.mediaContainer}
+      <MediaContainer
         ref={ref}
         {...(isRequired && {
-          onMouseEnter: () => handleInteraction(!isModalOpen ? true : false),
-          onMouseLeave: () => handleInteraction(false),
+          onMouseEnter: () => handleInteraction?.(!isModalOpen ? true : false), // Use optional chaining
+          onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
           onClick: () => {
             handleClick?.();
-            handleOverlayChange('newOverlayValue'); // Replace with actual value or function call
+            handleOverlayChange('newOverlayValue'); // Your existing logic
           },
         })}
       >
-        <CardMedia
-          className={classes.media}
+        <Media
           component="img"
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
@@ -104,24 +71,23 @@ const CardMediaSection = forwardRef(
 
         {/* Potentially additional elements for overlays and interactivity */}
         {overlay && (
-          <div className={classes.overlay}>
+          <Overlay>
             {' '}
             {/* Add styles and logic for overlay */}
             {overlay}
-          </div>
+          </Overlay>
         )}
 
         {anchorEl && isHovered && (
-          <Popper
-            className={classes.popover}
+          <MediaPopover
             open={isHovered}
             anchorEl={anchorEl}
             placement="right-start"
           >
             <CardToolTip card={card} />
-          </Popper>
+          </MediaPopover>
         )}
-      </div>
+      </MediaContainer>
     );
   }
 );

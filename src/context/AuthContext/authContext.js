@@ -1,504 +1,309 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+// /* eslint-disable @typescript-eslint/no-empty-function */
 import React, {
-  useState,
-  useEffect,
   useCallback,
-  useRef,
-  useContext,
+  useEffect,
   createContext,
+  useContext,
+  useRef,
   useMemo,
+  useState,
 } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { processResponseData } from './helpers';
 import { usePageContext } from '../PageContext/PageContext';
+import { processResponseData } from './helpers';
+import useLogger from '../hooks/useLogger';
+import useApiResponseHandler from '../hooks/useApiResponseHandler';
+import useFetchWrapper from '../hooks/useFetchWrapper';
+export const AuthContext = createContext();
 
-// export const AuthContext = React.createContext();
-export const AuthContext = createContext({
-  isLoggedIn: false,
-  authUser: null,
-  token: null,
-  user: null,
-  responseData: null,
-  login: () => {},
-  signup: () => {},
-  logout: () => {},
-  resetLogoutTimer: () => {},
-  setUser: () => {},
-  setIsLoggedIn: () => {},
-  setAuthUser: () => {},
-});
-export default function AuthProvider({ children, serverUrl }) {
-  const { setLoading } = usePageContext();
+const cookieOptions = { path: '/' };
+const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
+
+export default function AuthProvider({ children }) {
+  const { setIsDataLoading } = usePageContext();
+  const { logEvent } = useLogger('AuthContext');
+  const handleApiResponse = useApiResponseHandler();
+  const fetchWrapper = useFetchWrapper();
+  const [lastTokenCheck, setLastTokenCheck] = useState(Date.now());
+  const checkInterval = 120000; // 2 minutes in milliseconds
   const [cookies, setCookie, removeCookie] = useCookies([
-    'basicData',
-    'securityData',
+    'accessToken',
+    'refreshToken',
     'user',
+    'authUser',
+    'userBasicData',
+    'userSecurityData',
     'isLoggedIn',
     'userId',
-    'authUser',
-    'authToken',
-    'lastLogin',
-    'lastLogout',
   ]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [basicData, setBasicData] = useState(cookies.basicData);
-  const [securityData, setSecurityData] = useState(cookies.securityData);
-  const [user, setUser] = useState(cookies.user);
-  const [authUser, setAuthUser] = useState(cookies.authUser);
-  const [token, setToken] = useState(cookies.authToken);
-  const [responseData, setResponseData] = useState(null);
-  const lastLogin = useRef(null);
+  const [responseMessage, setResponseMessage] = useState('');
   const logoutTimerRef = useRef(null);
-  // function to set login times for tracking
-  const setLoginTimes = useCallback(() => {
-    lastLogin.current = new Date();
-    setCookie('lastLogin', lastLogin.current, { path: '/' });
-    setCookie('lastLogout', logoutTimerRef.current, { path: '/' });
-  }, [setCookie, logoutTimerRef]);
-  // value for tracking changes in login status
-  const [loginStatus, setLoginStatus] = useState({
-    isLoggedIn: isLoggedIn,
-    lastLogin: lastLogin.current,
-    lastLogout: logoutTimerRef.current,
-    authUser: authUser,
-    token: token,
-    user: user,
-  });
-  const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
+
+  // const setCookies = (data) => {
+  //   Object.entries(data).forEach(([key, value]) => {
+  //     logEvent('Setting cookie for: ', value);
+  //     setCookie(key, value, cookieOptions);
+  //   });
+  // };
 
   const executeAuthAction = async (actionType, url, requestData) => {
-    setLoading('isPageLoading', true);
+    setIsDataLoading(true);
     try {
+      // const response = await fetchWrapper(
+      //   `${REACT_APP_SERVER}/api/users/${url}`,
+      //   'POST',
+      //   requestData
+      // );
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/${url}`,
         requestData
       );
-      console.log('Response:', response);
-      const processedData = processResponseData(response, actionType);
+      setResponseMessage(response.data.message);
+      // const { data } = handleApiResponse(response.data, 'executeAuthAction');
       if (response.status === 200 || response.status === 201) {
         const {
-          token,
-          userData,
+          accessToken,
+          refreshToken,
           authData,
-          message,
-          data,
-          securityData,
           basicData,
-        } = processedData;
-        // console.log('Processed Data: ', data);
-        console.log('Processed Data Message: ', message);
-        console.log('Processed User Data: ', userData);
-        console.log('Processed Auth Data', authData);
-        console.log('Processed Token: ', token);
-        console.log('Processed Security Data: ', securityData);
-        console.log('Processed Basic Data: ', basicData);
-        setToken(token);
-        setBasicData(basicData);
-        setSecurityData(securityData);
-        setUser(data);
-        setAuthUser(authData);
-        setResponseData(data);
-        setIsLoggedIn(true);
-        setLoginTimes();
-        setLoginStatus({
-          isLoggedIn: isLoggedIn,
-          lastLogin: lastLogin.current,
-          lastLogout: logoutTimerRef.current,
-          authUser: authUser,
-          token: token,
-          user: user,
-        });
-
-        setCookie('authToken', token, { path: '/' });
-        setCookie('basicData', basicData, { path: '/' });
-        setCookie('securityData', securityData, { path: '/' });
-        setCookie('user', userData, { path: '/' });
-        setCookie('authUser', authData, { path: '/' });
+          securityData,
+          responseData,
+          refreshData,
+        } = processResponseData(response.data, actionType);
+        setCookie('accessToken', accessToken, { path: '/' });
+        setCookie('refreshToken', refreshToken, { path: '/' });
         setCookie('isLoggedIn', true, { path: '/' });
-        setCookie('userId', authData?.id, { path: '/' });
-        setCookie('lastLogin', lastLogin.current, { path: '/' });
-        setCookie('lastLogout', logoutTimerRef.current, { path: '/' });
+        setCookie('userBasicData', basicData, { path: '/' });
+        setCookie('userSecurityData', securityData, { path: '/' });
+        setCookie('user', responseData.user, { path: '/' });
+        setCookie('authUser', authData, { path: '/' });
+        setCookie('userId', authData.userId, { path: '/' });
+        resetLogoutTimer();
       }
     } catch (error) {
-      console.error('Auth error:', error);
+      logEvent('Auth error:', error);
     } finally {
-      setLoading('isPageLoading', false);
+      setIsDataLoading(false);
     }
   };
-  // LOGIC FOR LOGOUT, TOKEN EXPIRATION, AND USER ACTIVITY
-  const logout = useCallback(() => {
-    removeCookie('authToken');
-    removeCookie('user');
-    removeCookie('authUser');
-    removeCookie('isLoggedIn');
-    removeCookie('userId');
-    removeCookie('lastLogin');
-    removeCookie('lastLogout');
+  const logout = useCallback(async () => {
+    setIsDataLoading(true);
+    try {
+      const { userId, refreshToken } = cookies;
+      await axios.post(`${REACT_APP_SERVER}/api/users/signout`, {
+        userId,
+        refreshToken,
+      });
+      Object.keys(cookies).forEach(removeCookie);
+      clearTimeout(logoutTimerRef.current);
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsDataLoading(false);
+    }
+  }, [cookies, setIsDataLoading, removeCookie]);
 
-    setIsLoggedIn(false);
-    setLoginStatus({
-      isLoggedIn: isLoggedIn,
-      lastLogin: lastLogin.current,
-      lastLogout: logoutTimerRef.current,
-    });
-    setUser(null);
-    setToken(null);
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-  }, [removeCookie]);
   const resetLogoutTimer = useCallback(() => {
     clearTimeout(logoutTimerRef.current);
     logoutTimerRef.current = setTimeout(logout, 2700000); // 45 minutes
   }, [logout]);
-  useEffect(() => {
-    if (token) {
-      console.log('Token found, resetting logout timer...');
-      resetLogoutTimer();
-    }
-  }, [token, resetLogoutTimer]);
-  useEffect(() => {
-    const interceptorId = axios.interceptors.request.use(
-      (config) => {
-        if (token) config.headers.Authorization = `Bearer ${token}`;
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
 
-    return () => axios.interceptors.request.eject(interceptorId);
-  }, [token]);
+  const login = useCallback(
+    async (username, password) => {
+      logEvent('Logging in...');
+      await executeAuthAction('signin', 'signin', {
+        userSecurityData: { username, password },
+      });
+    },
+    [executeAuthAction]
+  );
 
-  // LOGIC FOR LOGIN AND SIGNUP
-  const login = async (username, password) => {
-    await executeAuthAction('signin', 'signin', {
-      userSecurityData: { username, password },
-    });
-  };
   const signup = async (securityData, basicData) => {
+    logEvent('Signing up...');
     await executeAuthAction('signup', 'signup', {
       userSecurityData: securityData,
       userBasicData: basicData,
     });
   };
-  useEffect(() => {
-    console.log('Auth Context: ');
-    const storedToken = cookies['authToken'];
-    // const storedUserId = cookies['userId'];
-    const storedUserBasicData = cookies['basicData'];
-    const storedUserSecurityData = cookies['securityData'];
-    const storedUser = cookies['user'];
-    const storedAuthUser = cookies['authUser'];
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setBasicData(storedUserBasicData);
-      setSecurityData(storedUserSecurityData);
-      setUser(storedUser);
-      setAuthUser(storedAuthUser);
-      setIsLoggedIn(true);
-      setLoginTimes();
-      setLoginStatus({
-        isLoggedIn: isLoggedIn,
-        lastLogin: lastLogin.current,
-        lastLogout: logoutTimerRef.current,
-        authUser: authUser,
-        token: token,
-        user: user,
-      });
-      resetLogoutTimer();
+
+  const checkTokenValidity = useCallback(async () => {
+    try {
+      const accessToken = cookies.accessToken;
+      if (!accessToken) return false;
+
+      const response = await axios.get(
+        `${REACT_APP_SERVER}/api/users/checkToken`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setResponseMessage(response.data.message);
+      const isValid = response.data.message === 'Token is valid';
+
+      console.log('Token validity:', response.data);
+      if (!isValid) {
+        console.log('Token is invalid, logging out...');
+        logout();
+      }
+
+      setLastTokenCheck(Date.now());
+      return isValid;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
     }
-  }, [
-    cookies['authToken'],
-    cookies['basicData'],
-    cookies['securityData'],
-    cookies['user'],
-    cookies['authUser'],
-    resetLogoutTimer,
-  ]);
+  }, [cookies.accessToken, logout]);
+
+  useEffect(() => {
+    const currentTime = Date.now();
+    if (currentTime - lastTokenCheck >= checkInterval) {
+      checkTokenValidity();
+    }
+
+    const timeToNextCheck = lastTokenCheck + checkInterval - currentTime;
+    const timeoutId = setTimeout(
+      checkTokenValidity,
+      timeToNextCheck > 0 ? timeToNextCheck : checkInterval
+    );
+
+    return () => clearTimeout(timeoutId); // Cleanup the timeout
+  }, [checkTokenValidity, lastTokenCheck]);
+
   const contextValue = useMemo(
     () => ({
-      isLoggedIn,
-      authUser,
-      token,
-      user,
-      basicData,
-      securityData,
-      responseData,
-      loginStatus,
-
+      // isLoggedIn: cookies.isLoggedIn,
+      isLoggedIn: !!cookies.accessToken,
+      accessToken: cookies.accessToken,
+      refreshToken: cookies.refreshToken,
+      responseMessage,
+      authUser: cookies.authUser,
+      user: cookies.user,
+      basicData: cookies.userBasicData,
+      securityData: cookies.userSecurityData,
+      userId: cookies.userId,
       login,
       signup,
       logout,
+      // checkTokenValidity,
       resetLogoutTimer,
-      setUser,
-      setIsLoggedIn,
-      setAuthUser,
     }),
-    [
-      loginStatus,
-      isLoggedIn,
-      authUser,
-      token,
-      user,
-      responseData,
-      login,
-      signup,
-      logout,
-      resetLogoutTimer,
-      setUser,
-      setIsLoggedIn,
-      setAuthUser,
-    ]
+    [cookies, login, logout, resetLogoutTimer]
   );
+
   useEffect(() => {
-    console.log('AUTH CONTEXT:', {
-      isLoggedIn,
-      authUser,
-      token,
-      user,
-      responseData,
-      loginStatus,
-    });
-  }, [
-    // login,
-    // signup,
-    // logout,
-    // resetLogoutTimer,
-    setUser,
-    setIsLoggedIn,
-    setLoginStatus,
-    setAuthUser,
-  ]);
+    console.log('AUTH CONTEXT:', contextValue);
+  }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
+
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
 export const useAuthContext = () => useContext(AuthContext);
+// const updateLoginStatus = useCallback(
+//   (at, rt) => {
+//     setCookie('accessToken', at, { path: '/' });
+//     setCookie('refreshToken', rt, { path: '/' });
+//     setCookie('isLoggedIn', true, { path: '/' });
+//   },
+//   [setCookie]
+// );
 
-// import React, {
-//   useState,
-//   useEffect,
-//   useRef,
-//   useCallback,
-//   useContext,
-// } from 'react';
-// import axios from 'axios';
-// import { useCookies } from 'react-cookie';
-// import { debounce } from 'lodash';
-// import {
-//   AUTH_COOKIE,
-//   AUTH_USER_COOKIE,
-//   LOGGED_IN_COOKIE,
-//   USER_COOKIE,
-//   USER_ID_COOKIE,
-//   processResponseData,
-// } from './helpers';
-// import { usePageContext } from '../PageContext/PageContext';
+// const executeAuthAction = async (actionType, url, requestData) => {
+//   setLoading('isPageLoading', true);
+//   try {
+//     // const response = await axios.post(
+//     //   `${REACT_APP_SERVER}/api/users/${url}`,
+//     //   requestData
+//     // );
+//     const response = await fetchWrapper(
+//       `${REACT_APP_SERVER}/api/users/${url}`,
+//       'POST',
+//       requestData
+//     );
+//     const data = handleApiResponse(response.data, 'executeAuthAction');
+//     if (response.status === 200 || response.status === 201) {
+//       const processedData = processResponseData(data, actionType);
+//       const {
+//         accessToken,
+//         refreshToken,
+//         authData,
+//         basicData,
+//         securityData,
+//         responseData,
+//         refreshData,
+//       } = processedData;
+//       setCookie('accessToken', accessToken, { path: '/' });
+//       setCookie('refreshToken', refreshToken, { path: '/' });
+//       setCookie('isLoggedIn', true, { path: '/' });
+//       setCookie('userBasicData', basicData, { path: '/' });
+//       setCookie('userSecurityData', securityData, { path: '/' });
+//       setCookie('user', responseData.user, { path: '/' });
+//       setCookie('authUser', authData, { path: '/' });
+//       setCookie('userId', authData.userId, { path: '/' });
 
-// export const AuthContext = React.createContext();
-
-// export default function AuthProvider({ children, serverUrl }) {
-//   const { setLoading, loadingStatus } = usePageContext();
-//   const [cookies, setCookie, removeCookie] = useCookies([
-//     LOGGED_IN_COOKIE,
-//     AUTH_COOKIE,
-//     USER_COOKIE,
-//     USER_ID_COOKIE,
-//     AUTH_USER_COOKIE,
-//   ]);
-//   // const [isLoading, setIsLoading] = useState(false);
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-//   const [user, setUser] = useState({
-//     username: '',
-//     userBasicData: {
-//       firstName: '',
-//       lastName: '',
-//       userId: '',
-//     },
-//     userSecurityData: {
-//       username: '',
-//       password: '',
-//       email: '',
-//       phone: '',
-//       role_data: {
-//         name: '',
-//         capabilities: [],
-//       },
-//     },
-//     allDecks: [],
-//     allCollections: [],
-//     cart: {},
-//   });
-//   const [updatedUser, setUpdatedUser] = useState({});
-//   const [token, setToken] = useState(null);
-//   const [error, setError] = useState(null);
-//   const [minutes, setMinutes] = useState(0);
-//   const [logoutExpires, setLogoutExpires] = useState();
-//   const logoutTimerRef = useRef(null);
-//   const expires = new Date();
-//   const REACT_APP_SERVER = serverUrl || process.env.REACT_APP_SERVER;
-
-//   // Logout Function
-//   const logout = useCallback(() => {
-//     console.log('User is logged out');
-//     removeCookie(AUTH_COOKIE);
-//     removeCookie(USER_COOKIE);
-//     removeCookie(AUTH_USER_COOKIE);
-//     removeCookie(LOGGED_IN_COOKIE);
-//     removeCookie(USER_ID_COOKIE);
-//     setIsLoggedIn(false);
-//     setUser({});
-//     setToken(null);
-//     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-//   }, [removeCookie]);
-
-//   // Reset Logout Timer
-//   const resetLogoutTimer = useCallback(() => {
-//     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-//     logoutTimerRef.current = setTimeout(logout, 45 * 60 * 1000); // 45 minutes
-//   }, [logout]);
-
-//   // Execute Authentication Action
-//   const executeAuthAction = async (actionType, url, requestData) => {
-//     try {
-//       const response = await axios.post(
-//         `${serverUrl}/api/users/${url}`,
-//         requestData
-//       );
-//       const processedData = processResponseData(response, actionType);
-
-//       console.log('Processed Data: ', processedData);
-//       if (response.status === 200 || response.status === 201) {
-//         const { token, authData } = processedData; // Make sure this data is correctly retrieved
-//         setCookie(AUTH_COOKIE, token, { path: '/' });
-//         setCookie(USER_COOKIE, authData, { path: '/' });
-//         setCookie(AUTH_USER_COOKIE, authData.userSecurityData, { path: '/' });
-//         setCookie(LOGGED_IN_COOKIE, true, { path: '/' });
-//         setCookie(USER_ID_COOKIE, authData.userSecurityData.userId, {
-//           path: '/',
-//         });
-//         setIsLoggedIn(true);
-//         setUser(authData);
-//         setToken(token);
-//         resetLogoutTimer();
-//       }
-//       return processedData;
-//     } catch (error) {
-//       setError(error);
-//     }
-//   };
-//   // Set axios interceptors
-//   axios.interceptors.request.use(
-//     (config) => {
-//       const authToken = cookies[AUTH_COOKIE];
-//       if (authToken) config.headers.Authorization = `Bearer ${authToken}`;
-//       return config;
-//     },
-//     (error) => Promise.reject(error)
-//   );
-
-//   useEffect(() => {
-//     if (isLoggedIn) {
+//       updateLoginStatus(accessToken, refreshToken);
 //       resetLogoutTimer();
 //     }
-//   }, [isLoggedIn, resetLogoutTimer]);
-
-//   const signup = async (securityData, basicData) => {
-//     const data = await executeAuthAction('signup', 'signup', {
-//       userSecurityData: securityData,
-//       userBasicData: basicData,
+//   } catch (error) {
+//     console.error('Auth error:', error);
+//   } finally {
+//     setLoading('isPageLoading', false);
+//   }
+// };
+// const logout = useCallback(async () => {
+//   setLoading('isPageLoading', true);
+//   try {
+//     const userId = cookies.userId; // Assuming you have userId in cookies
+//     const refreshToken = cookies.refreshToken;
+//     await axios.post(`${REACT_APP_SERVER}/api/users/logout`, {
+//       userId,
+//       refreshToken,
 //     });
-//     // resetLogoutTimer();
-//     return data;
-//   };
-//   const login = async (username, password) => {
-//     const data = await executeAuthAction('signin', 'signin', {
-//       userSecurityData: { username: username, password: password },
+//     // Clearing all cookies
+//     Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName));
+//     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+//   } catch (error) {
+//     console.error('Logout error:', error);
+//   } finally {
+//     setLoading('isPageLoading', false);
+//   }
+// }, [setLoading, removeCookie, cookies]);
+// Add a method to check token validity
+// const isTokenValid = async () => {
+//   try {
+//     const accessToken = cookies.accessToken;
+//     const response = await axios.get('/api/users/checkToken', {
+//       headers: { Authorization: accessToken },
 //     });
-//     console.log('User ' + username + ' is logged in');
-//     // resetLogoutTimer();
-//     return data;
-//   };
+//     return response.data.isValid;
+//   } catch (error) {
+//     console.error('Token validation error:', error);
+//     return false;
+//   }
+// };
+// Check token validity and update login status accordingly
+// const checkTokenValidity = useCallback(async () => {
+//   const accessToken = cookies.accessToken;
+//   if (!accessToken) return false;
 
-//   useEffect(() => {
-//     const handleUserActivity = debounce(resetLogoutTimer, 1000);
-//     const events = ['mousemove', 'keypress', 'scroll', 'click'];
-
-//     events.forEach((event) =>
-//       window.addEventListener(event, handleUserActivity)
+//   try {
+//     const response = await axios.get(
+//       `${REACT_APP_SERVER}/api/users/checkToken`,
+//       {
+//         headers: { Authorization: `Bearer ${accessToken}` },
+//       }
 //     );
 
-//     return () => {
-//       events.forEach((event) =>
-//         window.removeEventListener(event, handleUserActivity)
-//       );
-//       handleUserActivity.cancel();
-//       if (logoutTimerRef?.current) clearTimeout(logoutTimerRef?.current);
-//     };
-//   }, [resetLogoutTimer, logoutTimerRef]);
-//   // Check for stored tokens and user data in cookies
-//   // Initialize user and token from cookies
-//   useEffect(() => {
-//     const storedToken = cookies[AUTH_COOKIE];
-//     const storedUser = cookies[USER_COOKIE];
-//     if (storedToken && storedUser) {
-//       setToken(storedToken);
-//       setUser(storedUser);
-//       setIsLoggedIn(true);
-//       resetLogoutTimer();
+//     const isValid = response.data.isValid;
+//     if (!isValid) {
+//       logout(); // Automatically log out if token is invalid
 //     }
-//   }, [cookies, resetLogoutTimer]);
-
-//   return (
-//     <AuthContext.Provider
-//       value={{
-//         isLoggedIn,
-//         authUser: user,
-//         error,
-//         token,
-//         updatedUser,
-//         logoutTimerRef,
-//         // debouncedLogout,
-//         resetLogoutTimer,
-//         // startLogoutTimer,
-//         logout,
-//         setIsLoggedIn,
-//         setError,
-//         setToken,
-//         setUpdatedUser,
-//         setUser,
-//         login,
-//         signup,
-//       }}
-//     >
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
-
-// export const useAuthContext = () => {
-//   const context = useContext(AuthContext);
-
-//   if (!context) {
-//     throw new Error('useAuth must be used within an AuthProvider');
+//     return isValid;
+//   } catch (error) {
+//     console.error('Token validation error:', error);
+//     return false;
 //   }
-
-//   return context;
-// };
-// // Attach event listeners for user activity
-// // useEffect(() => {
-// //   startLogoutTimer();
-
-// //   window.addEventListener('mousemove', resetLogoutTimer);
-// //   window.addEventListener('keypress', resetLogoutTimer);
-// //   window.addEventListener('scroll', resetLogoutTimer);
-// //   window.addEventListener('click', resetLogoutTimer);
-
-// //   return () => {
-// //     clearTimeout(logoutTimerRef.current);
-// //     window.removeEventListener('mousemove', resetLogoutTimer);
-// //     window.removeEventListener('keypress', resetLogoutTimer);
-// //     window.removeEventListener('scroll', resetLogoutTimer);
-// //     window.removeEventListener('click', resetLogoutTimer);
-// //   };
-// // }, []);
+// }, [cookies.accessToken, logout]);
+// useEffect(() => {
+//   checkTokenValidity(); //Check the token validity on component mount and whenever the accessToken changes
+// }, [checkTokenValidity]);

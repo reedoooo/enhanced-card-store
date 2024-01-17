@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMode } from '../../context/hooks/colormode';
 import {
   FormWrapper,
   StyledButton,
@@ -8,6 +7,7 @@ import {
 } from './styled';
 
 import { Button, Grid } from '@mui/material';
+import { useMode } from '../../context';
 
 const SearchForm = ({
   searchTerm,
@@ -30,7 +30,7 @@ const SearchForm = ({
           gap: theme.spacing(2),
           width: '100%',
           // background: theme.palette.backgroundA.light,
-          // background: theme.palette.background.quaternary,
+          // background: theme.palette.backgroundB.lighter,
         }}
       >
         <StyledTextField

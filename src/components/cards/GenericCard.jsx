@@ -5,12 +5,11 @@ import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons'
 import placeholderImage from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/ModalContext/ModalContext';
 import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
-import { useMode } from '../../context/hooks/colormode';
 import { Box } from '@mui/system';
 import { useCartStore } from '../../context/CartContext/CartContext';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../context/DeckContext/DeckContext';
-import { useTheme } from '@mui/styles';
+import { useTheme } from 'styled-components';
 import {
   AspectRatioBox,
   QuantityLine,
@@ -18,6 +17,7 @@ import {
   StyledCardContent,
 } from './styles/cardStyledComponents';
 import { getQuantity } from '../componentHelpers';
+import { useMode } from '../../context';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
 

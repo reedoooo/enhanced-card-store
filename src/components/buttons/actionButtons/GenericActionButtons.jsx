@@ -20,14 +20,14 @@ import {
   AddCircleOutlineOutlined,
   RemoveCircleOutlineOutlined,
 } from '@mui/icons-material';
-import { useMode } from '../../../context/hooks/colormode';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../../context/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/CartContext/CartContext';
-import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
-import { useGenericActionButtonStyles } from '../../../context/hooks/useGenericActionButtonStyles';
+import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
+import { useGenericActionButtonStyles } from '../../../context/hooks/style-hooks/useGenericActionButtonStyles';
 import { useSelectionDialog } from '../../../context/hooks/useSelectionDialog';
 import { useCardActions } from '../../../context/hooks/useCardActions';
+import { useMode } from '../../../context';
 const GenericActionButtons = ({
   card,
   context,

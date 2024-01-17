@@ -11,14 +11,13 @@ import {
   Paper,
   Stack,
 } from '@mui/material';
-import { useMode } from '../context/hooks/colormode';
 import {
   ModalContext,
   useModalContext,
 } from '../context/ModalContext/ModalContext';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 import DetailsModal from '../components/dialogs/homeDetailsModal/DetailsModal';
-import useResponsiveStyles from '../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../context/hooks/style-hooks/useResponsiveStyles';
 import {
   HomePageBox,
   FeatureCard,
@@ -30,35 +29,82 @@ import {
   ActionButton,
 } from './pageStyles/StyledComponents';
 import { useSpring, animated } from 'react-spring';
-
 import SplashPage2 from './otherPages/SplashPage2';
 import pages from '../assets/pages.json';
-import { useTheme } from '@emotion/react';
 import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
-import { useCollectionStore } from '../context';
+import { useCollectionStore, useMode, usePageContext } from '../context';
 import CardChart from '../tests/CardChart';
 import useCardCronJob from '../tests/useCardCronJob';
-// import initialCardData from '../tests/initialCardData';
-import { styled } from '@mui/styles';
+import useSkeletonRender from '../context/hooks/useSkeletonRender';
 
 const AnimatedBox = animated(Box);
 
 const HomePage = () => {
   const { theme } = useMode();
-  const theme2 = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
   const { allCollections } = useCollectionStore();
-  const initialCardData = allCollections[0]?.cards[0];
-  const { cardData } = useCardCronJob(initialCardData);
+  const isDataLoaded = allCollections && allCollections.length > 0;
 
+  const initialCardData = isDataLoaded ? allCollections[0].cards[0] : null;
+  const { cardData } = useCardCronJob(initialCardData);
+  const { loadingStatus } = usePageContext();
   const { isModalOpen, modalContent } = useContext(ModalContext);
   const { selectedCollection } = useCollectionStore();
   const { allFeatureData, showDetailsModal, detailsModalShow } =
     useModalContext();
   const { tiers, introText } = pages;
   const { getTypographyVariant, getIconForTitle } = useResponsiveStyles(theme);
+  const homePageSkeletonConfigs = [
+    {
+      // Tertiary Content Skeletons
+      xs: 12,
+      sm: 12,
+      md: 12,
+      gap: 3,
+      skeletons: [
+        { variant: 'rectangular', height: 60 }, // Main title skeleton
+        { variant: 'text', width: '80%' }, // Description text skeletons
+        { variant: 'text', width: '70%' },
+        { variant: 'text', width: '60%' },
+      ],
+    },
+    {
+      // Secondary Content Skeletons
+      xs: 12,
+      sm: 6,
+      md: 6,
+      gap: 2,
+      skeletons: [
+        { variant: 'rectangular', height: 200 }, // Card animation skeleton
+      ],
+    },
+    {
+      xs: 12,
+      sm: 6,
+      md: 6,
+      gap: 2,
+      skeletons: [
+        { variant: 'rectangular', height: 200 }, // Chart component skeleton
+      ],
+    },
+    ...Array.from({ length: tiers.length }, () => ({
+      // Main Content Feature Card Skeletons
+      xs: 12,
+      sm: 12,
+      md: 4,
+      gap: 2,
+      skeletons: [
+        { variant: 'rectangular', height: 180 }, // Card image/header skeleton
+        { variant: 'text' }, // Text skeletons for card content
+        { variant: 'text' },
+        { variant: 'text' },
+      ],
+    })),
+  ];
+  const Skeletons = useSkeletonRender(homePageSkeletonConfigs);
+
   const handleOpenModal = (itemTitle) => {
     const selectedItem = allFeatureData.find(
       (item) => item.title === itemTitle
@@ -80,8 +126,6 @@ const HomePage = () => {
       });
     }
   }, []);
-
-  // Function to render the splash page animation
   const renderSplashPage = () => (
     <div ref={splashRef}>
       <SplashPage2 />
@@ -89,14 +133,28 @@ const HomePage = () => {
   );
   // Function to render tertiary content
   const renderTertiaryContent = () => (
-    <TertiaryContentContainer theme={theme}>
-      <HomePageBox theme={theme}>
+    <TertiaryContentContainer
+      // ref={splashRef}
+      theme={theme}
+      style={{ padding: '20px', textAlign: 'center' }}
+    >
+      <HomePageBox
+        theme={theme}
+        style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}
+      >
         <Typography
           component="h1"
           variant={getTypographyVariant()}
           align="center"
           color="text.primary"
           gutterBottom
+          style={{
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            fontSize: '2.5rem',
+            lineHeight: '1.2',
+            letterSpacing: 'normal',
+          }}
         >
           {introText.mainTitle}
         </Typography>
@@ -105,6 +163,13 @@ const HomePage = () => {
           align="center"
           color="text.secondary"
           paragraph
+          style={{
+            fontSize: '1.25rem',
+            lineHeight: '1.6',
+            margin: '0 auto',
+            maxWidth: '680px',
+            marginTop: '1rem',
+          }}
         >
           {introText.description}
         </Typography>
@@ -120,7 +185,7 @@ const HomePage = () => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          // width: '100%',
+          mx: 'auto',
           padding: theme.spacing(2),
           background: theme.palette.backgroundC.dark,
           maxWidth: isLgUp ? '100%' : '100%', // Adjust width based on screen size
@@ -158,7 +223,9 @@ const HomePage = () => {
             maxHeight: '100%',
           }}
         >
-          <CardChart cardData={allCollections[0]?.cards[0]} />
+          <CardChart
+            cardData={isDataLoaded ? allCollections[0]?.cards[0] : null}
+          />
         </Box>
       </Paper>
     </SecondaryContentContainer>
@@ -210,8 +277,8 @@ const HomePage = () => {
                     subheader={tier.subheader}
                     titleTypographyProps={{ align: 'center' }}
                     subheaderTypographyProps={{ align: 'center' }}
-                    style={{
-                      backgroundColor: theme.palette.backgroundD.dark,
+                    sx={{
+                      backgroundColor: theme.palette.backgroundA.dark,
                     }} // Apply the background color here
                   />
                   <CardContent style={{ flex: 1 }}>
@@ -223,7 +290,7 @@ const HomePage = () => {
                       ))}
                     </CardUnorderedList>
                   </CardContent>
-                  <CardActions style={{ alignSelf: 'end' }}>
+                  <CardActions sx={{ alignSelf: 'end' }}>
                     <ActionButton
                       fullWidth
                       variant="contained"
@@ -260,20 +327,26 @@ const HomePage = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      {/* Main Splash Page */}
-      {renderSplashPage()}
+      {loadingStatus?.isPageLoading ? (
+        <Skeletons />
+      ) : (
+        <React.Fragment>
+          {/* Main Splash Page */}
+          {/* {renderSplashPage()} */}
 
-      {/* Tertiary Content */}
-      {renderTertiaryContent()}
+          {/* Tertiary Content */}
+          {renderTertiaryContent()}
 
-      {/* Secondary Content */}
-      {renderSecondaryContent()}
+          {/* Secondary Content */}
+          {renderSecondaryContent()}
 
-      {/* Main Content */}
-      {renderMainContent()}
+          {/* Main Content */}
+          {renderMainContent()}
 
-      {/* Dialogs */}
-      {renderDialogs()}
+          {/* Dialogs */}
+          {renderDialogs()}
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 };

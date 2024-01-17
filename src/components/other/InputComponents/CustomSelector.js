@@ -6,11 +6,10 @@ import {
   MenuItem,
   styled,
 } from '@mui/material';
-import { useMode } from '../../../context/hooks/colormode';
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: theme.spacing(1, 0),
-  backgroundColor: theme.palette.background.paper, // Adjusted for a slight contrast
+  backgroundColor: theme.palette.backgroundA.lightest, // Adjusted for a slight contrast
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[1], // Subtle shadow for depth
 
@@ -20,15 +19,15 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
       backgroundColor: theme.palette.action.hover,
     },
     '&.Mui-focused': {
-      backgroundColor: theme.palette.background.paper,
-      borderColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.backgroundA.lightest,
+      borderColor: theme.palette.backgroundA.dark,
     },
   },
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   fontWeight: 'bold', // Making label text bold
-  color: theme.palette.background.main,
+  color: theme.palette.backgroundB.dark,
 }));
 
 const CustomSelector = ({ label, name, value, handleChange, values }) => {

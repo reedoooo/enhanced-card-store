@@ -34,10 +34,10 @@ const SignupSwitch = () => {
             onChange={toggleSignupMode} // Toggle function
             sx={{
               '& .MuiSwitch-thumb': {
-                color: signupMode ? theme.palette.primary.main : '', // Change thumb color based on mode
+                color: signupMode ? theme.palette.backgroundA.dark : '', // Change thumb color based on mode
               },
               '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                backgroundColor: theme.palette.primary.main, // Change track color when checked
+                backgroundColor: theme.palette.backgroundA.dark, // Change track color when checked
               },
             }}
           />

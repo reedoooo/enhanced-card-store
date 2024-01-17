@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import CardsGrid from '../../components/grids/deckBuilderGrids/CardsGrid';
-import useDeckStyles from '../../context/hooks/useDeckStyles';
+import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
 
 const CardsDisplay = ({ selectedDeck, isLoading }) => {
   const { cardsContainerStyles, noCardsTypographyStyles } = useDeckStyles();

@@ -14,7 +14,6 @@ import {
   Paper,
   Container,
 } from '@mui/material';
-import PortfolioChart from '../../assets/cleanup/PortfolioChart';
 import TimeRangeSelector from '../../components/other/InputComponents/TimeRangeSelector';
 import UpdateStatusBox2 from '../../components/other/InputComponents/UpdateStatusBox2';
 import TopCardsDisplay from '../../components/other/dataDisplay/TopCardsDisplay';
@@ -28,39 +27,14 @@ import {
   ErrorBoundary,
   usePageContext,
 } from '../../context';
-import { styled } from '@mui/styles';
+import styled from 'styled-components';
 import { debounce } from 'lodash';
 import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
 import LinearChart from '../../components/other/dataDisplay/chart/LinearChart';
-
-const ChartPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[5],
-  backgroundColor: theme.palette.background.paper,
-  color: theme.palette.text.secondary,
-  padding: theme.spacing(2),
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  minHeight: '400px',
-  overflow: 'hidden',
-  margin: theme.spacing(2, 0),
-  flexGrow: 1,
-}));
-
-const ResponsiveSquare = styled(Box)(({ theme }) => ({
-  width: '100%',
-  paddingTop: '100%',
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[5],
-  display: 'flex',
-  flexGrow: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
+import {
+  ChartPaper,
+  ResponsiveSquare,
+} from '../../pages/pageStyles/StyledComponents';
 
 function handleThresholdUpdate(lastUpdateTime, setLastUpdateTime) {
   const currentTime = new Date().getTime();
@@ -121,7 +95,7 @@ const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
   const nivoReadyData = convertDataForNivo2(rawData);
 
   if (!nivoReadyData.length) {
-    return <ResponsiveSquare>No data available</ResponsiveSquare>;
+    return <ResponsiveSquare theme={theme}>No data available</ResponsiveSquare>;
   }
 
   // Effect: Set data ready state based on allXYValues
@@ -170,7 +144,7 @@ const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
               {/* Portfolio Chart */}
               <Grid container spacing={isMobile ? 1 : 2}>
                 <Grid item xs={12}>
-                  <ChartPaper ref={chartRef}>
+                  <ChartPaper ref={chartRef} theme={theme}>
                     <LinearChart
                       nivoReadyData={nivoReadyData}
                       dimensions={chartDimensions}
@@ -236,7 +210,7 @@ const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
               flexDirection: 'column',
               height: '100%',
               alignItems: 'center',
-              background: theme.palette.background.dark,
+              background: theme.palette.backgroundB.darker,
               padding: isMobile ? theme.spacing(1) : theme.spacing(2),
               color: '#fff',
               borderRadius: 4,

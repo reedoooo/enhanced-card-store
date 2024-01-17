@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Grid, useMediaQuery } from '@mui/material';
 import GenericCard from '../../cards/GenericCard';
-import { useMode } from '../../../context/hooks/colormode';
 import { styled } from '@mui/system';
 import SkeletonDeckItem from '../gridItems/SkeletonDeckItem';
 import DeckItem from '../gridItems/DeckItem';
-import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import GridLayout from './GridLayout';
 import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
 

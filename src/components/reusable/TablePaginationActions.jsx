@@ -1,13 +1,12 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { useMode } from '../../context/hooks/colormode';
+import { useMode } from '../../context';
 
 const TablePaginationActions = (props) => {
   const { theme } = useMode();

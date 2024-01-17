@@ -52,13 +52,13 @@ const CardsGrid = ({ isLoading }) => {
           ))
         : flattenSelectedCards?.map((card, index) => (
             <CSSTransition
-              key={card?.cardData?.uniqueKey || index}
+              key={card?.uniqueKey || index}
               timeout={500}
               className="card"
             >
               <Grid item xs={6} sm={4} md={4} lg={3}>
                 <DeckItem
-                  card={card?.cardData}
+                  card={card}
                   page={'Deck'}
                   index={index}
                   context={'Deck'}
@@ -111,7 +111,6 @@ export default React.memo(CardsGrid); // Using React.memo for memoization
 //                 page={'Deck'}
 //                 index={index}
 //                 context={'Deck'}
-//                 // className={classes.card} // Passing down common className
 //               />
 //             </Grid>
 //           </CSSTransition>

@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeckStore, useMode } from '../../../context';
-import useDeckStyles from '../../../context/hooks/useDeckStyles';
+import useDeckStyles from '../../../context/hooks/style-hooks/useDeckStyles';
 
 const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
   const { theme } = useMode();
@@ -64,7 +64,7 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
       sx={{
         padding: 3,
         margin: 2,
-        // backgroundColor: theme.palette.background.paper,
+        // backgroundColor: theme.palette.backgroundA.lightest,
       }}
     >
       <Box
@@ -148,7 +148,7 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
           sx={{
             flexGrow: 1,
             margin: '4px',
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: theme.palette.backgroundA.dark,
           }}
         >
           Save Changes
@@ -181,8 +181,7 @@ export default DeckEditPanel;
 //   MenuItem,
 //   FormControl,
 // } from '@mui/material';
-// import { useMode } from '../../../context/hooks/colormode';
-// import DeleteIcon from '@material-ui/icons/Delete';
+// // import DeleteIcon from '@material-ui/icons/Delete';
 // import { FormWrapper } from '../../forms/styled';
 
 // const DeckEditPanel = ({
@@ -248,7 +247,7 @@ export default DeckEditPanel;
 //         maxWidth: 600,
 //         borderRadius: theme.shape.borderRadius,
 //         boxShadow: theme.shadows[3],
-//         backgroundColor: theme.palette.background.paper,
+//         backgroundColor: theme.palette.backgroundA.lightest,
 //         color: theme.palette.text.secondary,
 //       }}
 //     >
@@ -257,7 +256,7 @@ export default DeckEditPanel;
 //         sx={{
 //           marginBottom: theme.spacing(3),
 //           fontWeight: theme.typography.fontWeightBold,
-//           color: theme.palette.primary.main,
+//           color: theme.palette.backgroundA.dark,
 //         }}
 //       >
 //         {isEditing ? 'Edit Deck' : 'Create New Deck'}

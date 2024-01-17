@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SelectCollection from './SelectCollection';
-import { Box } from '@mui/material';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
 import { useMode } from '../../context';
-import { usePortfolioStyles } from '../../context/hooks/usePortfolioStyles';
+import { PortfolioBoxA } from '../../context/hooks/style-hooks/usePortfolioStyles';
 import CollectionPortfolioContent from './CollectionPortfolioContent';
 
 const CollectionPortfolio = ({ allCollections, onCollectionSelect }) => {
   const { theme } = useMode();
-  const classes = usePortfolioStyles(theme);
   const [showCollections, setShowCollections] = useState(true);
   const [selectedCards, setSelectedCards] = useState([]);
   const { selectedCollection } = useCollectionStore();
@@ -31,7 +29,7 @@ const CollectionPortfolio = ({ allCollections, onCollectionSelect }) => {
   };
 
   return (
-    <Box className={classes.portfolioBox}>
+    <PortfolioBoxA theme={theme}>
       {showCollections ? (
         <SelectCollection
           handleSelectCollection={handleSelectCollection}
@@ -44,7 +42,7 @@ const CollectionPortfolio = ({ allCollections, onCollectionSelect }) => {
           onBack={() => setShowCollections(true)}
         />
       )}
-    </Box>
+    </PortfolioBoxA>
   );
 };
 

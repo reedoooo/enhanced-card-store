@@ -18,9 +18,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { styled } from '@mui/system';
 import PropTypes from 'prop-types';
 import { useMode } from '../../../context';
-import useSelectCollectionListStyles from '../../../context/hooks/useSelectCollectionListStyles';
 import LongMenu from '../../reusable/LongMenu';
-
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: theme.spacing(1),
   transition: '0.3s',
@@ -29,7 +27,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
     boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
   },
 }));
-
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   textAlign: 'left',
   padding: theme.spacing(2),
@@ -48,13 +45,13 @@ const CollectionListItem = memo(
     roundToNearestTenth,
   }) => {
     const { theme } = useMode();
-    const classes = useSelectCollectionListStyles(theme);
     const [showOptions, setShowOptions] = useState(false);
     const twentyFourHourChange = statsByCollectionId?.twentyFourHourAverage;
 
     return (
       <StyledCard variant="outlined" theme={theme}>
-        <CardActionArea onClick={() => handleSelect(collection._id)}>
+        {/* <CardActionArea onClick={() => handleSelect(collection?._id)}> */}
+        <CardActionArea onClick={handleSelect(collection?._id)}>
           <StyledCardContent theme={theme}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
@@ -67,7 +64,7 @@ const CollectionListItem = memo(
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <StatisticTypography theme={theme}>
-                  Performance:{' '}
+                  Performance:
                   {twentyFourHourChange?.priceChange > 0 ? (
                     <ArrowUpwardIcon />
                   ) : (

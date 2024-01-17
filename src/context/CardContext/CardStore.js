@@ -10,6 +10,7 @@ import {
 import { useCookies } from 'react-cookie';
 import { useCollectionStore } from '../CollectionContext/CollectionContext';
 import { useUserContext } from '../UserContext/UserContext';
+import useFetchWrapper from '../hooks/useFetchWrapper.jsx';
 
 // Create a context for the cardStore
 const CardContext = createContext();
@@ -19,7 +20,8 @@ export const CardProvider = ({ children }) => {
   const [cookies, setCookie] = useCookies(['deckData', 'searchHistory']);
   const initialStore = cookies.store || [];
   const [cardsArray, setCardsArray] = useState(initialStore);
-  const { allCollections, setAllCollections } = useCollectionStore();
+  const { allCollections } = useCollectionStore();
+  const fetchWrapper = useFetchWrapper();
   const [image, setImage] = useState(null);
   // const [searchParam, setSearchParam] = useState('');
   // const [searchParams, setSearchParams] = useState([]);
@@ -47,24 +49,13 @@ export const CardProvider = ({ children }) => {
   if (!currenCartArray || !savedDeckData) {
     return <div>Loading...</div>;
   }
-
-  const handleRequest = async (searchParams) => {
+  const handleRequest = async (searchParamss) => {
     try {
-      console.log('SEARCH PARAMS: ', searchParams);
       // setSearchParams([searchParams]);
-      // Adding a unique dummy parameter or timestamp to the request
-      const uniqueParam = { requestTimestamp: new Date().toISOString() };
-      const requestBody = {
-        ...searchParams,
-        ...uniqueParam, // Including the unique or dummy parameter
-      };
-      // update history array with new search params
-      setSearchHistory([...searchHistory, searchParams]);
-      setCookie('searchHistory', searchParams, { path: '/' });
 
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
-        requestBody
+        searchParamss
       );
 
       if (response.data.data) {
@@ -105,7 +96,6 @@ export const CardProvider = ({ children }) => {
         setCookie('deckSearchData', uniqueCards, { path: '/' });
         setCookie('rawSearchData', uniqueCards, { path: '/' });
         // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
-        return response?.data?.data;
       } else {
         setSearchData([]);
         setDeckSearchData([]);
@@ -116,6 +106,75 @@ export const CardProvider = ({ children }) => {
       console.error(err);
     }
   };
+  // const handleRequest = async (searchParams) => {
+  //   try {
+  //     console.log('SEARCH PARAMS: ', searchParams);
+  //     // setSearchParams([searchParams]);
+  //     // Adding a unique dummy parameter or timestamp to the request
+  //     const uniqueParam = { requestTimestamp: new Date().toISOString() };
+  //     const requestBody = {
+  //       ...searchParams,
+  //       ...uniqueParam, // Including the unique or dummy parameter
+  //     };
+  //     // update history array with new search params
+  //     setSearchHistory([...searchHistory, searchParams]);
+  //     setCookie('searchHistory', searchParams, { path: '/' });
+  //     const url = `${process.env.REACT_APP_SERVER}/api/cards/ygopro`;
+  //     console.log('CARD SEARCH REQUEST BODY: ', requestBody);
+  //     const response = await fetchWrapper(url, 'POST', {
+  //       // body: JSON.stringify(requestBody),
+  //       requestBody,
+  //     });
+
+  //     if (response.data.data) {
+  //       const ids = new Set();
+
+  //       // Filter out duplicate cards
+  //       const uniqueCards = response.data.data.filter((card) => {
+  //         if (ids.has(card.id)) {
+  //           return false;
+  //         } else {
+  //           ids.add(card.id);
+  //           return true;
+  //         }
+  //       });
+
+  //       // Check if the uniqueCards is an array
+  //       const validCardData = uniqueCards && Array.isArray(uniqueCards);
+
+  //       // Set the state to the unique cards
+  //       setIsCardDataValid(validCardData);
+
+  //       if (validCardData) {
+  //         const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
+  //         setOrganizedSearchData(limitedCardsToRender);
+
+  //         if (limitedCardsToRender.length >= 1) {
+  //           // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
+  //           setSlicedSearchData(limitedCardsToRender);
+  //         }
+  //       }
+
+  //       setSearchData(uniqueCards);
+  //       setDeckSearchData(uniqueCards);
+  //       setRawSearchData(uniqueCards);
+
+  //       // Set the cookie to hold the current searchData
+  //       setCookie('searchData', uniqueCards, { path: '/' });
+  //       setCookie('deckSearchData', uniqueCards, { path: '/' });
+  //       setCookie('rawSearchData', uniqueCards, { path: '/' });
+  //       // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
+  //       return response?.data?.data;
+  //     } else {
+  //       setSearchData([]);
+  //       setDeckSearchData([]);
+  //       setRawSearchData([]);
+  //       setOrganizedSearchData([]);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   // Example client-side function to fetch an image
   // Function to request the card's image
   // const fetchCardImage = async (cardId) => {
@@ -204,6 +263,9 @@ export const CardProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     // Check if there's any collection that requires an update
+    if (!Array.isArray(allCollections)) {
+      return;
+    }
     const hasMissingData = allCollections?.some((collection) =>
       collection.cards?.some(
         (card) => !card?.card_images || !card?.card_sets || !card?.card_prices

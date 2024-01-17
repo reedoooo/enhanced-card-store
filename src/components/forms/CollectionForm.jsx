@@ -1,64 +1,51 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Alert } from '@mui/material';
-import { useFormContext, useMode } from '../../context';
-import { FormWrapper, StyledButton, StyledTextField } from './styled';
+import { FormWrapper, StyledTextField, StyledButton } from './styled';
+import { useMode } from '../../context';
 
 const CollectionForm = ({ onSave, isNew }) => {
   const { theme } = useMode();
-  const { forms, handleChange, handleSubmit } = useFormContext();
-  const [formValues, setFormValues] = useState({ name: '', description: '' });
-  const formType = isNew ? 'addCollectionForm' : 'updateCollectionForm';
+  const [formValues, setFormValues] = useState({
+    name: '',
+    description: '',
+  });
 
-  useEffect(() => {
-    setFormValues(
-      isNew ? forms?.addCollectionForm || {} : forms?.updateCollectionForm || {}
-    );
-  }, [isNew, forms.addCollectionForm, forms.updateCollectionForm]);
-
-  const handleValueChange = (field) => (event) => {
-    setFormValues((prev) => ({ ...prev, [field]: event.target.value }));
+  const handleValueChange = (fieldName) => (event) => {
+    setFormValues((prev) => ({ ...prev, [fieldName]: event.target.value }));
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    // You might need to ensure onSave is properly defined and used, or use the provided handleSubmit for form submission
-    onSave(formValues); // Replace or use along with your context's handleSubmit
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    onSave(formValues); // Assuming onSave is properly provided and handles the form submission
   };
+
   return (
-    <FormWrapper onSubmit={handleSave} theme={theme}>
-      <Typography variant="h6">
-        {isNew ? 'Create a new collection' : 'Edit your collection'}
-      </Typography>
-      {/* {error && <Alert severity="error">{error}</Alert>} */}
+    <FormWrapper onSubmit={handleFormSubmit} theme={theme}>
       <StyledTextField
         label="Collection Name"
-        value={formValues?.name}
+        placeholder="Enter collection name"
+        value={formValues.name}
         onChange={handleValueChange('name')}
-        variant="outlined"
-        fullWidth
         margin="normal"
+        variant="outlined"
+        required
+        fullWidth
         theme={theme}
       />
       <StyledTextField
         label="Collection Description"
-        value={formValues?.description}
+        placeholder="Enter collection description"
+        value={formValues.description}
         onChange={handleValueChange('description')}
+        margin="normal"
         variant="outlined"
         multiline
         rows={4}
         fullWidth
-        margin="normal"
         theme={theme}
       />
-      <StyledButton
-        variant="contained"
-        color="primary"
-        theme={theme}
-        type="button" // Ensuring it's a button to prevent any accidental form submissions
-        onClick={handleSave} // Use onClick to handle the button click event
-      >
-        {isNew ? 'Create Collection' : 'Save Changes'}
+      <StyledButton type="submit" variant="contained" theme={theme}>
+        {isNew ? 'Create Collection' : 'Update Collection'}
       </StyledButton>
     </FormWrapper>
   );
@@ -67,8 +54,6 @@ const CollectionForm = ({ onSave, isNew }) => {
 CollectionForm.propTypes = {
   onSave: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
-  // initialName: PropTypes.string,
-  // initialDescription: PropTypes.string,
 };
 
 export default CollectionForm;

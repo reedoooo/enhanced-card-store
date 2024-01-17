@@ -17,7 +17,7 @@ import { useUserContext } from '../../context/UserContext/UserContext';
 import { useCookies } from 'react-cookie';
 import ThemeToggleButton from '../../components/buttons/other/ThemeToggleButton';
 import ProfileForm from '../../components/forms/ProfileForm';
-import useResponsiveStyles from '../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
 
 const ProfilePage = () => {

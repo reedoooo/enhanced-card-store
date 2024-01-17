@@ -87,14 +87,16 @@ const initialFormStates = {
     status: '',
     signupMode: false,
   },
-  updateCollectionForm: {
-    name: '',
-    description: '',
-  },
-  addCollectionForm: {
-    // New form with same initial values as updateCollectionForm
-    name: '',
-    description: '',
+  collectionForm: {
+    updateCollectionForm: {
+      name: '',
+      description: '',
+    },
+    addCollectionForm: {
+      // New form with same initial values as updateCollectionForm
+      name: '',
+      description: '',
+    },
   },
   searchForm: {
     searchTerm: '',
@@ -158,8 +160,6 @@ export const FormProvider = ({ children }) => {
     current[keys[keys.length - 1]] = value;
   };
 
-  // Function to handle form field changes
-  // Example: handleChange('signupForm', 'firstName')
   const handleChange = (formName, path) => (event) => {
     const { value } = event.target;
     setForms((prevForms) => {
@@ -230,6 +230,7 @@ export const FormProvider = ({ children }) => {
     formErrors,
     initialFormStates,
     currentForm,
+    setForms,
     setFormErrors,
     setCurrentForm,
     handleChange,

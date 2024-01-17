@@ -90,7 +90,7 @@ export const CombinedProvider = ({ children }) => {
   // ----------- XXX -----------
 
   const listOfMonitoredCards = useMemo(
-    () => generateListOfMonitoredCards(allCollections),
+    () => generateListOfMonitoredCards([allCollections]),
     [allCollections]
   );
 

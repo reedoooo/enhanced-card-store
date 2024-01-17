@@ -133,7 +133,12 @@ const SplashPage2 = () => {
   return (
     <div
       ref={containerRef}
-      style={{ width: '100vw', height: '100vh', alignItems: 'flex-start' }}
+      style={{
+        width: '100vw',
+        height: '100vh',
+        alignItems: 'flex-start',
+        zIndex: -500,
+      }}
     ></div>
   );
 };

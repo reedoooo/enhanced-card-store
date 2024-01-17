@@ -1,21 +1,21 @@
 import React from 'react';
-import { Box, Grid, Paper } from '@mui/material';
 import CardList from '../../components/grids/collectionGrids/CardList';
-import { useTheme } from '@mui/material/styles';
-import { useMode } from '../../context/hooks/colormode';
-import usePortfolioStyles from '../../context/hooks/usePortfolioStyles';
+import { useTheme } from 'styled-components';
+import {
+  CardListContainerBox,
+  CardListContainerGrid,
+} from '../../context/hooks/style-hooks/usePortfolioStyles';
+import { useMode } from '../../context';
 
 const CollectionPortfolioListContainer = ({ selectedCards, removeCard }) => {
-  const theme2 = useTheme();
   const { theme } = useMode();
-  const classes = usePortfolioStyles(theme);
 
   return (
-    <Box className={classes.cardListContainerBox}>
-      <Grid className={classes.cardListContainerGrid}>
+    <CardListContainerBox>
+      <CardListContainerGrid>
         <CardList selectedCards={selectedCards} removeCard={removeCard} />
-      </Grid>
-    </Box>
+      </CardListContainerGrid>
+    </CardListContainerBox>
   );
 };
 

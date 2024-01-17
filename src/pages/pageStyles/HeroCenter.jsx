@@ -16,18 +16,18 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
         alignItems: 'center',
         flexDirection: 'column',
         gap: theme2.spacing(2),
-        padding: theme2.spacing(2),
+        // padding: theme2.spacing(2),
         background: theme.palette.success.light,
         // my: theme.spacing(6),
         // mt: theme.spacing(12),
         // mb: theme.spacing(2),
         textAlign: 'center',
-        height: {
-          xs: 'auto',
-          sm: 'auto',
-          md: 'auto',
-          lg: 'auto',
-        },
+        // height: {
+        //   xs: 'auto',
+        //   sm: 'auto',
+        //   md: 'auto',
+        //   lg: 'auto',
+        // },
       }}
     >
       {decorative && (

@@ -1,7 +1,7 @@
 // CartContainer.js
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import useCartStyles from '../../context/hooks/useCartStyles';
+import useCartStyles from '../../context/hooks/style-hooks/useCartStyles';
 
 const CartContainer = ({ children }) => {
   const { cartContainerStyles, cartTitleStyles } = useCartStyles();

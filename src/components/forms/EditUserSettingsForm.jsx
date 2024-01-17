@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import { useMode } from '../../context/hooks/colormode';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { usePageContext } from '../../context/PageContext/PageContext';
-import { useTheme } from '@mui/styles';
+import { useTheme } from 'styled-components';
 import { useSpring, animated } from 'react-spring';
 import { PageLayout, PageHeader, PageContent } from '../../layout';
 import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
 import ThemeToggleButton from '../../components/reusable/buttons/ThemeToggleButton';
+import { useMode } from '../../context';
 
 const EditUserSettingsForm = ({ user }) => {
   const [cookies] = useCookies(['user']);
@@ -71,32 +71,33 @@ const EditUserSettingsForm = ({ user }) => {
     }
   };
 
-  useEffect(() => {
-    if (!userId) return;
+  // useEffect(() => {
+  //   if (!userId) return;
 
-    const initializeUser = async () => {
-      setIsPageLoading(true);
-      try {
-        if (!userData || Object.keys(userData).length === 0) {
-          await fetchUserData();
-        }
-        logPageData('EditUserSettingsForm', userData);
-      } catch (e) {
-        setPageError(e);
-      } finally {
-        setIsPageLoading(false);
-      }
-    };
+  //   const initializeUser = async () => {
+  //     setIsPageLoading(true);
+  //     try {
+  //       if (!userData || Object.keys(userData).length === 0) {
+  //         await fetchUserData();
+  //       }
+  //       logPageData('EditUserSettingsForm', userData);
+  //     } catch (e) {
+  //       setPageError(e);
+  //     } finally {
+  //       setIsPageLoading(false);
+  //     }
+  //   };
 
-    initializeUser();
-  }, [userId]);
+  //   initializeUser();
+  // }, [userId]);
 
   if (isPageLoading) return <LoadingIndicator />;
   if (pageError) return <ErrorIndicator error={pageError} />;
   if (isLoading) return <LoadingIndicator />;
 
   return (
-    <PageLayout>
+    <>
+      {/* <PageLayout> */}
       <PageHeader>
         <Typography variant="h4" color="primary">
           Edit User Settings
@@ -145,7 +146,8 @@ const EditUserSettingsForm = ({ user }) => {
           </Button>
         </form>
       </PageContent>
-    </PageLayout>
+      {/* </PageLayout> */}
+    </>
   );
 };
 

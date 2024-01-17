@@ -4,15 +4,7 @@ import {
   Typography,
   Paper,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TablePagination,
-  TableRow,
   Button,
-  TableHead,
   Divider,
   Container,
 } from '@mui/material';
@@ -21,9 +13,18 @@ import TablePaginationActions from '../../reusable/TablePaginationActions';
 import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
 import Logger from '../../reusable/Logger';
 import { useMode } from '../../../context';
-import useCardListStyles from '../../../context/hooks/useCardListStyles';
-import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
-import usePortfolioStyles from '../../../context/hooks/usePortfolioStyles';
+import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
+import usePagination from '../../../context/hooks/usePagination';
+import {
+  PortfolioTableHeader,
+  PortfolioTableBody,
+  PortfolioTableFooter,
+  PortfolioTableCell,
+  PortfolioTableRow,
+  PortfolioTableContainer,
+  PortfolioTable,
+  PortfolioTablePaper,
+} from '../../../context/hooks/style-hooks/usePortfolioStyles';
 
 const cardLogger = new Logger([
   'Action',
@@ -34,7 +35,6 @@ const cardLogger = new Logger([
 
 const CardList = () => {
   const { theme } = useMode();
-  const classes = usePortfolioStyles(theme);
 
   const {
     selectedCollection,
@@ -44,26 +44,17 @@ const CardList = () => {
   } = useCollectionStore();
 
   const { isMedium, isLarge, isMediumExtraLarge } = useResponsiveStyles(theme);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const selectedCards = selectedCollection?.cards;
   const count = selectedCards?.length || 0;
-  const emptyRows = useMemo(
-    () => Math.max(0, (1 + page) * rowsPerPage - (selectedCards?.length || 0)),
-    [page, rowsPerPage, selectedCards]
-  );
-
-  const handleChangePage = (event, newPage) => {
-    cardLogger.logCardAction('Change Page', {});
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    cardLogger.logCardAction('Change Rows Per Page', {});
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
+  const {
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    paginatedItems,
+    // setRowsPerPage,
+    emptyRows,
+  } = usePagination(selectedCards, 10);
   const handleRemoveCard = (card) => {
     removeOneFromCollection(card, selectedCollection);
     cardLogger.logCardAction('remove', card);
@@ -73,10 +64,12 @@ const CardList = () => {
     addOneToCollection(card, selectedCollection);
     cardLogger.logCardAction('add', card);
   };
-
   useEffect(() => {
     const updateRowsPerPage = () =>
-      setRowsPerPage(window.innerWidth > 960 ? 10 : 5);
+      // setRowsPerPage(window.innerWidth > 960 ? 10 : 5);
+      handleChangeRowsPerPage({
+        target: { value: window.innerWidth > 960 ? 10 : 5 },
+      });
     window.addEventListener('resize', updateRowsPerPage);
     return () => window.removeEventListener('resize', updateRowsPerPage);
   }, []);
@@ -85,31 +78,31 @@ const CardList = () => {
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
 
   // Render functions
-  const renderTableHeader = () => {
+  const renderPortfolioTableHeader = () => {
     return (
-      <TableHead className={classes.tableHeader}>
-        <TableRow className={classes.tableRow}>
-          <TableCell className={classes.tableCell}>Name</TableCell>
-          <TableCell align="right" className={classes.tableCell}>
+      <PortfolioTableHeader theme={theme}>
+        <PortfolioTableRow theme={theme}>
+          <PortfolioTableCell theme={theme}>Name</PortfolioTableCell>
+          <PortfolioTableCell align="right" theme={theme}>
             Price
-          </TableCell>
-          <TableCell align="right" className={classes.tableCell}>
+          </PortfolioTableCell>
+          <PortfolioTableCell align="right" theme={theme}>
             Total Price
-          </TableCell>
-          <TableCell align="right" className={classes.tableCell}>
+          </PortfolioTableCell>
+          <PortfolioTableCell align="right" theme={theme}>
             Quantity
-          </TableCell>
-          <TableCell align="right" className={classes.tableCell}>
+          </PortfolioTableCell>
+          <PortfolioTableCell align="right" theme={theme}>
             Actions
-          </TableCell>
-        </TableRow>
-      </TableHead>
+          </PortfolioTableCell>
+        </PortfolioTableRow>
+      </PortfolioTableHeader>
     );
   };
 
-  const renderTableBody = () => {
+  const renderPortfolioTableBody = () => {
     return (
-      <TableBody className={classes.tableBody}>
+      <PortfolioTableBody theme={theme}>
         {(rowsPerPage > 0
           ? selectedCollection.cards?.slice(
               page * rowsPerPage,
@@ -117,20 +110,20 @@ const CardList = () => {
             )
           : selectedCollection.cards
         )?.map((card) => (
-          <TableRow key={card.id} className={classes.tableRow}>
-            <TableCell component="th" scope="row" className={classes.tableCell}>
+          <PortfolioTableRow key={card.id} theme={theme}>
+            <PortfolioTableCell component="th" scope="row" theme={theme}>
               {card.name}
-            </TableCell>
-            <TableCell align="right" className={classes.tableCell}>
+            </PortfolioTableCell>
+            <PortfolioTableCell align="right" theme={theme}>
               {card.price}
-            </TableCell>
-            <TableCell align="right" className={classes.tableCell}>
+            </PortfolioTableCell>
+            <PortfolioTableCell align="right" theme={theme}>
               {roundToNearestTenth(card.totalPrice)}
-            </TableCell>
-            <TableCell align="right" className={classes.tableCell}>
+            </PortfolioTableCell>
+            <PortfolioTableCell align="right" theme={theme}>
               {card.quantity}
-            </TableCell>
-            <TableCell align="right" className={classes.tableCell}>
+            </PortfolioTableCell>
+            <PortfolioTableCell align="right" theme={theme}>
               {/* Action Buttons */}
               <Button color="error" onClick={() => handleRemoveCard(card)}>
                 Remove
@@ -139,18 +132,18 @@ const CardList = () => {
               <Button color="primary" onClick={() => handleAddCard(card)}>
                 Add
               </Button>
-            </TableCell>
-          </TableRow>
+            </PortfolioTableCell>
+          </PortfolioTableRow>
         ))}
-      </TableBody>
+      </PortfolioTableBody>
     );
   };
 
-  const renderTableFooter = () => {
+  const renderPortfolioTableFooter = () => {
     return (
-      <TableFooter className={classes.tableFooter}>
-        <TableRow className={classes.tableRow}>
-          <TablePagination
+      <PortfolioTableFooter theme={theme}>
+        <PortfolioTableRow theme={theme}>
+          <TablePaginationActions
             rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
             colSpan={5}
             count={selectedCollection.cards?.length || 0}
@@ -159,9 +152,10 @@ const CardList = () => {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             ActionsComponent={TablePaginationActions}
+            theme={theme}
           />
-        </TableRow>
-      </TableFooter>
+        </PortfolioTableRow>
+      </PortfolioTableFooter>
     );
   };
 
@@ -185,8 +179,8 @@ const CardList = () => {
         display="flex"
         justifyContent="flex-end"
         mt={2}
-        className={classes.tablePriceBox}
         sx={{ width: '100%', flexDirection: 'row', borderRadius: '5px' }}
+        theme={theme}
       >
         <Typography variant="h5" sx={{ width: '100%', marginLeft: '70%' }}>
           Total:
@@ -197,16 +191,16 @@ const CardList = () => {
   };
 
   return (
-    <Paper className={classes.tablePaper}>
-      <TableContainer component={Container} className={classes.tableContainer}>
-        <Table aria-label="custom pagination table" className={classes.table}>
-          {renderTableHeader()}
-          {renderTableBody()}
-          {renderTableFooter()}
-        </Table>
-      </TableContainer>
+    <PortfolioTablePaper theme={theme}>
+      <PortfolioTableContainer component={Container} theme={theme}>
+        <PortfolioTable aria-label="custom pagination table" theme={theme}>
+          {renderPortfolioTableHeader()}
+          {renderPortfolioTableBody()}
+          {renderPortfolioTableFooter()}
+        </PortfolioTable>
+      </PortfolioTableContainer>
       {renderTotalPriceBox()}
-    </Paper>
+    </PortfolioTablePaper>
   );
 };
 
@@ -228,7 +222,7 @@ export default CardList;
 
 //   return (
 //     <StyledContainer theme={theme} maxWidth="lg">
-//       <CardListTable
+//       <CardListPortfolioTable
 //         theme={theme}
 //         selectedCards={selectedCards}
 //         rowsPerPage={rowsPerPage}
@@ -238,8 +232,8 @@ export default CardList;
 //         handleRemoveCard={handleRemoveCard}
 //         handleAddCard={handleAddCard}
 //         emptyRows={emptyRows}
-//         StyledTableHeader={StyledTableHeader}
-//         StyledTableCell={StyledTableCell}
+//         StyledPortfolioTableHeader={StyledPortfolioTableHeader}
+//         StyledPortfolioTableCell={StyledPortfolioTableCell}
 //         StyledButtonGroup={StyledButtonGroup}
 //         count={count}
 //       />
@@ -248,7 +242,7 @@ export default CardList;
 //   );
 // };
 
-// const CardListTable = ({
+// const CardListPortfolioTable = ({
 //   selectedCards,
 //   rowsPerPage,
 //   page,
@@ -257,15 +251,15 @@ export default CardList;
 //   handleRemoveCard,
 //   handleAddCard,
 //   emptyRows,
-//   StyledTableHeader,
-//   StyledTableCell,
+//   StyledPortfolioTableHeader,
+//   StyledPortfolioTableCell,
 //   count,
 //   StyledButtonGroup,
 // }) => {
 //   const { theme } = useMode();
 
 //   return (
-//     <TableContainer
+//     <PortfolioTableContainer
 //       component={Paper}
 //       sx={{
 //         backgroundColor: theme.palette.backgroundA.lightest,
@@ -277,7 +271,7 @@ export default CardList;
 //         maxWidth: '100%',
 //       }}
 //     >
-//       <Table
+//       <PortfolioTable
 //         aria-label="custom pagination table"
 //         sx={{
 //           width: '100%',
@@ -285,18 +279,18 @@ export default CardList;
 //           maxWidth: '100%',
 //         }}
 //       >
-//         <StyledTableHeader theme={theme}>
-//           <TableRow>
-//             <StyledTableCell>Name</StyledTableCell>
-//             <StyledTableCell align="right">Price</StyledTableCell>
-//             <StyledTableCell align="right">Total Price</StyledTableCell>
-//             <StyledTableCell align="right">Quantity</StyledTableCell>
-//             {/* <StyledTableCell align="right">TCGPlayer Price</StyledTableCell> */}
-//             <StyledTableCell align="right">Actions</StyledTableCell>
-//           </TableRow>
-//         </StyledTableHeader>
+//         <StyledPortfolioTableHeader theme={theme}>
+//           <PortfolioTableRow>
+//             <StyledPortfolioTableCell>Name</StyledPortfolioTableCell>
+//             <StyledPortfolioTableCell align="right">Price</StyledPortfolioTableCell>
+//             <StyledPortfolioTableCell align="right">Total Price</StyledPortfolioTableCell>
+//             <StyledPortfolioTableCell align="right">Quantity</StyledPortfolioTableCell>
+//             {/* <StyledPortfolioTableCell align="right">TCGPlayer Price</StyledPortfolioTableCell> */}
+//             <StyledPortfolioTableCell align="right">Actions</StyledPortfolioTableCell>
+//           </PortfolioTableRow>
+//         </StyledPortfolioTableHeader>
 
-//         <TableBody>
+//         <PortfolioTableBody>
 //           {(rowsPerPage > 0
 //             ? selectedCards?.slice(
 //                 page * rowsPerPage,
@@ -304,17 +298,17 @@ export default CardList;
 //               )
 //             : selectedCards
 //           )?.map((card, index) => (
-//             <TableRow key={card.id || index}>
-//               <StyledTableCell component="th" scope="row">
+//             <PortfolioTableRow key={card.id || index}>
+//               <StyledPortfolioTableCell component="th" scope="row">
 //                 {card?.name}
-//               </StyledTableCell>
-//               <StyledTableCell align="right">{card?.price}</StyledTableCell>
-//               <StyledTableCell align="right">
+//               </StyledPortfolioTableCell>
+//               <StyledPortfolioTableCell align="right">{card?.price}</StyledPortfolioTableCell>
+//               <StyledPortfolioTableCell align="right">
 //                 {card?.totalPrice}
-//               </StyledTableCell>
-//               <StyledTableCell align="right">{card?.quantity}</StyledTableCell>
+//               </StyledPortfolioTableCell>
+//               <StyledPortfolioTableCell align="right">{card?.quantity}</StyledPortfolioTableCell>
 
-//               <StyledTableCell align="right">
+//               <StyledPortfolioTableCell align="right">
 //                 <StyledButtonGroup theme={theme}>
 //                   <Button
 //                     onClick={() => handleRemoveCard(card)}
@@ -358,34 +352,34 @@ export default CardList;
 //                     Add
 //                   </Button>
 //                 </StyledButtonGroup>
-//               </StyledTableCell>
-//             </TableRow>
+//               </StyledPortfolioTableCell>
+//             </PortfolioTableRow>
 //           ))}
 
 //           {emptyRows > 0 && (
-//             <TableRow style={{ height: 53 * emptyRows }}>
-//               <StyledTableCell theme={theme} colSpan={6} />
-//             </TableRow>
+//             <PortfolioTableRow style={{ height: 53 * emptyRows }}>
+//               <StyledPortfolioTableCell theme={theme} colSpan={6} />
+//             </PortfolioTableRow>
 //           )}
-//         </TableBody>
+//         </PortfolioTableBody>
 
-//         <TableFooter>
-//           <TableRow>
-//             <TablePagination
+//         <PortfolioTableFooter>
+//           <PortfolioTableRow>
+//             <PortfolioTablePagination
 //               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
 //               colSpan={6}
 //               count={count}
 //               rowsPerPage={rowsPerPage}
 //               page={page}
-//               color={theme.palette.primary.main}
+//               color={theme.palette.backgroundA.dark}
 //               onPageChange={handleChangePage}
 //               onRowsPerPageChange={handleChangeRowsPerPage}
-//               ActionsComponent={TablePaginationActions}
+//               ActionsComponent={PortfolioTablePaginationActions}
 //             />
-//           </TableRow>
-//         </TableFooter>
-//       </Table>
-//     </TableContainer>
+//           </PortfolioTableRow>
+//         </PortfolioTableFooter>
+//       </PortfolioTable>
+//     </PortfolioTableContainer>
 //   );
 // };
 

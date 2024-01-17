@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@mui/styles';
+import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper';
 import 'swiper/css';

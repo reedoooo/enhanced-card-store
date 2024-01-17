@@ -47,6 +47,29 @@ const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
     [forms?.searchForm?.searchTerm],
     handleSubmit
   ); // Watch for changes in the form data
+  // const [searchParams, setSearchParams] = useState({
+  //   name: '',
+  //   race: '',
+  //   type: '',
+  //   level: '',
+  //   rarity: '',
+  //   attribute: '',
+  //   id: '',
+  // });
+  // setParams({
+  //   ...params,
+  //   name: forms?.searchForm?.searchParams?.name,
+  // });
+  // useEffect(
+  //   () => {
+  //     // console.log('SearchBar forms', forms);
+  //     if (!forms?.searchForm?.searchParams?.name) return;
+  //     // console.log('handling request', forms?.searchForm?.searchParams?.name);
+  //     handleRequest(forms?.searchForm?.searchParams?.name);
+  //   },
+  //   [forms?.searchForm?.searchParams?.name],
+  //   handleSubmit
+  // ); // Watch for changes in the form data
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -73,7 +96,7 @@ const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
             align="left"
             sx={{
               fontWeight: 'bold',
-              color: theme.palette.background.main,
+              color: theme.palette.backgroundB.dark,
               textTransform: 'uppercase',
             }}
           >

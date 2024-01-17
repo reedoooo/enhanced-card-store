@@ -1,28 +1,28 @@
 import { Box, Tooltip, Typography, useMediaQuery } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
+import styled, { useTheme } from 'styled-components';
+
 import { ResponsiveLine } from '@nivo/line';
 import { useCallback, useMemo, useState } from 'react';
 import { useMode } from '../context';
-const useStyles = makeStyles((theme) => ({
-  axisLabel: {
-    position: 'absolute',
-    textAlign: 'center',
-    margin: theme.spacing(2),
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    color: theme.palette.text.primary,
-  },
-  chartContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: 'auto',
-    '@media (max-width: 600px)': {
-      width: '150%', // Adjust width for mobile screens
-      height: '300px', // Adjust height for mobile screens
-      transform: 'translateX(10%)', // Shift the chart to the right by 50%
-    },
+const AxisLabel = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  textAlign: 'center',
+  margin: theme.spacing(2),
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  color: theme.palette.text.primary,
+}));
+
+const ChartContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: 'auto',
+  [theme.breakpoints.down('sm')]: {
+    width: '150%', // Adjust width for mobile screens
+    height: '300px', // Adjust height for mobile screens
+    transform: 'translateX(10%)', // Shift the chart to the right by 50%
   },
 }));
 
@@ -34,7 +34,7 @@ const CustomTooltip = ({ point }) => {
       <Box
         p={2}
         boxShadow={3}
-        bgcolor={theme.palette.background.paper}
+        bgcolor={theme.palette.backgroundA.lightest}
         borderRadius={2}
         borderColor={theme.palette.divider}
         border={1}
@@ -71,7 +71,6 @@ export const useEventHandlers = () => {
 
 const CardLinearChart = ({ nivoReadyData, dimensions }) => {
   const { theme } = useMode();
-  const classes = useStyles(theme);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Ensure all data points have valid dates
@@ -85,7 +84,6 @@ const CardLinearChart = ({ nivoReadyData, dimensions }) => {
     }));
   }, [nivoReadyData]);
   // const { theme } = useMode();
-  // const classes = useStyles(theme);
   // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   // const [isZoomed, setIsZoomed] = useState(false);
   // const { handleMouseMove, handleMouseLeave } = useEventHandlers();
@@ -208,12 +206,9 @@ const CardLinearChart = ({ nivoReadyData, dimensions }) => {
     return <Typography>No data available</Typography>;
   }
   return (
-    <Box
-      className={classes.chartContainer}
-      style={{ height: dimensions.height, width: dimensions.width }}
-    >
+    <ChartContainer dimensions={dimensions} theme={theme}>
       <ResponsiveLine {...chartProps} />
-    </Box>
+    </ChartContainer>
   );
 };
 

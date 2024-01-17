@@ -11,9 +11,6 @@ import {
   Slide,
   Fade,
   IconButton,
-  InputLabel,
-  Select,
-  MenuItem,
   Stack,
   Typography,
   Card,
@@ -21,28 +18,20 @@ import {
   List,
   CardContent,
   ListItem,
-  ListItemText,
 } from '@mui/material';
-import { useTheme } from '@mui/styles';
 import useSnackbar from '../../../context/hooks/useSnackBar';
 import useSelectedContext from '../../../context/hooks/useSelectedContext';
-import {
-  useModalContext,
-  useCollectionStore,
-  useUserContext,
-} from '../../../context';
+import { useModalContext, useMode } from '../../../context';
 import CardMediaSection from '../../cards/media/CardMediaSection';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
-import useResponsiveStyles from '../../../context/hooks/useResponsiveStyles';
+import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import CardDetail from '../../cards/CardDetail';
-import { FaRegCopy } from 'react-icons/fa';
 import CardDetailsContainer from '../../../layout/CardDetailsContainer';
-import { FormControl } from 'react-bootstrap';
-import CardDetails from '../../cards/CardDetails';
 
 const GenericCardDialog = (props) => {
-  const theme = useTheme();
+  // const theme = useTheme();
+  const { theme } = useMode();
   const {
     open = false,
     transition = false,

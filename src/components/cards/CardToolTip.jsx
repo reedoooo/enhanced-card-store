@@ -1,8 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
-import { Tooltip } from '@mui/material';
-import { useStyles } from './styles/cardStyles';
+import {
+  StyledAttributeSpan,
+  StyledDescriptionSpan,
+  StyledTooltip,
+  StyledTooltipTitle,
+} from './styles/cardStyles';
+import { useMode } from '../../context';
 
 const formatKey = (key) => {
   return key
@@ -12,7 +16,7 @@ const formatKey = (key) => {
 };
 
 const CardToolTip = ({ card }) => {
-  const classes = useStyles();
+  const { theme } = useMode();
   const {
     name,
     desc,
@@ -43,9 +47,8 @@ const CardToolTip = ({ card }) => {
   // const imageUrl = image_url || '';
   // const imageUrlSmall = image_url_small || '';
   // const imageUrlCropped = image_url_cropped || '';
-
   return (
-    <Tooltip
+    <StyledTooltip
       // title={
       //   <>
       //     <img
@@ -65,23 +68,22 @@ const CardToolTip = ({ card }) => {
       arrow
       title="Card"
       placement="right-end"
-      classes={{ tooltip: classes.tooltip }}
     >
-      <div className={classes.tooltip}>
-        {name && <h4 className={classes.tooltipTitle}>{name}</h4>}
-        {attributes &&
-          Object.entries(attributes).map(([key, value]) => (
-            <span key={key} className={classes.attributeSpan}>
-              <strong>{formatKey(key)}:</strong> {value}
-            </span>
-          ))}
-        {desc && (
-          <span className={classes.descriptionSpan}>
-            <strong>Description:</strong> {desc}
-          </span>
-        )}
-      </div>
-    </Tooltip>
+      {/* <div className={classes.tooltip}> */}
+      {name && <StyledTooltipTitle theme={theme}>{name}</StyledTooltipTitle>}
+      {attributes &&
+        Object.entries(attributes).map(([key, value]) => (
+          <StyledAttributeSpan theme={theme} key={key}>
+            <strong>{formatKey(key)}:</strong> {value}
+          </StyledAttributeSpan>
+        ))}
+      {desc && (
+        <StyledDescriptionSpan theme={theme}>
+          <strong>Description:</strong> {desc}
+        </StyledDescriptionSpan>
+      )}
+      {/* </div> */}
+    </StyledTooltip>
   );
 };
 

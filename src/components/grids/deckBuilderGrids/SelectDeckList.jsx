@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Chip, Typography } from '@mui/material';
 import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
 import { useDeckStore } from '../../../context/DeckContext/DeckContext';
-import { useTheme } from '@mui/styles';
+import { useTheme } from 'styled-components';
 
 const SelectDeckList = ({ handleSelectDeck }) => {
   const { allDecks } = useDeckStore();

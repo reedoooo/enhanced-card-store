@@ -13,7 +13,7 @@ import CollectionPortfolioChartContainer from '../../containers/collectionPageCo
 // eslint-disable-next-line max-len
 import CollectionPortfolioListContainer from '../../containers/collectionPageContainers/CollectionPortfolioListContainer';
 import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import usePortfolioStyles from '../../context/hooks/usePortfolioStyles';
+import { PortfolioBoxB } from '../../context/hooks/style-hooks/usePortfolioStyles';
 import { useMode } from '../../context';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import the icon for the back button
@@ -23,7 +23,6 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
 
   const { selectedCollection } = useCollectionStore();
   const [collectionName, setCollectionName] = useState('');
-  const classes = usePortfolioStyles(theme);
 
   useEffect(() => {
     if (selectedCollection?.name) {
@@ -32,11 +31,11 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
   }, [selectedCollection]);
 
   return (
-    <Box className={classes.portfolioBoxB}>
+    <PortfolioBoxB theme={theme}>
       <Box
         sx={{
           maxWidth: '100%',
-          background: theme.palette.background.dark,
+          background: theme.palette.backgroundB.darker,
           borderRadius: theme.shape.borderRadius,
           display: 'flex',
           flexDirection: 'row',
@@ -56,16 +55,16 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
             paddingLeft: '1rem',
             display: 'flex',
             alignItems: 'center',
-            color: theme.palette.primary.main,
+            color: theme.palette.backgroundA.dark,
             margin: '0',
           }}
         >
           <IconButton
             color={theme.palette.success.main}
-            background={theme.palette.primary.main}
+            background={theme.palette.backgroundA.dark}
             sx={{
-              color: theme.palette.primary.main,
-              // background: theme.palette.primary.main,
+              color: theme.palette.backgroundA.dark,
+              // background: theme.palette.backgroundA.dark,
               marginRight: '4px',
             }}
           >
@@ -84,11 +83,11 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
           onClick={onBack}
           aria-label="Back to Collections"
           color={theme.palette.success.main}
-          background={theme.palette.primary.main}
+          background={theme.palette.backgroundA.dark}
           sx={{
-            color: theme.palette.primary.main,
+            color: theme.palette.backgroundA.dark,
 
-            // background: theme.palette.primary.main,
+            // background: theme.palette.backgroundA.dark,
             marginRight: '4px',
           }}
         >
@@ -101,7 +100,7 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
               paddingLeft: '0.5rem',
               display: 'flex',
               alignItems: 'center',
-              color: theme.palette.primary.main,
+              color: theme.palette.backgroundA.dark,
               margin: '0',
             }}
           >
@@ -124,7 +123,7 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
           />
         </Grid>
       </Grid>
-    </Box>
+    </PortfolioBoxB>
   );
 };
 

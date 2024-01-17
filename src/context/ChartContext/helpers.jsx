@@ -1,4 +1,3 @@
-import { makeStyles } from '@mui/styles';
 import { roundToNearestTenth } from '../Helpers';
 import { Tooltip, Typography } from '@mui/material';
 
@@ -179,14 +178,7 @@ export const formatDateToString = (date) => {
     .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 };
 
-const useStyles = makeStyles((theme) => ({
-  tooltipTarget: {
-    cursor: 'pointer', // Change the cursor to indicate it's hoverable
-  },
-}));
-
 export const ChartTooltip = ({ point, lastData, hoveredData, latestData }) => {
-  const classes = useStyles();
   if (!point) return null;
   const formattedTime = hoveredData
     ? new Date(hoveredData.x).toLocaleString()
@@ -199,12 +191,23 @@ export const ChartTooltip = ({ point, lastData, hoveredData, latestData }) => {
   return (
     <>
       <Tooltip title={`Time: ${formattedTime}`} arrow>
-        <Typography className={classes.tooltipTarget}>
+        <Typography
+          sx={{
+            fontSize: 12,
+            cursor: 'pointer', // Change the cursor to indicate it's hoverable
+          }}
+          color="text.secondary"
+        >
           {formattedTime}
         </Typography>
       </Tooltip>
       <Tooltip title={`Value: ${formattedValue}`} arrow>
-        <Typography className={classes.tooltipTarget}>
+        <Typography
+          sx={{
+            fontSize: 12,
+            cursor: 'pointer', // Change the cursor to indicate it's hoverable
+          }}
+        >
           {formattedValue}
         </Typography>
       </Tooltip>
