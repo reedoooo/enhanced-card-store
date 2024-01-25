@@ -1,28 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const useCounter = (initialValue = 0, options = {}) => {
+const useCounter = (card, context, options = {}) => {
   const { min, max } = options;
 
-  // Throw an error if initialValue is outside the specified limits
-  if (
-    (min !== undefined && initialValue < min) ||
-    (max !== undefined && initialValue > max)
-  ) {
-    throw new Error('Initial value is outside the specified limits');
-  }
+  // Initialize state with a key for each context
+  const [counts, setCounts] = useState({
+    [context]: card?.quantity,
+  });
 
-  const [count, setCount] = useState(initialValue);
+  // Update count for the specific context if card.quantity changes externally
+  useEffect(() => {
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [context]: card?.quantity,
+    }));
+  }, [card?.quantity, context]);
 
   const increment = () => {
-    setCount((prevCount) =>
-      max !== undefined ? Math.min(prevCount + 1, max) : prevCount + 1
-    );
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [context]:
+        max !== undefined
+          ? Math.min(prevCounts[context] + 1, max)
+          : prevCounts[context] + 1,
+    }));
   };
 
   const decrement = () => {
-    setCount((prevCount) =>
-      min !== undefined ? Math.max(prevCount - 1, min) : prevCount - 1
-    );
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [context]:
+        min !== undefined
+          ? Math.max(prevCounts[context] - 1, min)
+          : prevCounts[context] - 1,
+    }));
   };
 
   const set = (value) => {
@@ -32,14 +43,26 @@ const useCounter = (initialValue = 0, options = {}) => {
     ) {
       throw new Error('Value is outside the specified limits');
     }
-    setCount(value);
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [context]: value,
+    }));
   };
 
   const reset = () => {
-    setCount(initialValue);
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [context]: card.quantity,
+    }));
   };
 
-  return { count, increment, decrement, set, reset };
+  return {
+    count: counts[context],
+    increment,
+    decrement,
+    set,
+    reset,
+  };
 };
 
 export default useCounter;

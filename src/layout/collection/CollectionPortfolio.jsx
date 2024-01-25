@@ -1,46 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import SelectCollection from './SelectCollection';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useMode } from '../../context';
-import { PortfolioBoxA } from '../../context/hooks/style-hooks/usePortfolioStyles';
 import CollectionPortfolioContent from './CollectionPortfolioContent';
+import useCollectionVisibility from '../../context/hooks/useCollectionVisibility';
+import { PortfolioBoxA } from '../../context/hooks/style-hooks/usePortfolioStyles';
+import { useCollectionStore, useMode } from '../../context';
 
-const CollectionPortfolio = ({ allCollections, onCollectionSelect }) => {
+const CollectionPortfolio = () => {
   const { theme } = useMode();
-  const [showCollections, setShowCollections] = useState(true);
-  const [selectedCards, setSelectedCards] = useState([]);
   const { selectedCollection } = useCollectionStore();
-  useEffect(() => {
-    setSelectedCards(selectedCollection?.cards?.slice(0, 30));
-  }, [selectedCollection]);
-  useEffect(() => {
-    if (selectedCollection && !showCollections) {
-      onCollectionSelect(true);
-    }
-  }, [selectedCollection, showCollections, onCollectionSelect]);
-
-  const handleSelectCollection = (collectionId) => {
-    const foundCollection = allCollections?.find(
-      (collection) => collection?._id === collectionId
-    );
-    if (foundCollection) {
-      setShowCollections(false);
-    }
-  };
+  const { handleBackToCollections } = useCollectionVisibility();
 
   return (
     <PortfolioBoxA theme={theme}>
-      {showCollections ? (
-        <SelectCollection
-          handleSelectCollection={handleSelectCollection}
-          selectedCards={selectedCards}
-        />
-      ) : (
+      {selectedCollection && Object.keys(selectedCollection).length > 0 ? (
         <CollectionPortfolioContent
           selectedCollection={selectedCollection}
-          selectedCards={selectedCards}
-          onBack={() => setShowCollections(true)}
+          onBack={handleBackToCollections}
         />
+      ) : (
+        <SelectCollection />
       )}
     </PortfolioBoxA>
   );

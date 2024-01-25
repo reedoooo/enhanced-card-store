@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { useCollectionStore } from '../CollectionContext/CollectionContext';
-import { useDeckStore } from '../DeckContext/DeckContext';
+import { useCollectionStore } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
+import { useDeckStore } from '../MAIN_CONTEXT/DeckContext/DeckContext';
 
 export const useSelectionDialog = (
   context,

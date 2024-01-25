@@ -3,15 +3,13 @@ import { Grid, Container } from '@mui/material';
 import CustomPagination from '../../reusable/CustomPagination';
 import { useCardStore, useMode } from '../../../context';
 import SkeletonStoreItem from '../gridItems/SkeletonStoreItem'; // A new component for skeleton screens
-import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import GridLayout from './GridLayout';
 import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
 import StoreItem from '../gridItems/StoreItem';
 
 const ProductGrid = ({ updateHeight }) => {
   const { theme } = useMode();
-  const { getProductGridContainerStyle } = useResponsiveStyles(theme); // Use the hook
-  const containerStyles = getProductGridContainerStyle(theme); // Get the styles
+  const containerStyles = theme.responsiveStyles.productGridContainerStyle;
   const { searchData, setSlicedAndMergedSearchData, isCardDataValid } =
     useCardStore();
   const [page, setPage] = useState(1);

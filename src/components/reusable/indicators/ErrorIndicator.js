@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Container from '@mui/material/Container';
 import { Alert, AlertTitle } from '@mui/material';
+import { useMode } from '../../../context';
 
 // Styled components with theme utilization
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -36,9 +37,10 @@ const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)(({ theme }) => ({
 }));
 
 const ErrorIndicator = ({ error }) => {
+  const { theme } = useMode();
   return (
     <StyledContainer>
-      <StyledPaper elevation={3}>
+      <StyledPaper elevation={3} theme={theme}>
         <StyledTypography variant="h6">
           <StyledErrorOutlineIcon />
           <Alert severity="error">

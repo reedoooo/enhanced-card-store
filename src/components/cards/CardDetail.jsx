@@ -20,9 +20,6 @@ const CardDetail = ({
   icon,
 }) => {
   const { theme } = useMode();
-  const theme2 = useTheme();
-  const { getHeaderStyle, getButtonTypographyVariant } =
-    useResponsiveStyles(theme);
 
   const getChipColor = (rarity) => {
     switch (rarity) {

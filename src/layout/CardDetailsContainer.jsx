@@ -46,6 +46,7 @@ const CardDetailsContainer = ({ card, className }) => {
         // For lg and xl, you might want to adjust accordingly or keep the same as md
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6} key={index}>
           <CardDetail
+            theme={theme}
             className={className}
             icon={
               detail.icon && (

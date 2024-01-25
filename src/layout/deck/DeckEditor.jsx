@@ -7,7 +7,7 @@ import {
   Box,
 } from '@mui/material';
 import DeckEditPanel from '../../components/other/InputComponents/DeckEditPanel';
-import { useDeckStore } from '../../context/DeckContext/DeckContext';
+import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
 
 const DeckEditor = ({

@@ -7,13 +7,14 @@ import {
   Button,
   Divider,
   Container,
+  CardActions,
 } from '@mui/material';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import TablePaginationActions from '../../reusable/TablePaginationActions';
-import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import Logger from '../../reusable/Logger';
 import { useMode } from '../../../context';
-import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
+// import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import usePagination from '../../../context/hooks/usePagination';
 import {
   PortfolioTableHeader,
@@ -24,8 +25,16 @@ import {
   PortfolioTableContainer,
   PortfolioTable,
   PortfolioTablePaper,
+  PortfolioPaginationActionsTableRow,
+  PortfolioPaginationActionsTableCell,
+  PortfolioPaginationActionsTableContentsContainer,
 } from '../../../context/hooks/style-hooks/usePortfolioStyles';
 
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 const cardLogger = new Logger([
   'Action',
   'Card Name',
@@ -35,53 +44,77 @@ const cardLogger = new Logger([
 
 const CardList = () => {
   const { theme } = useMode();
-
+  // const [currentCard, setCurrentCard] = useState({});
   const {
     selectedCollection,
     getTotalPrice,
     removeOneFromCollection,
     addOneToCollection,
   } = useCollectionStore();
-
-  const { isMedium, isLarge, isMediumExtraLarge } = useResponsiveStyles(theme);
   const selectedCards = selectedCollection?.cards;
-  const count = selectedCards?.length || 0;
+  // const card = useMemo(() => currentCard, [currentCard]);
+  const cardCount = selectedCards?.length || 0;
   const {
     page,
     rowsPerPage,
+    paginatedItems,
+    emptyRows,
     handleChangePage,
     handleChangeRowsPerPage,
-    paginatedItems,
-    // setRowsPerPage,
-    emptyRows,
+    goToFirstPage,
+    goToLastPage,
+    goToNextPage,
+    goToPreviousPage,
   } = usePagination(selectedCards, 10);
-  const handleRemoveCard = (card) => {
-    removeOneFromCollection(card, selectedCollection);
-    cardLogger.logCardAction('remove', card);
-  };
+  // const {
+  //   // count: quantity,
+  //   increment,
+  //   decrement,
+  // } = useCounter(card, 'Collection');
+  // const { performAction, count } = useCardActions(
+  //   'Collection',
+  //   card,
+  //   selectedCollection,
+  //   addOneToCollection,
+  //   removeOneFromCollection
+  // );
+  // const logQuantityChange = (action) => {
+  //   console.log(
+  //     `Action: ${action} - Card:`,
+  //     card?.name,
+  //     `Initial Quantity: ${card?.quantity}, New Quantity: ${}`
+  //   );
+  // };
+  // const handleRemoveCard = (card) => {
+  //   setCurrentCard(card);
+  //   decrement();
+  //   performAction('remove');
+  //   logQuantityChange('Remove');
+  // };
+  // const handleAddCard = (card) => {
+  //   setCurrentCard(card);
+  //   increment();
+  //   performAction('add');
+  //   // logQuantityChange('Add');
+  // };
 
-  const handleAddCard = (card) => {
-    addOneToCollection(card, selectedCollection);
-    cardLogger.logCardAction('add', card);
-  };
   useEffect(() => {
     const updateRowsPerPage = () =>
-      // setRowsPerPage(window.innerWidth > 960 ? 10 : 5);
       handleChangeRowsPerPage({
         target: { value: window.innerWidth > 960 ? 10 : 5 },
       });
     window.addEventListener('resize', updateRowsPerPage);
+    // window.addEventListener('resize', updateColsPerPage);
     return () => window.removeEventListener('resize', updateRowsPerPage);
   }, []);
 
-  // Helper function to round the total price to the nearest tenth
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-
+  const isRtl = theme.direction === 'rtl';
   // Render functions
   const renderPortfolioTableHeader = () => {
     return (
       <PortfolioTableHeader theme={theme}>
-        <PortfolioTableRow theme={theme}>
+        <PortfolioTableRow component="tr" theme={theme}>
           <PortfolioTableCell theme={theme}>Name</PortfolioTableCell>
           <PortfolioTableCell align="right" theme={theme}>
             Price
@@ -99,66 +132,142 @@ const CardList = () => {
       </PortfolioTableHeader>
     );
   };
-
   const renderPortfolioTableBody = () => {
     return (
       <PortfolioTableBody theme={theme}>
-        {(rowsPerPage > 0
-          ? selectedCollection.cards?.slice(
-              page * rowsPerPage,
-              page * rowsPerPage + rowsPerPage
-            )
-          : selectedCollection.cards
-        )?.map((card) => (
-          <PortfolioTableRow key={card.id} theme={theme}>
-            <PortfolioTableCell component="th" scope="row" theme={theme}>
-              {card.name}
-            </PortfolioTableCell>
-            <PortfolioTableCell align="right" theme={theme}>
-              {card.price}
-            </PortfolioTableCell>
-            <PortfolioTableCell align="right" theme={theme}>
-              {roundToNearestTenth(card.totalPrice)}
-            </PortfolioTableCell>
-            <PortfolioTableCell align="right" theme={theme}>
-              {card.quantity}
-            </PortfolioTableCell>
-            <PortfolioTableCell align="right" theme={theme}>
-              {/* Action Buttons */}
-              <Button color="error" onClick={() => handleRemoveCard(card)}>
-                Remove
-              </Button>
-              <Divider orientation="vertical" flexItem />
-              <Button color="primary" onClick={() => handleAddCard(card)}>
-                Add
-              </Button>
-            </PortfolioTableCell>
-          </PortfolioTableRow>
-        ))}
+        {paginatedItems?.map((card) => {
+          if (!card) return;
+          {
+            /* console.log('Card: ', card); */
+          }
+          {
+            /* const { performAction, count } = useCardActions(
+            'Collection',
+            card,
+            selectedCollection,
+            addOneToCollection,
+            removeOneFromCollection
+          );
+          const handleUpdateQuantity = (card, action, quantity) => {
+            if (!card) return;
+            console.log(
+              `Action: ${action} - Card:`,
+              card?.name,
+              `Initial Quantity: ${card?.quantity}, New Quantity: ${quantity}`
+            );
+
+            if (card) {
+              action === 'add' ? performAction('add') : performAction('remove');
+            }
+          };
+          if (Error) {
+            console.log('Error: ', Error);
+          } */
+          }
+          const renderCardActions = () => (
+            <CardActions
+              sx={{ justifyContent: 'center', padding: theme.spacing(0.5) }}
+            >
+              <GenericActionButtons
+                card={card}
+                context={'Collection'}
+                page={'Collection'}
+              />
+            </CardActions>
+          );
+          return (
+            <PortfolioTableRow component="tr" key={card.id} theme={theme}>
+              <PortfolioTableCell scope="row" theme={theme}>
+                {card?.name}
+              </PortfolioTableCell>
+              <PortfolioTableCell align="right" theme={theme}>
+                {card?.price}
+              </PortfolioTableCell>
+              <PortfolioTableCell align="right" theme={theme}>
+                {roundToNearestTenth(card.totalPrice)}
+              </PortfolioTableCell>
+              <PortfolioTableCell align="right" theme={theme}>
+                {card?.quantity}
+              </PortfolioTableCell>
+
+              <PortfolioTableCell align="right" theme={theme}>
+                {/* Action Buttons */}
+                {renderCardActions()}
+                {/* <Button
+                  color="error"
+                  onClick={() => handleUpdateQuantity(card, 'remove', count)}
+                >
+                  Remove
+                </Button>
+                <Divider orientation="vertical" flexItem />
+                <Button
+                  color="primary"
+                  onClick={() => handleUpdateQuantity(card, 'add', count)}
+                >
+                  Add
+                </Button> */}
+              </PortfolioTableCell>
+            </PortfolioTableRow>
+          );
+        })}
       </PortfolioTableBody>
     );
   };
-
   const renderPortfolioTableFooter = () => {
     return (
-      <PortfolioTableFooter theme={theme}>
-        <PortfolioTableRow theme={theme}>
-          <TablePaginationActions
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+      <PortfolioTableFooter>
+        <PortfolioPaginationActionsTableRow theme={theme}>
+          {/* Set colSpan to the number of columns in the table */}
+          <PortfolioPaginationActionsTableCell
             colSpan={5}
-            count={selectedCollection.cards?.length || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
+            align="right"
             theme={theme}
-          />
-        </PortfolioTableRow>
+          >
+            <PortfolioPaginationActionsTableContentsContainer theme={theme}>
+              <IconButton
+                onClick={goToFirstPage}
+                disabled={page === 0}
+                aria-label="first page"
+              >
+                {isRtl ? <LastPageIcon /> : <FirstPageIcon />}
+              </IconButton>
+              <IconButton
+                onClick={goToPreviousPage}
+                disabled={page === 0}
+                aria-label="previous page"
+              >
+                {isRtl ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+              </IconButton>
+              <IconButton
+                onClick={goToNextPage}
+                disabled={page >= Math.ceil(cardCount / rowsPerPage) - 1}
+                aria-label="next page"
+              >
+                {isRtl ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+              </IconButton>
+              <IconButton
+                onClick={goToLastPage}
+                disabled={page >= Math.ceil(cardCount / rowsPerPage) - 1}
+                aria-label="last page"
+              >
+                {isRtl ? <FirstPageIcon /> : <LastPageIcon />}
+              </IconButton>
+            </PortfolioPaginationActionsTableContentsContainer>
+            {/* <TablePaginationActions
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              count={cardCount}
+              paginatedItems={paginatedItems}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            /> */}
+          </PortfolioPaginationActionsTableCell>
+        </PortfolioPaginationActionsTableRow>
       </PortfolioTableFooter>
     );
   };
-
   const renderTotalPriceBox = () => {
     const renderTotalPrice = () => {
       return (

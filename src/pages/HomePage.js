@@ -14,10 +14,10 @@ import {
 import {
   ModalContext,
   useModalContext,
-} from '../context/ModalContext/ModalContext';
+} from '../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 import DetailsModal from '../components/dialogs/homeDetailsModal/DetailsModal';
-import useResponsiveStyles from '../context/hooks/style-hooks/useResponsiveStyles';
+// import useResponsiveStyles from '../context/hooks/style-hooks/useResponsiveStyles';
 import {
   HomePageBox,
   FeatureCard,
@@ -55,7 +55,10 @@ const HomePage = () => {
   const { allFeatureData, showDetailsModal, detailsModalShow } =
     useModalContext();
   const { tiers, introText } = pages;
-  const { getTypographyVariant, getIconForTitle } = useResponsiveStyles(theme);
+  // const { getTypographyVariant, getIconForTitle } = useResponsiveStyles(theme);
+  const { getTypographyVariant, getIconForTitle, getIconForTitle2 } =
+    theme.responsiveStyles;
+
   const homePageSkeletonConfigs = [
     {
       // Tertiary Content Skeletons
@@ -136,19 +139,22 @@ const HomePage = () => {
     <TertiaryContentContainer
       // ref={splashRef}
       theme={theme}
-      style={{ padding: '20px', textAlign: 'center' }}
+      sx={{ padding: '20px', textAlign: 'center' }}
     >
       <HomePageBox
         theme={theme}
-        style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}
+        sx={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}
       >
         <Typography
           component="h1"
-          variant={getTypographyVariant()}
+          // variant={theme.responsiveStyles.getTypographyVariant(isMdUp)}
+          variant={theme.responsiveStyles.getTypographyVariant(
+            theme.breakpoints
+          )}
           align="center"
           color="text.primary"
           gutterBottom
-          style={{
+          sx={{
             fontWeight: 'bold',
             marginBottom: '1rem',
             fontSize: '2.5rem',
@@ -163,7 +169,7 @@ const HomePage = () => {
           align="center"
           color="text.secondary"
           paragraph
-          style={{
+          sx={{
             fontSize: '1.25rem',
             lineHeight: '1.6',
             margin: '0 auto',
@@ -332,7 +338,7 @@ const HomePage = () => {
       ) : (
         <React.Fragment>
           {/* Main Splash Page */}
-          {/* {renderSplashPage()} */}
+          {renderSplashPage()}
 
           {/* Tertiary Content */}
           {renderTertiaryContent()}

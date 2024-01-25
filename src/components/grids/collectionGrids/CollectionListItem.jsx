@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   Box,
   Card,
@@ -11,48 +11,83 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  Skeleton,
 } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { styled } from '@mui/system';
 import PropTypes from 'prop-types';
-import { useMode } from '../../../context';
+import { useCollectionStore, useMode } from '../../../context';
 import LongMenu from '../../reusable/LongMenu';
-const StyledCard = styled(Card)(({ theme }) => ({
-  margin: theme.spacing(1),
-  transition: '0.3s',
-  boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
-  '&:hover': {
-    boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
-  },
-}));
-const StyledCardContent = styled(CardContent)(({ theme }) => ({
-  textAlign: 'left',
-  padding: theme.spacing(2),
-}));
-const StatisticTypography = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.text.secondary,
-}));
-
+import {
+  StyledCollectionListCard,
+  StyledCollectionListCardContent,
+  StyledStatisticTypography,
+} from '../../cards/styles/cardStyles';
+import useCollectionVisibility from '../../../context/hooks/useCollectionVisibility';
+import { usePageContext } from '../../../context';
 const CollectionListItem = memo(
   ({
     collection,
-    handleSelect,
-    statsByCollectionId,
     handleOpenDialog,
+    isSelected,
+    statsByCollectionId,
     roundToNearestTenth,
   }) => {
     const { theme } = useMode();
+    const { loadingStatus } = usePageContext();
+    const { setSelectedCollection } = useCollectionStore();
     const [showOptions, setShowOptions] = useState(false);
     const twentyFourHourChange = statsByCollectionId?.twentyFourHourAverage;
-
+    const { handleSelectCollection, showCollections } =
+      useCollectionVisibility();
+    // Function to handle selection of a collection
+    const handleSelect = useCallback(
+      (collectionId) => {
+        return () => {
+          handleSelectCollection(collectionId);
+          // setSelectedCollection(collectionId);
+          console.log('collectionId', collectionId);
+          console.log('showCollections', showCollections);
+        };
+      },
+      [handleSelectCollection]
+    );
+    const renderToolTip = () => {
+      return (
+        <Tooltip title="Options">
+          <Box>
+            <IconButton
+              size="small"
+              onClick={() => setShowOptions(!showOptions)}
+              sx={{ position: 'absolute', top: 5, right: 5 }}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </Box>
+        </Tooltip>
+      );
+    };
     return (
-      <StyledCard variant="outlined" theme={theme}>
-        {/* <CardActionArea onClick={() => handleSelect(collection?._id)}> */}
-        <CardActionArea onClick={handleSelect(collection?._id)}>
-          <StyledCardContent theme={theme}>
+      <StyledCollectionListCard
+        variant="outlined"
+        theme={theme}
+        // onClick={handleSelect(collection._id)}
+      >
+        <CardActionArea
+          onClick={handleSelect(collection._id)}
+          // onClick={() => handleSelect(collection._id)}
+          sx={{
+            position: 'relative',
+            height: '100%',
+            width: '100%',
+            // display: 'flex',
+            // flexDirection: 'row',
+            // justifyContent: 'space-between',
+            // alignItems: 'flex-start',
+          }}
+        >
+          <StyledCollectionListCardContent theme={theme}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography>Name: {collection?.name}</Typography>
@@ -63,7 +98,7 @@ const CollectionListItem = memo(
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <StatisticTypography theme={theme}>
+                <StyledStatisticTypography theme={theme}>
                   Performance:
                   {twentyFourHourChange?.priceChange > 0 ? (
                     <ArrowUpwardIcon />
@@ -71,33 +106,58 @@ const CollectionListItem = memo(
                     <ArrowDownwardIcon />
                   )}
                   {twentyFourHourChange?.percentageChange}
-                </StatisticTypography>
+                </StyledStatisticTypography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography>Cards: {collection?.totalQuantity}</Typography>
               </Grid>
-              {/* Add more grid items for other details like Performance */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  {loadingStatus?.isDataLoading ? (
+                    <Skeleton
+                      variant="rectangular"
+                      sx={{
+                        position: 'absolute',
+                        top: 5,
+                        right: 5,
+                        height: 40,
+                        width: 10,
+                      }}
+                    />
+                  ) : (
+                    renderToolTip()
+                  )}
+                </Box>
+              </Grid>
             </Grid>
-          </StyledCardContent>
+            <Divider sx={{ marginTop: theme.spacing(1) }} />
+          </StyledCollectionListCardContent>
+          {/* <Tooltip title="Options">
+            <Box>
+              <IconButton
+                size="small"
+                onClick={() => setShowOptions(!showOptions)}
+                style={{ position: 'absolute', top: 5, right: 5 }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            </Box>
+          </Tooltip> */}
         </CardActionArea>
-        <Tooltip title="Options">
-          <IconButton
-            size="small"
-            onClick={() => setShowOptions(!showOptions)}
-            style={{ position: 'absolute', top: 5, right: 5 }}
-          >
-            <MoreVertIcon />
-          </IconButton>
-        </Tooltip>
+
         {showOptions && (
-          <LongMenu
-            onEdit={() => handleOpenDialog(collection)}
-            onStats={() => console.log('Stats:', collection)}
-            onView={() => console.log('View:', collection)}
-            onClose={() => setShowOptions(false)}
-          />
+          <Box>
+            <LongMenu
+              onEdit={() => handleOpenDialog(collection)}
+              onSelect={() => handleSelect(collection._id)}
+              onStats={() => console.log('Stats:', collection)}
+              onView={() => console.log('View:', collection)}
+              onClose={() => setShowOptions(false)}
+              collectionId={collection._id}
+            />
+          </Box>
         )}
-      </StyledCard>
+      </StyledCollectionListCard>
     );
   },
   (prevProps, nextProps) =>
@@ -107,7 +167,7 @@ const CollectionListItem = memo(
 
 CollectionListItem.propTypes = {
   collection: PropTypes.object.isRequired,
-  handleSelect: PropTypes.func.isRequired,
+  // handleSelect: PropTypes.func.isRequired,
   isSelected: PropTypes.bool,
 };
 

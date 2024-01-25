@@ -10,6 +10,7 @@ import {
 import { styled } from '@mui/system';
 import { useMode } from '../../../../context';
 import { PieChart } from '@mui/x-charts';
+import { StatisticHeader } from '../../../../context/hooks/style-hooks/usePortfolioStyles';
 
 // Define styled components
 const StatisticPaper = styled(Paper)(({ theme }) => ({
@@ -24,11 +25,11 @@ const StatisticPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const StatisticHeader = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.backgroundA.dark,
-  marginBottom: theme.spacing(1),
-}));
+// const StatisticHeader = styled(Typography)(({ theme }) => ({
+//   fontWeight: 'bold',
+//   color: theme.palette.backgroundA.dark,
+//   marginBottom: theme.spacing(1),
+// }));
 
 const PieChartStats = ({ chartData }) => {
   const { theme } = useMode();

@@ -5,13 +5,12 @@ import CartItem from '../../components/grids/gridItems/CartItem';
 import CartTotal from '../../components/other/dataDisplay/CartTotal';
 import { useCartStore } from '../../context/CartContext/CartContext';
 import Checkout from '../../containers/cartPageContainers/Checkout';
-import useResponsiveStyles from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
 
 const CartContent = () => {
   const { theme } = useMode();
-  const { getProductGridContainerStyle } = useResponsiveStyles(theme);
-  const containerStyles = getProductGridContainerStyle(theme);
+  const { getProductGridContainerStyle } = theme.responsiveStyles;
+  // const containerStyles = responsiveStyles.getProductGridContainerStyle;
   const { cartData, isLoading } = useCartStore();
 
   const renderCartItems = () => {
@@ -22,7 +21,7 @@ const CartContent = () => {
     return (
       <Container
         sx={{
-          ...containerStyles,
+          ...theme.responsiveStyles.getProductGridContainerStyle,
           marginTop: '1rem',
           marginBottom: '1rem',
         }}

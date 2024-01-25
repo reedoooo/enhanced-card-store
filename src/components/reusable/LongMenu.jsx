@@ -6,7 +6,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const ITEM_HEIGHT = 48;
 
-export default function LongMenu({ onEdit, onStats, onView }) {
+export default function LongMenu({
+  onEdit,
+  onStats,
+  onView,
+  onSelect,
+  collectionId,
+}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -48,6 +54,14 @@ export default function LongMenu({ onEdit, onStats, onView }) {
           }}
         >
           Edit Collection
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            onSelect(collectionId);
+          }}
+        >
+          Select Collection
         </MenuItem>
         <MenuItem
           onClick={() => {

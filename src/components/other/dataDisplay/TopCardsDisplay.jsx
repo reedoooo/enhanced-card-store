@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { useCollectionStore } from '../../../context/CollectionContext/CollectionContext';
+import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { styled } from 'styled-components';
 
 import { MainContainer } from '../../../pages/pageStyles/StyledComponents';

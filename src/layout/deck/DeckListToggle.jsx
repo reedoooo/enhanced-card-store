@@ -2,7 +2,12 @@ import React from 'react';
 import { Button, Box } from '@mui/material';
 import AppsIcon from '@mui/icons-material/Apps';
 import SelectDeckList from '../../components/grids/deckBuilderGrids/SelectDeckList';
-import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
+
+import { useMode } from '../../context';
+import {
+  DeckCardsContainer,
+  DeckStyledButton,
+} from '../../pages/pageStyles/StyledComponents';
 
 const DeckListToggle = ({
   showAllDecks,
@@ -10,26 +15,25 @@ const DeckListToggle = ({
   handleSelectDeck,
   allDecks,
 }) => {
-  const { buttonStyles, cardsContainerStyles } = useDeckStyles();
-
+  const { theme } = useMode();
   return (
     <>
-      <Button
+      <DeckStyledButton
+        theme={theme}
         onClick={() => setShowAllDecks(!showAllDecks)}
         variant="contained"
-        color="primary"
-        sx={buttonStyles}
+        // color="primary"
       >
         <AppsIcon sx={{ mr: 1 }} />
         {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
-      </Button>
+      </DeckStyledButton>
       {showAllDecks && (
-        <Box sx={cardsContainerStyles}>
+        <DeckCardsContainer theme={theme}>
           <SelectDeckList
             handleSelectDeck={handleSelectDeck}
             allDecks={allDecks}
           />
-        </Box>
+        </DeckCardsContainer>
       )}
     </>
   );

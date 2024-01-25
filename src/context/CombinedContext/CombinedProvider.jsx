@@ -7,15 +7,15 @@ import React, {
   useState,
 } from 'react';
 import { useCookies } from 'react-cookie';
-import { CollectionContext } from '../CollectionContext/CollectionContext';
-import { useSocketContext } from '../SocketContext/SocketProvider';
-import { filterNullPriceHistoryForCollection } from '../CollectionContext/helpers';
+import { CollectionContext } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
+import { filterNullPriceHistoryForCollection } from '../MAIN_CONTEXT/CollectionContext/helpers';
 import {
   generateListOfMonitoredCards,
   updateCardPricesInList,
   initialState,
 } from './helpers';
 import { useUnsavedCardsEffect } from '../hooks/useUnsavedCardsEffect';
+import { useSocketContext } from '../UTILITIES_CONTEXT/SocketContext/SocketProvider';
 export const CombinedContext = createContext();
 
 export const CombinedProvider = ({ children }) => {

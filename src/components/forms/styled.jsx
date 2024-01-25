@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 import {
   Box,
   Button,
@@ -33,27 +33,29 @@ export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   backgroundColor: theme.palette.backgroundA.lightest,
 }));
 
-export const FormWrapper = styled('form')`
-  display: 'flex';
-  flex-direction: column;
-  gap: '20px';
-  align-items: center;
-  padding: '20px';
-  ${'' /* max-width: '400px'; */}
-  margin: auto;
-`;
+// FORM STYLES
+export const FormWrapper = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+  padding: theme.spacing(3),
+  alignItems: 'center',
+  backgroundColor: theme.palette.backgroundA.light,
+  borderRadius: theme.shape.borderRadius,
+}));
 
-export const StyledPaper = styled(Paper)(({ theme }) => ({
+export const StyledFormPaper = styled(Paper)(({ theme }) => ({
   width: '100%',
+
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundA.lighter,
-  boxShadow: theme.shadows[5],
-  maxWidth: '550px',
+  // backgroundColor: theme.palette.backgroundB.lightest,
+  boxShadow: 4,
+  // maxWidth: '550px',
   margin: 'auto',
   transition: 'box-shadow 0.3s ease-in-out',
   '&:hover': {
-    boxShadow: theme.shadows[7],
+    boxShadow: theme.shadows[9],
   },
 }));
 

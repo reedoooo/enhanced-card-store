@@ -1,10 +1,4 @@
-// ===========================|| REACT APP ENTRY POINT ||=========================== //
-
-// import * as serviceWorker from './serviceWorker';
-
-// ===========================|| REACT APP ENTRY POINT ||=========================== //
-
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
@@ -22,6 +16,7 @@ const AppWrapper = () => {
     process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
   );
   return (
+    // <StrictMode>
     <Router>
       <ColorModeProvider>
         <PageProvider>
@@ -33,6 +28,7 @@ const AppWrapper = () => {
         </PageProvider>
       </ColorModeProvider>
     </Router>
+    // </StrictMode>
   );
 };
 

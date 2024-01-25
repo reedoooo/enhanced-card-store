@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { CSSTransition } from 'react-transition-group';
 import DeckItem from '../gridItems/DeckItem';
-import { useDeckStore } from '../../../context/DeckContext/DeckContext';
+import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import SkeletonDeckItem from '../gridItems/SkeletonDeckItem';
 import GridLayout from '../searchResultsGrids/GridLayout';
 const CardsGrid = ({ isLoading }) => {

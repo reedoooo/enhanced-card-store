@@ -17,7 +17,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { BrowserView, MobileView } from 'react-device-detect';
 import {
   DrawerHeader,
-  StyledListItem,
+  // StyledListItem,
   StyledListItemButton,
   StyledListItemIcon,
   StyledSwipeableDrawer,
@@ -38,7 +38,16 @@ const SideBar = ({
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
-
+  const renderMenuItems = () => {
+    return menuItemsData?.map((item, index) => (
+      <MenuItemComponent
+        key={`${item.name}-sidebar-item-${index}`}
+        item={item}
+        name={item.name}
+        onClick={handleDrawer}
+      />
+    ));
+  };
   return (
     <Hidden smDown implementation="css">
       <StyledSwipeableDrawer
@@ -63,16 +72,22 @@ const SideBar = ({
             </IconButton>
           </DrawerHeader>
           <Divider />
+          {/* THIS RENDERS THE VERTICAL MENU ITEMS */}
           <List>
-            {menuItemsData?.map((item) => (
-              <StyledListItem key={item.name} theme={theme}>
-                <MenuItemComponent name={item.name} item={item} />
-              </StyledListItem>
-            ))}
+            {renderMenuItems()}
+            {/* {menuItemsData?.map((item) => (
+              <>
+                {/* <StyledListItem key={item.name} theme={theme}> */}
+            {/* <MenuItemComponent
+                  key={item.name}
+                  name={item.name}
+                  item={item}
+                /> */}
+            {/* </StyledListItem> */}
+            {/* </> */}
             <Divider />
-            <StyledListItem
+            {/* <StyledListItem
               theme={theme}
-              /* eslint-disable-next-line @typescript-eslint/no-empty-function */
               onClick={isLoggedIn ? handleLogout : () => {}}
             >
               <StyledListItemButton theme={theme}>
@@ -81,7 +96,7 @@ const SideBar = ({
                 </StyledListItemIcon>
                 <ListItemText primary={isLoggedIn ? 'Logout' : 'Login'} />
               </StyledListItemButton>
-            </StyledListItem>
+            </StyledListItem> */}
           </List>
         </StyledBox>
       </StyledSwipeableDrawer>

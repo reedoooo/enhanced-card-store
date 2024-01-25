@@ -13,140 +13,271 @@ import {
   Card,
 } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
+import { useStatisticsStore } from '../../../context/StatisticsContext/StatisticsContext';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LongMenu from '../../reusable/LongMenu';
 import { roundToNearestTenth } from '../../../context/Helpers';
-import styled from 'styled-components';
-import {
-  useCollectionStore,
-  useMode,
-  usePageContext,
-  useStatisticsStore,
-} from '../../../context';
+import { useMode, usePageContext } from '../../../context';
 import CollectionListItem from './CollectionListItem';
 import {
-  StyledSkeletonCard,
   AspectRatioBoxSkeleton,
+  StyledSkeletonCard,
+  ListItemSkeleton,
 } from '../../../pages/pageStyles/StyledComponents';
-import useList from '../../../context/hooks/useList';
-import useMap from '../../../context/hooks/useMap';
+import useCollectionVisibility from '../../../context/hooks/useCollectionVisibility';
 
-// eslint-disable-next-line react/display-name
-const ListItemSkeleton = memo(
-  () => {
-    const { theme } = useMode();
-    return (
-      <ListItemSkeleton theme={theme}>
-        <StyledSkeletonCard theme={theme}>
-          <AspectRatioBoxSkeleton theme={theme}>
-            <Skeleton variant="rectangular" animation="wave" height={50} />
-          </AspectRatioBoxSkeleton>
-        </StyledSkeletonCard>
-      </ListItemSkeleton>
-    );
-  },
-  () => true
-);
+// const ListItemSkeletonContainer = memo(
+//   () => {
+//     const { theme } = useMode();
+//     return (
+//       <ListItemSkeleton theme={theme}>
+//         <StyledSkeletonCard theme={theme}>
+//           <AspectRatioBoxSkeleton theme={theme}>
+//             <Skeleton variant="rectangular" animation="wave" height={50} />
+//           </AspectRatioBoxSkeleton>
+//         </StyledSkeletonCard>
+//       </ListItemSkeleton>
+//     );
+//   },
+//   () => true
+// );
+
+// ListItemSkeletonContainer.displayName = 'ListItemSkeletonContainer';
 
 const SelectCollectionList = ({
-  onSave,
+  allCollections,
+  // onSave,
   openDialog,
-  handleSelectCollection,
-  isLoadingNewCollection,
+  // handleSelectCollection,
+  // isLoadingNewCollection,
 }) => {
   const { theme } = useMode();
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [loadingCollectionIds, setLoadingCollectionIds] = useState([]);
-  const { allCollections, setSelectedCollection, selectedCollection } =
-    useCollectionStore();
-  const { setLoading } = usePageContext();
+  const { setSelectedCollection } = useCollectionStore();
+  const { setIsDataLoading, loadingStatus } = usePageContext();
   const { statsByCollectionId } = useStatisticsStore();
-  // const { list: allCollections } = useList(); // Assuming allCollections is initially fetched
-  const { mapData: loadingCollectionMap, setMap, deleteKey } = useMap();
-
-  const handleSelect = useCallback(
-    (selectedId) => {
-      console.log('selectedId', selectedId);
-      setSelectedCollectionId(selectedId); // Keep track of the selected collection ID
-      const selected = allCollections?.find(
-        (collection) => collection._id === selectedId
-      );
-      if (!selected) {
-        console.error('Collection not found with ID:', selectedId);
-        return;
-      }
-      // setSelectedCollection(selected);
-      setMap(selected?._id, true); // Set loading state for the selected collection
-      handleSelectCollection(selected?._id);
-      onSave(selected);
-      setLoadingCollectionIds((prev) => [...prev, selectedId]);
-    },
-    [setMap, allCollections, onSave, handleSelectCollection] // Dependencies
-  );
+  const { showCollections } = useCollectionVisibility();
   const handleOpenDialog = useCallback(
     (collection) => {
       setSelectedCollection(collection);
       openDialog(true);
     },
-    [openDialog, setSelectedCollection]
+    [setSelectedCollection]
   );
 
-  useEffect(() => {
-    if (isLoadingNewCollection) {
-      setLoading('isLoading', true);
-      const newCollectionId = allCollections[allCollections?.length - 1]?._id;
-      if (newCollectionId) {
-        setMap(newCollectionId, true); // Set loading state for new collection
-        setLoading('isLoading', false);
-      }
-    }
-  }, [isLoadingNewCollection, allCollections, setMap, setLoading]);
-
-  useEffect(() => {
-    loadingCollectionMap.forEach((_, collectionId) => {
-      setTimeout(() => deleteKey(collectionId), 1000); // Simulate delay and delete loading state
-    });
-  }, [loadingCollectionMap, deleteKey]);
-
   return (
-    <List>
-      {allCollections?.map((collection) => {
-        const isSelected = collection?._id === selectedCollectionId;
-        {
-          /* const isLoading = loadingCollectionIds?.includes(collection?._id); */
-        }
-        const isLoading = loadingCollectionMap.has(collection?._id);
-
-        return isLoading ? (
-          // Render skeleton if the collection is still loading
-          <ListItemSkeleton key={`loading-${collection?._id}`} />
-        ) : (
-          // Render actual collection item if it's not in loading state
-          <CollectionListItem
-            key={collection?._id}
-            collection={collection}
-            handleSelect={handleSelect}
-            handleOpenDialog={handleOpenDialog}
-            roundToNearestTenth={roundToNearestTenth}
-            isSelected={isSelected}
-            statsByCollectionId={statsByCollectionId}
-            isPlaceholder={false}
-          />
-        );
-      })}
-    </List>
+    showCollections && (
+      <List>
+        {allCollections?.map((collection, index) => {
+          {
+            /* const isLoading = loadingCollectionIds?.includes(collection?._id); */
+          }
+          if (loadingCollectionIds?.includes(collection?._id)) {
+            setIsDataLoading(true);
+          }
+          return loadingStatus?.isDataLoading ? (
+            <ListItemSkeleton
+              theme={theme}
+              key={`loading-${collection?.name}-${index}`}
+            >
+              <StyledSkeletonCard theme={theme}>
+                <AspectRatioBoxSkeleton theme={theme}>
+                  <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                    height={50}
+                  />
+                </AspectRatioBoxSkeleton>
+              </StyledSkeletonCard>
+            </ListItemSkeleton>
+          ) : (
+            <CollectionListItem
+              key={
+                collection?._id ||
+                `collectionListItem-${index}-${collection?._id}`
+                // `${collection?.name}-${collection?.totalPrice}-${index}`
+              }
+              collection={collection}
+              handleOpenDialog={handleOpenDialog}
+              isSelected={collection._id === selectedCollectionId}
+              roundToNearestTenth={roundToNearestTenth}
+              statsByCollectionId={statsByCollectionId}
+              isPlaceholder={false}
+            />
+          );
+        })}
+      </List>
+    )
   );
 };
 
 SelectCollectionList.propTypes = {
-  onSave: PropTypes.func.isRequired,
+  // onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
-  handleSelectCollection: PropTypes.func.isRequired,
-  isLoadingNewCollection: PropTypes.bool,
+  // handleSelectCollection: PropTypes.func.isRequired,
+  // isLoadingNewCollection: PropTypes.bool,
+  allCollections: PropTypes.array.isRequired, // Ensure this is passed or obtained from context
 };
 
 export default SelectCollectionList;
+
+// import React, { memo, useCallback, useEffect, useState } from 'react';
+// import { List, Skeleton } from '@mui/material';
+// import PropTypes from 'prop-types';
+// import { roundToNearestTenth } from '../../../context/Helpers';
+// import {
+//   useCollectionStore,
+//   useMode,
+//   usePageContext,
+//   useStatisticsStore,
+// } from '../../../context';
+// import CollectionListItem from './CollectionListItem';
+// import {
+//   StyledSkeletonCard,
+//   AspectRatioBoxSkeleton,
+// } from '../../../pages/pageStyles/StyledComponents';
+// import useMap from '../../../context/hooks/useMap';
+
+// // eslint-disable-next-line react/display-name
+// const ListItemSkeleton = memo(
+//   () => {
+//     const { theme } = useMode();
+//     return (
+//       <ListItemSkeleton theme={theme}>
+//         <StyledSkeletonCard theme={theme}>
+//           <AspectRatioBoxSkeleton theme={theme}>
+//             <Skeleton variant="rectangular" animation="wave" height={50} />
+//           </AspectRatioBoxSkeleton>
+//         </StyledSkeletonCard>
+//       </ListItemSkeleton>
+//     );
+//   },
+//   () => true
+// );
+
+// const SelectCollectionList = ({
+//   onSave,
+//   openDialog,
+//   handleSelectCollection,
+//   isLoadingNewCollection,
+// }) => {
+//   const { theme } = useMode();
+//   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+//   const [loadingCollectionIds, setLoadingCollectionIds] = useState([]);
+//   const { allCollections, setSelectedCollection, selectedCollection } =
+//     useCollectionStore();
+//   // const { setLoading } = usePageContext();
+//   const { statsByCollectionId } = useStatisticsStore();
+//   const [loading, setLoading] = useState(new Map());
+
+//   // const { list: allCollections } = useList(); // Assuming allCollections is initially fetched
+//   // const { mapData: loadingCollectionMap, setMap, deleteKey } = useMap();
+//   // const { mapData: loadingCollectionMap } = useMap();
+//   // const handleSelect = useCallback(
+//   //   (collectionId) => {
+//   //     handleSelectCollection(collectionId);
+//   //   },
+//   //   [handleSelectCollection]
+//   // );
+//   // const handleSelect = useCallback(
+//   //   (selectedId) => {
+//   //     console.log('selectedId', selectedId);
+//   //     setSelectedCollectionId(selectedId); // Keep track of the selected collection ID
+//   //     const selected = allCollections?.find(
+//   //       (collection) => collection._id === selectedId
+//   //     );
+//   //     if (!selected) {
+//   //       console.error('Collection not found with ID:', selectedId);
+//   //       return;
+//   //     }
+//   //     // setSelectedCollection(selected);
+//   //     setMap(selected?._id, true); // Set loading state for the selected collection
+//   //     handleSelectCollection(selected?._id);
+//   //     onSave(selected);
+//   //     setLoadingCollectionIds((prev) => [...prev, selectedId]);
+//   //   },
+//   //   [setMap, allCollections, onSave, handleSelectCollection] // Dependencies
+//   // );
+//   const handleOpenDialog = useCallback(
+//     (collection) => {
+//       setSelectedCollection(collection);
+//       openDialog(true);
+//     },
+//     [openDialog, setSelectedCollection]
+//   );
+
+//   // useEffect(() => {
+//   //   if (isLoadingNewCollection) {
+//   //     setLoading('isLoading', true);
+//   //     const newCollectionId = allCollections[allCollections?.length - 1]?._id;
+//   //     if (newCollectionId) {
+//   //       setMap(newCollectionId, true); // Set loading state for new collection
+//   //       setLoading('isLoading', false);
+//   //     }
+//   //   }
+//   // }, [isLoadingNewCollection, allCollections, setMap, setLoading]);
+
+//   // useEffect(() => {
+//   //   loadingCollectionMap.forEach((_, collectionId) => {
+//   //     setTimeout(() => deleteKey(collectionId), 1000); // Simulate delay and delete loading state
+//   //   });
+//   // }, [loadingCollectionMap, deleteKey]);
+//   const handleSelect = (collectionId) => {
+//     setLoading((prev) => new Map(prev).set(collectionId, true));
+//     handleSelectCollection(collectionId);
+//   };
+//   return (
+//     <List>
+//       {allCollections?.map((collection) => {
+//         console.log('allCollections:', allCollections);
+
+//         {
+//           /* const isSelected = collection?._id === selectedCollectionId; */
+//         }
+//         {
+//           /* const isLoading = loadingCollectionIds?.includes(collection?._id); */
+//         }
+//         const isLoading = loading.get(collection._id);
+
+//         return isLoading ? (
+//           // Render skeleton if the collection is still loading
+//           <Skeleton
+//             variant="rectangular"
+//             animation="wave"
+//             height={50}
+//             key={`loading-${collection._id}`}
+//           />
+//         ) : (
+//           // Render actual collection item if it's not in loading state
+//           <CollectionListItem
+//             key={collection?._id}
+//             collection={collection}
+//             handleSelect={handleSelect}
+//             handleOpenDialog={handleOpenDialog}
+//             roundToNearestTenth={roundToNearestTenth}
+//             // isSelected={isSelected}
+//             statsByCollectionId={statsByCollectionId}
+//             isPlaceholder={false}
+//           />
+//         );
+//       })}
+//     </List>
+//   );
+// };
+
+// SelectCollectionList.propTypes = {
+//   onSave: PropTypes.func.isRequired,
+//   openDialog: PropTypes.func.isRequired,
+//   allCollections: PropTypes.array.isRequired,
+//   handleSelectCollection: PropTypes.func.isRequired,
+//   isLoadingNewCollection: PropTypes.bool,
+// };
+
+// export default SelectCollectionList;
+// !================
 // eslint-disable-next-line react/display-name
 // const CollectionListItem = memo(
 //   ({

@@ -1,4 +1,11 @@
-import { Box, Button, Card, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import styled from 'styled-components';
 
 export const StyledCard = styled(Card)(({ theme }) => ({
@@ -26,7 +33,7 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   maxHeight: '60px',
   width: '100%',
 }));
-export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+export const StyledToolTipBox = styled(Box)(({ theme }) => ({
   width: 'auto',
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
@@ -52,6 +59,33 @@ export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
     height: '100%',
     objectFit: 'cover',
   },
+}));
+export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+  // width: 'auto',
+  // border: `1px solid ${theme.palette.divider}`,
+  // borderRadius: theme.shape.borderRadius,
+  // padding: theme.spacing(2),
+  // backgroundColor: theme.palette.backgroundA.lightest,
+  // color: theme.palette.text.primary,
+  // boxShadow: theme.shadows[3],
+  // alignContent: 'flex-start',
+  // alignItems: 'flex-start',
+  // height: '100%',
+  // maxWidth: 220,
+  // position: 'relative',
+  // '&::before': {
+  //   content: '""',
+  //   display: 'block',
+  //   paddingTop: '100%',
+  // },
+  // '& > img': {
+  //   position: 'absolute',
+  //   top: 0,
+  //   left: 0,
+  //   width: '100%',
+  //   height: '100%',
+  //   objectFit: 'cover',
+  // },
 }));
 export const StyledTooltipTitle = styled('h4')(({ theme }) => ({
   fontWeight: 'bold',
@@ -87,7 +121,7 @@ export const CardDetailContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const CardDetailRow = styled('div')(({ theme }) => ({
+export const CardDetailRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
@@ -115,6 +149,25 @@ export const CardTitleStyle = styled('span')(({ theme }) => ({
 
 export const CardValueStyle = styled('span')(({ theme }) => ({
   fontWeight: 400,
+  color: theme.palette.text.secondary,
+}));
+// COLLLECTION LIST ITEM
+export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
+  margin: theme.spacing(1),
+  transition: '0.3s',
+  boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
+  '&:hover': {
+    boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
+  },
+}));
+export const StyledCollectionListCardContent = styled(CardContent)(
+  ({ theme }) => ({
+    textAlign: 'left',
+    padding: theme.spacing(2),
+  })
+);
+export const StyledStatisticTypography = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
   color: theme.palette.text.secondary,
 }));
 

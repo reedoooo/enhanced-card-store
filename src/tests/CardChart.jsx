@@ -19,7 +19,6 @@ import {
   ListItem,
   Paper,
   Typography,
-  styled,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -36,6 +35,7 @@ import { format } from 'date-fns';
 import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
 import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import ImageDisplayFromHook from '../components/other/dataDisplay/ImageDisplayFromHook';
+import styled from 'styled-components';
 
 // Adjust the padding, margin, and other styles as needed
 const ChartArea = styled(Box)(({ theme }) => ({
@@ -66,11 +66,8 @@ const SquareChartContainer = styled(Box)(({ theme }) => ({
 const CardChart = ({ cardData = initialCardData }) => {
   // STYLING AND MEDIA QUERY HOOKS
   const { theme } = useMode();
-  const theme2 = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
-  const { selectedCollection, allCollections } = useCollectionStore();
   const [imageUrl, setImageUrl] = useState(null);
-  const [error, setError] = useState(null);
   const { startUpdates, pauseUpdates, resetData } =
     useCardCronJob(initialCardData);
   const formatTimestamp = (timestamp) =>

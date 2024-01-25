@@ -1,80 +1,70 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import { useMode } from '../../context';
+// import * as React from 'react';
+// import PropTypes from 'prop-types';
+// import Box from '@mui/material/Box';
+// import IconButton from '@mui/material/IconButton';
+// import FirstPageIcon from '@mui/icons-material/FirstPage';
+// import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+// import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+// import LastPageIcon from '@mui/icons-material/LastPage';
+// import { useMode } from '../../context';
+// import { PortfolioPaginationActionsTableContentsContainer } from '../../context/hooks/style-hooks/usePortfolioStyles';
 
-const TablePaginationActions = (props) => {
-  const { theme } = useMode();
-  const { count, page, rowsPerPage, onPageChange } = props;
+// const TablePaginationActions = (props) => {
+//   const { theme } = useMode();
+//   const { count, page, rowsPerPage, onRowsPerPageChange, onPageChange } = props;
 
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
+//   // Simplify button click handlers
+//   const handleFirstPageButtonClick = () => onPageChange(0);
+//   const handleBackButtonClick = () => onPageChange(page - 1);
+//   const handleNextButtonClick = () => onPageChange(page + 1);
+//   const handleLastPageButtonClick = () =>
+//     onPageChange(Math.max(0, Math.ceil(count / rowsPerPage) - 1));
 
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
+//   // const handleButtonClick = (event, newPage) => {
+//   //   onPageChange(event, newPage);
+//   //   onRowsPerPageChange(event);
+//   // };
 
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
+//   const isRtl = theme.direction === 'rtl';
+//   return (
+//     <PortfolioPaginationActionsTableContentsContainer theme={theme}>
+//       <IconButton
+//         onClick={handleFirstPageButtonClick}
+//         disabled={page === 0}
+//         aria-label="first page"
+//       >
+//         {isRtl ? <LastPageIcon /> : <FirstPageIcon />}
+//       </IconButton>
+//       <IconButton
+//         onClick={handleBackButtonClick}
+//         disabled={page === 0}
+//         aria-label="previous page"
+//       >
+//         {isRtl ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+//       </IconButton>
+//       <IconButton
+//         onClick={handleNextButtonClick}
+//         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+//         aria-label="next page"
+//       >
+//         {isRtl ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+//       </IconButton>
+//       <IconButton
+//         onClick={handleLastPageButtonClick}
+//         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+//         aria-label="last page"
+//       >
+//         {isRtl ? <FirstPageIcon /> : <LastPageIcon />}
+//       </IconButton>
+//     </PortfolioPaginationActionsTableContentsContainer>
+//   );
+// };
 
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
+// TablePaginationActions.propTypes = {
+//   count: PropTypes.number.isRequired,
+//   onPageChange: PropTypes.func.isRequired,
+//   page: PropTypes.number.isRequired,
+//   rowsPerPage: PropTypes.number.isRequired,
+// };
 
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === 'rtl' ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-};
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
-
-export default TablePaginationActions;
+// export default TablePaginationActions;

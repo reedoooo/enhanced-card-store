@@ -4,7 +4,6 @@ import GenericCard from '../../cards/GenericCard';
 import { styled } from '@mui/system';
 import SkeletonDeckItem from '../gridItems/SkeletonDeckItem';
 import DeckItem from '../gridItems/DeckItem';
-import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import GridLayout from './GridLayout';
 import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
 
@@ -35,7 +34,7 @@ const DeckSearchCardGrid = ({ cards, userDecks }) => {
           gridItemProps={{ xs: 12, sm: 6, md: 4, lg: 4 }}
         />
       ) : (
-        uniqueCards.map((card) => (
+        uniqueCards?.map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={4} key={card.id}>
             <Box sx={{ flexGrow: 1, display: 'flex' }}>
               <DeckItem

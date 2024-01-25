@@ -39,7 +39,7 @@ export const calculatePriceChanges = (data) => {
   return [];
 };
 
-const getTopCollection = (collections) => {
+export const getTopCollection = (collections) => {
   return collections?.reduce(
     (max, collection) =>
       max.totalPrice > collection.totalPrice ? max : collection,
@@ -47,14 +47,14 @@ const getTopCollection = (collections) => {
   );
 };
 
-const getTopCard = (cards) => {
+export const getTopCard = (cards) => {
   return cards?.reduce(
     (max, card) => (max.price > card.price ? max : card),
     cards[0]
   );
 };
 
-const calculateTotalPriceOfAllCollections = (collections) => {
+export const calculateTotalPriceOfAllCollections = (collections) => {
   return collections
     ?.reduce((total, collection) => total + collection.totalPrice, 0)
     .toFixed(2);
@@ -107,4 +107,17 @@ export const calculateStatistics = (data, timeRange, allCollections, cards) => {
       topCollection: topCollection?.name, // or any other identifier for the collection
     },
   };
+};
+
+export const calculateStatsForCollection = (collection, timeRange) => {
+  try {
+    const data = collection?.chartData?.allXYValues || [];
+    return calculateStatistics({ data }, timeRange) || {};
+  } catch (error) {
+    console.error(
+      `Error calculating statistics for collection ${collection._id}:`,
+      error
+    );
+    return {}; // Default value in case of error
+  }
 };

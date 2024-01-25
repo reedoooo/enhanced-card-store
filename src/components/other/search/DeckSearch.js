@@ -34,7 +34,17 @@ const DeckSearch = ({ userDecks }) => {
           height: '100%',
         }}
       >
-        <SearchBar /> {/* Already contains all needed functionality */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: '100%',
+            marginBottom: 2, // Add some margin below the search form
+          }}
+        >
+          <SearchBar />
+        </Box>
         <DeckSearchCardGrid cards={paginatedData} userDecks={userDecks} />
         <CustomPagination
           totalCount={searchData?.length}

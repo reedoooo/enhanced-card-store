@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useCollectionStore } from '../CollectionContext/CollectionContext';
+import { useCollectionStore } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { processUnsavedCards } from '../CombinedContext/helpers';
 
 export const useUnsavedCardsEffect = (allCollections, userId) => {

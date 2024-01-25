@@ -3,12 +3,12 @@ import { CardActions, Typography } from '@mui/material';
 import CardMediaSection from './media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/images/placeholder.jpeg';
-import { useModalContext } from '../../context/ModalContext/ModalContext';
-import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
+import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
+import { PopoverContext } from '../../context/UTILITIES_CONTEXT/PopoverContext/PopoverContext';
 import { Box } from '@mui/system';
 import { useCartStore } from '../../context/CartContext/CartContext';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useDeckStore } from '../../context/DeckContext/DeckContext';
+import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
+import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useTheme } from 'styled-components';
 import {
   AspectRatioBox,
@@ -18,6 +18,7 @@ import {
 } from './styles/cardStyledComponents';
 import { getQuantity } from '../componentHelpers';
 import { useMode } from '../../context';
+import useCounter from '../../context/hooks/useCounter';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
 
@@ -32,6 +33,7 @@ const GenericCard = React.forwardRef((props, ref) => {
     useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
     useContext(PopoverContext);
+  const { count: quantity, increment, decrement } = useCounter(card, context);
 
   const handleClick = useCallback(() => {
     openModalWithCard(card);
@@ -121,12 +123,20 @@ const GenericCard = React.forwardRef((props, ref) => {
   //   selectedDeck: useDeckStore().selectedDeck,
   //   allDecks: useDeckStore().allDecks,
   // });
-  const cartQuantity = getQuantity({ card: card, cartData: cartData });
-  const collectionQuantity = getQuantity({
+  // const cartQuantity = getQuantity({ card: card, cartData: cartData });
+  // const collectionQuantity = getQuantity({
+  //   card: card,
+  //   collectionData: selectedCollection,
+  // });
+  // const deckQuantity = getQuantity({ card: card, deckData: selectedDeck });
+  const quantities = getQuantity({
     card: card,
-    collectionData: selectedCollection,
+    cartData: cartData,
+    selectedCollection: selectedCollection,
+    allCollections: allCollections,
+    selectedDeck: selectedDeck,
+    allDecks: allDecks,
   });
-  const deckQuantity = getQuantity({ card: card, deckData: selectedDeck });
 
   // Function to render the card's media section
   const renderCardMediaSection = () => (
@@ -137,7 +147,7 @@ const GenericCard = React.forwardRef((props, ref) => {
         card={card}
         context={context}
         page={page}
-        quantity={cartQuantity}
+        quantity={quantity}
         isHovered={hoveredCard === card}
         handleInteraction={handleInteraction}
         handleClick={handleClick}
@@ -155,11 +165,11 @@ const GenericCard = React.forwardRef((props, ref) => {
         <Typography variant="body2" color="text.secondary" gutterBottom>
           {price}
         </Typography>
-        <QuantityLine theme={theme}>{`Cart: ${cartQuantity}`}</QuantityLine>
+        <QuantityLine theme={theme}>{`Cart: ${quantities.cart}`}</QuantityLine>
         <QuantityLine
           theme={theme}
-        >{`Collection: ${collectionQuantity}`}</QuantityLine>
-        <QuantityLine theme={theme}>{`Deck: ${deckQuantity}`}</QuantityLine>
+        >{`Collection: ${quantities.collection}`}</QuantityLine>
+        <QuantityLine theme={theme}>{`Deck: ${quantities.deck}`}</QuantityLine>
       </StyledCardContent>
     );
   };

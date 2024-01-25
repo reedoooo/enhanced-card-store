@@ -1,8 +1,8 @@
 // CombinedContext.js
 import React, { createContext, useContext, useState } from 'react';
-import { DeckContext } from '../DeckContext/DeckContext';
+import { DeckContext } from '../MAIN_CONTEXT/DeckContext/DeckContext';
 import { CartContext } from '../CartContext/CartContext';
-import { CollectionContext } from '../CollectionContext/CollectionContext';
+import { CollectionContext } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
 
 // Create the combined context
 export const AppContext = createContext({});

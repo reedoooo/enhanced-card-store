@@ -1,3 +1,30 @@
+// export const getQuantity = ({
+//   card,
+//   cartData,
+//   selectedCollection,
+//   allCollections,
+//   selectedDeck,
+//   allDecks,
+// }) => {
+//   // Helper function to find the quantity of a card in a list of collections or decks
+//   const findCardQuantity = (collectionsOrDecks) =>
+//     collectionsOrDecks?.reduce(
+//       (acc, item) =>
+//         acc + (item?.cards?.find((c) => c.id === card.id)?.quantity ?? 0),
+//       0
+//     ) ?? 0;
+
+//   const cartQuantity =
+//     cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0;
+//   const collectionQuantity = selectedCollection
+//     ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
+//     : findCardQuantity(allCollections);
+//   const deckQuantity = selectedDeck
+//     ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
+//     : findCardQuantity(allDecks);
+
+//   return Math.max(cartQuantity, collectionQuantity, deckQuantity);
+// };
 export const getQuantity = ({
   card,
   cartData,
@@ -7,10 +34,10 @@ export const getQuantity = ({
   allDecks,
 }) => {
   // Helper function to find the quantity of a card in a list of collections or decks
-  const findCardQuantity = (collectionsOrDecks) =>
+  const findCardQuantity = (collectionsOrDecks, cardId) =>
     collectionsOrDecks?.reduce(
       (acc, item) =>
-        acc + (item?.cards?.find((c) => c.id === card.id)?.quantity ?? 0),
+        acc + (item?.cards?.find((c) => c.id === cardId)?.quantity ?? 0),
       0
     ) ?? 0;
 
@@ -18,10 +45,14 @@ export const getQuantity = ({
     cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0;
   const collectionQuantity = selectedCollection
     ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-    : findCardQuantity(allCollections);
+    : findCardQuantity(allCollections, card.id);
   const deckQuantity = selectedDeck
     ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-    : findCardQuantity(allDecks);
+    : findCardQuantity(allDecks, card.id);
 
-  return Math.max(cartQuantity, collectionQuantity, deckQuantity);
+  return {
+    cart: cartQuantity,
+    collection: collectionQuantity,
+    deck: deckQuantity,
+  };
 };

@@ -3,39 +3,28 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useMode } from '../../context';
 
 const HeroCenter = ({ decorative, title, subtitle }) => {
-  const theme2 = useTheme(); // Using the theme for responsive breakpoints
-
   const { theme } = useMode();
+  const theme2 = useTheme();
   return (
     <Box
       sx={{
-        flex: 1,
-        flexGrow: 1,
-        zIndex: 10,
         display: 'flex',
-        alignItems: 'center',
         flexDirection: 'column',
-        gap: theme2.spacing(2),
-        // padding: theme2.spacing(2),
-        background: theme.palette.success.light,
-        // my: theme.spacing(6),
-        // mt: theme.spacing(12),
-        // mb: theme.spacing(2),
+        justifyContent: 'space-around', // Distributes space evenly
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
         textAlign: 'center',
-        // height: {
-        //   xs: 'auto',
-        //   sm: 'auto',
-        //   md: 'auto',
-        //   lg: 'auto',
-        // },
+        background: theme.palette.success.light,
+        padding: theme2.spacing(2), // Adjust padding as needed
       }}
     >
       {decorative && (
         <Typography
           component="span"
           sx={{
-            color: theme2.palette.primary.main,
-            fontWeight: theme2.typography.fontWeightMedium,
+            color: theme.palette.primary.main,
+            fontWeight: theme.typography.fontWeightMedium,
             fontSize: {
               xs: theme2.typography.body2.fontSize, // smaller screens
               sm: theme2.typography.body1.fontSize, // medium screens
@@ -58,7 +47,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
             lg: theme2.typography.h1.fontSize, // extra large screens
           },
           fontWeight: theme2.typography.fontWeightBold,
-          color: theme2.palette.text.primary,
+          color: theme.palette.text.primary,
         }}
       >
         {title}
@@ -66,7 +55,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
       <Typography
         sx={{
           fontSize: theme2.typography.subtitle1.fontSize,
-          color: theme2.palette.text.secondary,
+          color: theme.palette.text.secondary,
           maxWidth: '54ch',
         }}
       >
@@ -80,7 +69,6 @@ HeroCenter.defaultProps = {
   decorative: '',
   title: '',
   subtitle: '',
-  theme: null,
 };
 
 export default HeroCenter;

@@ -3,7 +3,7 @@ import useFetch from './useFetch';
 import useFetchWrapper from './useFetchWrapper';
 import useMap from './useMap';
 import useIdle from './useIdle';
-import useCounter from './useCounter';
+// import useCounter from './useCounter';
 import useList from './useList';
 import useObjectState from './useObjectState';
 import usePrevious from './usePrevious';
@@ -15,7 +15,7 @@ import { useVisible } from './useVisible';
 import useLogger from './useLogger';
 import useDialog from './useDialog';
 import useApiResponseHandler from './useApiResponseHandler';
-
+import useRenderCount from './useRenderCount';
 /**
  * Hook: useLogger
  * Description: Logs component lifecycle events, state changes, and custom events.
@@ -76,7 +76,7 @@ const { isIdle } = useIdle(1000, () => console.log('User is idle!'));
  * Description: Manages a counter state with increment, decrement, and reset functionalities.
  * Ideal for counters, numeric inputs, or pagination components.
  */
-const { count, increment, decrement, reset } = useCounter();
+// const { count, increment, decrement, reset } = useCounter();
 /**
  * Hook: useList
  * Description: Manages list states with add, remove, and update functionalities.
@@ -168,3 +168,13 @@ const { isVisible, show, hide, toggleVisible } = useVisible();
  * handleApiResponse: Function - Function to handle the API response.
  * }
  */
+
+/**
+ * Hook: useRenderCount
+ * Description: Keeps track of the number of times a component has rendered.
+ * Useful for performance optimization and debugging.
+ * @returns {
+ * renderCount: number - The number of times the component has rendered.
+ * }
+ */
+const renderCount = useRenderCount();

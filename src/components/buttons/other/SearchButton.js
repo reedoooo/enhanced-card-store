@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Grid } from '@mui/material';
-import { useCardStore } from '../../../context/CardContext/CardStore';
+import { useMode } from '../../../context';
 
 const SearchButton = ({ searchParams, handleSubmit }) => {
   // const { handleRequest } = useCardStore();

@@ -15,10 +15,10 @@ import { useMode } from '../../context';
 const CardDetails = ({ details, className }) => {
   // details expected to be an array of objects with { icon, title, value }
   const { theme } = useMode();
-  const theme2 = useTheme();
-  const styles = useCardDetailStyles(theme, theme2);
-  const { getHeaderStyle, getButtonTypographyVariant } =
-    useResponsiveStyles(theme);
+  // const theme2 = useTheme();
+  // const styles = useCardDetailStyles(theme, theme2);
+  // const { getHeaderStyle, getButtonTypographyVariant } =
+  //   useResponsiveStyles(theme);
 
   return (
     <CardDetailContainer theme={theme}>

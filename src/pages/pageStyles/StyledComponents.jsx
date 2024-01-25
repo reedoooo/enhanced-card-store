@@ -16,6 +16,10 @@ import {
   ListItem,
   ListItemIcon,
   SwipeableDrawer,
+  List,
+  FormControlLabel,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import styled from 'styled-components';
 
@@ -85,6 +89,7 @@ export const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   color: 'inherit',
   textDecoration: 'none',
 }));
+
 // ! MENU ITEMS COMPONENT STYLES -----------------------------
 export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   cursor: 'pointer',
@@ -95,6 +100,10 @@ export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderRadius: '30px',
   // height: '100%',
   // width: '100%',
+  height: '100%',
+  // '&:hover': {
+  //   backgroundColor: theme.palette.backgroundA.onHover,
+  // },
   '&:hover': {
     backgroundColor:
       'linear-gradient( 90deg, rgba(78, 78, 246, 0.647) 0%, rgba(247, 90, 216, 0.696) 100% );',
@@ -138,6 +147,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   width: 250,
 }));
+
 // ! SIDEBAR COMPONENT STYLES -----------------------------
 export const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
   '.MuiPaper-root': {
@@ -162,14 +172,14 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
-export const StyledListItem = styled(ListItem)(({ theme }) => ({
-  cursor: 'pointer',
-  height: '100%',
-  flexGrow: 1,
-  '&:hover': {
-    backgroundColor: theme.palette.backgroundA.onHover,
-  },
-}));
+// export const StyledListItem = styled(ListItem)(({ theme }) => ({
+//   cursor: 'pointer',
+//   height: '100%',
+//   flexGrow: 1,
+//   '&:hover': {
+//     backgroundColor: theme.palette.backgroundA.onHover,
+//   },
+// }));
 export const StyledListItemButton = styled(ListItem)(({ theme }) => ({
   cursor: 'pointer',
   '&:hover': {
@@ -283,10 +293,8 @@ export const RootGrid = styled(Grid)(({ theme }) => ({
   flexDirection: 'row',
   width: '100%',
   padding: theme.spacing(3),
-
   justifyContent: 'center',
   alignItems: 'center',
-
   flexWrap: 'wrap', // Ensure wrapping on smaller screens
   overflow: 'auto',
   backgroundColor: theme.palette.backgroundB.default,
@@ -298,6 +306,66 @@ export const GridContainer = styled(Grid)(({ theme }) => ({
   flexdirection: 'column',
   height: '100%',
 }));
+
+// ! DECK DISPLAY PAGE
+export const DeckDisplayBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.backgroundB.lightest,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  margin: 'auto',
+  maxWidth: '800px',
+}));
+
+export const DeckDisplayPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[4],
+  backgroundColor: theme.palette.backgroundA.lightest,
+  color: theme.palette.text.primary,
+  display: 'flex',
+  flexDirection: 'column',
+}));
+
+export const DeckDisplayTitleTypography = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  color: theme.palette.text.primary,
+  marginBottom: theme.spacing(2),
+}));
+
+export const DeckStyledButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.backgroundA.dark,
+  color: theme.palette.backgroundA.contrastTextA,
+  '&:hover': {
+    backgroundColor: theme.palette.backgroundA.darker,
+  },
+  display: 'flex',
+  alignItems: 'center',
+}));
+
+export const SwitchControl = styled(FormControlLabel)(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
+
+export const DeckCardsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexGrow: 1,
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(2),
+}));
+
+export const NoCardsTypography = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  textAlign: 'center',
+  fontStyle: 'italic',
+}));
+
 // ! HOME PAGE STYLED COMPONENTS
 export const HomePageBox = styled(Box)(({ theme }) => ({
   background: theme.palette.backgroundA.lighter,
@@ -360,17 +428,18 @@ export const TertiaryContentContainer = styled('div')(({ theme }) => ({
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
 }));
-export const CardUnorderedList = styled('ul')(({ theme }) => ({
+export const CardUnorderedList = styled(List)(({ theme }) => ({
   listStyleType: 'disc', // or 'circle' or 'square' for different bullet styles
   paddingLeft: theme.spacing(4), // Adjust based on theme spacing for indentation
   margin: 0, // Remove default margins
 }));
-export const CardListItem = styled('li')(({ theme }) => ({
+export const CardListItem = styled(ListItem)(({ theme }) => ({
   color: theme.palette.text.primary,
   paddingBottom: theme.spacing(1), // Space between list items
   textAlign: 'left', // Align text to the left
   fontSize: '1rem', // Adjust font size as needed
 }));
+
 // ! PORTFOLIO CHART STYLES
 export const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -399,8 +468,8 @@ export const ResponsiveSquare = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
 }));
-// ! SELECT COLLECTION LIST
 
+// ! SELECT COLLECTION LIST
 export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   // Use the same styles as in StyledCard
   display: 'flex',
@@ -417,9 +486,36 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
     transform: 'scale(1.03)',
   },
 }));
-
-export const AspectRatioBoxSkeleton = styled('div')(({ theme }) => ({
+export const ListItemSkeleton = styled(ListItem)(({ theme }) => ({
+  margin: theme.spacing(1, 0),
+  borderRadius: theme.shape.borderRadius,
+}));
+export const AspectRatioBoxSkeleton = styled(Box)(({ theme }) => ({
   width: '100%',
   position: 'relative',
   paddingTop: '56.25%', // 16:9 aspect ratio
+}));
+
+// ! FORMS / INPUTS
+export const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: theme.spacing(1, 0),
+  backgroundColor: theme.palette.backgroundA.lightest, // Adjusted for a slight contrast
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[1], // Subtle shadow for depth
+
+  '& .MuiFilledInput-root': {
+    borderRadius: theme.shape.borderRadius,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&.Mui-focused': {
+      backgroundColor: theme.palette.backgroundA.lightest,
+      borderColor: theme.palette.backgroundA.dark,
+    },
+  },
+}));
+
+export const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  fontWeight: 'bold', // Making label text bold
+  color: theme.palette.backgroundB.dark,
 }));

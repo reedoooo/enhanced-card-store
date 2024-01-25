@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import {
   StyledAttributeSpan,
   StyledDescriptionSpan,
+  StyledToolTipBox,
   StyledTooltip,
   StyledTooltipTitle,
 } from './styles/cardStyles';
 import { useMode } from '../../context';
+import { Box } from '@mui/material';
 
 const formatKey = (key) => {
   return key
@@ -15,7 +17,10 @@ const formatKey = (key) => {
     .join(' ');
 };
 
-const CardToolTip = ({ card }) => {
+const SingleCardToolTip = ({ card }) => {
+  // if (Array.isArray(card)) {
+  //   return card.map((card) => <CardToolTip card={card} />);
+  // }
   const { theme } = useMode();
   const {
     name,
@@ -69,43 +74,70 @@ const CardToolTip = ({ card }) => {
       title="Card"
       placement="right-end"
     >
-      {/* <div className={classes.tooltip}> */}
-      {name && <StyledTooltipTitle theme={theme}>{name}</StyledTooltipTitle>}
-      {attributes &&
-        Object.entries(attributes).map(([key, value]) => (
-          <StyledAttributeSpan theme={theme} key={key}>
-            <strong>{formatKey(key)}:</strong> {value}
-          </StyledAttributeSpan>
-        ))}
-      {desc && (
-        <StyledDescriptionSpan theme={theme}>
-          <strong>Description:</strong> {desc}
-        </StyledDescriptionSpan>
-      )}
-      {/* </div> */}
+      <StyledToolTipBox theme={theme}>
+        {name && <StyledTooltipTitle theme={theme}>{name}</StyledTooltipTitle>}
+        {attributes &&
+          Object.entries(attributes).map(([key, value]) => (
+            <StyledAttributeSpan theme={theme} key={key}>
+              <strong>{formatKey(key)}:</strong> {value}
+            </StyledAttributeSpan>
+          ))}
+        {desc && (
+          <StyledDescriptionSpan theme={theme}>
+            <strong>Description:</strong> {desc}
+          </StyledDescriptionSpan>
+        )}
+      </StyledToolTipBox>
     </StyledTooltip>
   );
 };
-
+const CardToolTip = ({ card }) => {
+  if (Array.isArray(card)) {
+    return (
+      <div>
+        {card.map((singleCard, index) => (
+          <SingleCardToolTip key={index} card={singleCard} />
+        ))}
+      </div>
+    );
+  }
+  return <SingleCardToolTip card={card} />;
+};
 CardToolTip.propTypes = {
-  card: PropTypes.shape({
-    name: PropTypes.string,
-    desc: PropTypes.string,
-    attributes: PropTypes.object,
-    set_name: PropTypes.string,
-    set_code: PropTypes.string,
-    set_rarity: PropTypes.string,
-    set_rarity_code: PropTypes.string,
-    set_price: PropTypes.object,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    // image_url: PropTypes.string,
-    // image_url_small: PropTypes.string,
-    // image_url_cropped: PropTypes.string,
-    cardmarket_price: PropTypes.object,
-    tcgplayer_price: PropTypes.object,
-    cardkingdom_price: PropTypes.object,
-    cardhoarder_price: PropTypes.object,
-  }).isRequired,
+  card: PropTypes.oneOfType([
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string,
+        desc: PropTypes.string,
+        attributes: PropTypes.object,
+        set_name: PropTypes.string,
+        set_code: PropTypes.string,
+        set_rarity: PropTypes.string,
+        set_rarity_code: PropTypes.string,
+        set_price: PropTypes.object,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        cardmarket_price: PropTypes.object,
+        tcgplayer_price: PropTypes.object,
+        cardkingdom_price: PropTypes.object,
+        cardhoarder_price: PropTypes.object,
+      })
+    ),
+    PropTypes.shape({
+      name: PropTypes.string,
+      desc: PropTypes.string,
+      attributes: PropTypes.object,
+      set_name: PropTypes.string,
+      set_code: PropTypes.string,
+      set_rarity: PropTypes.string,
+      set_rarity_code: PropTypes.string,
+      set_price: PropTypes.object,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      cardmarket_price: PropTypes.object,
+      tcgplayer_price: PropTypes.object,
+      cardkingdom_price: PropTypes.object,
+      cardhoarder_price: PropTypes.object,
+    }),
+  ]).isRequired,
 };
 
 export default CardToolTip;

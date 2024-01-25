@@ -103,7 +103,7 @@ const CartPage = () => {
     <React.Fragment>
       {/* <PageLayout> */}
       {loadingStatus?.isPageLoading && returnDisplay()}
-      {loadingStatus?.isLoading && returnDisplay()}
+      {/* {loadingStatus?.isLoading && returnDisplay()} */}
       <Box
         sx={{
           overflow: 'auto',

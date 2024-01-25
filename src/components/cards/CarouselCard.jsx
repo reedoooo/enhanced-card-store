@@ -8,7 +8,7 @@ import {
   MobileStepper,
   Typography,
 } from '@mui/material';
-import { ModalContext } from '../../context/ModalContext/ModalContext';
+import { ModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import GenericCard from './GenericCard';
 import {
   MainContainer2,

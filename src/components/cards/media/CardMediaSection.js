@@ -2,7 +2,7 @@ import React, { useEffect, forwardRef, useState } from 'react';
 import { CardMedia, Popover, Popper } from '@mui/material';
 import CardToolTip from '../CardToolTip';
 import PropTypes from 'prop-types';
-import { useModalContext, usePopoverContext } from '../../../context';
+import { useModalContext, useMode, usePopoverContext } from '../../../context';
 import {
   MediaContainer,
   Media,
@@ -34,7 +34,7 @@ const CardMediaSection = forwardRef(
     ref
   ) => {
     const [anchorEl, setAnchorEl] = useState(null);
-
+    const { theme } = useMode();
     // Handle overlay state and interaction
     const [overlay, setOverlay] = useState(null);
 
@@ -59,7 +59,7 @@ const CardMediaSection = forwardRef(
           onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
           onClick: () => {
             handleClick?.();
-            handleOverlayChange('newOverlayValue'); // Your existing logic
+            // handleOverlayChange('newOverlayValue'); // Your existing logic
           },
         })}
       >
@@ -68,15 +68,6 @@ const CardMediaSection = forwardRef(
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
         />
-
-        {/* Potentially additional elements for overlays and interactivity */}
-        {overlay && (
-          <Overlay>
-            {' '}
-            {/* Add styles and logic for overlay */}
-            {overlay}
-          </Overlay>
-        )}
 
         {anchorEl && isHovered && (
           <MediaPopover

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import placeholder from '../../assets/images/placeholder.jpeg';
+import { Box } from '@mui/material';
 
 const SplashPage2 = () => {
   const containerRef = useRef(null);
@@ -131,7 +132,7 @@ const SplashPage2 = () => {
   }, []); // Empty dependency array ensures this effect runs once when the component mounts
 
   return (
-    <div
+    <Box
       ref={containerRef}
       style={{
         width: '100vw',
@@ -139,7 +140,7 @@ const SplashPage2 = () => {
         alignItems: 'flex-start',
         zIndex: -500,
       }}
-    ></div>
+    ></Box>
   );
 };
 

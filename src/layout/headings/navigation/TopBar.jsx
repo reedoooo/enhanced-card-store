@@ -1,8 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
 import MenuItemComponent from '../header/MenuItemComponent';
 import {
   StyledAppBar,
@@ -13,7 +10,14 @@ import { useMode } from '../../../context';
 import LogoSection from '../../MainLayout/LogoSection';
 import getMenuItemsData from '../header/menuItemsData';
 // import ProfilePage from '../../pages/ProfilePage';
-import { ButtonBase, Avatar } from '@mui/material';
+import {
+  ButtonBase,
+  Avatar,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 
 const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
   const { theme } = useMode();
@@ -21,10 +25,9 @@ const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
 
   // confirm;
   const renderMenuItems = () => {
-    console.log('MenuItems rendered');
     return menuItemsData?.map((item, index) => (
       <MenuItemComponent
-        key={`${item.id}-menu-item-${index}`}
+        key={`${item.name}-topbar-item-${index}`}
         item={item}
         onClick={handleDrawer}
       />

@@ -12,7 +12,7 @@ import {
 import CollectionPortfolioChartContainer from '../../containers/collectionPageContainers/CollectionPortfolioChartContainer';
 // eslint-disable-next-line max-len
 import CollectionPortfolioListContainer from '../../containers/collectionPageContainers/CollectionPortfolioListContainer';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
+import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { PortfolioBoxB } from '../../context/hooks/style-hooks/usePortfolioStyles';
 import { useMode } from '../../context';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -22,13 +22,9 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
   const { theme } = useMode();
 
   const { selectedCollection } = useCollectionStore();
-  const [collectionName, setCollectionName] = useState('');
-
-  useEffect(() => {
-    if (selectedCollection?.name) {
-      setCollectionName(selectedCollection.name);
-    }
-  }, [selectedCollection]);
+  const [collectionName, setCollectionName] = useState(
+    selectedCollection?.name || ''
+  );
 
   return (
     <PortfolioBoxB theme={theme}>
@@ -40,13 +36,18 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
           display: 'flex',
           flexDirection: 'row',
           margin: 'auto',
-          width: {
-            xs: '100%', // Full width on mobile screens
-            md: '100%', // Full width on mobile screens
-          },
-          padding: theme.spacing(1), // Reduced padding for mobile screens
+          width: { xs: '100%', md: '100%' },
+          padding: theme.spacing(1),
         }}
       >
+        <IconButton
+          onClick={onBack}
+          aria-label="Back to Collections"
+          color="inherit"
+          sx={{ marginRight: '4px' }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
         <Typography
           variant="h4"
           gutterBottom
@@ -55,60 +56,12 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
             paddingLeft: '1rem',
             display: 'flex',
             alignItems: 'center',
-            color: theme.palette.backgroundA.dark,
-            margin: '0',
           }}
         >
-          <IconButton
-            color={theme.palette.success.main}
-            background={theme.palette.backgroundA.dark}
-            sx={{
-              color: theme.palette.backgroundA.dark,
-              // background: theme.palette.backgroundA.dark,
-              marginRight: '4px',
-            }}
-          >
-            <AssessmentIcon />
-          </IconButton>
+          <AssessmentIcon />
           Cards in Portfolio
         </Typography>
-        {/* <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={onBack}
-          sx={{ marginRight: theme.spacing(2) }}
-        >
-          Back
-        </Button> */}
-        <IconButton
-          onClick={onBack}
-          aria-label="Back to Collections"
-          color={theme.palette.success.main}
-          background={theme.palette.backgroundA.dark}
-          sx={{
-            color: theme.palette.backgroundA.dark,
-
-            // background: theme.palette.backgroundA.dark,
-            marginRight: '4px',
-          }}
-        >
-          <ArrowBackIcon />
-          <Typography
-            variant="body1"
-            gutterBottom
-            sx={{
-              // fontWeight: 'bold',
-              paddingLeft: '0.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              color: theme.palette.backgroundA.dark,
-              margin: '0',
-            }}
-          >
-            Back to Collections
-          </Typography>
-        </IconButton>
       </Box>
-      {/* <HeaderTitle title={collectionName} size="large" location="center" /> */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <CollectionPortfolioChartContainer

@@ -1,349 +1,420 @@
-import axios from 'axios';
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useLayoutEffect,
-} from 'react';
-import { useCookies } from 'react-cookie';
-import { useCollectionStore } from '../CollectionContext/CollectionContext';
-import { useUserContext } from '../UserContext/UserContext';
-import useFetchWrapper from '../hooks/useFetchWrapper.jsx';
+// import { createContext, useContext } from 'react';
+// import { useCardStoreHook } from '../hooks/useCardStore';
 
-// Create a context for the cardStore
-const CardContext = createContext();
+// // Create a context for the cardStore
+// const CardContext = createContext();
 
-export const CardProvider = ({ children }) => {
-  const { user } = useUserContext();
-  const [cookies, setCookie] = useCookies(['deckData', 'searchHistory']);
-  const initialStore = cookies.store || [];
-  const [cardsArray, setCardsArray] = useState(initialStore);
-  const { allCollections } = useCollectionStore();
-  const fetchWrapper = useFetchWrapper();
-  const [image, setImage] = useState(null);
-  // const [searchParam, setSearchParam] = useState('');
-  // const [searchParams, setSearchParams] = useState([]);
-  // const [searchParams, setSearchParams] = useState({
-  //   name: '',
-  //   type: '',
-  //   attribute: '',
-  //   race: '',
-  // });
-  const currentCart = cookies.cart || [];
-  const [currenCartArray, setCurrentCartArray] = useState(currentCart);
-  const [searchData, setSearchData] = useState([]);
-  const [isCardDataValid, setIsCardDataValid] = useState(false);
-  const [rawSearchData, setRawSearchData] = useState([]);
-  const [organizedSearchData, setOrganizedSearchData] = useState([]);
-  const [slicedSearchData, setSlicedSearchData] = useState([]);
-  const [slicedAndMergedSearchData, setSlicedAndMergedSearchData] = useState(
-    []
-  );
-  const currentDeckData = cookies.deck || [];
-  const [savedDeckData, setSavedDeckData] = useState(currentDeckData);
-  const [deckSearchData, setDeckSearchData] = useState([]);
-  const [searchHistory, setSearchHistory] = useState([]);
+// export const CardProvider = ({ children }) => {
+//   const cardStore = useCardStoreHook(); // Use the custom hook
 
-  if (!currenCartArray || !savedDeckData) {
-    return <div>Loading...</div>;
-  }
-  const handleRequest = async (searchParamss) => {
-    try {
-      // setSearchParams([searchParams]);
+//   // // function to destructure the cardStore
+//   // const {
+//   //   cardsArray,
+//   //   searchData,
+//   //   deckSearchData,
+//   //   savedDeckData,
+//   //   randomCardData,
+//   //   currenCartArray,
+//   //   initialStore,
+//   //   cookies,
+//   //   currentCart,
+//   //   currentDeckData,
+//   //   slicedSearchData,
+//   //   rawSearchData,
+//   //   organizedSearchData,
+//   //   isCardDataValid,
+//   //   slicedAndMergedSearchData,
+//   //   image,
+//   //   setImage,
+//   //   setSlicedAndMergedSearchData,
+//   //   setOrganizedSearchData,
+//   //   setRawSearchData,
+//   //   setSlicedSearchData,
+//   //   setSearchData,
+//   //   setDeckSearchData,
+//   //   setSavedDeckData,
+//   //   getCardData,
+//   //   setCardsArray,
+//   //   getRandomCard,
+//   //   setCookie,
+//   //   setCurrentCartArray,
+//   //   handleRequest,
+//   // } = cardStore;
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
-        searchParamss
-      );
+//   return (
+//     <CardContext.Provider
+//       value={cardStore} // Pass the cardStore as the context value
+//     >
+//       {children}
+//     </CardContext.Provider>
+//   );
+// };
 
-      if (response.data.data) {
-        const ids = new Set();
+// export const useCardStore = () => {
+//   const context = useContext(CardContext);
+//   if (context === undefined) {
+//     throw new Error('useCardContext must be used within a CardProvider');
+//   }
+//   return context;
+// };
 
-        // Filter out duplicate cards
-        const uniqueCards = response.data.data.filter((card) => {
-          if (ids.has(card.id)) {
-            return false;
-          } else {
-            ids.add(card.id);
-            return true;
-          }
-        });
+// // import axios from 'axios';
+// // import {
+// //   createContext,
+// //   useContext,
+// //   useState,
+// //   useEffect,
+// //   useMemo,
+// //   useLayoutEffect,
+// // } from 'react';
+// // import { useCookies } from 'react-cookie';
+// // import { useCollectionStore } from '../CollectionContext/CollectionContext';
+// // import { useUserContext } from '../UserContext/UserContext';
+// // import useFetchWrapper from '../hooks/useFetchWrapper.jsx';
+// // import { useAuthContext } from '../index.js';
 
-        // Check if the uniqueCards is an array
-        const validCardData = uniqueCards && Array.isArray(uniqueCards);
+// // // Create a context for the cardStore
+// // const CardContext = createContext();
 
-        // Set the state to the unique cards
-        setIsCardDataValid(validCardData);
+// // export const CardProvider = ({ children }) => {
+// //   const { userId } = useAuthContext();
+// //   const [cookies, setCookie] = useCookies(['deckData', 'searchHistory']);
+// //   const initialStore = cookies.store || [];
+// //   const [cardsArray, setCardsArray] = useState(initialStore);
+// //   const { allCollections } = useCollectionStore();
+// //   const fetchWrapper = useFetchWrapper();
+// //   const [image, setImage] = useState(null);
+// //   // const [searchParam, setSearchParam] = useState('');
+// //   // const [searchParams, setSearchParams] = useState([]);
+// //   // const [searchParams, setSearchParams] = useState({
+// //   //   name: '',
+// //   //   type: '',
+// //   //   attribute: '',
+// //   //   race: '',
+// //   // });
+// //   const currentCart = cookies.cart || [];
+// //   const [currenCartArray, setCurrentCartArray] = useState(currentCart);
+// //   const [searchData, setSearchData] = useState([]);
+// //   const [isCardDataValid, setIsCardDataValid] = useState(false);
+// //   const [rawSearchData, setRawSearchData] = useState([]);
+// //   const [organizedSearchData, setOrganizedSearchData] = useState([]);
+// //   const [slicedSearchData, setSlicedSearchData] = useState([]);
+// //   const [slicedAndMergedSearchData, setSlicedAndMergedSearchData] = useState(
+// //     []
+// //   );
+// //   const currentDeckData = cookies.deck || [];
+// //   const [savedDeckData, setSavedDeckData] = useState(currentDeckData);
+// //   const [deckSearchData, setDeckSearchData] = useState([]);
+// //   const [searchHistory, setSearchHistory] = useState([]);
 
-        if (validCardData) {
-          const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
-          setOrganizedSearchData(limitedCardsToRender);
+// //   if (!currenCartArray || !savedDeckData) {
+// //     return <div>Loading...</div>;
+// //   }
+// //   const handleRequest = async (searchParamss) => {
+// //     try {
+// //       // setSearchParams([searchParams]);
+// //       console.log('SEARCH PARAMS: ', searchParamss);
+// //       // Adding a unique dummy parameter or timestamp to the request
+// //       // const uniqueParam = { requestTimestamp: new Date().toISOString() };
+// //       // add userId
+// //       const requestBody = {
+// //         ...searchParamss,
+// //         // ...uniqueParam, // Including the unique or dummy parameter
+// //         name: searchParamss,
+// //         user: userId,
+// //       };
+// //       console.log('SEARCH PARAMS: ', searchParamss);
+// //       const response = await axios.post(
+// //         `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
+// //         requestBody
+// //       );
 
-          if (limitedCardsToRender.length >= 1) {
-            // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
-            setSlicedSearchData(limitedCardsToRender);
-          }
-        }
+// //       if (response.data.data) {
+// //         const ids = new Set();
 
-        setSearchData(uniqueCards);
-        setDeckSearchData(uniqueCards);
-        setRawSearchData(uniqueCards);
+// //         // Filter out duplicate cards
+// //         const uniqueCards = response.data.data.filter((card) => {
+// //           if (ids.has(card.id)) {
+// //             return false;
+// //           } else {
+// //             ids.add(card.id);
+// //             return true;
+// //           }
+// //         });
 
-        // Set the cookie to hold the current searchData
-        setCookie('searchData', uniqueCards, { path: '/' });
-        setCookie('deckSearchData', uniqueCards, { path: '/' });
-        setCookie('rawSearchData', uniqueCards, { path: '/' });
-        // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
-      } else {
-        setSearchData([]);
-        setDeckSearchData([]);
-        setRawSearchData([]);
-        setOrganizedSearchData([]);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  // const handleRequest = async (searchParams) => {
-  //   try {
-  //     console.log('SEARCH PARAMS: ', searchParams);
-  //     // setSearchParams([searchParams]);
-  //     // Adding a unique dummy parameter or timestamp to the request
-  //     const uniqueParam = { requestTimestamp: new Date().toISOString() };
-  //     const requestBody = {
-  //       ...searchParams,
-  //       ...uniqueParam, // Including the unique or dummy parameter
-  //     };
-  //     // update history array with new search params
-  //     setSearchHistory([...searchHistory, searchParams]);
-  //     setCookie('searchHistory', searchParams, { path: '/' });
-  //     const url = `${process.env.REACT_APP_SERVER}/api/cards/ygopro`;
-  //     console.log('CARD SEARCH REQUEST BODY: ', requestBody);
-  //     const response = await fetchWrapper(url, 'POST', {
-  //       // body: JSON.stringify(requestBody),
-  //       requestBody,
-  //     });
+// //         // Check if the uniqueCards is an array
+// //         const validCardData = uniqueCards && Array.isArray(uniqueCards);
 
-  //     if (response.data.data) {
-  //       const ids = new Set();
+// //         // Set the state to the unique cards
+// //         setIsCardDataValid(validCardData);
 
-  //       // Filter out duplicate cards
-  //       const uniqueCards = response.data.data.filter((card) => {
-  //         if (ids.has(card.id)) {
-  //           return false;
-  //         } else {
-  //           ids.add(card.id);
-  //           return true;
-  //         }
-  //       });
+// //         if (validCardData) {
+// //           const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
+// //           setOrganizedSearchData(limitedCardsToRender);
 
-  //       // Check if the uniqueCards is an array
-  //       const validCardData = uniqueCards && Array.isArray(uniqueCards);
+// //           if (limitedCardsToRender.length >= 1) {
+// //             // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
+// //             setSlicedSearchData(limitedCardsToRender);
+// //           }
+// //         }
 
-  //       // Set the state to the unique cards
-  //       setIsCardDataValid(validCardData);
+// //         setSearchData(uniqueCards);
+// //         setDeckSearchData(uniqueCards);
+// //         setRawSearchData(uniqueCards);
 
-  //       if (validCardData) {
-  //         const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
-  //         setOrganizedSearchData(limitedCardsToRender);
+// //         // Set the cookie to hold the current searchData
+// //         setCookie('searchData', uniqueCards, { path: '/' });
+// //         setCookie('deckSearchData', uniqueCards, { path: '/' });
+// //         setCookie('rawSearchData', uniqueCards, { path: '/' });
+// //         // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
+// //       } else {
+// //         setSearchData([]);
+// //         setDeckSearchData([]);
+// //         setRawSearchData([]);
+// //         setOrganizedSearchData([]);
+// //       }
+// //     } catch (err) {
+// //       console.error(err);
+// //     }
+// //   };
+// //   useLayoutEffect(() => {
+// //     // Check if there's any collection that requires an update
+// //     if (!Array.isArray(allCollections)) {
+// //       return;
+// //     }
+// //     const hasMissingData = allCollections?.some((collection) =>
+// //       collection.cards?.some(
+// //         (card) => !card?.card_images || !card?.card_sets || !card?.card_prices
+// //       )
+// //     );
 
-  //         if (limitedCardsToRender.length >= 1) {
-  //           // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
-  //           setSlicedSearchData(limitedCardsToRender);
-  //         }
-  //       }
+// //     if (hasMissingData) {
+// //       // handlePatch();
+// //     }
+// //   }, [allCollections]); // Keep the dependency array, but now it only triggers when necessary
 
-  //       setSearchData(uniqueCards);
-  //       setDeckSearchData(uniqueCards);
-  //       setRawSearchData(uniqueCards);
+// //   const getCardData = (cardId) => {
+// //     if (Array.isArray(currenCartArray)) {
+// //       return currenCartArray.find((card) => card.id === cardId);
+// //     }
+// //     throw new Error('Cards data is not in the expected format');
+// //   };
 
-  //       // Set the cookie to hold the current searchData
-  //       setCookie('searchData', uniqueCards, { path: '/' });
-  //       setCookie('deckSearchData', uniqueCards, { path: '/' });
-  //       setCookie('rawSearchData', uniqueCards, { path: '/' });
-  //       // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
-  //       return response?.data?.data;
-  //     } else {
-  //       setSearchData([]);
-  //       setDeckSearchData([]);
-  //       setRawSearchData([]);
-  //       setOrganizedSearchData([]);
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-  // Example client-side function to fetch an image
-  // Function to request the card's image
-  // const fetchCardImage = async (cardId) => {
-  //   try {
-  //     // Ensure there's a cardId to fetch
-  //     if (!cardId) {
-  //       console.error('No card ID provided for image fetch');
-  //       return;
-  //     }
+// //   const getRandomCard = () => {
+// //     const randomIndex = Math.floor(Math.random() * currenCartArray.length);
+// //     const randomCardData = currenCartArray[randomIndex];
+// //     return randomCardData;
+// //   };
 
-  //     // Constructing the query URL
-  //     const url = `${process.env.REACT_APP_SERVER}/api/card/image/${cardId}`;
+// //   const randomCardData = getRandomCard();
+// //   const contextValue = useMemo(
+// //     () => ({
+// //       cardsArray,
+// //       searchData,
+// //       deckSearchData,
+// //       savedDeckData,
+// //       randomCardData,
+// //       currenCartArray,
+// //       initialStore,
+// //       cookies,
+// //       currentCart,
+// //       currentDeckData,
+// //       slicedSearchData,
+// //       rawSearchData,
+// //       organizedSearchData,
+// //       isCardDataValid,
+// //       slicedAndMergedSearchData,
+// //       image,
+// //       // fetchCardImage,
+// //       setImage,
 
-  //     const response = await axios.get(url);
-  //     if (response.status === 200 && response.data) {
-  //       // Assuming response.data contains the URL of the image
-  //       const imageUrl = response.data.imageUrl;
+// //       // handlePatch,
+// //       setSlicedAndMergedSearchData,
+// //       setOrganizedSearchData,
+// //       setRawSearchData,
+// //       setSlicedSearchData,
+// //       setSearchData,
+// //       setDeckSearchData,
+// //       setSavedDeckData,
+// //       getCardData,
+// //       setCardsArray,
+// //       getRandomCard,
+// //       setCookie,
+// //       setCurrentCartArray,
+// //       handleRequest, // Add your new function to the context
+// //     }),
+// //     [cardsArray, searchData]
+// //   );
+// //   // In CardProvider component
+// //   useEffect(() => {
+// //     console.log('CARD CONTEXT: ', {
+// //       contextValue,
+// //     });
+// //   }, []);
+// //   return (
+// //     <CardContext.Provider value={contextValue}>{children}</CardContext.Provider>
+// //   );
+// // };
 
-  //       // Update your state or perform actions with the image URL
-  //       setImage(imageUrl);
-  //     } else {
-  //       throw new Error('Failed to fetch image');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching the card image:', error);
-  //   }
-  // };
-  // Example client-side function to fetch a card's image through the server
-  // const fetchCardImage = async (cardData) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${process.env.REACT_APP_SERVER}/api/card/ygopro`,
-  //       {
-  //         params: { name: cardData.name },
-  //       }
-  //     );
-  //     if (response.data) {
-  //       // Assuming the server returns the image as a base64 string
-  //       const imageBase64 = response.data;
-  //       console.log('IMAGE BASE 64: ', imageBase64);
-  //       setImage(imageBase64);
-  //       return imageBase64;
-  //     }
-  //     throw new Error('Failed to fetch image.');
-  //   } catch (error) {
-  //     console.error('Error fetching the image:', error);
-  //     throw error;
-  //   }
-  // };
+// // export const useCardStore = () => {
+// //   const context = useContext(CardContext);
+// //   if (context === undefined) {
+// //     throw new Error('useCardStore must be used within a CardProvider');
+// //   }
+// //   return context;
+// // };
 
-  // const handlePatch = async () => {
-  //   let needsUpdate = false;
+// // const handleRequest = async (searchParams) => {
+// //   try {
+// //     console.log('SEARCH PARAMS: ', searchParams);
+// //     // setSearchParams([searchParams]);
+// //     // Adding a unique dummy parameter or timestamp to the request
+// //     const uniqueParam = { requestTimestamp: new Date().toISOString() };
+// //     const requestBody = {
+// //       ...searchParams,
+// //       ...uniqueParam, // Including the unique or dummy parameter
+// //     };
+// //     // update history array with new search params
+// //     setSearchHistory([...searchHistory, searchParams]);
+// //     setCookie('searchHistory', searchParams, { path: '/' });
+// //     const url = `${process.env.REACT_APP_SERVER}/api/cards/ygopro`;
+// //     console.log('CARD SEARCH REQUEST BODY: ', requestBody);
+// //     const response = await fetchWrapper(url, 'POST', {
+// //       // body: JSON.stringify(requestBody),
+// //       requestBody,
+// //     });
 
-  //   for (const collection of allCollections) {
-  //     for (const card of collection.cards) {
-  //       if (
-  //         !user.id ||
-  //         !card.card_images ||
-  //         !card.card_sets ||
-  //         !card.card_prices
-  //       ) {
-  //         needsUpdate = true;
-  //         console.log('PATCHING CARD: ', card);
-  //         const response = await axios.patch(
-  //           `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.name}`,
-  //           { id: card.id, user: user.id },
-  //           { withCredentials: true }
-  //         );
-  //         if (response.data && response.data.data) {
-  //           const updatedCard = response.data.data;
-  //           const cardIndex = collection.cards.findIndex(
-  //             (c) => c.id === updatedCard.id
-  //           );
-  //           if (cardIndex !== -1) {
-  //             collection.cards[cardIndex] = updatedCard;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
+// //     if (response.data.data) {
+// //       const ids = new Set();
 
-  //   if (needsUpdate) {
-  //     setAllCollections([...allCollections]);
-  //   }
-  // };
+// //       // Filter out duplicate cards
+// //       const uniqueCards = response.data.data.filter((card) => {
+// //         if (ids.has(card.id)) {
+// //           return false;
+// //         } else {
+// //           ids.add(card.id);
+// //           return true;
+// //         }
+// //       });
 
-  useLayoutEffect(() => {
-    // Check if there's any collection that requires an update
-    if (!Array.isArray(allCollections)) {
-      return;
-    }
-    const hasMissingData = allCollections?.some((collection) =>
-      collection.cards?.some(
-        (card) => !card?.card_images || !card?.card_sets || !card?.card_prices
-      )
-    );
+// //       // Check if the uniqueCards is an array
+// //       const validCardData = uniqueCards && Array.isArray(uniqueCards);
 
-    if (hasMissingData) {
-      // handlePatch();
-    }
-  }, [allCollections]); // Keep the dependency array, but now it only triggers when necessary
+// //       // Set the state to the unique cards
+// //       setIsCardDataValid(validCardData);
 
-  const getCardData = (cardId) => {
-    if (Array.isArray(currenCartArray)) {
-      return currenCartArray.find((card) => card.id === cardId);
-    }
-    throw new Error('Cards data is not in the expected format');
-  };
+// //       if (validCardData) {
+// //         const limitedCardsToRender = Array.from(uniqueCards).slice(0, 30);
+// //         setOrganizedSearchData(limitedCardsToRender);
 
-  const getRandomCard = () => {
-    const randomIndex = Math.floor(Math.random() * currenCartArray.length);
-    const randomCardData = currenCartArray[randomIndex];
-    return randomCardData;
-  };
+// //         if (limitedCardsToRender.length >= 1) {
+// //           // console.log('LIMITED CARDS TO RENDER: ', limitedCardsToRender[0]);
+// //           setSlicedSearchData(limitedCardsToRender);
+// //         }
+// //       }
 
-  const randomCardData = getRandomCard();
-  const contextValue = useMemo(
-    () => ({
-      cardsArray,
-      searchData,
-      deckSearchData,
-      savedDeckData,
-      randomCardData,
-      currenCartArray,
-      initialStore,
-      cookies,
-      currentCart,
-      currentDeckData,
-      slicedSearchData,
-      rawSearchData,
-      organizedSearchData,
-      isCardDataValid,
-      slicedAndMergedSearchData,
-      image,
-      // fetchCardImage,
-      setImage,
+// //       setSearchData(uniqueCards);
+// //       setDeckSearchData(uniqueCards);
+// //       setRawSearchData(uniqueCards);
 
-      // handlePatch,
-      setSlicedAndMergedSearchData,
-      setOrganizedSearchData,
-      setRawSearchData,
-      setSlicedSearchData,
-      setSearchData,
-      setDeckSearchData,
-      setSavedDeckData,
-      getCardData,
-      setCardsArray,
-      getRandomCard,
-      setCookie,
-      setCurrentCartArray,
-      handleRequest, // Add your new function to the context
-    }),
-    [cardsArray, searchData]
-  );
-  // In CardProvider component
-  useEffect(() => {
-    console.log('CARD CONTEXT: ', {
-      contextValue,
-    });
-  }, []);
-  return (
-    <CardContext.Provider value={contextValue}>{children}</CardContext.Provider>
-  );
-};
+// //       // Set the cookie to hold the current searchData
+// //       setCookie('searchData', uniqueCards, { path: '/' });
+// //       setCookie('deckSearchData', uniqueCards, { path: '/' });
+// //       setCookie('rawSearchData', uniqueCards, { path: '/' });
+// //       // setCookie('organizedSearchData', limitedCardsToRender, { path: '/' });
+// //       return response?.data?.data;
+// //     } else {
+// //       setSearchData([]);
+// //       setDeckSearchData([]);
+// //       setRawSearchData([]);
+// //       setOrganizedSearchData([]);
+// //     }
+// //   } catch (err) {
+// //     console.error(err);
+// //   }
+// // };
+// // Example client-side function to fetch an image
+// // Function to request the card's image
+// // const fetchCardImage = async (cardId) => {
+// //   try {
+// //     // Ensure there's a cardId to fetch
+// //     if (!cardId) {
+// //       console.error('No card ID provided for image fetch');
+// //       return;
+// //     }
 
-export const useCardStore = () => {
-  const context = useContext(CardContext);
-  if (context === undefined) {
-    throw new Error('useCardStore must be used within a CardProvider');
-  }
-  return context;
-};
+// //     // Constructing the query URL
+// //     const url = `${process.env.REACT_APP_SERVER}/api/card/image/${cardId}`;
+
+// //     const response = await axios.get(url);
+// //     if (response.status === 200 && response.data) {
+// //       // Assuming response.data contains the URL of the image
+// //       const imageUrl = response.data.imageUrl;
+
+// //       // Update your state or perform actions with the image URL
+// //       setImage(imageUrl);
+// //     } else {
+// //       throw new Error('Failed to fetch image');
+// //     }
+// //   } catch (error) {
+// //     console.error('Error fetching the card image:', error);
+// //   }
+// // };
+// // Example client-side function to fetch a card's image through the server
+// // const fetchCardImage = async (cardData) => {
+// //   try {
+// //     const response = await axios.get(
+// //       `${process.env.REACT_APP_SERVER}/api/card/ygopro`,
+// //       {
+// //         params: { name: cardData.name },
+// //       }
+// //     );
+// //     if (response.data) {
+// //       // Assuming the server returns the image as a base64 string
+// //       const imageBase64 = response.data;
+// //       console.log('IMAGE BASE 64: ', imageBase64);
+// //       setImage(imageBase64);
+// //       return imageBase64;
+// //     }
+// //     throw new Error('Failed to fetch image.');
+// //   } catch (error) {
+// //     console.error('Error fetching the image:', error);
+// //     throw error;
+// //   }
+// // };
+
+// // const handlePatch = async () => {
+// //   let needsUpdate = false;
+
+// //   for (const collection of allCollections) {
+// //     for (const card of collection.cards) {
+// //       if (
+// //         !user.id ||
+// //         !card.card_images ||
+// //         !card.card_sets ||
+// //         !card.card_prices
+// //       ) {
+// //         needsUpdate = true;
+// //         console.log('PATCHING CARD: ', card);
+// //         const response = await axios.patch(
+// //           `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.name}`,
+// //           { id: card.id, user: user.id },
+// //           { withCredentials: true }
+// //         );
+// //         if (response.data && response.data.data) {
+// //           const updatedCard = response.data.data;
+// //           const cardIndex = collection.cards.findIndex(
+// //             (c) => c.id === updatedCard.id
+// //           );
+// //           if (cardIndex !== -1) {
+// //             collection.cards[cardIndex] = updatedCard;
+// //           }
+// //         }
+// //       }
+// //     }
+// //   }
+
+// //   if (needsUpdate) {
+// //     setAllCollections([...allCollections]);
+// //   }
+// // };

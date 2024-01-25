@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useAuthContext } from '../AuthContext/authContext';
-import { usePageContext } from '../PageContext/PageContext';
-import { useCardStore } from '../CardContext/CardStore';
-// import { params: initialState } from './search.json';
-// import as dif name from ./search.json
-import { initialState } from './search.json';
-import { defaultContextValue } from './helpers';
+import { useAuthContext } from '../../AuthContext/authContext';
+import { usePageContext } from '../../PageContext/PageContext';
+import {
+  defaultContextValue,
+  initialFormStates,
+  setValueAtPath,
+} from './helpers';
+import { useCardStoreHook } from '../../hooks/useCardStore';
 
 // Define the context
 const FormContext = createContext(defaultContextValue);
@@ -44,98 +45,16 @@ const formValidations = {
     // ... more validations
     return errors;
   },
-  // ...other form-specific validations
-};
-// Initial state for different forms
-const initialFormStates = {
-  loginForm: {
-    username: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    role_data: {
-      name: 'admin',
-      capabilities: ['create', 'read', 'update', 'delete'],
-    },
-    signupMode: false, // Assuming it's a boolean toggle for whether it's signup or login
-  },
-  signupForm: {
-    username: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    role_data: {
-      name: 'admin',
-      capabilities: ['create', 'read', 'update', 'delete'],
-    },
-    signupMode: true,
-  },
-  updateUserDataForm: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    role_data: {
-      name: 'admin',
-      capabilities: ['create', 'read', 'update', 'delete'],
-    },
-    dateOfBirth: '',
-    gender: '',
-    age: '',
-    status: '',
-    signupMode: false,
-  },
-  collectionForm: {
-    updateCollectionForm: {
-      name: '',
-      description: '',
-    },
-    addCollectionForm: {
-      // New form with same initial values as updateCollectionForm
-      name: '',
-      description: '',
-    },
-  },
-  searchForm: {
-    searchTerm: '',
-    searchParams: {
-      name: '',
-      type: '',
-      race: '',
-      archetype: '',
-      attribute: '',
-      level: '',
-    },
-  },
-  customerInfoFields: {
-    firstName: '',
-    lastName: '',
-    address: {
-      line1: { type: String },
-      line2: { type: String },
-      city: { type: String },
-      state: { type: String },
-      zip: { type: String },
-      country: { type: String },
-    },
-    timezone: { type: String },
-    phone: { type: String },
-    email: { type: String },
-  },
-  // ...other form types as needed
 };
 
-// Provider component
 export const FormProvider = ({ children }) => {
   const { signup, login } = useAuthContext();
+  const { handleRequest } = useCardStoreHook();
   const {
     loadingStatus,
     setLoading, // Use setLoading instead of individual state setters
     returnDisplay,
   } = usePageContext();
-  // const { handleRequest } = useCardStore();
   const [forms, setForms] = useState(initialFormStates);
   const [currentForm, setCurrentForm] = useState({}); // For multiple forms
   const [formErrors, setFormErrors] = useState(null); // For a single form
@@ -147,19 +66,6 @@ export const FormProvider = ({ children }) => {
     }));
     setFormErrors((prevErrors) => ({ ...prevErrors, [formName]: {} }));
   };
-
-  // Utility to set value at a given path in an object
-  // Example: setValueAtPath(obj, 'address.line1', '123 Main St')
-  const setValueAtPath = (obj, path, value) => {
-    const keys = path.split('.');
-    let current = obj;
-    for (let i = 0; i < keys.length - 1; i++) {
-      current[keys[i]] = current[keys[i]] || {};
-      current = current[keys[i]];
-    }
-    current[keys[keys.length - 1]] = value;
-  };
-
   const handleChange = (formName, path) => (event) => {
     const { value } = event.target;
     setForms((prevForms) => {
@@ -173,44 +79,81 @@ export const FormProvider = ({ children }) => {
       setFormErrors({ ...formErrors, [formName]: newErrors });
     }
   };
+  // const handleChange = (formName, path) => (event) => {
+  //   const { value } = event.target;
+  //   setForms((prevForms) => {
+  //     const form = { ...prevForms[formName] };
+  //     setValueAtPath(form, path, value);
+  //     return { ...prevForms, [formName]: form };
+  //   });
 
-  // Function to handle form submission
+  //   // Check if the form being changed is the search form and specifically the searchTerm field
+  //   if (formName === 'searchForm' && path === 'searchTerm') {
+  //     // Call handleRequest for immediate search
+  //     const updatedSearchForm = {
+  //       ...forms.searchForm,
+  //       searchTerm: value,
+  //     };
+  //     handleRequest(updatedSearchForm);
+  //   }
+
+  //   if (formValidations[formName]) {
+  //     const newErrors = formValidations[formName](forms[formName]);
+  //     setFormErrors({ ...formErrors, [formName]: newErrors });
+  //   }
+  // };
   const handleSubmit = (formName) => async (event) => {
     event.preventDefault();
-    setLoading('isFormDataLoading', true); // indicate form is being submitted
-    setCurrentForm(forms[formName]); // Set current form
+    setLoading('isFormDataLoading', true);
+    setCurrentForm(forms[formName]);
     const currentErrors = formValidations[formName]
       ? formValidations[formName](currentForm)
       : {};
-    const securityData = {
-      username: currentForm.username,
-      password: currentForm.password,
-      email: currentForm.email,
-      role_data: {
-        name: 'admin',
-        capabilities: ['create', 'read', 'update', 'delete'],
-      },
-    };
-    const basicData = {
-      firstName: currentForm.firstName,
-      lastName: currentForm.lastName,
-    };
+
+    console.log('currentForm', currentForm);
+
     if (Object.values(currentErrors).every((x) => x === '')) {
       // Proceed based on form type
       switch (formName) {
         case 'signupForm':
           console.log('Submitting signup form:', currentForm);
-          await signup(securityData, basicData); // Use the appropriate function from AuthContext
+          await signup(currentForm?.securityData, currentForm.basicData); // Use the appropriate function from AuthContext
+          // await signup(securityData, basicData); // Use the appropriate function from AuthContext
           break;
         case 'loginForm':
           console.log('Submitting login form:', currentForm);
-          await login(currentForm?.username, currentForm?.password); // Adjust as necessary
-          break;
-        // Handle other cases
-      }
-      // Handle success logic here
+          // await login(currentForm?, currentForm?.password); // Adjust as necessary
+          await login(
+            currentForm?.securityData?.username,
+            currentForm?.securityData?.password
+          ); // Use the appropriate function from AuthContext
 
-      // Reset the form
+          break;
+        case 'updateUserDataForm':
+          console.log('Submitting update user data form:', currentForm);
+          // await updateUserData(currentForm); // Adjust as necessary
+          break;
+        case 'updateCollectionForm':
+          console.log('Submitting update collection form:', currentForm);
+          // await updateCollection(currentForm); // Adjust as necessary
+          break;
+        case 'addCollectionForm':
+          console.log('Submitting add collection form:', currentForm);
+          // await addCollection(currentForm); // Adjust as necessary
+          break;
+        case 'searchForm':
+          console.log('Submitting search form:', currentForm);
+          await handleRequest(currentForm); // Use handleRequest for the search form
+          break;
+        default:
+          console.log('No form type specified');
+          break;
+      }
+      console.log(
+        `${
+          formName?.charAt(0).toUpperCase() + formName.slice(1)
+        } Form submitted successfully`
+      );
       resetForm(formName);
     } else {
       setFormErrors(currentErrors); // Update error state
@@ -218,11 +161,11 @@ export const FormProvider = ({ children }) => {
     setLoading('isFormDataLoading', false); // indicate form submission is done
   };
 
-  // useEffect(() => {
-  //   if (initialFormStates?.searchForm?.searchTerm) {
-  //     handleRequest(initialFormStates?.searchForm?.searchTerm);
-  //   }
-  // }, [returnDisplay]);
+  useEffect(() => {
+    if (initialFormStates?.searchForm?.searchTerm) {
+      handleRequest(initialFormStates?.searchForm?.searchTerm);
+    }
+  }, [returnDisplay]);
 
   // Provide each form's data, handleChange, and handleSubmit through context
   const contextValue = {
@@ -236,6 +179,7 @@ export const FormProvider = ({ children }) => {
     handleChange,
     handleSubmit,
     resetForm,
+    handleRequest,
   };
 
   return (
@@ -244,3 +188,14 @@ export const FormProvider = ({ children }) => {
 };
 
 export default FormProvider;
+// // Utility to set value at a given path in an object
+// // Example: setValueAtPath(obj, 'address.line1', '123 Main St')
+// const setValueAtPath = (obj, path, value) => {
+//   const keys = path.split('.');
+//   let current = obj;
+//   for (let i = 0; i < keys.length - 1; i++) {
+//     current[keys[i]] = current[keys[i]] || {};
+//     current = current[keys[i]];
+//   }
+//   current[keys[keys.length - 1]] = value;
+// };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Chip, Typography } from '@mui/material';
 import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
-import { useDeckStore } from '../../../context/DeckContext/DeckContext';
+import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useTheme } from 'styled-components';
 
 const SelectDeckList = ({ handleSelectDeck }) => {

@@ -20,7 +20,6 @@ const CronTrigger = () => {
   return (
     <Box>
       <Button onClick={handleTriggerCron}>Trigger Cron Job</Button>
-
       <Button onClick={handleStopCron}>Stop Cron Job</Button>
     </Box>
   );

@@ -26,6 +26,8 @@ import {
 } from './context';
 import { ThemeProvider } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { CssBaseline, GlobalStyles } from '@mui/material';
+
 // ==============================|| APP ||============================== //
 
 const App = () => {
@@ -35,7 +37,6 @@ const App = () => {
     useAuthContext();
   const { loadingStatus, returnDisplay, setLoading, setError } =
     usePageContext();
-  // Function to log the provider status
   const logProviderStatus = (providerName) => {
     useEffect(() => {
       console.log(`${providerName} initialized successfully.`);
@@ -89,20 +90,14 @@ const App = () => {
       </Helmet>
     );
   };
-  // Display loading indicator or error message if applicable
-  if (loadingStatus.isPageLoading || loadingStatus.error) {
+  if (loadingStatus?.isPageLoading || loadingStatus?.error) {
     return returnDisplay();
   }
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
-        {/* <CssBaseline /> */}
-        {/* <GlobalStyles /> */}
-
-        {/* <PageProvider> */}
-        {/* {logProviderStatus('PageProvider')} */}
-        {/* <AuthProvider> */}
-        {/* {logProviderStatus('AuthProvider')} */}
+        <CssBaseline />
+        <GlobalStyles />
         <FormProvider>
           {logProviderStatus('FormProvider')}
           <SocketProvider>

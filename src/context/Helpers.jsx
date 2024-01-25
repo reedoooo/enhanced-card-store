@@ -126,3 +126,14 @@ export const validateData = (data, eventName, functionName) => {
   }
   return true;
 };
+/**
+ * Creates a new price entry object.
+ * @param {number} price - The price to be added to the price entry.
+ * @returns {object} - The new price entry object.
+ * */
+export const createNewPriceEntry = (price) => {
+  return {
+    num: price,
+    timestamp: new Date(),
+  };
+};

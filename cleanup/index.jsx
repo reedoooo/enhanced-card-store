@@ -25,7 +25,7 @@
 //     count: quantity,
 //     increment: incrementQuantity,
 //     decrement: decrementQuantity,
-//   } = useCounter();
+// //   } = useCounter();
 //   const cardExists = (collection, cardId) =>
 //     collection.cards.some((card) => card.id === cardId);
 

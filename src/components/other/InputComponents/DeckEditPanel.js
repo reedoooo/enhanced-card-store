@@ -11,12 +11,14 @@ import {
   Select,
   MenuItem,
   Box,
-  FormControlLabel,
   Switch,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeckStore, useMode } from '../../../context';
-import useDeckStyles from '../../../context/hooks/style-hooks/useDeckStyles';
+import {
+  StyledFormControl,
+  SwitchControl,
+} from '../../../pages/pageStyles/StyledComponents';
 
 const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
   const { theme } = useMode();
@@ -26,7 +28,6 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
   const [tags, setTags] = useState([]);
   const [color, setColor] = useState('');
   const [newTag, setNewTag] = useState('');
-  const { switchControlStyles } = useDeckStyles();
 
   useEffect(() => {
     if (selectedDeck) {
@@ -64,7 +65,7 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
       sx={{
         padding: 3,
         margin: 2,
-        // backgroundColor: theme.palette.backgroundA.lightest,
+        backgroundColor: theme.palette.backgroundA.lightest,
       }}
     >
       <Box
@@ -81,10 +82,10 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
         >
           Deck Editor
         </Typography>
-        <FormControlLabel
+        <SwitchControl
+          theme={theme}
           control={<Switch checked={isEditing} onChange={handleToggleEdit} />}
           label={isEditing ? 'Edit Deck' : 'Create New Deck'}
-          sx={switchControlStyles}
         />
       </Box>
       <TextField
@@ -102,7 +103,13 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
         fullWidth
         sx={{ marginBottom: 2 }}
       />
-      <form onSubmit={handleTagSubmit}>
+      {/* <form onSubmit={handleTagSubmit}> */}
+      <StyledFormControl
+        onSubmit={handleTagSubmit}
+        fullWidth
+        variant="filled"
+        theme={theme}
+      >
         <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
           {tags.map((tag, index) => (
             <Chip
@@ -119,7 +126,7 @@ const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
             sx={{ flex: 1 }}
           />
         </Stack>
-      </form>
+      </StyledFormControl>
       <FormControl fullWidth sx={{ marginBottom: 2 }}>
         <InputLabel id="deck-color-selector-label">Color</InputLabel>
         <Select

@@ -1,6 +1,9 @@
 import { tokens } from './tokens';
 import themeTypography from './themes/typography/typography';
 import themeColors from './scss/_theme-vars.modules.scss';
+import DeckOfCardsIcon from '../components/reusable/icons/DeckOfCardsIcon';
+import MoneyIcon from '../components/reusable/icons/MoneyIcon';
+import ChartsIcon from '../components/reusable/icons/ChartsIcon';
 
 // TODO: TEST BOTH HEAX CONVERSION FUNCTIONS
 // Utility function to convert Hex to RGBA
@@ -308,6 +311,146 @@ export const themeSettings = (mode) => {
     //   body3: { fontSize: '0.625rem' },
     //   body4: { fontSize: '0.5rem' },
     // },
+    responsiveStyles: {
+      isXSmall: (breakpoints) => breakpoints.down('xs'),
+      isSmall: (breakpoints) => breakpoints.down('sm'),
+      isSmallMedium: (breakpoints) => breakpoints.up('sm'),
+      isMedium: (breakpoints) => breakpoints.down('md'),
+      isMediumLarge: (breakpoints) => breakpoints.up('md'),
+      isLarge: (breakpoints) => breakpoints.up('lg'),
+
+      getTypographyVariant: (breakpoints) => {
+        if (breakpoints.down('xs')) return 'h4';
+        if (breakpoints.down('sm')) return 'h3';
+        if (breakpoints.down('md')) return 'h2';
+        return 'h2';
+      },
+
+      getButtonTypographyVariant: (breakpoints) => {
+        if (breakpoints.down('xs')) return 'body1';
+        if (breakpoints.down('sm')) return 'body2';
+        if (breakpoints.down('md')) return 'body3';
+        if (breakpoints.up('lg')) return 'body3';
+        return 'body1';
+      },
+
+      getButtonTypographyVariant2: (breakpoints) => {
+        if (breakpoints.down('xs')) return 'h6';
+        if (breakpoints.down('sm')) return 'h6';
+        if (breakpoints.down('md')) return 'h6';
+        if (breakpoints.up('lg')) return 'body1';
+        return 'body1';
+      },
+
+      getProductGridContainerStyle: {
+        maxWidth: 'lg',
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: 4, // theme.spacing(4)
+      },
+
+      getHeaderStyle: {
+        fontWeight: 'bold',
+        color: 'text.primary',
+        marginBottom: 2, // theme.spacing(2)
+        '@media (maxWidth:599.95px)': {
+          fontSize: '1.25rem',
+        },
+        '@media (minWidth:600px) and (maxWidth:899.95px)': {
+          fontSize: '1.5rem',
+        },
+        '@media (minWidth:900px)': {
+          fontSize: '1.75rem',
+        },
+      },
+
+      getStyledGridStyle: {
+        '@media (maxWidth:599.95px)': {
+          margin: 0.5, // theme.spacing(0.5)
+        },
+        '@media (minWidth:600px) and (maxWidth:1199.95px)': {
+          margin: 1, // theme.spacing(1)
+        },
+        '@media (minWidth:1200px)': {
+          margin: 2, // theme.spacing(2)
+        },
+        '@media (minWidth:1800px)': {
+          margin: 2, // theme.spacing(2)
+        },
+      },
+
+      getStyledGridItemStyle: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        '@media (maxWidth:599.95px)': {
+          padding: 1, // theme.spacing(1)
+        },
+        '@media (minWidth:600px)': {
+          padding: 0.25, // theme.spacing(0.25)
+        },
+        '@media (minWidth:1200px)': {
+          padding: 1, // theme.spacing(1)
+        },
+        '@media (minWidth:1800px)': {
+          padding: 2, // theme.spacing(2)
+        },
+      },
+
+      getIconForTitle: (title) => {
+        switch (title) {
+          case 'Deck Builder':
+            return <DeckOfCardsIcon />;
+          case 'Collection Tracker':
+            return <MoneyIcon />;
+          case 'Store':
+            return <ChartsIcon />;
+          default:
+            return null;
+        }
+      },
+    },
+    genericButtonStyles: {
+      contextText: {
+        color: 'text.primary', // Use color from theme
+        fontWeight: 'bold',
+        fontSize: '0.8rem',
+        '@media (min-width:600px)': {
+          fontSize: '1rem',
+        },
+      },
+      addButton: {
+        color: 'success.contrastText', // Use color from theme
+        backgroundColor: 'success.main', // Use color from theme
+        '&:hover': {
+          backgroundColor: 'success.darker', // Use color from theme
+        },
+        marginRight: 0.5, // Use spacing from theme
+      },
+      removeButton: {
+        color: 'error.contrastText', // Use color from theme
+        backgroundColor: 'error.main', // Use color from theme
+        '&:hover': {
+          backgroundColor: 'error.dark', // Use color from theme
+        },
+        marginRight: 0.5, // Use spacing from theme
+      },
+      actionRow: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        flexWrap: 'nowrap',
+      },
+      circleButtonContainer: {
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '100%',
+        padding: 1, // Use spacing from theme
+        gap: 1, // Use spacing from theme
+      },
+    },
   };
 };
 // chart: {

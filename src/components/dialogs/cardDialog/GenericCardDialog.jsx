@@ -28,10 +28,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import CardDetail from '../../cards/CardDetail';
 import CardDetailsContainer from '../../../layout/CardDetailsContainer';
+import { useOverlay } from '../../../context/hooks/useOverlay';
 
 const GenericCardDialog = (props) => {
-  // const theme = useTheme();
   const { theme } = useMode();
+  const { selectedRarity, handleRarityClick, generateOverlay } =
+    useOverlay(theme);
+
   const {
     open = false,
     transition = false,
@@ -149,11 +152,14 @@ const GenericCardDialog = (props) => {
           <Grid container spacing={2}>
             {/* these two grid items are for the card media and card details */}
             <Grid item xs={12} sm={6} md={6} lg={6}>
-              <CardMediaSection
-                isRequired={!isMobile}
-                card={card}
-                imgUrl={imageUrl}
-              />
+              <div style={{ position: 'relative' }}>
+                <CardMediaSection
+                  isRequired={!isMobile}
+                  card={card}
+                  imgUrl={imageUrl}
+                />
+                {generateOverlay()}
+              </div>
             </Grid>
 
             {/* these two grid items are for the card details */}
@@ -174,16 +180,13 @@ const GenericCardDialog = (props) => {
                 className={'card-detail'}
                 title="Rarity"
                 values={card?.card_sets?.map((set) => set.set_rarity)}
-                onRarityClick={(rarity) => {
-                  // Handle the click event here
-                  console.log(`Rarity ${rarity} was clicked.`);
-                }}
+                onRarityClick={handleRarityClick}
               />
 
               {/* Price History Dropdown */}
-              <Grid item xs={12} sm={6} md={6} lg={6}>
-                {/* Price History Dropdown */}
-              </Grid>
+              {/* <Grid item xs={12} sm={6} md={6} lg={6}> */}
+              {/* Price History Dropdown */}
+              {/* </Grid> */}
             </Grid>
             <Grid item xs={6} sm={6} md={6} lg={6}>
               <CardDetailsContainer card={card} className={'card-detail'} />

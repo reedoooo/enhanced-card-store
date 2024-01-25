@@ -7,8 +7,9 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { styled } from '@mui/system';
 import { useMode } from '../../../context';
+import { StatisticHeader } from '../../../context/hooks/style-hooks/usePortfolioStyles';
+import styled from 'styled-components';
 
 // Styled components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -22,11 +23,11 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const StatisticHeader = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.backgroundA.dark,
-  marginBottom: theme.spacing(1),
-}));
+// const StatisticHeader = styled(Typography)(({ theme }) => ({
+//   fontWeight: 'bold',
+//   color: theme.palette.backgroundA.dark,
+//   marginBottom: theme.spacing(1),
+// }));
 
 const StatisticValue = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',

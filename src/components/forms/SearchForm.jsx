@@ -2,7 +2,7 @@ import React from 'react';
 import {
   FormWrapper,
   StyledButton,
-  StyledPaper,
+  StyledFormPaper,
   StyledTextField,
 } from './styled';
 
@@ -11,26 +11,28 @@ import { useMode } from '../../context';
 
 const SearchForm = ({
   searchTerm,
-  handleChange,
+  handleChange, // Make sure this is the adjusted function from SearchBar
   handleSubmit,
   handleKeyPress,
   onFocus,
   onBlur,
 }) => {
   const { theme } = useMode();
-
   return (
-    <StyledPaper theme={theme}>
+    <StyledFormPaper
+      theme={theme}
+      sx={{
+        background: theme.palette.backgroundB.lightest,
+      }}
+    >
       <FormWrapper
         onSubmit={handleSubmit}
         theme={theme}
-        style={{
+        sx={{
           display: 'flex',
           flexDirection: 'column',
           gap: theme.spacing(2),
           width: '100%',
-          // background: theme.palette.backgroundA.light,
-          // background: theme.palette.backgroundB.lighter,
         }}
       >
         <StyledTextField
@@ -41,7 +43,7 @@ const SearchForm = ({
           label="Search for cards"
           variant="outlined"
           fullWidth
-          onKeyDown={handleKeyPress} // Add keydown listener here
+          onKeyDown={handleKeyPress}
           theme={theme}
         />
         <Button
@@ -59,7 +61,7 @@ const SearchForm = ({
           Search
         </Button>
       </FormWrapper>
-    </StyledPaper>
+    </StyledFormPaper>
   );
 };
 
