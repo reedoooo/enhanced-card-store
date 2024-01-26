@@ -28,12 +28,12 @@ const SearchForm = ({
       <FormWrapper
         onSubmit={handleSubmit}
         theme={theme}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: theme.spacing(2),
-          width: '100%',
-        }}
+        // sx={{
+        //   display: 'flex',
+        //   flexDirection: 'column',
+        //   gap: theme.spacing(2),
+        //   width: '100%',
+        // }}
       >
         <StyledTextField
           value={searchTerm}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, MenuItem, Select } from '@mui/material';
-import { useChartContext } from '../../../context/ChartContext/ChartContext';
+import { useChartContext } from '../../../context/MAIN_CONTEXT/ChartContext/ChartContext';
 
 const TimeRangeSelector = () => {
   const { timeRange, timeRanges, handleChange } = useChartContext();

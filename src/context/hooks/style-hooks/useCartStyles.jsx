@@ -1,5 +1,5 @@
 // useCartStyles.js
-import useMode from '../../ColorModeContext/useMode';
+import useMode from '../../UTILITIES_CONTEXT/ColorModeContext/useMode';
 
 const useCartStyles = () => {
   const { theme } = useMode();

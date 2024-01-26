@@ -1,4 +1,4 @@
-import { roundToNearestTenth } from '../Helpers';
+import { roundToNearestTenth } from '../../Helpers';
 import { Tooltip, Typography } from '@mui/material';
 
 export const groupAndAverageData = (data, threshold = 600000, timeRange) => {

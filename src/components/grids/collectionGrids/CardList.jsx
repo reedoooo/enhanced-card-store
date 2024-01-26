@@ -45,12 +45,7 @@ const cardLogger = new Logger([
 const CardList = () => {
   const { theme } = useMode();
   // const [currentCard, setCurrentCard] = useState({});
-  const {
-    selectedCollection,
-    getTotalPrice,
-    removeOneFromCollection,
-    addOneToCollection,
-  } = useCollectionStore();
+  const { selectedCollection, getTotalPrice } = useCollectionStore();
   const selectedCards = selectedCollection?.cards;
   // const card = useMemo(() => currentCard, [currentCard]);
   const cardCount = selectedCards?.length || 0;

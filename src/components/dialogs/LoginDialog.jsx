@@ -29,7 +29,6 @@ function LoginDialog() {
   const { theme } = useMode();
   const { logout } = useAuthContext();
   const { toggleLoginDialog, isLoggedIn } = useAuthDialog();
-  const { returnDisplay, loadingStatus, setLoading } = usePageContext();
   const { forms } = useFormContext();
   const loginValues = forms?.loginForm;
   const signupValues = forms?.signupForm;

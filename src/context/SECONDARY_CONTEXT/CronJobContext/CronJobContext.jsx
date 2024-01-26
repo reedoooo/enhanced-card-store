@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useUserContext } from '../../UserContext/UserContext';
+import { useUserContext } from '../../MAIN_CONTEXT/UserContext/UserContext';
 import { useCollectionStore } from '../../MAIN_CONTEXT/CollectionContext/CollectionContext';
-import { useCombinedContext } from '../../CombinedContext/CombinedProvider';
+import { useCombinedContext } from '../../MISC_CONTEXT/CombinedContext/CombinedProvider';
 
 const CronJobContext = createContext();
 

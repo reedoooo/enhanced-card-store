@@ -5,11 +5,11 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
-import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
-import SplashPage2 from '../../pages/otherPages/SplashPage2';
-import useSnackBar from '../hooks/useSnackBar';
-import { isEmpty } from '../Helpers';
+import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import ErrorIndicator from '../../../components/reusable/indicators/ErrorIndicator';
+import SplashPage2 from '../../../pages/otherPages/SplashPage2';
+import useSnackBar from '../../hooks/useSnackBar';
+import { isEmpty } from '../../Helpers';
 
 const PageContext = createContext();
 
@@ -17,31 +17,32 @@ export const usePageContext = () => useContext(PageContext);
 
 export const PageProvider = ({ children }) => {
   const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackBar();
-  const [activelyLoading, setActivelyLoading] = useState(false); // [false, setActivelyLoading
+  // const [activelyLoading, setActivelyLoading] = useState(false); // [false, setActivelyLoading
   const [loadingStatus, setLoadingStatus] = useState({
     isLoading: false,
     isDataLoading: false,
     isFormDataLoading: false,
     isPageLoading: false,
-    error: null,
     loadingTimeoutExpired: false,
+    error: null,
     loadingType: '',
   });
-
+  useEffect(() => {
+    const isCompleted = Object.values(loadingStatus).every((status) => !status);
+    if (isCompleted) {
+      handleSnackBar({
+        message: `Loading ${loadingStatus.loadingType} completed`,
+        severity: 'success',
+      });
+    }
+  }, [loadingStatus, handleSnackBar]);
   const setLoading = (type, status) => {
-    setLoadingStatus((prevStatus) => {
-      const updatedStatus = { ...prevStatus, [type]: status };
-
-      // Simplify the check for any loading status
-      const anyLoading = Object.values(updatedStatus).some(
-        (value) => value === true
-      );
-
-      setActivelyLoading(anyLoading);
-      return { ...updatedStatus, loadingType: anyLoading ? type : '' };
-    });
+    setLoadingStatus((prevStatus) => ({
+      ...prevStatus,
+      [type]: status,
+      loadingType: status ? type : '',
+    }));
   };
-
   const returnDisplay = () => {
     if (loadingStatus.error) {
       return <ErrorIndicator error={loadingStatus.error} />;
@@ -58,23 +59,11 @@ export const PageProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const isCompleted = Object.values(loadingStatus).every((status) => !status);
-    if (isCompleted) {
-      handleSnackBar({
-        message: `Loading ${loadingStatus.loadingType} completed`,
-        severity: 'success',
-      });
-    }
-  }, [loadingStatus, handleSnackBar]);
-
   const contextValue = useMemo(
     () => ({
       loadingStatus,
-      activelyLoading,
-      setActivelyLoading,
+      setActivelyLoading: (status) => setLoading('isLoading', status),
       returnDisplay,
-      setLoading,
       setError: (error) => setLoadingStatus((prev) => ({ ...prev, error })),
       setPageError: (error) =>
         setLoadingStatus((prev) => ({ ...prev, error, isPageLoading: false })),
@@ -94,7 +83,7 @@ export const PageProvider = ({ children }) => {
           isPageLoading: false,
         })),
     }),
-    [loadingStatus, activelyLoading, setLoading]
+    [loadingStatus]
   );
 
   return (

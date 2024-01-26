@@ -43,11 +43,11 @@ const CollectionListItem = memo(
       useCollectionVisibility();
     // Function to handle selection of a collection
     const handleSelect = useCallback(
-      (collectionId) => {
+      (collection) => {
         return () => {
-          handleSelectCollection(collectionId);
-          // setSelectedCollection(collectionId);
-          console.log('collectionId', collectionId);
+          handleSelectCollection(collection?._id);
+          setSelectedCollection(collection);
+          console.log('collectionId', collection?._id);
           console.log('showCollections', showCollections);
         };
       },
@@ -57,13 +57,13 @@ const CollectionListItem = memo(
       return (
         <Tooltip title="Options">
           <Box>
-            <IconButton
+            {/* <IconButton
               size="small"
               onClick={() => setShowOptions(!showOptions)}
               sx={{ position: 'absolute', top: 5, right: 5 }}
-            >
-              <MoreVertIcon />
-            </IconButton>
+            > */}
+            <MoreVertIcon />
+            {/* </IconButton> */}
           </Box>
         </Tooltip>
       );
@@ -75,7 +75,7 @@ const CollectionListItem = memo(
         // onClick={handleSelect(collection._id)}
       >
         <CardActionArea
-          onClick={handleSelect(collection._id)}
+          onClick={handleSelect(collection)}
           // onClick={() => handleSelect(collection._id)}
           sx={{
             position: 'relative',
@@ -112,21 +112,8 @@ const CollectionListItem = memo(
                 <Typography>Cards: {collection?.totalQuantity}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Box>
-                  {loadingStatus?.isDataLoading ? (
-                    <Skeleton
-                      variant="rectangular"
-                      sx={{
-                        position: 'absolute',
-                        top: 5,
-                        right: 5,
-                        height: 40,
-                        width: 10,
-                      }}
-                    />
-                  ) : (
-                    renderToolTip()
-                  )}
+                <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+                  {renderToolTip()}
                 </Box>
               </Grid>
             </Grid>
@@ -149,7 +136,7 @@ const CollectionListItem = memo(
           <Box>
             <LongMenu
               onEdit={() => handleOpenDialog(collection)}
-              onSelect={() => handleSelect(collection._id)}
+              onSelect={() => handleSelect(collection)}
               onStats={() => console.log('Stats:', collection)}
               onView={() => console.log('View:', collection)}
               onClose={() => setShowOptions(false)}

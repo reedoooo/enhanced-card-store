@@ -21,7 +21,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import the icon fo
 const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
   const { theme } = useMode();
 
-  const { selectedCollection } = useCollectionStore();
+  const { selectedCollection, totalQuantity } = useCollectionStore();
   const [collectionName, setCollectionName] = useState(
     selectedCollection?.name || ''
   );
@@ -60,6 +60,18 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
         >
           <AssessmentIcon />
           Cards in Portfolio
+        </Typography>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            paddingLeft: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          Total Cards: {totalQuantity}
         </Typography>
       </Box>
       <Grid container spacing={3}>

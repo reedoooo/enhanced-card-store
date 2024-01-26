@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { useAuthContext } from '../../AuthContext/authContext';
+import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
 
 const SidebarContext = createContext();
 

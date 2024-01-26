@@ -1,36 +1,39 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
 import useLogger from '../../hooks/useLogger';
 import useApiResponseHandler from '../../hooks/useApiResponseHandler';
-import { debounce, isEqual } from 'lodash';
-import {
-  DEFAULT_ALLCOLLECTIONS_ARRAY,
-  DEFAULT_CARDS_ARRAY,
-  DEFAULT_COLLECTION,
-} from '../../constants';
+import { DEFAULT_COLLECTION } from '../../constants';
+import { calculateCollectionValue } from './collectionUtility';
 
-const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
+const useCollectionManager = (isLoggedIn, userId) => {
+  const createApiUrl = useCallback(
+    (path) =>
+      `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections${path}`,
+    [userId]
+  );
   const fetchWrapper = useFetchWrapper();
   const handleApiResponse = useApiResponseHandler();
-  const cardExists = (collection, cardId) =>
-    collection?.cards?.some((card) => card.id === cardId);
-
   const logger = useLogger('useCollectionManager');
-  const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
-
-  // States for managing collections
+  const [collectionData, setCollectionData] = useState({});
   const [allCollections, setAllCollections] = useState(
-    DEFAULT_ALLCOLLECTIONS_ARRAY
+    [DEFAULT_COLLECTION] || []
   );
-  const [selectedCollection, setSelectedCollection] =
-    useState(DEFAULT_COLLECTION);
-  const [selectedCards, setSelectedCards] = useState(DEFAULT_CARDS_ARRAY);
+  const [selectedCollection, setSelectedCollection] = useState(
+    DEFAULT_COLLECTION || {}
+  );
+  const [selectedCards, setSelectedCards] = useState(
+    DEFAULT_COLLECTION.cards || []
+  );
+  const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
 
   // Function to update the selected collection and its cards
   const updateSelectedCollection = useCallback((newCollection) => {
     setSelectedCollection(newCollection);
     setSelectedCards(newCollection?.cards?.slice(0, 30) || []);
   }, []);
+  // const updateCollectionDataCookie = (data) => {
+  //   setCookie('collectionData', data, { path: '/' });
+  // };
   /**
    * Creates a new collection for a specific user.
    * @param {string} userId - The ID of the user for whom the collection is being created.
@@ -42,11 +45,11 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
    * FUNCTION LOCATIONS: -->
    * [ ]   @function CollectionForm - src/components/forms/CollectionForm.jsx
    */
-  const createNewCollection = async (collectionData) => {
-    logger.logEvent('[createNewCollection] start', collectionData);
+  const createNewCollection = async (coData) => {
+    logger.logEvent('[createNewCollection] start', coData);
 
     try {
-      const newCollectionData = { ...collectionData };
+      const newCollectionData = { ...coData };
       const response = await fetchWrapper(createApiUrl('/create'), 'POST', {
         newCollectionData,
       });
@@ -62,7 +65,6 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
       throw error;
     }
   };
-
   /**
    * Retrieves all collections for a specific user.
    * @param {string} userId - The ID of the user whose collections are to be fetched.
@@ -79,10 +81,10 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
         'GET'
       );
       const data = handleApiResponse(response, 'getAllCollectionsForUser');
-      if (Array.isArray(data) && !isEqual(data, allCollections)) {
-        setAllCollections(data);
-        setSelectedCollection(data[0] || {});
-      }
+      // console.log('getAllCollectionsForUser', data);
+      setCollectionData({ data: data });
+      setAllCollections(data?.allCollections);
+      setSelectedCollection(data?.allCollections?.[0]);
       setHasFetchedCollections(true);
     } catch (error) {
       logger.logEvent(
@@ -100,18 +102,20 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
     hasFetchedCollections,
     userId,
   ]);
-
-  // Debounce the API call
-  const debouncedGetAllCollectionsForUser = useCallback(
-    debounce(() => getAllCollectionsForUser(), 15000),
-    [getAllCollectionsForUser]
-  );
-
+  // Call getAllCollectionsForUser on component mount
   useEffect(() => {
     if (userId && !hasFetchedCollections) {
-      debouncedGetAllCollectionsForUser();
+      // console.log('getAllCollectionsForUser');
+      getAllCollectionsForUser();
     }
-  }, [userId, debouncedGetAllCollectionsForUser, hasFetchedCollections]);
+  }, [userId, hasFetchedCollections, collectionData]);
+  useEffect(() => {
+    if (hasFetchedCollections) {
+      // console.log('setAllCollections', collectionData?.data?.allCollections);
+      setAllCollections(collectionData?.data);
+      updateSelectedCollection(collectionData?.data?.[0]);
+    }
+  }, [hasFetchedCollections, collectionData]);
 
   /**
    * Updates and synchronizes a specific collection for a user.
@@ -155,8 +159,6 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
   const deleteCollection = async (collectionId) => {
     try {
       const response = await fetchWrapper(`/${collectionId}`, 'DELETE');
-
-      // Update allCollectionsSet by creating a new Set without the deleted collection
       setAllCollections((prev) =>
         prev.filter((collection) => collection._id !== collectionId)
       );
@@ -174,27 +176,46 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
    * @returns {Promise<Object>} The response from the server.
    */
   const addCardsToCollection = async (cards, collection) => {
-    let newCards = []; // Array to hold cards that are new to the collection
-
-    logger.logEvent('addCardsToCollection start', { cards, collection });
+    const newCards = [];
+    const updatedCards = [];
 
     for (const card of cards) {
-      if (cardExists(card.id, collection._id)) {
-        // Increment quantity if the card exists
-        await updateCardsInCollection(collection._id, [card], 'increment');
+      const existingCard = collection?.cards?.find((c) => c.id === card.id);
+
+      if (existingCard) {
+        // await updateCardsInCollection(collection._id, [card], 'increment');
+        existingCard.tag = 'incremented';
+        updatedCards.push(existingCard);
       } else {
-        // Add new card with quantity set to 1
+        card.tag = 'added';
         newCards.push({ ...card, quantity: 1 });
       }
     }
 
     if (newCards.length > 0) {
+      logger.logEvent('addCardsToCollection ADD', {
+        newCards,
+        collection,
+      });
       const response = await fetchWrapper(
         createApiUrl(`/${collection._id}/add`),
         'POST',
         { cards: newCards }
       );
-      const { data } = handleApiResponse(response, 'addCardsToCollection');
+      const data = handleApiResponse(response, 'addCardsToCollection');
+      updateSelectedCollection(data);
+    }
+    if (updatedCards.length > 0) {
+      logger.logEvent('addCardsToCollection UPDATE', {
+        updatedCards,
+        collection,
+      });
+      const response = await fetchWrapper(
+        createApiUrl(`/${collection._id}/update`),
+        'PUT',
+        { cards: updatedCards, type: 'increment' }
+      );
+      const data = handleApiResponse(response, 'addCardsToCollection');
       updateSelectedCollection(data);
     }
   };
@@ -205,21 +226,53 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
    * @param {Array} cardIds - Array of card object IDs to be removed.
    * @returns {Promise<Object>} The response from the server.
    */
-  const removeCardsFromCollection = async (collectionId, cardIds) => {
-    logger.logEvent('removeCardsFromCollection start', {
-      collectionId,
-      cardIds,
-    });
-
+  const removeCardsFromCollection = async (cards, cardIds, collection) => {
+    const collectionId = collection._id;
+    const cardsToRemove = [];
+    const cardsToDecrement = [];
+    for (const card of cards) {
+      const existingCard = collection?.cards?.find((c) => c.id === card.id);
+      if (existingCard) {
+        if (existingCard.quantity > 1) {
+          // Decrement card quantity
+          // existingCard?.quantity -= 1;
+          existingCard.tag = 'decremented';
+          cardsToDecrement.push(existingCard);
+        } else {
+          // Quantity is 1, remove the card
+          card.tag = 'removed';
+          cardsToRemove.push(card);
+        }
+      }
+    }
     try {
-      const response = await fetchWrapper(
-        createApiUrl(`/${collectionId}/remove`),
-        'DELETE',
-        { cardIds }
-      );
-      const { data } = handleApiResponse(response, 'removeCardsFromCollection');
-      updateSelectedCollection(data);
-      return data;
+      if (cardsToRemove.length > 0) {
+        logger.logEvent('removeCardsFromCollection REMOVE', {
+          collectionId,
+          cardsToRemove,
+        });
+        const response = await fetchWrapper(
+          createApiUrl(`/${collectionId}/remove`),
+          'DELETE',
+          { cards: cardsToRemove }
+        );
+        const data = handleApiResponse(response, 'removeCardsFromCollection');
+        updateSelectedCollection(data);
+      }
+
+      if (cardsToDecrement.length > 0) {
+        logger.logEvent('removeCardsFromCollection DECREMENT', {
+          collectionId,
+          cardsToDecrement,
+        });
+        const response = await fetchWrapper(
+          createApiUrl(`/${collectionId}/update`),
+          'PUT',
+          { cards: cardsToDecrement, type: 'decrement' }
+        );
+        const data = handleApiResponse(response, 'removeCardsFromCollection');
+        updateSelectedCollection(data);
+      }
     } catch (error) {
       logger.logEvent('removeCardsFromCollection error', error);
       throw error;
@@ -233,49 +286,49 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
    * @param {string} incrementType - Determines if the card count should be incremented or decremented.
    * @returns {Promise<Object>} The response from the server.
    */
-  const updateCardsInCollection = async (
-    collectionId,
-    cards,
-    incrementType
-  ) => {
-    logger.logEvent('updateCardsInCollection start', {
-      collectionId,
-      cards,
-      incrementType,
-    });
+  // const updateCardsInCollection = async (
+  //   collectionId,
+  //   cards,
+  //   incrementType
+  // ) => {
+  //   logger.logEvent('updateCardsInCollection start', {
+  //     collectionId,
+  //     cards,
+  //     incrementType,
+  //   });
 
-    // Modify card quantities based on incrementType
-    const modifiedCards = cards.map((card) => ({
-      ...card,
-      quantity:
-        incrementType === 'increment'
-          ? card.quantity + 1
-          : Math.max(card.quantity - 1, 0),
-    }));
+  //   // Modify card quantities based on incrementType
+  //   const modifiedCards = cards.map((card) => ({
+  //     ...card,
+  //     quantity:
+  //       incrementType === 'increment'
+  //         ? card.quantity + 1
+  //         : Math.max(card.quantity - 1, 0),
+  //   }));
 
-    // Remove cards with quantity 0
-    const cardsToUpdate = modifiedCards.filter((card) => card.quantity > 0);
-    const cardsToRemove = modifiedCards
-      .filter((card) => card.quantity === 0)
-      .map((card) => card.id);
+  //   // Remove cards with quantity 0
+  //   const cardsToUpdate = modifiedCards.filter((card) => card.quantity > 0);
+  //   const cardsToRemove = modifiedCards
+  //     .filter((card) => card.quantity === 0)
+  //     .map((card) => card.id);
 
-    if (cardsToUpdate.length > 0) {
-      const updateResponse = await fetchWrapper(
-        createApiUrl(`/${collectionId}/update`),
-        'PUT',
-        { cards: cardsToUpdate }
-      );
-      const updateData = handleApiResponse(
-        updateResponse,
-        'updateCardsInCollection'
-      );
-      updateSelectedCollection(updateData);
-    }
+  //   if (cardsToUpdate.length > 0) {
+  //     const updateResponse = await fetchWrapper(
+  //       createApiUrl(`/${collectionId}/update`),
+  //       'PUT',
+  //       { cards: cardsToUpdate }
+  //     );
+  //     const updateData = handleApiResponse(
+  //       updateResponse,
+  //       'updateCardsInCollection'
+  //     );
+  //     updateSelectedCollection(updateData);
+  //   }
 
-    if (cardsToRemove.length > 0) {
-      await removeCardsFromCollection(collectionId, cardsToRemove);
-    }
-  };
+  //   if (cardsToRemove.length > 0) {
+  //     await removeCardsFromCollection(collectionId, cardsToRemove);
+  //   }
+  // };
   /**
    * Updates the chart data for a specific collection.
    * @param {string} userId - The ID of the user who owns the collection.
@@ -306,31 +359,46 @@ const useCollectionManager = (createApiUrl, isLoggedIn, userId) => {
 
   return {
     // STATE
+    collectionData,
     allCollections,
     selectedCollection,
     selectedCards,
 
+    // SECONDARY STATE (derived from main state selectedCollection)
+    collectionStatistics: selectedCollection?.collectionStatistics,
+    chartData: selectedCollection?.chartData,
+    // totalPrice: calculateCollectionValue(selectedCollection),
+    totalQuantity: selectedCollection?.cards?.length || 0,
+    collectionPriceHistory: selectedCollection?.collectionPriceHistory,
+    allXYValues: selectedCollection?.chartData?.allXYValues,
+    lastSavedPrice: selectedCollection?.lastSavedPrice,
+    latestPrice: selectedCollection?.latestPrice,
+    cards: selectedCollection?.cards,
+
     // STATE SETTERS
+    setCollectionData,
     setAllCollections,
     setSelectedCollection,
     setSelectedCards,
 
     // COLLECTION ACTIONS
     createNewCollection,
-    getAllCollectionsForUser: debouncedGetAllCollectionsForUser,
+    getAllCollectionsForUser,
     updateAndSyncCollection,
     deleteCollection,
     updateSelectedCollection,
+    // updateCollectionDataCookie,
 
     // CARD ACTIONS
     addCardsToCollection,
     removeCardsFromCollection,
-    updateCardsInCollection,
+    // updateCardsInCollection,
 
     // CHART ACTIONS
     updateChartDataInCollection,
 
     // OTHER
+    getTotalPrice: () => calculateCollectionValue(selectedCollection),
   };
 };
 

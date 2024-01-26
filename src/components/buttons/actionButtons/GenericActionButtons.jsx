@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import useAppContext from '../../../context/hooks/useAppContext';
+import React, { useCallback, useEffect } from 'react';
 import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import {
   Box,
@@ -18,11 +17,10 @@ import {
 } from '@mui/icons-material';
 import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useCartStore } from '../../../context/CartContext/CartContext';
+import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useSelectionDialog } from '../../../context/hooks/useSelectionDialog';
 import { useCardActions } from '../../../context/hooks/useCardActions';
 import { useMode } from '../../../context';
-import useCounter from '../../../context/hooks/useCounter';
 const GenericActionButtons = ({
   card,
   context,
@@ -32,10 +30,8 @@ const GenericActionButtons = ({
   onFailure,
   page,
 }) => {
-  const contextProps = useAppContext(); // Assuming useAppContext returns the context object
   const { closeModal, isModalOpen, setModalOpen } = useModalContext();
   const { theme } = useMode();
-  // const theme = useTheme();
   const {
     addOneToCollection,
     removeOneFromCollection,
@@ -77,24 +73,8 @@ const GenericActionButtons = ({
 
   const { getButtonTypographyVariant2, getButtonTypographyVariant } =
     theme.responsiveStyles;
-  // const performAction = useCardActions(
-  //   context,
-  //   card,
-  //   selectedCollection,
-  //   selectedDeck,
-  //   addOneToCollection,
-  //   removeOneFromCollection,
-  //   addOneToDeck,
-  //   removeOneFromDeck,
-  //   addOneToCart,
-  //   removeOneFromCart,
-  //   onSuccess,
-  //   onFailure
-  // );
   const { addButton, removeButton, actionRow, circleButtonContainer } =
     theme.genericButtonStyles;
-  // Function to handle incrementing the card quantity
-  // const { count: quantity, increment, decrement } = useCounter(card, context);
   const { performAction, count } = useCardActions(
     context,
     card,
@@ -109,29 +89,16 @@ const GenericActionButtons = ({
     onSuccess,
     onFailure
   );
-  // const logQuantityChange = (action) => {
-  //   console.log(
-  //     `Action: ${action} - Card:`,
-  //     card?.name,
-  //     `Initial Quantity: ${card?.quantity}, New Quantity: ${quantity}`
-  //   );
-  // };
   const handleAddCard = () => {
     onClick?.();
-    // increment();
-    // logQuantityChange('add');
     performAction('add');
     closeModal?.();
   };
-
   const handleRemoveCard = () => {
     onClick?.();
-    // decrement();
-    // logQuantityChange('remove');
     performAction('remove');
     closeModal?.();
   };
-
   const {
     selectDialogOpen,
     itemsForSelection,
@@ -145,7 +112,6 @@ const GenericActionButtons = ({
     allCollections,
     allDecks
   );
-
   const isCardInContext = useCallback(() => {
     const cardsList = {
       Collection: selectedCollection?.cards,
@@ -154,16 +120,6 @@ const GenericActionButtons = ({
     };
     return !!cardsList[context]?.find((c) => c?.id === card?.id);
   }, [context, card.id, selectedCollection, selectedDeck, cartData]);
-
-  // const handleAddClick = () => {
-  //   onClick?.(); // Set the selected context when adding
-  //   performAction('add');
-  // };
-  // const handleRemoveOne = () => {
-  //   onClick?.(); // Set the selected context when removing
-  //   performAction('remove');
-  //   closeModal?.();
-  // };
   const renderSelectionDialog = () => (
     <Dialog open={selectDialogOpen} onClose={() => setSelectDialogOpen(false)}>
       <DialogTitle>Select {context}</DialogTitle>
@@ -176,19 +132,6 @@ const GenericActionButtons = ({
       </DialogContent>
     </Dialog>
   );
-  // const renderSelectionDialog = () => (
-  //   <Dialog open={selectDialogOpen} onClose={() => setSelectDialogOpen(false)}>
-  //     <DialogTitle>Select {context}</DialogTitle>
-  //     <DialogContent>
-  //       {/* Render the items for selection */}
-  //       {itemsForSelection.map((item) => (
-  //         <Button key={item.id} onClick={() => handleSelection(item)}>
-  //           {item.name}
-  //         </Button>
-  //       ))}
-  //     </DialogContent>
-  //   </Dialog>
-  // );
   const getButtonLabel = () => {
     if (isModalOpen && !theme.responsiveStyles.isLarge(theme.breakpoints)) {
       return `${context}`;
@@ -217,15 +160,6 @@ const GenericActionButtons = ({
             ...theme.responsiveStyles.getStyledGridItemStyle,
           }}
         >
-          {/* <CardActions
-          sx={{
-            ...genericButtonStyles.actionRow,
-            alignSelf: 'center',
-            flexGrow: 1,
-            width: '100%',
-            ...responsiveStyles.getStyledGridItemStyle,
-          }}
-        > */}
           {isCardInContext(context) ? (
             <Box sx={circleButtonContainer}>
               <Grid
@@ -255,22 +189,16 @@ const GenericActionButtons = ({
                       textAlign: 'center',
                     }}
                   >
-                    {`${count}`}
+                    {`${count || 0}`}
                   </Typography>
                 </Grid>
                 {/* <Grid item xs={0.5} sm={0.5} md={0} lg={0} xl={0}></Grid> */}
                 <Grid item xs={3.75} sm={4} md={3.5} lg={3.5} xl={4}>
-                  {/* <IconButton onClick={handleAddClick} sx={addButton}>
-                    <AddCircleOutlineOutlined />
-                  </IconButton> */}
                   <IconButton onClick={handleAddCard} sx={addButton}>
                     <AddCircleOutlineOutlined />
                   </IconButton>
                 </Grid>
                 <Grid item xs={3.75} sm={4} md={3.5} lg={3.5} xl={4}>
-                  {/* <IconButton onClick={handleRemoveOne} sx={removeButton}>
-                    <RemoveCircleOutlineOutlined />
-                  </IconButton> */}
                   <IconButton onClick={handleRemoveCard} sx={removeButton}>
                     <RemoveCircleOutlineOutlined />
                   </IconButton>

@@ -165,7 +165,13 @@ function getUpdatedCard(card, update, priceHistory, deckId, cardPrice) {
     priceHistory: priceHistory,
   };
 }
-
+export const getCardQuantity = (cardId, selectedDeck) => {
+  const foundCard = selectedDeck?.cards.find((item) => item.id === cardId);
+  return foundCard?.quantity || 0;
+};
+export const shouldFetchDecks = (prevUserId, currentUserId) => {
+  return prevUserId !== currentUserId && currentUserId != null;
+};
 // export const addCardsToDeck = async (deckId, newCards) => {
 //   if (!Array.isArray(newCards)) {
 //     console.error('Invalid card data, expected an array');

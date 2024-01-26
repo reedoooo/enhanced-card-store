@@ -35,7 +35,7 @@ export const useCardActions = (
           },
           remove: () => {
             decrement();
-            removeOneFromCollection(card, selectedCollection);
+            removeOneFromCollection(card, card?.id, selectedCollection);
           },
         },
         Deck: {

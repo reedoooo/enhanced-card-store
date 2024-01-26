@@ -16,6 +16,8 @@ import useLogger from './useLogger';
 import useDialog from './useDialog';
 import useApiResponseHandler from './useApiResponseHandler';
 import useRenderCount from './useRenderCount';
+import useLocalStorage from './useLocalStorage';
+
 /**
  * Hook: useLogger
  * Description: Logs component lifecycle events, state changes, and custom events.
@@ -26,6 +28,17 @@ import useRenderCount from './useRenderCount';
  */
 const { logEvent, setStateAndLog } = useLogger('ComponentName', {});
 
+/**
+ * Hook: useLocalStorage
+ * Description: Manages a state value in local storage.
+ * Useful for persisting data across sessions or pages.
+ * @param {string} key - The key to store the value in local storage.
+ * @param {*} initialValue - The initial value to set.
+ * @returns {[value, setValue]} - The stored value and a function to update it.
+ * Used By:
+ * @function CardProvider - src/context/hooks/useCardStore.jsx
+ */
+const [value, setValue] = useLocalStorage('key', 'initialValue');
 /**
  * Hook: useFetch
  * Description: Manages data fetching with loading and error states.

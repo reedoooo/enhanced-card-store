@@ -32,69 +32,15 @@ import {
   useMode,
 } from '../../../context';
 import SearchForm from '../../forms/SearchForm';
-import SearchSettings from './SearchSettings';
 
 const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
   const { theme } = useMode();
-  const { forms, handleChange, handleSubmit, handleRequest } = useFormContext();
-  // ! useEffect(
-  //   () => {
-  //     console.log('SearchBar forms', forms);
-  //     if (!forms?.searchForm?.searchTerm) return;
-  //     handleRequest({
-  //       name: forms?.searchForm?.searchTerm,
-  //       race: forms?.searchForm?.preSet,
-  //       type: forms?.searchForm?.type,
-  //       level: forms?.searchForm?.level,
-  //       rarity: forms?.searchForm?.rarity,
-  //       attribute: forms?.searchForm?.attribute,
-  //       id: forms?.searchForm?.id,
-  //     });
-  //   },
-  //   [forms?.searchForm?.searchTerm],
-  //   handleSubmit
-  // ! ); // Watch for changes in the form data
-  // const [searchParams, setSearchParams] = useState({
-  //   name: '',
-  //   race: '',
-  //   type: '',
-  //   level: '',
-  //   rarity: '',
-  //   attribute: '',
-  //   id: '',
-  // });
-  // setParams({
-  //   ...params,
-  //   name: forms?.searchForm?.searchParams?.name,
-  // });
-  // useEffect(
-  //   () => {
-  //     // console.log('SearchBar forms', forms);
-  //     if (!forms?.searchForm?.searchParams?.name) return;
-  //     // console.log('handling request', forms?.searchForm?.searchParams?.name);
-  //     handleRequest(forms?.searchForm?.searchParams?.name);
-  //   },
-  //   [forms?.searchForm?.searchParams?.name],
-  //   handleSubmit
-  // ); // Watch for changes in the form data
+  const { forms, handleChange, handleSubmit } = useFormContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
-  const handleSearchSubmit = async () => {
-    // Call handleRequest with the current form data
-    await handleRequest(forms.searchForm);
-  };
-
-  // Effect to trigger search when searchTerm changes
-  useEffect(() => {
-    if (forms.searchForm.searchTerm) {
-      handleSearchSubmit();
-    }
-  }, [forms.searchForm.searchTerm]);
-
   return (
     <React.Fragment>
       <Paper elevation={3} sx={commonPaperStyles(theme)}>
@@ -137,15 +83,12 @@ const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
           {/* eslint-disable-next-line max-len */}
           <SearchForm
             searchTerm={forms?.searchForm?.searchTerm}
-            // handleChange={handleChange('searchForm', 'searchTerm')} // Pass handleChange for specific form field
-            handleChange={handleChange('searchForm', 'searchTerm')} // Directly pass handleChange
-            handleSubmit={(e) => {
-              e.preventDefault();
-              handleSearchSubmit();
-            }}
+            handleChange={handleChange('searchForm', 'searchTerm')}
+            handleSubmit={handleSubmit('searchForm')}
             handleKeyPress={(e) => {
               if (e.key === 'Enter') {
-                handleSearchSubmit(e);
+                e.preventDefault();
+                handleSubmit('searchForm')(e);
               }
             }}
             onFocus={onSearchFocus}

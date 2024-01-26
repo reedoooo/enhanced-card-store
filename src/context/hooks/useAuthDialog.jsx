@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useAuthContext } from '../AuthContext/authContext';
+import { useAuthContext } from '../MAIN_CONTEXT/AuthContext/authContext';
 import useDialog from './useDialog';
 
 const useAuthDialog = () => {

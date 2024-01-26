@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useAuthContext } from '../../AuthContext/authContext';
-import { usePageContext } from '../../PageContext/PageContext';
+import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
+import { usePageContext } from '../PageContext/PageContext';
 import {
   defaultContextValue,
   initialFormStates,
@@ -52,13 +52,13 @@ export const FormProvider = ({ children }) => {
   const { handleRequest } = useCardStoreHook();
   const {
     loadingStatus,
-    setLoading, // Use setLoading instead of individual state setters
+    setIsFormDataLoading, // Use setLoading instead of individual state setters
     returnDisplay,
   } = usePageContext();
   const [forms, setForms] = useState(initialFormStates);
   const [currentForm, setCurrentForm] = useState({}); // For multiple forms
   const [formErrors, setFormErrors] = useState(null); // For a single form
-
+  const [limitedCards, setLimitedCards] = useState([]); // For a single form
   const resetForm = (formName) => {
     setForms((prevForms) => ({
       ...prevForms,
@@ -73,7 +73,10 @@ export const FormProvider = ({ children }) => {
       setValueAtPath(form, path, value);
       return { ...prevForms, [formName]: form };
     });
-
+    // Specific logic for the search form
+    if (formName === 'searchForm' && path === 'searchTerm') {
+      handleRequest({ searchTerm: value });
+    }
     if (formValidations[formName]) {
       const newErrors = formValidations[formName](forms[formName]);
       setFormErrors({ ...formErrors, [formName]: newErrors });
@@ -104,7 +107,7 @@ export const FormProvider = ({ children }) => {
   // };
   const handleSubmit = (formName) => async (event) => {
     event.preventDefault();
-    setLoading('isFormDataLoading', true);
+    setIsFormDataLoading(true);
     setCurrentForm(forms[formName]);
     const currentErrors = formValidations[formName]
       ? formValidations[formName](currentForm)
@@ -142,7 +145,7 @@ export const FormProvider = ({ children }) => {
           // await addCollection(currentForm); // Adjust as necessary
           break;
         case 'searchForm':
-          console.log('Submitting search form:', currentForm);
+          console.log('Submitting search form:', forms.searchForm);
           await handleRequest(currentForm); // Use handleRequest for the search form
           break;
         default:
@@ -157,13 +160,21 @@ export const FormProvider = ({ children }) => {
       resetForm(formName);
     } else {
       setFormErrors(currentErrors); // Update error state
+      console.log('Form errors:', currentErrors);
     }
-    setLoading('isFormDataLoading', false); // indicate form submission is done
+    // Specific logic for the search form
+    // if (formName === 'searchForm') {
+    //   await handleRequest(forms.searchForm);
+    // }
+    setIsFormDataLoading(false); // indicate form submission is done
   };
 
   useEffect(() => {
     if (initialFormStates?.searchForm?.searchTerm) {
-      handleRequest(initialFormStates?.searchForm?.searchTerm);
+      const limitedCards = handleRequest(
+        initialFormStates?.searchForm?.searchTerm
+      );
+      setLimitedCards(limitedCards);
     }
   }, [returnDisplay]);
 
@@ -173,6 +184,7 @@ export const FormProvider = ({ children }) => {
     formErrors,
     initialFormStates,
     currentForm,
+    limitedCards,
     setForms,
     setFormErrors,
     setCurrentForm,

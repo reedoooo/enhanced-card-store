@@ -7,25 +7,32 @@ import {
   useMemo,
   useState,
 } from 'react';
-import {
-  calculateCollectionValue,
-  defaultContextValue,
-} from './collectionUtility';
-import { useAuthContext } from '../../AuthContext/authContext';
+import { calculateCollectionValue } from './collectionUtility';
+import { useAuthContext } from '../AuthContext/authContext';
 import useCollectionManager from './useCollectionManager';
+import { defaultContextValue } from '../../constants';
 
-export const CollectionContext = createContext(defaultContextValue);
+export const CollectionContext = createContext(
+  defaultContextValue.COLLECTION_CONTEXT
+);
+
 export const CollectionProvider = ({ children }) => {
   const { isLoggedIn, authUser, userId } = useAuthContext();
-  const createApiUrl = useCallback(
-    (path) =>
-      `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections${path}`,
-    [userId]
-  );
   const {
+    collectionData,
     allCollections,
     selectedCollection,
     selectedCards,
+    collectionStatistics,
+    chartData,
+    totalPrice,
+    totalQuantity,
+    collectionPriceHistory,
+    allXYValues,
+    lastSavedPrice,
+    latestPrice,
+
+    setCollectionData,
     createNewCollection,
     getAllCollectionsForUser,
     updateAndSyncCollection,
@@ -38,34 +45,37 @@ export const CollectionProvider = ({ children }) => {
     setAllCollections,
     setSelectedCollection,
     setSelectedCards,
-  } = useCollectionManager(createApiUrl, userId, isLoggedIn);
+    getTotalPrice,
+  } = useCollectionManager(isLoggedIn, userId);
 
   const contextValue = useMemo(
     () => ({
+      // ...defaultContextValue.COLLECTION_CONTEXT,
       // MAIN STATE
+      collectionData,
       allCollections,
       selectedCollection,
       selectedCards,
 
       // SECONDARY STATE (derived from main state selectedCollection)
-      collectionStatistics: selectedCollection?.collectionStatistics,
-      chartData: selectedCollection?.chartData,
-      totalPrice: calculateCollectionValue(selectedCollection),
-      totalQuantity: selectedCollection?.cards?.length || 0,
-      collectionPriceHistory:
-        selectedCollection?.chartData?.collectionPriceHistory,
-      allXYValues: selectedCollection?.chartData?.allXYValues,
-      lastSavedPrice: selectedCollection?.chartData?.lastSavedPrice,
-      latestPrice: selectedCollection?.chartData?.latestPrice,
+      collectionStatistics,
+      chartData,
+      totalPrice: getTotalPrice(selectedCollection),
+      totalQuantity,
+      collectionPriceHistory,
+      allXYValues,
+      lastSavedPrice,
+      latestPrice,
 
       // STATE SETTERS
+      setCollectionData,
       setAllCollections,
       setSelectedCollection,
       setSelectedCards,
 
       // COLLECTION ACTIONS
       createUserCollection: createNewCollection,
-      getAllCollectionsForUser, // Debounced function to fetch collections
+      getAllCollectionsForUser,
       updateAndSyncCollection,
       deleteCollection,
       updateSelectedCollection,
@@ -73,15 +83,16 @@ export const CollectionProvider = ({ children }) => {
       // CARD ACTIONS
       addOneToCollection: (card, collection) =>
         addCardsToCollection([card], collection),
-      removeOneFromCollection: (collectionId, cardId) =>
-        removeCardsFromCollection(collectionId, [cardId]),
+      removeOneFromCollection: (card, cardId, collection) =>
+        removeCardsFromCollection([card], [cardId], collection),
       updateOneInCollection: (collectionId, card, incrementType) => {
         updateCardsInCollection(collectionId, [card], incrementType);
       },
       updateChartDataInCollection,
 
       // OTHER ACTIONS
-      getTotalPrice: () => calculateCollectionValue(selectedCollection),
+      getTotalPrice,
+      // getTotalPrice: () => calculateCollectionValue(selectedCollection),
       // toggleCollectionVisibility: () => {},
     }),
     [
@@ -103,9 +114,9 @@ export const CollectionProvider = ({ children }) => {
     ]
   );
 
-  useEffect(() => {
-    console.log('COLLECTION CONTEXT:', contextValue);
-  }, [contextValue]);
+  // useEffect(() => {
+  //   console.log('COLLECTION CONTEXT:', contextValue);
+  // }, [contextValue]);
 
   return (
     <CollectionContext.Provider value={contextValue}>

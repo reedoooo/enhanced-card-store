@@ -13,8 +13,8 @@ import {
   getTopCollection,
   calculateStatsForCollection,
 } from './helpers';
-import { useChartContext } from '../ChartContext/ChartContext';
-import { useCollectionStore } from '../index';
+import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
+import { useCollectionStore } from '../../index';
 
 const StatisticsContext = createContext();
 

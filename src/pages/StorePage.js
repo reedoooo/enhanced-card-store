@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import SearchBar from '../components/other/search/SearchBar';
 import ProductGrid from '../components/grids/searchResultsGrids/ProductGrid';
 import HeroCenter from './pageStyles/HeroCenter';
-import { useModalContext, useMode, usePageContext } from '../context';
+import { useModalContext, useMode } from '../context';
 import { gridItemStyles } from './pageStyles/styles';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
+import useLocalStorage from '../context/hooks/useLocalStorage';
 
 const StorePage = () => {
   const { theme } = useMode();
-  const { setLoading, loadingStatus } = usePageContext();
+  const [page, setPage] = useState(1);
+  const [previousSearchData] = useLocalStorage('previousSearchData', []);
+  const [searchData, setSearchData] = useLocalStorage(
+    'searchData',
+    previousSearchData || []
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const itemsPerPage = 12;
+  const uniqueCards = useMemo(() => {
+    return Array.from(
+      new Map(searchData?.map((card) => [card.id, card])).values()
+    );
+  }, [searchData]);
   const [containerHeight, setContainerHeight] = useState(0);
   const [searchBarFocused, setSearchBarFocused] = useState(false);
   const { isModalOpen, modalContent } = useModalContext();
-  // Function to render the Hero section
   const renderHero = () => (
     <HeroCenter
       title="Welcome to Store"
@@ -26,7 +38,6 @@ const StorePage = () => {
       }}
     />
   );
-  // Function to render the search bar and product grid
   const renderSearchAndProducts = () => (
     <Container
       sx={{
@@ -55,11 +66,35 @@ const StorePage = () => {
           onSearchFocus={() => setSearchBarFocused(true)}
           onSearchBlur={() => setSearchBarFocused(false)}
         />
-        <ProductGrid updateHeight={setContainerHeight} />
+        <ProductGrid
+          updateHeight={setContainerHeight}
+          uniqueCards={uniqueCards}
+          isLoading={isLoading}
+          page={page}
+          setPage={setPage}
+          itemsPerPage={itemsPerPage}
+        />
       </Grid>
     </Container>
   );
-  // Function to render the bottom background box (for UI effects)
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    const timeoutId = setTimeout(() => {
+      if (isMounted) {
+        // setSelectedCards(selectedDeck?.cards?.slice(0, 30) || []);
+        const updatedData = JSON.parse(
+          localStorage.getItem('searchData') || '[]'
+        );
+        setSearchData(updatedData);
+        setIsLoading(false);
+      }
+    }, 1000);
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
+  }, [searchData]);
   const renderBackgroundBox = () => (
     <Box
       sx={{
@@ -76,7 +111,6 @@ const StorePage = () => {
 
   return (
     <React.Fragment>
-      {/* <PageLayout> */}
       {/* Main content rendering */}
       {renderHero()}
       {renderSearchAndProducts()}
@@ -92,7 +126,6 @@ const StorePage = () => {
 
       {/* Background box for additional UI */}
       {renderBackgroundBox()}
-      {/* </PageLayout> */}
     </React.Fragment>
   );
 };

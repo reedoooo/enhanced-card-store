@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { ColorModeContext } from '../../../context/ColorModeContext/ColorModeProvider';
+import { ColorModeContext } from '../../../context/UTILITIES_CONTEXT/ColorModeContext/ColorModeProvider';
 
 const ThemeToggleButton = () => {
   const [anchorEl, setAnchorEl] = useState(null);

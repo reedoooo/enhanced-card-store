@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Snackbar, Typography } from '@mui/material';
-import { useCombinedContext } from '../../../context/CombinedContext/CombinedProvider';
 import { useCookies } from 'react-cookie';
+import { useCombinedContext } from '../../../context';
 
 const styles = {
   container: {

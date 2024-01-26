@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Grid, Select, MenuItem, Container } from '@mui/material';
 import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
-import { useStatisticsStore } from '../../../context/StatisticsContext/StatisticsContext';
+import { useStatisticsStore } from '../../../context/SECONDARY_CONTEXT/StatisticsContext/StatisticsContext';
 import StatCard from '../dataDisplay/StatCard';
 const CollectionStatisticsSelector = () => {
   const { selectedCollection } = useCollectionStore();

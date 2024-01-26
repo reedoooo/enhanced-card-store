@@ -6,7 +6,7 @@ import placeholderImage from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { PopoverContext } from '../../context/UTILITIES_CONTEXT/PopoverContext/PopoverContext';
 import { Box } from '@mui/system';
-import { useCartStore } from '../../context/CartContext/CartContext';
+import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useTheme } from 'styled-components';

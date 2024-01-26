@@ -99,10 +99,13 @@ const defaultChartData = {
   userId: null,
   allXYValues: [],
 };
-
+const defaultPriceEntry = {
+  num: 0,
+  timestamp: new Date(),
+};
+const defaultPriceHistory = [defaultPriceEntry];
 // ! DEFAULT VALUES FOR COLLECTION OBJECTS
 const defaultCollection = {
-  ...defaultCollectionStatistics,
   userId: null,
   name: '',
   description: '',
@@ -111,16 +114,13 @@ const defaultCollection = {
   totalQuantity: 0,
   dailyPriceChange: 0,
   dailyPercentageChange: '0%',
-  latestPrice: {},
-  lastSavedPrice: {},
-  dailyCollectionPriceHistory: [],
-  collectionPriceHistory: [],
-  chartData: {
-    name: '',
-    userId: null,
-    allXYValues: [],
-  },
-  cards: [],
+  latestPrice: defaultPriceEntry,
+  lastSavedPrice: defaultPriceEntry,
+  dailyCollectionPriceHistory: defaultPriceHistory,
+  collectionPriceHistory: defaultPriceHistory,
+  chartData: defaultChartData,
+  collectionStatistics: defaultCollectionStatistics,
+  cards: [defaultCardObject],
 };
 
 // ! DEFAULT VALUES FOR DECK OBJECTS
@@ -245,19 +245,20 @@ const defaultCardContextValues = {
 // ! DEFAULT VALUES FOR COLLECTION CONTEXT
 const defaultCollectionContextValues = {
   // MAIN STATE
-  allCollections: DEFAULT_ALLCOLLECTIONS_ARRAY,
+  allCollections: [DEFAULT_COLLECTION],
   selectedCollection: DEFAULT_COLLECTION,
   selectedCards: DEFAULT_CARDS_ARRAY,
 
   // SECONDARY STATE (derived from main state selectedCollection)
   collectionStatistics: DEFAULT_COLLECTION_STATISTICS,
   chartData: DEFAULT_COLLECTION_CHART_DATA,
-  totalPrice: 0,
-  totalQuantity: 0,
-  latestPrice: {},
-  lastSavedPrice: {},
-  collectionPriceHistory: [],
-  allXYValues: [],
+  allXYValues: DEFAULT_COLLECTION.chartData.allXYValues || [],
+  totalPrice: DEFAULT_COLLECTION.totalPrice,
+  totalQuantity: DEFAULT_COLLECTION.totalQuantity,
+  latestPrice: DEFAULT_COLLECTION.latestPrice || {},
+  lastSavedPrice: DEFAULT_COLLECTION.lastSavedPrice || {},
+  collectionPriceHistory: DEFAULT_COLLECTION.collectionPriceHistory || [],
+  cards: DEFAULT_COLLECTION.cards || [],
 
   // STATE SETTERS
   setAllCollections: () => {},
@@ -372,4 +373,23 @@ const defaultStatisticsContextValues = {
   getTopCard: () => {},
   getTopCollection: () => {},
   calculateStatsByCollectionId: () => {},
+};
+
+export const defaultContextValue = {
+  // PAGE CONTEXT
+  PAGE_CONTEXT: defaultPageContextValues,
+  // AUTH CONTEXT
+  AUTH_CONTEXT: defaultAuthContextValues,
+  // CARD CONTEXT
+  CARD_CONTEXT: defaultCardContextValues,
+  // COLLECTION CONTEXT
+  COLLECTION_CONTEXT: defaultCollectionContextValues,
+  // DECK CONTEXT
+  DECK_CONTEXT: defaultDeckContextValues,
+  // CART CONTEXT
+  CART_CONTEXT: defaultCartContextValues,
+  // USER CONTEXT
+  USER_CONTEXT: defaultUserContextValues,
+  // STATISTICS CONTEXT
+  STATISTICS_CONTEXT: defaultStatisticsContextValues,
 };

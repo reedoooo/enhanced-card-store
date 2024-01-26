@@ -8,7 +8,7 @@ import {
 } from '@mui/icons-material';
 import DeckBuilderIcon from '../../../components/reusable/icons/DeckBuilderIcon';
 import { Badge } from '@mui/material';
-import { useCartStore } from '../../../context/CartContext/CartContext';
+import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
 export const getMenuItemsData = (isLoggedIn) => {
   const { cartCardQuantity } = useCartStore();
   try {

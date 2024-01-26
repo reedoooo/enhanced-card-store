@@ -8,8 +8,8 @@ import {
   RootGrid,
   SearchGrid,
 } from './pageStyles/StyledComponents';
-import { useUserContext } from '../context/UserContext/UserContext';
-import { usePageContext } from '../context/PageContext/PageContext';
+import { useUserContext } from '../context/MAIN_CONTEXT/UserContext/UserContext';
+import { usePageContext } from '../context/UTILITIES_CONTEXT/PageContext/PageContext';
 import HeroCenter from './pageStyles/HeroCenter';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 import DeckSearch from '../components/other/search/DeckSearch';
@@ -21,8 +21,7 @@ const DeckBuilderPage = () => {
   const { theme } = useMode();
   const { fetchAllDecksForUser, allDecks, setSelectedDeck, selectedDeck } =
     useDeckStore();
-  const { logPageData, loadingStatus, returnDisplay, setLoading } =
-    usePageContext();
+  const { loadingStatus, returnDisplay, setIsPageLoading } = usePageContext();
   const { userId } = useUserContext();
   const { isModalOpen, modalContent } = useContext(ModalContext);
   const heroBannerHeight = {
@@ -39,7 +38,7 @@ const DeckBuilderPage = () => {
     lg: '75vh', // 70% for large screens and up
   };
   useEffect(() => {
-    setLoading('isPageLoading', true);
+    setIsPageLoading(true);
 
     fetchAllDecksForUser().catch((err) =>
       console.error('Failed to get all decks:', err)
@@ -49,7 +48,7 @@ const DeckBuilderPage = () => {
       setSelectedDeck(userDecks[0]);
     }
 
-    setLoading('isPageLoading', false);
+    setIsPageLoading(false);
   }, [fetchAllDecksForUser]);
 
   useEffect(() => {

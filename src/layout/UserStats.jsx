@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useDeckStore } from '../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useCartStore } from '../context/CartContext/CartContext';
+import { useCartStore } from '../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useCollectionStore } from '../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 
 const UserStats = () => {

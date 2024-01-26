@@ -1,6 +1,6 @@
 import { Grid, Skeleton } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid'; // Import UUID to generate unique keys
-import useMode from '../ColorModeContext/useMode';
+import useMode from '../UTILITIES_CONTEXT/ColorModeContext/useMode';
 
 // Function to render individual skeleton based on the provided config
 const renderSkeletonItem = (config, theme) => {

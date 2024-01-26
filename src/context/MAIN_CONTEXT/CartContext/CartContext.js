@@ -11,7 +11,7 @@ import React, {
 import { useCookies } from 'react-cookie';
 import { useUserContext } from '../UserContext/UserContext';
 import { getCardQuantity } from './helpers';
-import useFetchWrapper from '../hooks/useFetchWrapper';
+import useFetchWrapper from '../../hooks/useFetchWrapper';
 
 export const CartContext = createContext({
   cartData: {
@@ -94,7 +94,7 @@ export const CartProvider = ({ children }) => {
         `${process.env.REACT_APP_SERVER}${`/api/users/${userId}/cart`}`,
         'GET'
       );
-      console.log('FETCHED USER CART:', response);
+      // console.log('FETCHED USER CART:', response);
       setCartDataAndCookie(response);
     } catch (error) {
       console.error('Error fetching user cart:', error);
@@ -313,7 +313,7 @@ export const CartProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log('CART CONTEXT: ', contextValue);
+    // console.log('CART CONTEXT: ', contextValue);
     if (userId && typeof userId === 'string') {
       fetchUserCart();
     }

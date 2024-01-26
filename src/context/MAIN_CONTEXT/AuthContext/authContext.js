@@ -10,11 +10,11 @@ import React, {
 } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { usePageContext } from '../PageContext/PageContext';
+import { usePageContext } from '../../UTILITIES_CONTEXT/PageContext/PageContext';
 import { processResponseData } from './helpers';
-import useLogger from '../hooks/useLogger';
-import useApiResponseHandler from '../hooks/useApiResponseHandler';
-import useFetchWrapper from '../hooks/useFetchWrapper';
+import useLogger from '../../hooks/useLogger';
+import useApiResponseHandler from '../../hooks/useApiResponseHandler';
+import useFetchWrapper from '../../hooks/useFetchWrapper';
 export const AuthContext = createContext();
 
 const cookieOptions = { path: '/' };
@@ -189,9 +189,9 @@ export default function AuthProvider({ children }) {
     [cookies, login, logout, resetLogoutTimer]
   );
 
-  useEffect(() => {
-    console.log('AUTH CONTEXT:', contextValue);
-  }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
+  // useEffect(() => {
+  //   console.log('AUTH CONTEXT:', contextValue);
+  // }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

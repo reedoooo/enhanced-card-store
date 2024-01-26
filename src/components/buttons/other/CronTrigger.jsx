@@ -1,16 +1,15 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { useCombinedContext } from '../../../context/CombinedProvider';
-import { useUserContext } from '../../../context/UserContext/UserContext';
+import { useAuthContext } from '../../../context';
 
 const CronTrigger = () => {
   const { stopCronJob, handleSendAllCardsInCollections, listOfMonitoredCards } =
     useCombinedContext();
-  const { user } = useUserContext();
-
+  const { userId } = useAuthContext();
   const handleTriggerCron = () => {
     console.log('TRIGGERING CRON JOB TO UPDATE: ' + listOfMonitoredCards);
-    handleSendAllCardsInCollections(user.userID, listOfMonitoredCards);
+    handleSendAllCardsInCollections(userId, listOfMonitoredCards);
   };
 
   const handleStopCron = () => {
