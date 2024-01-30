@@ -37,7 +37,7 @@ const TimeRangeSelector = () => {
           border: '1px solid #fff',
         }}
       >
-        {timeRanges.map((range) => (
+        {timeRanges?.map((range) => (
           <MenuItem key={range.label} value={range.value}>
             {range.label}
           </MenuItem>

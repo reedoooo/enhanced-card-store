@@ -9,8 +9,8 @@ import {
 import DeckBuilderIcon from '../../../components/reusable/icons/DeckBuilderIcon';
 import { Badge } from '@mui/material';
 import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
-export const getMenuItemsData = (isLoggedIn) => {
-  const { cartCardQuantity } = useCartStore();
+export const getMenuItemsData = (isLoggedIn, cartCardQuantity) => {
+  // const { cartCardQuantity } = useCartStore();
   try {
     const baseMenuItems = [
       { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
@@ -68,10 +68,21 @@ export const getMenuItemsData = (isLoggedIn) => {
       }));
     }
 
-    return baseMenuItems;
+    // Processed menu items
+    const processedMenuItems = isLoggedIn
+      ? baseMenuItems.map((item) => ({ ...item, requiresLogin: false }))
+      : baseMenuItems;
+
+    return {
+      baseMenuItems,
+      menuItems: processedMenuItems,
+    };
   } catch (error) {
     console.error('An error occurred in getMenuItemsData:', error);
-    return [];
+    return {
+      baseMenuItems: [],
+      menuItems: [],
+    };
   }
 };
 

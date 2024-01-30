@@ -15,10 +15,9 @@ import {
 } from './helpers';
 import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
 import { useCollectionStore } from '../../index';
+import { defaultContextValue } from '../../constants';
 
-const StatisticsContext = createContext();
-
-export const useStatisticsStore = () => useContext(StatisticsContext);
+const StatisticsContext = createContext(defaultContextValue.STATISTICS_CONTEXT);
 
 export const StatisticsProvider = ({ children }) => {
   const { timeRange } = useChartContext();
@@ -28,17 +27,17 @@ export const StatisticsProvider = ({ children }) => {
 
   // Calculate statistics for all collections
   const statsByCollectionId = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections.length === 0) {
+    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
       return {};
     }
-    return allCollections.reduce((acc, collection) => {
+    return allCollections?.reduce((acc, collection) => {
       acc[collection._id] = calculateStatsForCollection(collection, timeRange);
       return acc;
     }, {});
   }, [allCollections, timeRange]);
   // Calculate the total value of all collections
   const totalValue = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections.length === 0) {
+    if (!Array.isArray(allCollections) || allCollections.length === 1) {
       return 0;
     }
     return allCollections.reduce(
@@ -48,7 +47,7 @@ export const StatisticsProvider = ({ children }) => {
   }, [allCollections]);
   // Get the top five cards among all collections
   const topFiveCards = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections.length === 0) {
+    if (!Array.isArray(allCollections) || allCollections.length === 1) {
       return [];
     }
     const allCards = allCollections.flatMap(
@@ -82,7 +81,7 @@ export const StatisticsProvider = ({ children }) => {
       },
     ];
   }, [selectedCollection]);
-  // Prepare chart data for all collections
+  // Prepare chart data for the pie chart
   const chartData = useMemo(() => {
     return allCollections?.map((collection) => ({
       id: collection.id,
@@ -132,6 +131,9 @@ export const StatisticsProvider = ({ children }) => {
 };
 
 export default StatisticsProvider;
+
+export const useStatisticsStore = () => useContext(StatisticsContext);
+
 // const stats = useMemo(() => {
 //   try {
 //     return calculateStatistics(

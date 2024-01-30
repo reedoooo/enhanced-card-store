@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef, useState } from 'react';
-import { CardMedia, Popover, Popper } from '@mui/material';
+import { Backdrop, CardMedia, Popover, Popper } from '@mui/material';
 import CardToolTip from '../CardToolTip';
 import PropTypes from 'prop-types';
 import { useModalContext, useMode, usePopoverContext } from '../../../context';
@@ -9,6 +9,7 @@ import {
   MediaPopover,
   Overlay,
 } from '../../../context/hooks/style-hooks/usePortfolioStyles';
+import { useOverlay } from '../../../context/hooks/useOverlay';
 
 const anchorOrigin = {
   vertical: 'top',
@@ -35,6 +36,13 @@ const CardMediaSection = forwardRef(
   ) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { theme } = useMode();
+    const {
+      generateOverlay,
+      handleRarityClick,
+      backdropColor,
+      isOverlayVisible,
+    } = useOverlay(theme);
+
     // Handle overlay state and interaction
     const [overlay, setOverlay] = useState(null);
 
@@ -52,6 +60,17 @@ const CardMediaSection = forwardRef(
     }, [isHovered, ref]);
 
     return (
+      // <Backdrop
+      //   sx={{
+      //     color: '#fff',
+      //     zIndex: (theme) => theme.zIndex.drawer + 1,
+      //     backgroundColor: backdropColor, // Set backdrop color
+      //   }}
+      //   open={isOverlayVisible}
+      //   onClick={() => handleOverlayChange(null)}
+      // >
+      // </Backdrop>
+
       <MediaContainer
         ref={ref}
         {...(isRequired && {

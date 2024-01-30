@@ -4,8 +4,6 @@ import { useCookies } from 'react-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { usePageContext } from '../../context/PageContext/PageContext';
-import { useTheme } from 'styled-components';
-import { useSpring, animated } from 'react-spring';
 import { PageLayout, PageHeader, PageContent } from '../../layout';
 import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
@@ -29,13 +27,7 @@ const EditUserSettingsForm = ({ user }) => {
     logPageData,
   } = useUserContext();
 
-  const {
-    isPageLoading,
-    setIsPageLoading,
-    // pageError,
-    // setPageError,
-    // logPageData,
-  } = usePageContext();
+  const { isPageLoading, setIsPageLoading } = usePageContext();
 
   const [formState, setFormState] = useState({
     email: '',
@@ -71,33 +63,12 @@ const EditUserSettingsForm = ({ user }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (!userId) return;
-
-  //   const initializeUser = async () => {
-  //     setIsPageLoading(true);
-  //     try {
-  //       if (!userData || Object.keys(userData).length === 0) {
-  //         await fetchUserData();
-  //       }
-  //       logPageData('EditUserSettingsForm', userData);
-  //     } catch (e) {
-  //       setPageError(e);
-  //     } finally {
-  //       setIsPageLoading(false);
-  //     }
-  //   };
-
-  //   initializeUser();
-  // }, [userId]);
-
   if (isPageLoading) return <LoadingIndicator />;
   if (pageError) return <ErrorIndicator error={pageError} />;
   if (isLoading) return <LoadingIndicator />;
 
   return (
     <>
-      {/* <PageLayout> */}
       <PageHeader>
         <Typography variant="h4" color="primary">
           Edit User Settings
@@ -146,7 +117,6 @@ const EditUserSettingsForm = ({ user }) => {
           </Button>
         </form>
       </PageContent>
-      {/* </PageLayout> */}
     </>
   );
 };

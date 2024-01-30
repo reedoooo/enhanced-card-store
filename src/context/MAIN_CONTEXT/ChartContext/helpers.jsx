@@ -151,6 +151,17 @@ export const convertDataForNivo2 = (rawData2) => {
   ];
 };
 
+export const finalizeNivoData = (nivoChartData) => {
+  // return nivoData which is the data array, combined with id and color properties
+  return [
+    {
+      id: 'Your Data', // Replace with a meaningful id
+      color: 'hsl(252, 70%, 50%)', // Replace with color of your choice or logic for dynamic colors
+      data: nivoChartData[0]?.data,
+    },
+  ];
+};
+
 export const getFilteredData = (data, timeRange) => {
   const cutOffTime = new Date().getTime() - timeRange;
   return data

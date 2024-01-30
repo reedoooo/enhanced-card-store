@@ -16,7 +16,6 @@ const DeckEditor = ({
   isEditing,
   handleToggleEdit,
 }) => {
-  // const { switchControlStyles } = useDeckStyles();
   const [editorKey, setEditorKey] = useState(Math.random());
 
   useEffect(() => {
@@ -26,11 +25,6 @@ const DeckEditor = ({
   return (
     <>
       <Box key={editorKey} elevation={3}>
-        {/* <FormControlLabel
-          control={<Switch checked={isEditing} onChange={handleToggleEdit} />}
-          label={isEditing ? 'Edit Deck' : 'Create New Deck'}
-          sx={switchControlStyles}
-        /> */}
         {isEditing ? (
           selectedDeck ? (
             <DeckEditPanel

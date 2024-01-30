@@ -11,8 +11,6 @@ export const commonPaperStyles = (theme) => ({
     boxShadow: 6,
   },
 });
-
-// SearchBar.jsx
 import React, { useState, useEffect } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -101,47 +99,3 @@ const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
 };
 
 export default SearchBar;
-
-// // // SearchForm.jsx
-// // import React from 'react';
-// // import { Button, TextField, Paper } from '@mui/material';
-
-// const SearchForm = ({
-//   searchTerm,
-//   handleChange,
-//   handleSubmit,
-//   handleKeyPress,
-// }) => {
-//   const { theme } = useMode();
-//   return (
-//     <Paper sx={{ padding: theme.spacing(2) }}>
-//       <form
-//         onSubmit={(e) => {
-//           e.preventDefault();
-//           handleSubmit();
-//         }}
-//       >
-//         <TextField
-//           value={searchTerm}
-//           onChange={handleChange}
-//           label="Search for cards"
-//           variant="outlined"
-//           fullWidth
-//           onKeyDown={handleKeyPress}
-//         />
-//         <Button
-//           fullWidth
-//           variant="contained"
-//           // color={theme.palette.backgroundA.default}
-//           // background={theme.palette.backgroundA.default}
-//           type="submit"
-//           sx={{ mt: 1, mb: 1, background: theme.palette.backgroundA.default }}
-//         >
-//           Search
-//         </Button>
-//       </form>
-//     </Paper>
-//   );
-// };
-
-// // export default SearchForm;

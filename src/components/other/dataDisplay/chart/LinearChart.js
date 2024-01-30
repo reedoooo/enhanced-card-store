@@ -1,29 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import {
-  Typography,
-  Box,
-  Tooltip,
-  useTheme,
-  useMediaQuery,
-} from '@mui/material';
+import { Typography, Box, Tooltip, useMediaQuery } from '@mui/material';
 import ChartErrorBoundary from '../../../reusable/ChartErrorBoundary';
 import {
   useChartContext,
   useMode,
   useStatisticsStore,
 } from '../../../../context';
-import { LinearChartContainer } from '../../../../pages/pageStyles/StyledComponents';
-// const useStyles = makeStyles((theme) => ({
-//   axisLabel: {
-//     position: 'absolute',
-//     textAlign: 'center',
-//     margin: theme.spacing(2),
-//     fontSize: '1rem',
-//     fontWeight: 'bold',
-//     color: theme.palette.text.primary,
-//   },
-// }));
+import {
+  ChartContainer,
+  LinearChartContainer,
+} from '../../../../pages/pageStyles/StyledComponents';
+import { AutoSizer } from 'react-virtualized';
 
 const CustomTooltipLayer = ({ points, xScale, yScale, specialPoints }) => {
   console.log('CustomTooltipLayer points: ', specialPoints);
@@ -109,6 +97,14 @@ const CustomTooltip = ({ point, specialPoints }) => {
   );
 };
 
+const parseDate = (dateString) => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error(`Invalid date: ${dateString}`);
+    return null; // or a sensible default, or throw an error, depending on your needs
+  }
+  return date;
+};
 export const useEventHandlers = () => {
   const [hoveredData, setHoveredData] = useState(null);
   const handleMouseMove = useCallback((point) => {
@@ -117,142 +113,162 @@ export const useEventHandlers = () => {
   const handleMouseLeave = useCallback(() => setHoveredData(null), []);
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
-
-const LinearChart = ({
-  nivoReadyData,
-  dimensions,
-  timeRange,
-  specialPoints,
-}) => {
+const LinearChart = ({ nivoChartData, width, height, specialPoints }) => {
   const { theme } = useMode();
-  const theme2 = useTheme();
-  const isMobile = useMediaQuery(theme2.breakpoints.down('sm'));
-  const { statsByCollectionId, markers } = useStatisticsStore();
   const { tickValues, xFormat } = useChartContext();
-
-  const [isZoomed, setIsZoomed] = useState(false);
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-  // if (
-  //   !Array.isArray(filteredChartData) ||
-  //   filteredChartData.some((d) => !d?.x || !d?.y)
-  // ) {
-  //   return (
-  //     <Typography variant="body1" color="textSecondary">
-  //       No valid data available
-  //     </Typography>
-  //   );
-  // }
-
-  const currentTime = new Date().getTime();
-  const dataWithinTimeRange = useMemo(() => {
-    return nivoReadyData?.map((series) => ({
+  const [isZoomed, setIsZoomed] = useState(false);
+  const processedData = useMemo(() => {
+    return nivoChartData?.map((series) => ({
       ...series,
-      data: series?.data?.filter((dataPoint) => {
-        const dataPointTime = new Date(dataPoint?.x).getTime();
-        const isWithinRange = dataPointTime >= currentTime - timeRange;
-        return isWithinRange;
-      }),
+      data: series?.data?.map((point) => ({
+        ...point,
+        x: parseDate(point?.x) || point?.x, // Use the parsed date or fallback to the original value
+      })),
     }));
-  }, [nivoReadyData, timeRange]);
+  }, [nivoChartData]);
 
-  const chartProps = useMemo(
-    () => ({
-      margin: { top: 10, right: 20, bottom: 30, left: 40 },
-      // border: { color: theme.palette.divider, lineWidth: 3 },
-      data: dataWithinTimeRange,
-      animate: true,
-      motionStiffness: 90,
-      motionDamping: 15,
-      background: '#2c2121',
-      xScale: {
-        type: 'time',
-        format: '%Y-%m-%dT%H:%M:%S.%LZ',
-        useUTC: false,
-        precision: 'second',
-      },
-      xFormat: 'time:%Y-%m-%d %H:%M:%S',
-      axisBottom: {
-        tickRotation: 0,
-        legendOffset: -12,
-        legend: 'Time',
-        tickPadding: 10,
-        tickSize: 1,
-        format: xFormat,
-        tickValues: tickValues,
-      },
-      yScale: { type: 'linear', min: 'auto', max: 'auto' },
-      axisLeft: {
-        orient: 'left',
-        legend: 'Value ($)',
-        legendOffset: 12,
-        legendPosition: 'middle',
-        format: (value) => `$${value}`,
-        tickPadding: 10,
-        tickSize: 10,
-      },
-      pointSize: 10,
-      pointBorderWidth: 2,
-      pointBorderColor: theme.palette.backgroundA.dark,
-      pointColor: theme.palette.success.light,
-      colors: theme.palette.success.light,
-      lineWidth: 3,
-      curve: 'monotoneX',
-      useMesh: true,
-      theme: theme.chart,
-      onMouseMove: handleMouseMove,
-      onMouseLeave: handleMouseLeave,
-      onClick: () => setIsZoomed(!isZoomed),
-      // tooltip: CustomTooltip,
-      markers,
+  const markers = specialPoints?.map((sp) => ({
+    axis: 'y',
+    value: sp.y,
+    lineStyle: { stroke: 'red', strokeWidth: 2 },
+    legend: sp.label,
+    legendOrientation: 'vertical',
+    legendPosition: 'top',
+    legendOffsetY: -10,
+    legendOffsetX: 0,
+    legendColor: 'red',
+  }));
+  const chartProps = {
+    data: processedData,
+    margin: { top: 20, right: 40, bottom: 40, left: 30 },
+    padding: 0.3,
+    animate: true,
+    motionStiffness: 90,
+    motionDamping: 15,
+    background: '#2c2121',
+    color: theme.palette.backgroundA.contrastTextA,
+    text: {
+      color: theme.palette.backgroundA.contrastTextA,
+      fill: theme.palette.backgroundA.contrastTextA,
+      fontSize: 12,
+    },
+    // xFormat: { type: 'point' },
+    xFormat: 'time:%Y-%m-%d %H:%M:%S',
+    xScale: {
+      type: 'time',
+      format: '%Y-%m-%dT%H:%M:%S.%LZ', // Adjust if necessary to match your input data format
+      useUTC: false,
+      precision: 'second',
+    },
+    axisBottom: {
+      tickRotation: 0,
+      legend: 'Time',
+      legendOffset: 36,
+      legendPosition: 'middle',
+      tickSize: 5,
+      tickPadding: 5,
+      tickValues: tickValues,
+      format: '%Y-%m-%d', // Adjust this format to display the dates as you need
+      // format: '%d',
+      // format: '%S.%L',
+    },
+    yFormat: '$.2f',
+    axisLeft: {
+      tickSize: 5,
+      tickPadding: 5,
+      tickRotation: 0,
+      legend: 'Value ($)',
+      legendOffset: -40,
+      legendPosition: 'middle',
+      color: theme.palette.text.primary,
+    },
+    yScale: {
+      type: 'linear',
+      min: 'auto',
+      max: 'auto',
+      stacked: true,
+      reverse: false,
+    },
+    pointSize: 8,
+    pointBorderWidth: 1,
+    pointBorderColor: { from: 'serieColor', modifiers: [] },
+    pointColor: { from: 'color', modifiers: [] },
+    colors: { scheme: 'green_blue' },
+    // lineWidth: 3,
+    curve: 'monotoneX',
+    useMesh: true,
+    motionConfig: 'wobbly',
 
-      layers: [
-        'grid',
-        'markers',
-        'areas',
-        'lines',
-        'slices',
-        'points',
-        'axes',
-        'legends',
-        ({ points, xScale, yScale, markers }) => (
-          <CustomTooltipLayer
-            points={points}
-            xScale={xScale}
-            yScale={yScale}
-            specialPoints={markers}
-          />
-        ),
-      ],
-      tooltip: ({ point }) => {
-        return (
-          <CustomTooltip
-            point={point}
-            // Pass additional props as needed, e.g., to show high point marker
-            isHighPoint={point.data.isHighPoint}
-          />
-        );
+    theme: {
+      axis: {
+        domain: {
+          line: {
+            stroke: theme.palette.backgroundA.contrastTextA,
+            strokeWidth: 1,
+          },
+        },
+        ticks: {
+          line: {
+            stroke: theme.palette.backgroundA.contrastTextA,
+            strokeWidth: 1,
+          },
+          text: {
+            fill: theme.palette.backgroundA.contrastTextA,
+            fontSize: 12,
+            fontWeight: 400,
+          },
+        },
+        legend: {
+          text: {
+            fill: theme.palette.text.primary,
+            fontSize: 12,
+            fontWeight: 500,
+          },
+        },
       },
-    }),
-    [theme, nivoReadyData, timeRange]
-  );
-
-  useEffect(() => {
-    console.log('Chart data: ', nivoReadyData);
-  }, [nivoReadyData]);
-
-  return (
-    <ChartErrorBoundary>
-      <LinearChartContainer
-        sx={{
-          height: isMobile ? '350px' : dimensions?.height ?? '500px',
-          flexGrow: 1,
-        }}
-      >
-        {/* <div style={{ width: '100%', height: dimensions?.height ?? '100%' }}> */}
-        <ResponsiveLine {...chartProps} />
-      </LinearChartContainer>
-    </ChartErrorBoundary>
-  );
+      grid: {
+        line: {
+          stroke: theme.palette.divider,
+          strokeWidth: 1,
+        },
+      },
+    },
+    onMouseMove: handleMouseMove,
+    onMouseLeave: handleMouseLeave,
+    onClick: () => setIsZoomed(!isZoomed),
+    // tooltip: CustomTooltip,
+    markers,
+    layers: [
+      'grid',
+      'markers',
+      'areas',
+      'lines',
+      'slices',
+      'points',
+      'axes',
+      'legends',
+      ({ points, xScale, yScale, markers }) => (
+        <CustomTooltipLayer
+          points={points}
+          xScale={xScale}
+          yScale={yScale}
+          specialPoints={markers}
+        />
+      ),
+    ],
+    tooltip: ({ point }) => {
+      return (
+        <CustomTooltip
+          point={point}
+          isHighPoint={point.data.isHighPoint}
+          isLowPoint={point.data.isLowPoint}
+          isAveragePoint={point.data.isAveragePoint}
+        />
+      );
+    },
+  };
+  return <ResponsiveLine {...chartProps} width={width} height={height} />;
 };
 
 export default LinearChart;

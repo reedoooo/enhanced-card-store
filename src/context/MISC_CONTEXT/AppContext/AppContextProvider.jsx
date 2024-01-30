@@ -1,5 +1,5 @@
 // CombinedContext.js
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { DeckContext } from '../../MAIN_CONTEXT/DeckContext/DeckContext';
 import { CartContext } from '../../MAIN_CONTEXT/CartContext/CartContext';
 import { CollectionContext } from '../../MAIN_CONTEXT/CollectionContext/CollectionContext';
@@ -13,9 +13,22 @@ export const AppContextProvider = ({ children }) => {
   const Deck = useContext(DeckContext);
   const Cart = useContext(CartContext);
   const Collection = useContext(CollectionContext);
-
+  const { selectedCollection } = Collection;
+  const { selectedDeck } = Deck;
+  const { cartData } = Cart;
+  const isCardInContext = useCallback(
+    (selectedCollection, selectedDeck, cartData, context, card) => {
+      const cardsList = {
+        Collection: selectedCollection?.cards,
+        Deck: selectedDeck?.cards,
+        Cart: cartData?.cart,
+      };
+      return !!cardsList[context]?.find((c) => c?.id === card?.id);
+    },
+    [context, selectedCollection, selectedDeck, cartData]
+  );
   // Combine the context values into one object
-  const appContextValues = { Deck, Cart, Collection };
+  const appContextValues = { Deck, Cart, Collection, isCardInContext };
 
   return (
     <AppContext.Provider value={appContextValues}>

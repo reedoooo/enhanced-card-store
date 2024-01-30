@@ -8,32 +8,6 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const { forms, handleChange, handleSubmit } = useFormContext();
   const profileValues = forms?.updateUserDataForm || {};
   const formType = 'updateUserDataForm';
-  // const [formData, setFormData] = useState({
-  //   userName: userName || '', // default to empty string if undefined
-  //   name: name || '',
-  //   age: age || '',
-  //   status: status || '',
-  // });
-  // const handleChange = (e) => {
-  //   setFormData({
-  //     ...formData,
-  //     [e.target.id]: e.target.value,
-  //   });
-  // };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   onSave(formData);
-  // };
-
-  // useEffect(() => {
-  //   setFormData({
-  //     userName: userName || '',
-  //     name: name || '',
-  //     age: age || '',
-  //     status: status || '',
-  //   });
-  // }, [userName, name, age, status]);
   const handleFormSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
     handleSubmit(formType)(event); // Pass the event to your form handler

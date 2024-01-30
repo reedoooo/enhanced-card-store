@@ -53,22 +53,6 @@ const useResponsiveStyles = (theme) => {
     marginTop: theme.spacing(4),
   });
 
-  const getHeaderStyle = (theme) => ({
-    fontWeight: 'bold',
-    color: theme.palette.text.primary,
-    marginBottom: theme.spacing(2),
-    // Correct media query syntax in JS object
-    '@media (maxWidth:599.95px)': {
-      fontSize: '1.25rem',
-    },
-    '@media (minWidth:600px) and (maxWidth:899.95px)': {
-      fontSize: '1.5rem',
-    },
-    '@media (minWidth:900px)': {
-      fontSize: '1.75rem',
-    },
-  });
-
   const getStyledGridStyle = (theme) => ({
     '@media (maxWidth:599.95px)': {
       margin: theme.spacing(0.5),
@@ -117,7 +101,7 @@ const useResponsiveStyles = (theme) => {
     getButtonTypographyVariant2,
     getIconForTitle,
     getProductGridContainerStyle,
-    getHeaderStyle,
+    // getHeaderStyle,
     getStyledGridStyle,
     getStyledGridItemStyle,
   };

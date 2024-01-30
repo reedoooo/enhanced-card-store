@@ -1,40 +1,67 @@
-import React from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  IconButton,
+  ButtonBase,
+  Avatar,
+  CardActions,
+  Button,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useMode, useSidebarContext } from '../../../context';
+import LogoSection from '../../headings/LogoSection';
 import MenuItemComponent from '../header/MenuItemComponent';
+import MenuIcon from '@mui/icons-material/Menu';
+
 import {
   StyledAppBar,
   StyledMenuItem,
   StyledToolbar,
 } from '../../../pages/pageStyles/StyledComponents';
-import { useMode } from '../../../context';
-import LogoSection from '../../MainLayout/LogoSection';
-import getMenuItemsData from '../header/menuItemsData';
-// import ProfilePage from '../../pages/ProfilePage';
-import {
-  ButtonBase,
-  Avatar,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-} from '@mui/material';
-
 const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
   const { theme } = useMode();
-  const menuItemsData = getMenuItemsData(isLoggedIn);
+  const navigate = useNavigate();
+  const { visibleItems, setVisibleItems, menuItems, baseMenuItems } =
+    useSidebarContext();
 
-  // confirm;
-  const renderMenuItems = () => {
-    return menuItemsData?.map((item, index) => (
-      <MenuItemComponent
+  useEffect(() => {
+    // Logic to set visibleItems
+    setVisibleItems(Array(menuItems.length).fill(false));
+    menuItems.forEach((_, index) => {
+      setTimeout(() => {
+        setVisibleItems((prev) => {
+          const newVisible = [...prev];
+          newVisible[index] = true;
+          return newVisible;
+        });
+      }, index * 100);
+    });
+  }, [menuItems.length, setVisibleItems]);
+
+  const renderMenuItems = () =>
+    menuItems.map((item, index) => (
+      <StyledMenuItem
         key={`${item.name}-topbar-item-${index}`}
-        item={item}
         onClick={handleDrawer}
-      />
+        style={{
+          opacity: visibleItems[index] ? 1 : 0,
+          transform: visibleItems[index]
+            ? 'translateY(0)'
+            : 'translateY(-20px)',
+          transition: 'opacity 0.3s ease, transform 0.3s ease',
+          transitionDelay: `${index * 0.1}s`,
+        }}
+      >
+        <MenuItemComponent item={item} />
+      </StyledMenuItem>
     ));
-  };
+
   return (
-    <StyledAppBar position="relative" theme={theme}>
+    <StyledAppBar
+      position="relative"
+      theme={theme}
+      sx={{ zIndex: theme.zIndex.drawer + 1 }}
+    >
       <StyledToolbar position="relative" theme={theme} disableGutters>
         {isMobileView ? (
           <Box
@@ -44,41 +71,25 @@ const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
               justifyContent: 'space-between',
             }}
           >
-            {/* logo section */}
-            <StyledMenuItem theme={theme}>
-              <LogoSection />
-            </StyledMenuItem>
-            {renderMenuItems()}
-            {/* <ProfilePage /> */}
-            <StyledMenuItem theme={theme}>
-              <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
-                <Avatar
-                  onClick={handleDrawer}
-                  variant="rounded"
-                  // sx={theme.typography.commonAvatar}
-                  sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
-                />
-              </ButtonBase>
-            </StyledMenuItem>
-            {/* Notification and Profile Sections */}
-            {/* <ProfileSection /> */}
-            {/* Menu icon */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={handleDrawer}
-                size="large"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-              >
-                <MenuIcon />
-              </IconButton>
-            </Box>
+            {/* {renderMenuItems()} */}
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleDrawer}
+              size="large"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              sx={{
+                px: 1,
+                mx: 1,
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <LogoSection />
           </Box>
         ) : (
-          // Desktop components
           <Box
             sx={{
               display: 'flex',
@@ -88,108 +99,12 @@ const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
               justifyContent: 'space-between',
             }}
           >
-            <StyledMenuItem theme={theme}>
-              <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
-                <Avatar
-                  onClick={handleDrawer}
-                  variant="rounded"
-                  // sx={theme.typography.commonAvatar}
-                  sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
-                />
-              </ButtonBase>
-            </StyledMenuItem>
-            {/* <StyledMenuItem theme={theme}>
-              <LogoSection />
-            </StyledMenuItem> */}
             {renderMenuItems()}
-            {/* Notification and Profile Sections */}
-            {/* <ProfileSection /> */}
           </Box>
         )}
-        {/* Common components */}
-        {/* <IconButton
-          edge="end"
-          color="inherit"
-          aria-label={isLoggedIn ? 'logout' : 'login'}
-          onClick={logout}
-        >
-          {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-        </IconButton> */}
-        {/* Notification and Profile Sections */}
-        {/* <ProfileSection /> */}
       </StyledToolbar>
     </StyledAppBar>
   );
 };
 
 export default TopBar;
-// // TopBar.jsx
-// import React from 'react';
-// import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
-// import LogoutIcon from '@mui/icons-material/Logout';
-// import LoginIcon from '@mui/icons-material/Login';
-// import MenuItemComponent from '../header/MenuItemComponent';
-// import {
-//   StyledAppBar,
-//   StyledToolbar,
-// } from '../../../pages/pageStyles/StyledComponents';
-// import { useMode } from '../../../context';
-
-// const TopBar = ({
-//   handleDrawer,
-//   isMobileView,
-//   isLoggedIn,
-//   handleLogout,
-//   menuItemsData,
-// }) => {
-//   const { theme } = useMode();
-
-//   const handleUserIconClick = () => {
-//     if (isLoggedIn) {
-//       handleLogout();
-//     } else {
-//       handleDrawer();
-//     }
-//   };
-
-//   return (
-//     <StyledAppBar position="relative" theme={theme}>
-//       <StyledToolbar theme={theme}>
-//         {isMobileView ? (
-//           <>
-//             <IconButton
-//               edge="start"
-//               color="inherit"
-//               aria-label="menu"
-//               onClick={handleDrawer}
-//             >
-//               <MenuIcon />
-//             </IconButton>
-//             <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-//               ReedVogt.com
-//             </Typography>
-//           </>
-//         ) : (
-//           menuItemsData?.map((item) => (
-//             <MenuItemComponent
-//               key={item.name}
-//               item={item}
-//               onClick={handleDrawer}
-//             />
-//           ))
-//         )}
-//         <IconButton
-//           edge="end"
-//           color="inherit"
-//           aria-label={isLoggedIn ? 'logout' : 'login'}
-//           onClick={handleUserIconClick}
-//         >
-//           {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-//         </IconButton>
-//       </StyledToolbar>
-//     </StyledAppBar>
-//   );
-// };
-
-// export default TopBar;

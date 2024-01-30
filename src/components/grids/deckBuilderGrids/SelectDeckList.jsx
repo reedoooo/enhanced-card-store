@@ -2,11 +2,11 @@ import React from 'react';
 import { Grid, Chip, Typography } from '@mui/material';
 import DeckBuilderIcon from '../../reusable/icons/DeckBuilderIcon';
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useTheme } from 'styled-components';
+import { useMode } from '../../../context';
 
 const SelectDeckList = ({ handleSelectDeck }) => {
   const { allDecks } = useDeckStore();
-  const theme = useTheme();
+  const { theme } = useMode();
 
   return (
     <Grid container spacing={2}>

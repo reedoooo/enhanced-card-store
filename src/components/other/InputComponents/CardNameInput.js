@@ -4,10 +4,6 @@ import { useCardStore } from '../../../context/CardContext/CardStore';
 
 const CardNameInput = ({ value, setValue, handleChange }) => {
   const { handleRequest } = useCardStore();
-
-  // const handleChange = (event) => {
-  //   setValue(event.target.value);
-  // };
   return (
     <Input
       fullWidth

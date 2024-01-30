@@ -10,6 +10,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
         justifyContent: 'space-around', // Distributes space evenly
         alignItems: 'center',
         width: '100%',

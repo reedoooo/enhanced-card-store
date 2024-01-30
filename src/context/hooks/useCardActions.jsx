@@ -13,56 +13,64 @@ export const useCardActions = (
   addOneToCart,
   removeOneFromCart,
   onSuccess,
-  onFailure
+  onFailure,
+  page
 ) => {
   // console.log('CARD:', card);
-  const { count, increment, decrement } = useCounter(card, context);
+  // const { count, increment, decrement } = useCounter(card, context);
+  const { data, increment, decrement } = useCounter(card, context, {
+    max: page === 'DeckBuilder' ? 3 : undefined, // Limit to 3 for Deck context
+  });
   const logQuantityChange = (action) => {
     console.log(
       `Action: ${action} - Card:`,
       card?.name,
-      `Initial Quantity: ${card?.quantity}, New Quantity: ${count}`
+      `Initial Quantity: ${card?.quantity}, New Quantity: ${data?.quantity}`
     );
   };
   const performAction = useCallback(
     (action) => {
+      // Increment or decrement based on the action
+      const updateQuantity = (actionType) => {
+        actionType === 'add' ? increment(card.id) : decrement(card.id);
+      };
+
       // Action functions for different contexts
       const actionFunctions = {
         Collection: {
           add: () => {
-            increment();
-            addOneToCollection(card, selectedCollection);
+            updateQuantity('add');
+            addOneToCollection(data, selectedCollection);
           },
           remove: () => {
-            decrement();
-            removeOneFromCollection(card, card?.id, selectedCollection);
+            updateQuantity('remove');
+            removeOneFromCollection(data, data?.id, selectedCollection);
           },
         },
         Deck: {
           add: () => {
-            increment();
-            addOneToDeck(card, selectedDeck);
+            updateQuantity('add');
+            addOneToDeck(data, selectedDeck);
           },
           remove: () => {
-            decrement();
-            removeOneFromDeck(card, selectedDeck);
+            updateQuantity('remove');
+            removeOneFromDeck(data, selectedDeck);
           },
         },
         Cart: {
           add: () => {
-            increment();
-            addOneToCart(card);
+            updateQuantity('add');
+            addOneToCart(data);
           },
           remove: () => {
-            decrement();
-            removeOneFromCart(card);
+            updateQuantity('remove');
+            removeOneFromCart(data);
           },
         },
       };
 
       try {
         actionFunctions[context][action]?.();
-        logQuantityChange(action);
         onSuccess?.();
       } catch (error) {
         onFailure?.(error);
@@ -87,7 +95,7 @@ export const useCardActions = (
   );
 
   return {
-    count,
+    count: data.quantity,
     performAction,
   };
 };

@@ -12,29 +12,6 @@ import {
 } from '../../../pages/pageStyles/StyledComponents';
 import { useMode } from '../../../context';
 
-// const StyledFormControl = styled(FormControl)(({ theme }) => ({
-//   margin: theme.spacing(1, 0),
-//   backgroundColor: theme.palette.backgroundA.lightest, // Adjusted for a slight contrast
-//   borderRadius: theme.shape.borderRadius,
-//   boxShadow: theme.shadows[1], // Subtle shadow for depth
-
-//   '& .MuiFilledInput-root': {
-//     borderRadius: theme.shape.borderRadius,
-//     '&:hover': {
-//       backgroundColor: theme.palette.action.hover,
-//     },
-//     '&.Mui-focused': {
-//       backgroundColor: theme.palette.backgroundA.lightest,
-//       borderColor: theme.palette.backgroundA.dark,
-//     },
-//   },
-// }));
-
-// const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-//   fontWeight: 'bold', // Making label text bold
-//   color: theme.palette.backgroundB.dark,
-// }));
-
 const CustomSelector = ({ label, name, value, handleChange, values }) => {
   const defaultValue = value || 'Unset';
 

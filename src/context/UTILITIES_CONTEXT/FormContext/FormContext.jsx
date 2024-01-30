@@ -82,6 +82,16 @@ export const FormProvider = ({ children }) => {
       setFormErrors({ ...formErrors, [formName]: newErrors });
     }
   };
+  // !--------------------------------
+  // TODO: integrate functionaltity below
+  // // Search input value state
+  // const [search, setSearch] = useState(globalFilter);
+
+  // // Search input state handle
+  // const onSearchChange = useAsyncDebounce((value) => {
+  //   setGlobalFilter(value || undefined);
+  // }, 100);
+  // !----------------------
   // const handleChange = (formName, path) => (event) => {
   //   const { value } = event.target;
   //   setForms((prevForms) => {
@@ -169,14 +179,14 @@ export const FormProvider = ({ children }) => {
     setIsFormDataLoading(false); // indicate form submission is done
   };
 
-  useEffect(() => {
-    if (initialFormStates?.searchForm?.searchTerm) {
-      const limitedCards = handleRequest(
-        initialFormStates?.searchForm?.searchTerm
-      );
-      setLimitedCards(limitedCards);
-    }
-  }, [returnDisplay]);
+  // useEffect(() => {
+  //   if (initialFormStates?.searchForm?.searchTerm) {
+  //     const limitedCards = handleRequest(
+  //       initialFormStates?.searchForm?.searchTerm
+  //     );
+  //     setLimitedCards(limitedCards);
+  //   }
+  // }, [returnDisplay]);
 
   // Provide each form's data, handleChange, and handleSubmit through context
   const contextValue = {

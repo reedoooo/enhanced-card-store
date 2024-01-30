@@ -1,17 +1,8 @@
 // SearchForm.jsx
 import React from 'react';
-import {
-  TextField,
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-} from '@mui/material';
-import { styled } from '@mui/system';
-
-const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  minWidth: 120,
-}));
+import { TextField, MenuItem, Select, InputLabel } from '@mui/material';
+import { StyledFormControl } from '../../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../../context';
 
 const SearchFormB = ({
   searchSettings,
@@ -19,6 +10,7 @@ const SearchFormB = ({
   handleSearchBy,
   handleSortBy,
 }) => {
+  const { theme } = useMode();
   return (
     <>
       <TextField
@@ -29,7 +21,7 @@ const SearchFormB = ({
         onChange={handleSearch}
         placeholder="Search"
       />
-      <StyledFormControl fullWidth>
+      <StyledFormControl fullWidth theme={theme}>
         <InputLabel>Search by</InputLabel>
         <Select
           value={searchSettings.searchBy}

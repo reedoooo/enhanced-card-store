@@ -9,9 +9,6 @@ const CollectionStatisticsSelector = () => {
     useStatisticsStore();
 
   const handleChange = (event) => setSelectedStat(event.target.value);
-
-  const specificCollectionStats =
-    statsByCollectionId[selectedCollection?._id] || {};
   const styles = {
     container: {
       padding: '15px',
@@ -63,7 +60,7 @@ const CollectionStatisticsSelector = () => {
                 title={
                   selectedStat.charAt(0).toUpperCase() + selectedStat.slice(1)
                 }
-                value={specificCollectionStats[selectedStat]}
+                value={statsByCollectionId[selectedStat]}
               />
             </Container>
           </Grid>

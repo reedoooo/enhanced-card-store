@@ -22,7 +22,6 @@ const DeckListToggle = ({
         theme={theme}
         onClick={() => setShowAllDecks(!showAllDecks)}
         variant="contained"
-        // color="primary"
       >
         <AppsIcon sx={{ mr: 1 }} />
         {showAllDecks ? 'Hide Decks' : 'Show All Decks'}

@@ -10,10 +10,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  ButtonGroup,
 } from '@mui/material';
 import {
   AddCircleOutlineOutlined,
   RemoveCircleOutlineOutlined,
+  MoreVert,
 } from '@mui/icons-material';
 import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
@@ -21,6 +23,8 @@ import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartCont
 import { useSelectionDialog } from '../../../context/hooks/useSelectionDialog';
 import { useCardActions } from '../../../context/hooks/useCardActions';
 import { useMode } from '../../../context';
+import { useAppContext } from '../../../context';
+import LoadingButton from '@mui/lab/LoadingButton';
 const GenericActionButtons = ({
   card,
   context,
@@ -30,8 +34,16 @@ const GenericActionButtons = ({
   onFailure,
   page,
 }) => {
+  const [isLoadingApiResponse, setIsLoadingApiResponse] = React.useState(false);
   const { closeModal, isModalOpen, setModalOpen } = useModalContext();
+  const { isCardInContext } = useAppContext();
   const { theme } = useMode();
+  const { getButtonTypographyVariant2, getButtonTypographyVariant } =
+    theme.responsiveStyles;
+  const { isXSmall, isSmall, isMedium, isLarge, isXLarge, isMdUp, isMdDown } =
+    theme.responsiveStyles;
+  const { addButton, removeButton, actionRow, circleButtonContainer } =
+    theme.genericButtonStyles;
   const {
     addOneToCollection,
     removeOneFromCollection,
@@ -47,7 +59,6 @@ const GenericActionButtons = ({
     setSelectedDeck,
   } = useDeckStore();
   const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
-  // Auto-select first deck or collection if none is selected
   useEffect(() => {
     if (context === 'Deck' && !selectedDeck && allDecks.length > 0) {
       console.warn('No deck selected. Defaulting to first deck.');
@@ -70,11 +81,6 @@ const GenericActionButtons = ({
     setSelectedDeck,
     setSelectedCollection,
   ]);
-
-  const { getButtonTypographyVariant2, getButtonTypographyVariant } =
-    theme.responsiveStyles;
-  const { addButton, removeButton, actionRow, circleButtonContainer } =
-    theme.genericButtonStyles;
   const { performAction, count } = useCardActions(
     context,
     card,
@@ -87,16 +93,14 @@ const GenericActionButtons = ({
     addOneToCart,
     removeOneFromCart,
     onSuccess,
-    onFailure
+    onFailure,
+    page
   );
-  const handleAddCard = () => {
+  const handleActionClick = (action) => {
+    console.log('SET LOADING FOR ', action);
+    setIsLoadingApiResponse(true);
     onClick?.();
-    performAction('add');
-    closeModal?.();
-  };
-  const handleRemoveCard = () => {
-    onClick?.();
-    performAction('remove');
+    performAction(action);
     closeModal?.();
   };
   const {
@@ -112,14 +116,24 @@ const GenericActionButtons = ({
     allCollections,
     allDecks
   );
-  const isCardInContext = useCallback(() => {
-    const cardsList = {
-      Collection: selectedCollection?.cards,
-      Deck: selectedDeck?.cards,
-      Cart: cartData?.cart,
-    };
-    return !!cardsList[context]?.find((c) => c?.id === card?.id);
-  }, [context, card.id, selectedCollection, selectedDeck, cartData]);
+  // const getButtonLabel = () => {
+  //   if (isModalOpen && !theme.responsiveStyles.isLarge(theme.breakpoints)) {
+  //     return `${context}`;
+  //   }
+  //   return `Add to ${context}`;
+  // };
+  // RESPONSIVE BUTTON ACTIONS CONTAINER USING WINDOW SIZE
+  // const getButtonSize = () => {
+  //   const isSm = theme.breakpoints.down('sm');
+  //   const isMd = theme.breakpoints.between('md', 'lg');
+  //   const isLgOrGreater = theme.breakpoints.up('lg');
+
+  //   if (isSm) return 'small';
+  //   if (isMd) return 'medium';
+  //   if (isLgOrGreater) return 'large'; // For large and greater sizes
+  // };
+  // const buttonSize = getButtonSize();
+
   const renderSelectionDialog = () => (
     <Dialog open={selectDialogOpen} onClose={() => setSelectDialogOpen(false)}>
       <DialogTitle>Select {context}</DialogTitle>
@@ -132,13 +146,65 @@ const GenericActionButtons = ({
       </DialogContent>
     </Dialog>
   );
-  const getButtonLabel = () => {
-    if (isModalOpen && !theme.responsiveStyles.isLarge(theme.breakpoints)) {
-      return `${context}`;
-    }
-    return `Add to ${context}`;
-  };
+  const getButtonLabel = () =>
+    isModalOpen && !theme.breakpoints.up('lg')
+      ? `${context}`
+      : `Add to ${context}`;
 
+  // Define button sizes based on breakpoints
+  const buttonSize = theme.breakpoints.down('sm')
+    ? 'small'
+    : theme.breakpoints.between('md', 'lg')
+      ? 'medium'
+      : 'large';
+
+  const renderCircleButtons = () => (
+    <ButtonGroup variant="contained" fullWidth>
+      <LoadingButton
+        size={buttonSize}
+        loading={isLoadingApiResponse}
+        onClick={() => handleActionClick('add')}
+        startIcon={<AddCircleOutlineOutlined />}
+        sx={addButton}
+      >
+        Add
+      </LoadingButton>
+      <LoadingButton
+        size={buttonSize}
+        loading={isLoadingApiResponse}
+        onClick={() => handleActionClick('remove')}
+        startIcon={<RemoveCircleOutlineOutlined />}
+        sx={removeButton}
+      >
+        Remove
+      </LoadingButton>
+    </ButtonGroup>
+  );
+
+  const renderFullWidthAddButton = () => (
+    <Button
+      fullWidth
+      variant="contained"
+      color="secondary"
+      onClick={() => handleActionClick('add')}
+      startIcon={<AddCircleOutlineOutlined />}
+      sx={{
+        ...theme.responsiveStyles.getButtonTypographyVariant2(
+          theme.breakpoints
+        ),
+        ...theme.genericButtonStyles.addButton,
+      }}
+    >
+      {getButtonLabel()}
+    </Button>
+  );
+
+  const renderButtons = () => {
+    if (isCardInContext(context)) {
+      return renderCircleButtons();
+    }
+    return renderFullWidthAddButton();
+  };
   return (
     <React.Fragment>
       {renderSelectionDialog()}
@@ -146,87 +212,14 @@ const GenericActionButtons = ({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center', // Center align the buttons
-          alignItems: 'center', // Center align the buttons
-          gap: 1, // Add a small gap between buttons
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 1,
           flexGrow: 1,
         }}
       >
-        <CardActions
-          sx={{
-            alignSelf: 'center',
-            flexGrow: 1,
-            width: '100%',
-            ...theme.responsiveStyles.getStyledGridItemStyle,
-          }}
-        >
-          {isCardInContext(context) ? (
-            <Box sx={circleButtonContainer}>
-              <Grid
-                container
-                spacing={2.5}
-                alignItems="center"
-                sx={{
-                  flexGrow: 1,
-                }}
-              >
-                <Grid item xs={4.5} sm={4} md={4} lg={4.5} xl={4}>
-                  <Typography
-                    variant={getButtonTypographyVariant2(theme.breakpoints)}
-                    sx={{
-                      flexGrow: 1,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {`${context}`}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4.5} sm={4} md={4} lg={4.5} xl={4}>
-                  <Typography
-                    variant={getButtonTypographyVariant2(theme.breakpoints)}
-                    sx={{
-                      flexGrow: 1,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {`${count || 0}`}
-                  </Typography>
-                </Grid>
-                {/* <Grid item xs={0.5} sm={0.5} md={0} lg={0} xl={0}></Grid> */}
-                <Grid item xs={3.75} sm={4} md={3.5} lg={3.5} xl={4}>
-                  <IconButton onClick={handleAddCard} sx={addButton}>
-                    <AddCircleOutlineOutlined />
-                  </IconButton>
-                </Grid>
-                <Grid item xs={3.75} sm={4} md={3.5} lg={3.5} xl={4}>
-                  <IconButton onClick={handleRemoveCard} sx={removeButton}>
-                    <RemoveCircleOutlineOutlined />
-                  </IconButton>
-                </Grid>
-                {/* <Grid item xs={3} sm={3} md={3} lg={2} xl={2}></Grid> */}
-              </Grid>
-            </Box>
-          ) : (
-            <Button
-              fullWidth
-              variant="contained"
-              color="secondary"
-              onClick={handleAddCard}
-              startIcon={<AddCircleOutlineOutlined />}
-              sx={{
-                ...theme.responsiveStyles.getButtonTypographyVariant2(
-                  theme.breakpoints
-                ),
-                ...theme.genericButtonStyles.addButton,
-              }}
-            >
-              <Typography
-                variant={getButtonTypographyVariant(theme.breakpoints)}
-              >
-                {getButtonLabel()}
-              </Typography>
-            </Button>
-          )}
+        <CardActions sx={{ alignSelf: 'center', flexGrow: 1, width: '100%' }}>
+          {renderButtons()}
         </CardActions>
       </Box>
     </React.Fragment>

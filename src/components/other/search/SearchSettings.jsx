@@ -1,9 +1,9 @@
 // SearchSettings.jsx
 import React, { useState } from 'react';
 import { Paper, Box, Container, Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import SearchFormB from './SearchFormB'; // Ensure path is correct
 import { useMode } from '../../../context';
+import { SearchSettingsBox } from '../../../pages/pageStyles/StyledComponents';
 
 export const commonPaperStyles = (theme) => ({
   padding: theme.spacing(3),
@@ -17,12 +17,6 @@ export const commonPaperStyles = (theme) => ({
     boxShadow: theme.shadows[6],
   },
 });
-
-const SearchSettingsBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
-}));
 
 const SearchSettings = () => {
   const [searchSettings, setSearchSettings] = useState({
@@ -57,19 +51,6 @@ const SearchSettings = () => {
   return (
     <Paper elevation={3} sx={commonPaperStyles(theme)}>
       <Container>
-        {' '}
-        {/* <Typography
-          variant="h4"
-          align="center"
-          sx={{
-            mb: 3,
-            fontWeight: 'bold',
-            color: theme.palette.backgroundB.dark,
-            textTransform: 'uppercase',
-          }}
-        >
-          Search Settings
-        </Typography> */}
         <SearchSettingsBox theme={theme}>
           <SearchFormB
             searchSettings={searchSettings}

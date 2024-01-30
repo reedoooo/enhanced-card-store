@@ -6,28 +6,31 @@ import {
   getTickValues,
   getFilteredData,
   formatDateToString,
+  finalizeNivoData,
 } from './helpers';
+import { useCollectionStore } from '../CollectionContext/CollectionContext';
+import { defaultContextValue } from '../../constants';
 
-const ChartContext = createContext();
-
-export const useChartContext = () => {
-  const context = useContext(ChartContext);
-  if (!context) {
-    throw new Error('useChartContext must be used within a ChartProvider');
-  }
-  return context;
-};
+const ChartContext = createContext(defaultContextValue.CHART_CONTEXT);
 
 export const ChartProvider = ({ children }) => {
+  const { selectedCollection } = useCollectionStore();
   const [latestData, setLatestData] = useState(null);
-  const [timeRange, setTimeRange] = useState(86400000 || 24 * 60 * 60 * 1000); // Default to 24 hours
-
   const [timeRanges] = useState([
     { label: '2 hours', value: 720000 || 2 * 60 * 60 * 1000 },
     { label: '24 hours', value: 86400000 || 24 * 60 * 60 * 1000 },
     { label: '7 days', value: 604800000 || 7 * 24 * 60 * 60 * 1000 },
     { label: '1 month', value: 2592000000 || 30 * 24 * 60 * 60 * 1000 },
+    { label: '3 months', value: 7776000000 || 90 * 24 * 60 * 60 * 1000 },
+    { label: '6 months', value: 15552000000 || 180 * 24 * 60 * 60 * 1000 },
+    { label: '12 months', value: 31536000000 || 365 * 24 * 60 * 60 * 1000 },
   ]);
+  const [timeRange, setTimeRange] = useState(86400000 || 24 * 60 * 60 * 1000); // Default to 24 hours
+  const finalizedNivoData = useMemo(() => {
+    if (selectedCollection.nivoChartData) {
+      return finalizeNivoData(selectedCollection?.nivoChartData);
+    }
+  }, [latestData]);
 
   const currentValue = timeRanges.find((option) => option.value === timeRange);
 
@@ -54,6 +57,18 @@ export const ChartProvider = ({ children }) => {
         format = '%b %d';
         ticks = 'every 3 days';
         break;
+      case '3 months':
+        format = '%b %d';
+        ticks = 'every week';
+        break;
+      case '6 months':
+        format = '%b %d';
+        ticks = 'every week';
+        break;
+      case '12 months':
+        format = '%b %d';
+        ticks = 'every month';
+        break;
       default:
         format = '%b %d';
         ticks = 'every day';
@@ -61,28 +76,53 @@ export const ChartProvider = ({ children }) => {
     return { tickValues: ticks, xFormat: `time:${format}` };
   }, [timeRange]);
 
-  return (
-    <ChartContext.Provider
-      value={{
-        currentValue,
-        latestData,
-        timeRange,
-        timeRanges,
-        tickValues,
-        xFormat,
+  const contextValue = useMemo(
+    () => ({
+      currentValue,
+      latestData,
+      timeRange,
+      timeRanges,
+      tickValues,
+      xFormat,
+      finalizedNivoData,
+      nivoChartData: selectedCollection?.nivoChartData,
+      muiChartData: selectedCollection?.muiChartData,
 
-        groupAndAverageData,
-        convertDataForNivo2,
-        // getUniqueValidData,
-        getTickValues,
-        getFilteredData,
-        formatDateToString,
-        setTimeRange,
-        setLatestData,
-        handleChange,
-      }}
-    >
+      finalizeNivoData,
+      groupAndAverageData,
+      convertDataForNivo2,
+      // getUniqueValidData,
+      getTickValues,
+      getFilteredData,
+      formatDateToString,
+      setTimeRange,
+      setLatestData,
+      handleChange,
+    }),
+    [
+      latestData,
+      setLatestData,
+      timeRange,
+      setTimeRange,
+      timeRanges,
+      currentValue,
+      handleChange,
+      tickValues,
+      xFormat,
+      finalizedNivoData,
+    ]
+  );
+  return (
+    <ChartContext.Provider value={contextValue}>
       {children}
     </ChartContext.Provider>
   );
+};
+
+export const useChartContext = () => {
+  const context = useContext(ChartContext);
+  if (!context) {
+    throw new Error('useChartContext must be used within a ChartProvider');
+  }
+  return context;
 };

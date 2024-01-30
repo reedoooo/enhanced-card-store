@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import React from 'react';
+import { Typography } from '@mui/material';
 import { useUserContext } from '../../context/UserContext/UserContext';
 import { usePageContext } from '../../context/PageContext/PageContext';
-import { useTheme } from 'styled-components';
-import { useSpring, animated } from 'react-spring';
-import { PageLayout, PageHeader, PageContent } from '../../layout';
-import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
-import ErrorIndicator from '../../components/reusable/indicators/ErrorIndicator';
-import ThemeToggleButton from '../../components/reusable/buttons/ThemeToggleButton';
+import { PageHeader, PageContent } from '../../layout';
 import { FormWrapper, StyledTextField, StyledButton } from './styled';
 import { useFormContext, useMode } from '../../context';
 
 const EditUserProfileForm = () => {
   const { theme } = useMode();
-  // const { user } = useAuthContext();
   const { user, fetchUserData } = useUserContext();
   const userId = user?.id;
   const { isPageLoading, setIsPageLoading, setPageError } = usePageContext();
@@ -26,28 +19,8 @@ const EditUserProfileForm = () => {
     event.preventDefault();
     handleSubmit('updateUserDataForm');
   };
-  // useEffect(() => {
-  //   if (!userId) return;
-
-  //   const initializeUser = async () => {
-  //     setIsPageLoading(true);
-  //     try {
-  //       if (!user || Object.keys(user).length === 0) {
-  //         await fetchUserData();
-  //       }
-  //     } catch (e) {
-  //       setPageError(e);
-  //     } finally {
-  //       setIsPageLoading(false);
-  //     }
-  //   };
-
-  //   initializeUser();
-  // }, [userId]);
-
   return (
     <>
-      {/* <PageLayout> */}
       <PageHeader>
         <Typography variant="h4" color="primary">
           Edit User Settings
@@ -107,7 +80,6 @@ const EditUserProfileForm = () => {
           </StyledButton>
         </FormWrapper>
       </PageContent>
-      {/* </PageLayout> */}
     </>
   );
 };

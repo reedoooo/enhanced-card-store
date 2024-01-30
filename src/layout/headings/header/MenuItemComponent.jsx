@@ -5,29 +5,38 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Grow,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useMode } from '../../../context';
 import { StyledMenuItem } from '../../../pages/pageStyles/StyledComponents';
+import { useSpring, animated } from 'react-spring';
 
 const MenuItemComponent = ({ item, onClick }) => {
   const { theme } = useMode();
   const navigate = useNavigate();
-  const { icon, to, name } = item;
+
+  const itemAnimation = useSpring({
+    from: { transform: 'scale(0)' },
+    to: { transform: 'scale(1)' },
+    delay: 200,
+  });
 
   const handleClick = () => {
-    navigate(to); // Navigate to the desired path
-    // onClick(); // Perform any additional onClick logic (like closing the drawer)
+    navigate(item.to);
+    if (onClick) onClick();
   };
 
   return (
-    <StyledMenuItem onClick={handleClick} theme={theme}>
-      <ListItemIcon>{icon}</ListItemIcon>
-      <ListItemText
-        disableTypography
-        primary={<Typography variant="body1">{name}</Typography>}
-      />
-    </StyledMenuItem>
+    <animated.div style={itemAnimation}>
+      <StyledMenuItem onClick={handleClick} theme={theme}>
+        <ListItemIcon>{item.icon}</ListItemIcon>
+        <ListItemText
+          disableTypography
+          primary={<Typography variant="body1">{item.name}</Typography>}
+        />
+      </StyledMenuItem>
+    </animated.div>
   );
 };
 

@@ -7,27 +7,24 @@ import {
   ListItemText,
   Box,
   IconButton,
+  Typography,
+  ListItemButton,
+  Collapse,
 } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
 import MenuItemComponent from '../header/MenuItemComponent';
-import { useMode } from '../../../context';
+import { useMode, useSidebarContext } from '../../../context';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { BrowserView, MobileView } from 'react-device-detect';
 import {
   DrawerHeader,
-  // StyledListItem,
-  StyledListItemButton,
-  StyledListItemIcon,
   StyledSwipeableDrawer,
 } from '../../../pages/pageStyles/StyledComponents';
 import { StyledBox } from '../../../components/forms/styled';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
 const SideBar = ({
-  isLoggedIn,
   handleLogout,
   handleDrawer,
   isOpen,
@@ -35,6 +32,14 @@ const SideBar = ({
   menuItemsData,
 }) => {
   const { theme } = useMode();
+  const {
+    open,
+    setOpen,
+    handleCollapse,
+    isLoggedIn,
+    menuItems,
+    baseMenuItems,
+  } = useSidebarContext();
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -62,7 +67,7 @@ const SideBar = ({
         theme={theme}
       >
         <StyledBox role="presentation" onClick={handleDrawer} theme={theme}>
-          <DrawerHeader theme={theme}>
+          <DrawerHeader theme={theme} sx={{ flex: '0 0 20%' }}>
             <IconButton>
               {theme.direction === 'ltr' ? (
                 <ChevronLeftIcon />
@@ -70,34 +75,46 @@ const SideBar = ({
                 <ChevronRightIcon />
               )}
             </IconButton>
-          </DrawerHeader>
-          <Divider />
-          {/* THIS RENDERS THE VERTICAL MENU ITEMS */}
-          <List>
-            {renderMenuItems()}
-            {/* {menuItemsData?.map((item) => (
-              <>
-                {/* <StyledListItem key={item.name} theme={theme}> */}
-            {/* <MenuItemComponent
-                  key={item.name}
-                  name={item.name}
-                  item={item}
-                /> */}
-            {/* </StyledListItem> */}
-            {/* </> */}
-            <Divider />
-            {/* <StyledListItem
-              theme={theme}
-              onClick={isLoggedIn ? handleLogout : () => {}}
+            <Box
+              className="sidebar-top"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '80%',
+                borderBottom: 1,
+                borderColor: 'divider',
+                p: 1,
+                mb: 1,
+              }}
             >
-              <StyledListItemButton theme={theme}>
-                <StyledListItemIcon theme={theme}>
-                  {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-                </StyledListItemIcon>
-                <ListItemText primary={isLoggedIn ? 'Logout' : 'Login'} />
-              </StyledListItemButton>
-            </StyledListItem> */}
-          </List>
+              <i className="logo fab fa-sketch"></i>
+              <span className="brand">The App</span>
+            </Box>
+          </DrawerHeader>
+
+          <Divider />
+
+          {/* THIS RENDERS THE VERTICAL MENU ITEMS */}
+          <Box sx={{ flex: '1 0 70%', overflow: 'auto' }}>
+            <List>
+              <ListItemButton onClick={handleCollapse}>
+                <ListItemText primary="Collapsible Menu" />
+                {open ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                {renderMenuItems()}
+              </Collapse>
+              <Divider />
+            </List>
+          </Box>
+
+          <Divider />
+
+          {/* Footer Section */}
+          <Box sx={{ flex: '0 0 10%', textAlign: 'center' }}>
+            <Typography variant="caption">Footer Content</Typography>
+            {/* Footer Items */}
+          </Box>
         </StyledBox>
       </StyledSwipeableDrawer>
     </Hidden>

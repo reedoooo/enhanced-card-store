@@ -25,16 +25,7 @@ const SearchForm = ({
         background: theme.palette.backgroundB.lightest,
       }}
     >
-      <FormWrapper
-        onSubmit={handleSubmit}
-        theme={theme}
-        // sx={{
-        //   display: 'flex',
-        //   flexDirection: 'column',
-        //   gap: theme.spacing(2),
-        //   width: '100%',
-        // }}
-      >
+      <FormWrapper onSubmit={handleSubmit} theme={theme}>
         <StyledTextField
           value={searchTerm}
           onChange={handleChange}

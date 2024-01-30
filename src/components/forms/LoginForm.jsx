@@ -18,8 +18,6 @@ const LoginForm = () => {
   const signupMode = signupValues?.signupMode;
   const formType = signupMode ? 'signupForm' : 'loginForm';
   const valueType = signupMode ? signupValues : loginValues;
-
-  // Define the form submission handler
   const handleFormSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
     handleSubmit(formType)(event); // Pass the event to your form handler
@@ -27,7 +25,6 @@ const LoginForm = () => {
 
   return (
     <>
-      {/* Display loading indicator or error if form is in the loading or error state */}
       {loadingStatus?.isFormDataLoading && returnDisplay()}
 
       <FormWrapper onSubmit={handleFormSubmit}>

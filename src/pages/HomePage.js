@@ -10,6 +10,11 @@ import {
   useMediaQuery,
   Paper,
   Stack,
+  TextareaAutosize,
+  Skeleton,
+  Card,
+  Avatar,
+  Button,
 } from '@mui/material';
 import {
   ModalContext,
@@ -30,84 +35,153 @@ import {
 } from './pageStyles/StyledComponents';
 import { useSpring, animated } from 'react-spring';
 import SplashPage2 from './otherPages/SplashPage2';
-import pages from '../assets/pages.json';
+import pages from '../assets/data/pages.json';
 import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
-import { useCollectionStore, useMode, usePageContext } from '../context';
+import {
+  useAuthContext,
+  useCollectionStore,
+  useMode,
+  usePageContext,
+} from '../context';
 import CardChart from '../tests/CardChart';
 import useCardCronJob from '../tests/useCardCronJob';
 import useSkeletonRender from '../context/hooks/useSkeletonRender';
+import { AnimatedFeatureCard } from '../components/cards/AnimatedFeatureCard';
 
-const AnimatedBox = animated(Box);
+const getHomePageSkeletonConfigs = (tiers) => {
+  const { theme } = useMode();
+  const { tertiaryContent, secondaryContent, mainContentFeatureCard } =
+    theme.skeletonLayouts;
 
+  const homePageSkeletonConfigs = [
+    {
+      ...tertiaryContent,
+      skeletons: [...tertiaryContent.baseSkeletons],
+    },
+    {
+      ...secondaryContent,
+      skeletons: [secondaryContent.baseSkeleton],
+    },
+    {
+      ...secondaryContent,
+      skeletons: [secondaryContent.baseSkeleton], // Assuming similar style for another secondary content
+    },
+    ...Array.from({ length: tiers.length }, () => ({
+      ...mainContentFeatureCard,
+      skeletons: [...mainContentFeatureCard.baseSkeletons],
+    })),
+  ];
+
+  return homePageSkeletonConfigs;
+};
+// Helper functions to centralize repeated logic
+const getTypographyProps = (variant, theme, breakpoints) => ({
+  component: variant,
+  variant: theme.responsiveStyles.getTypographyVariant(breakpoints),
+  align: 'center',
+  color: 'text.primary',
+  gutterBottom: true,
+  sx: {
+    fontWeight: 'bold',
+    marginBottom: '1rem',
+    fontSize: '2.5rem',
+    lineHeight: '1.2',
+    letterSpacing: 'normal',
+  },
+});
+const getGridItemProps = (title) => ({
+  xs: 12,
+  sm: 12,
+  md: title === 'Enterprise' ? 12 : 4,
+  style: { display: 'flex' },
+});
+// export const AnimatedFeatureCard = ({ tier, onOpenModal, theme }) => {
+//   const [tiltAnimation, api] = useSpring(() => ({
+//     transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
+//   }));
+
+//   const handleMouseEnter = () =>
+//     api.start({
+//       transform: 'perspective(600px) rotateX(5deg) rotateY(5deg) scale(1.05)',
+//     });
+//   const handleMouseLeave = () =>
+//     api.start({
+//       transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
+//     });
+//   return (
+//     <AnimatedBox
+//       style={tiltAnimation}
+//       onMouseEnter={handleMouseEnter}
+//       onMouseLeave={handleMouseLeave}
+//       sx={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         flexGrow: 1,
+//         height: '100%',
+//         width: '100%',
+//       }}
+//     >
+//       <FeatureCard
+//         theme={theme}
+//         sx={{
+//           display: 'flex',
+//           flexDirection: 'column',
+//           height: '100%',
+//         }}
+//       >
+//         <CardHeader
+//           title={tier.title}
+//           subheader={tier.subheader}
+//           titleTypographyProps={{ align: 'center' }}
+//           subheaderTypographyProps={{ align: 'center' }}
+//           sx={{ backgroundColor: theme.palette.backgroundA.dark }}
+//         />
+//         <CardContent>
+//           <CardUnorderedList>
+//             {tier.description.map((line, index) => (
+//               <CardListItem key={index} theme={theme}>
+//                 {line}
+//               </CardListItem>
+//             ))}
+//           </CardUnorderedList>
+//         </CardContent>
+//         <CardActions sx={{ alignSelf: 'end' }}>
+//           <ActionButton
+//             fullWidth
+//             variant="contained"
+//             theme={theme}
+//             onClick={() => onOpenModal(tier.title)}
+//           >
+//             {tier.buttonText}
+//           </ActionButton>
+//         </CardActions>
+//       </FeatureCard>
+//     </AnimatedBox>
+//   );
+// };
 const HomePage = () => {
   const { theme } = useMode();
-  const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
-  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
-  const { allCollections } = useCollectionStore();
+  const breakpoints = theme.breakpoints;
+  const isSmUp = useMediaQuery(breakpoints.up('sm'));
+  const isMdUp = useMediaQuery(breakpoints.up('md'));
+  const isLgUp = useMediaQuery(breakpoints.up('lg'));
+  const { homeCardStyles, homeTypographyStyles } = theme.pageStyles;
+  const { authUser } = useAuthContext();
+  const { allCollections, selectedCollection } = useCollectionStore();
   const isDataLoaded = allCollections && allCollections.length > 0;
+  const { tiers, introText } = pages;
 
   const initialCardData = isDataLoaded ? allCollections[0].cards[0] : null;
   const { cardData } = useCardCronJob(initialCardData);
   const { loadingStatus } = usePageContext();
-  const { isModalOpen, modalContent } = useContext(ModalContext);
-  const { selectedCollection } = useCollectionStore();
-  const { allFeatureData, showDetailsModal, detailsModalShow } =
-    useModalContext();
-  const { tiers, introText } = pages;
-  // const { getTypographyVariant, getIconForTitle } = useResponsiveStyles(theme);
-  const { getTypographyVariant, getIconForTitle, getIconForTitle2 } =
-    theme.responsiveStyles;
-
-  const homePageSkeletonConfigs = [
-    {
-      // Tertiary Content Skeletons
-      xs: 12,
-      sm: 12,
-      md: 12,
-      gap: 3,
-      skeletons: [
-        { variant: 'rectangular', height: 60 }, // Main title skeleton
-        { variant: 'text', width: '80%' }, // Description text skeletons
-        { variant: 'text', width: '70%' },
-        { variant: 'text', width: '60%' },
-      ],
-    },
-    {
-      // Secondary Content Skeletons
-      xs: 12,
-      sm: 6,
-      md: 6,
-      gap: 2,
-      skeletons: [
-        { variant: 'rectangular', height: 200 }, // Card animation skeleton
-      ],
-    },
-    {
-      xs: 12,
-      sm: 6,
-      md: 6,
-      gap: 2,
-      skeletons: [
-        { variant: 'rectangular', height: 200 }, // Chart component skeleton
-      ],
-    },
-    ...Array.from({ length: tiers.length }, () => ({
-      // Main Content Feature Card Skeletons
-      xs: 12,
-      sm: 12,
-      md: 4,
-      gap: 2,
-      skeletons: [
-        { variant: 'rectangular', height: 180 }, // Card image/header skeleton
-        { variant: 'text' }, // Text skeletons for card content
-        { variant: 'text' },
-        { variant: 'text' },
-      ],
-    })),
-  ];
-  const Skeletons = useSkeletonRender(homePageSkeletonConfigs);
-
+  const {
+    allFeatureData,
+    showDetailsModal,
+    detailsModalShow,
+    isModalOpen,
+    modalContent,
+  } = useModalContext();
+  const homePageSkeletonConfigs = getHomePageSkeletonConfigs(tiers);
   const handleOpenModal = (itemTitle) => {
     const selectedItem = allFeatureData.find(
       (item) => item.title === itemTitle
@@ -134,226 +208,137 @@ const HomePage = () => {
       <SplashPage2 />
     </div>
   );
-  // Function to render tertiary content
-  const renderTertiaryContent = () => (
-    <TertiaryContentContainer
-      // ref={splashRef}
-      theme={theme}
-      sx={{ padding: '20px', textAlign: 'center' }}
-    >
-      <HomePageBox
-        theme={theme}
-        sx={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}
-      >
-        <Typography
-          component="h1"
-          // variant={theme.responsiveStyles.getTypographyVariant(isMdUp)}
-          variant={theme.responsiveStyles.getTypographyVariant(
-            theme.breakpoints
-          )}
-          align="center"
-          color="text.primary"
-          gutterBottom
-          sx={{
-            fontWeight: 'bold',
-            marginBottom: '1rem',
-            fontSize: '2.5rem',
-            lineHeight: '1.2',
-            letterSpacing: 'normal',
-          }}
-        >
-          {introText.mainTitle}
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          color="text.secondary"
-          paragraph
-          sx={{
-            fontSize: '1.25rem',
-            lineHeight: '1.6',
-            margin: '0 auto',
-            maxWidth: '680px',
-            marginTop: '1rem',
-          }}
-        >
-          {introText.description}
-        </Typography>
-      </HomePageBox>
-    </TertiaryContentContainer>
-  );
-  // Function to render secondary content
-  const renderSecondaryContent = () => (
-    <SecondaryContentContainer theme={theme}>
-      <Paper
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mx: 'auto',
-          padding: theme.spacing(2),
-          background: theme.palette.backgroundC.dark,
-          maxWidth: isLgUp ? '100%' : '100%', // Adjust width based on screen size
-        }}
-      >
-        {isMdUp && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              // width: '100%',
-              maxWidth: '100%',
-              maxHeight: '100%',
-              padding: theme.spacing(2),
-            }}
-          >
-            {/* <Typography variant={isSmUp ? 'h4' : 'h5'}>
-            Top Performing Cards
-          </Typography> */}
-            <SingleCardAnimation cardImage={cardData?.image} />
-          </Box>
-        )}
-
-        {/* Chart and Card Components */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            maxWidth: isMdUp ? '50%' : '100%', // Adjust width based on screen size
-            maxHeight: '100%',
-          }}
-        >
-          <CardChart
-            cardData={isDataLoaded ? allCollections[0]?.cards[0] : null}
-          />
-        </Box>
-      </Paper>
-    </SecondaryContentContainer>
-  );
-  // Function to render main content
-  const renderMainContent = () => (
-    <MainContentContainer maxWidth="100%" theme={theme}>
-      <Grid container spacing={isSmUp ? 5 : 2}>
-        {tiers.map((tier, index) => {
-          const [tiltAnimation, setTiltAnimation] = useSpring(() => ({
-            transform:
-              'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
-          }));
-          const handleMouseEnter = () =>
-            setTiltAnimation({
-              transform:
-                'perspective(600px) rotateX(5deg) rotateY(5deg) scale(1.05)',
-            });
-
-          const handleMouseLeave = () =>
-            setTiltAnimation({
-              transform:
-                'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
-            });
-          return (
-            <Grid
-              item
-              key={index}
-              xs={12}
-              sm={12}
-              md={tier.title === 'Enterprise' ? 12 : 4}
-              style={{ display: 'flex' }} // Ensure flex display for grid item
-            >
-              <AnimatedBox
-                style={{ ...tiltAnimation, width: '100%' }} // Stretch to fill grid item
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <FeatureCard
-                  theme={theme}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                  }}
-                >
-                  <CardHeader
-                    title={tier.title}
-                    subheader={tier.subheader}
-                    titleTypographyProps={{ align: 'center' }}
-                    subheaderTypographyProps={{ align: 'center' }}
-                    sx={{
-                      backgroundColor: theme.palette.backgroundA.dark,
-                    }} // Apply the background color here
-                  />
-                  <CardContent style={{ flex: 1 }}>
-                    <CardUnorderedList>
-                      {tier.description.map((line, index) => (
-                        <CardListItem key={index} theme={theme}>
-                          {line}
-                        </CardListItem>
-                      ))}
-                    </CardUnorderedList>
-                  </CardContent>
-                  <CardActions sx={{ alignSelf: 'end' }}>
-                    <ActionButton
-                      fullWidth
-                      variant="contained"
-                      theme={theme}
-                      onClick={() => handleOpenModal(tier.title)}
-                    >
-                      {tier.buttonText}
-                    </ActionButton>
-                  </CardActions>
-                </FeatureCard>
-              </AnimatedBox>
-            </Grid>
-          );
-        })}
-      </Grid>
-    </MainContentContainer>
-  );
-  // Function to render dialogs (GenericCardDialog and DetailsModal)
-  const renderDialogs = () => {
-    return (
-      <>
-        {isModalOpen && (
-          <GenericCardDialog
-            open={isModalOpen}
-            context={'Home'}
-            card={modalContent}
-          />
-        )}
-        {detailsModalShow && <DetailsModal />}
-      </>
-    );
-  };
-
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      {loadingStatus?.isPageLoading ? (
-        <Skeletons />
-      ) : (
-        <React.Fragment>
-          {/* Main Splash Page */}
-          {renderSplashPage()}
-
-          {/* Tertiary Content */}
-          {renderTertiaryContent()}
-
-          {/* Secondary Content */}
-          {renderSecondaryContent()}
-
-          {/* Main Content */}
-          {renderMainContent()}
-
-          {/* Dialogs */}
-          {renderDialogs()}
-        </React.Fragment>
+  const renderDialogs = () => (
+    <>
+      {isModalOpen && (
+        <GenericCardDialog
+          open={isModalOpen}
+          context={'Home'}
+          card={modalContent}
+        />
       )}
-    </React.Fragment>
+      {detailsModalShow && <DetailsModal />}
+    </>
+  );
+  const renderStatItem = (label, value) => (
+    <Typography variant="body1" component="div">
+      <strong>{label}:</strong> {value}
+    </Typography>
+  );
+  return (
+    <CssBaseline>
+      {loadingStatus?.isPageLoading ? (
+        <Skeleton>
+          <Skeleton variant="rectangular" width="100%" height="100vh" />
+        </Skeleton>
+      ) : (
+        <>
+          {renderSplashPage()}
+          <TertiaryContentContainer
+            theme={theme}
+            sx={{ padding: '20px', textAlign: 'center' }}
+          >
+            <HomePageBox
+              theme={theme}
+              sx={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}
+            >
+              <Typography
+                {...getTypographyProps('h1', theme, breakpoints)}
+                sx={theme.pageStyles.homeTypographyStyles}
+              >
+                {introText.mainTitle}
+              </Typography>
+              <Typography variant="h6" paragraph>
+                {introText.description}
+              </Typography>
+            </HomePageBox>
+          </TertiaryContentContainer>{' '}
+          <SecondaryContentContainer theme={theme}>
+            <Paper sx={theme.pageStyles.homePaperStyles}>
+              <Stack direction={isMdUp ? 'row' : 'column'} spacing={2}>
+                {isMdUp && (
+                  <Box sx={theme.pageStyles.homeCardAnimationBoxStyles}>
+                    <SingleCardAnimation cardImage={cardData?.image} />
+                  </Box>
+                )}
+
+                {/* Chart and Card Components */}
+                <Box sx={theme.pageStyles.homeCardChartBoxStyles}>
+                  <CardChart cardData={cardData} />
+                </Box>
+              </Stack>
+            </Paper>
+            {authUser && (
+              <Paper sx={theme.pageStyles.homePaperStyles}>
+                <Card>
+                  <CardHeader
+                    title="User Account"
+                    subheader={`Welcome back, ${authUser.name}!`}
+                    avatar={<Avatar src={authUser.photoURL} />}
+                  />
+                  <CardContent>
+                    <Stack direction={isMdUp ? 'row' : 'column'} spacing={2}>
+                      {renderStatItem('Total Value of Collections', 5)}
+                      {renderStatItem('Number of Decks', 5)}
+                      {renderStatItem('Number of Collections', 5)}
+                      {renderStatItem('Total Cards Purchased', 5)}
+                      {/* Add more stats as needed */}
+                    </Stack>
+                  </CardContent>
+                  <CardActions
+                    sx={{
+                      justifyContent: 'space-between',
+                      padding: theme.spacing(2),
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      // color={theme.palette.backgroundA.darker}
+                    >
+                      Manage Collections
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      // color={theme.palette.backgroundA.darker}
+                    >
+                      View Purchase History
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Paper>
+            )}
+          </SecondaryContentContainer>
+          <MainContentContainer maxWidth="100%" theme={theme}>
+            <Grid
+              container
+              spacing={isSmUp ? 5 : 2}
+              sx={{
+                // m: 0,
+                mt: 2,
+              }}
+            >
+              {tiers.map((tier, index) => (
+                <Grid
+                  item
+                  key={index}
+                  xs={12}
+                  sm={12}
+                  md={tier.title === 'Enterprise' ? 12 : 4}
+                  style={{ display: 'flex', flexGrow: 1 }} // Ensure flex display for grid item
+                >
+                  <AnimatedFeatureCard
+                    tier={tier}
+                    onOpenModal={handleOpenModal}
+                    theme={theme}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </MainContentContainer>{' '}
+          {renderDialogs()}
+        </>
+      )}
+    </CssBaseline>
   );
 };
 

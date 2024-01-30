@@ -142,10 +142,12 @@ export const DialogButton = styled(Button)({
   textTransform: 'none',
 });
 
-export const SelectCollectionListContainer = styled(Box)(({ theme }) => ({
-  maxHeight: '60vh',
+export const SelectCollectionListContainer = styled(Container)(({ theme }) => ({
+  // maxHeight: '60vh',
   overflowY: 'auto',
   padding: theme.spacing(2),
+  height: '100%',
+  width: '100%',
 }));
 
 export const DialogContent = styled('div')(({ theme }) => ({

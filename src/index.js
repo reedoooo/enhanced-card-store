@@ -17,8 +17,10 @@ const AppWrapper = () => {
     () => loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY),
     [process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY]
   );
-  const renderHelmet = () => {
-    return (
+
+  return (
+    // <StrictMode>
+    <Router>
       <Helmet>
         {/* Basic */}
         <title>Your Website Title</title>
@@ -60,13 +62,6 @@ const AppWrapper = () => {
         {/* Example: Add a script needed for a service or functionality */}
         {/* <script src="https://cdn.service.com/library.js"></script> */}
       </Helmet>
-    );
-  };
-  return (
-    // <StrictMode>
-    <Router>
-      {renderHelmet()}
-
       <ColorModeProvider>
         <PageProvider>
           <AuthProvider>

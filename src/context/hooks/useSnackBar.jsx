@@ -1,31 +1,37 @@
-// useSnackBar.js
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const useSnackBar = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'info',
-    duration: 6000, // default duration
+    duration: 6000,
   });
-  const queueRef = useRef([]); // Queue to hold the messages
+  const queueRef = useRef([]);
+  const isMountedRef = useRef(false);
 
-  const showNextSnackbar = () => {
-    if (queueRef.current.length > 0) {
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const showNextSnackbar = useCallback(() => {
+    if (queueRef.current.length > 0 && isMountedRef.current) {
       const nextSnackbar = queueRef.current.shift();
       setSnackbar({ ...nextSnackbar, open: true });
     }
-  };
+  }, []);
 
   const handleSnackBar = useCallback(
     (message, severity = 'info', duration = 6000) => {
       queueRef.current.push({ message, severity, duration });
-      if (!snackbar.open) {
-        // If no snackbar is currently being displayed, show it immediately.
+      if (!snackbar.open && isMountedRef.current) {
         showNextSnackbar();
       }
     },
-    [snackbar.open]
+    [snackbar.open, showNextSnackbar]
   );
 
   const handleCloseSnackbar = useCallback(
@@ -33,13 +39,13 @@ const useSnackBar = () => {
       if (reason === 'clickaway') {
         return;
       }
-      setSnackbar({ ...snackbar, open: false });
-      showNextSnackbar(); // Show next snackbar if it's in the queue
+      if (isMountedRef.current) {
+        setSnackbar({ ...snackbar, open: false });
+        showNextSnackbar();
+      }
     },
-    [snackbar]
+    [snackbar, showNextSnackbar]
   );
-
-  // Additional enhancements can be made to support actions, positioning, etc.
 
   return [snackbar, handleSnackBar, handleCloseSnackbar];
 };

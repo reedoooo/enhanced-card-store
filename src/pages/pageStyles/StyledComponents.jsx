@@ -24,13 +24,17 @@ import {
 import styled from 'styled-components';
 
 // ! APP CONTAINER -----------------------------
-export const AppContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
+export const AppContainer = styled(Container)(({ theme }) => ({
+  // display: 'flex',
   flexDirection: 'column',
   // height: '100vh',
+  // left: -20,
+  margin: 0,
+  padding: 0,
   justifyContent: 'center',
   minHeight: '100vh', // Ensures at least the height of the viewport
   width: '100%', // Ensures it takes the full width
+  minWidth: '100vw', // Ensures at least the width of the viewport
   // overflow: 'hidden', // Prevents unwanted scrolling if not necessary
   // [theme.breakpoints.down('sm')]: {
   //   paddingTop: theme.spacing(6),
@@ -39,19 +43,14 @@ export const AppContainer = styled(Box)(({ theme }) => ({
 }));
 // ! TOP BAR STYLES -----------------------------
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  width: '100%',
-  // mx: '1',
-  // width: '98%',
-  // width: '95vw',
-  // right: '3.2%',
+  minWidth: '100vw',
   border: '2px solid white',
-  borderRadius: '30px',
+  left: -20,
+  // borderRadius: '30px',
   background:
-    'linear-gradient( 90deg, rgba(78, 78, 246, 0.647) 0%, rgba(247, 90, 216, 0.696) 100% );',
-  // background: theme.palette.backgroundB.lightest,
-  // // transform: topbarup ? 'translateY(-64px)' : 'translateY(0)',
-  // transition: 'transform 0.3s ease-in-out',
+    'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
 }));
+
 export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // display: 'flex',
   // flexDirection: 'row',
@@ -60,11 +59,11 @@ export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // width: '100%',
   // Do not explicitly set the height here to allow Toolbar's default styling to take effect
   backgroundColor: theme.palette.backgroundA.darker,
-  borderRadius: '30px',
+  // borderRadius: '30px',
   flexGrow: 1,
 
-  mr: 2,
-  px: 3,
+  // mr: 2,
+  // px: 3,
   display: { xs: 'none', md: 'flex' },
   fontFamily: 'monospace',
   fontWeight: 700,
@@ -219,13 +218,17 @@ export const CardDetails = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.backgroundB.lighter}`,
   borderRadius: theme.shape.borderRadius,
 }));
-export const ChartContainer = styled(Container)(({ theme }) => ({
+export const ChartContainer = styled(Box)(({ theme, height, width }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  width: '100%',
-  height: '100%',
+  flexGrow: 1,
+  height: height,
+  width: width,
+  minHeight: '390px',
+  minWidth: '390px',
+  position: 'relative',
   padding: theme.spacing(2),
   background: theme.palette.backgroundB.darker,
 }));
@@ -235,7 +238,7 @@ export const LinearChartContainer = styled(Box)(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 'auto',
+    // height: 'auto',
     '@media (max-width: 600px)': {
       width: '150%', // Adjust width for mobile screens
       height: '300px', // Adjust height for mobile screens
@@ -395,8 +398,8 @@ export const FeatureCard = styled(Card)(({ theme }) => ({
   },
 }));
 export const ActionButton = styled(Button)(({ theme }) => ({
-  color: 'white', // Ensuring text is white for better contrast
-  backgroundColor: theme.palette.backgroundA.dark,
+  color: theme.palette.backgroundA.dark,
+  background: theme.palette.backgroundA.dark,
   '&:hover': {
     background: theme.palette.success.dark, // Darken button on hover for feedback
   },
@@ -420,10 +423,11 @@ export const SecondaryContentContainer = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   transition: 'background-color 0.3s',
 }));
-export const TertiaryContentContainer = styled('div')(({ theme }) => ({
+export const TertiaryContentContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.success.main,
+  background: theme.palette.backgroundD.dark,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -441,6 +445,39 @@ export const CardListItem = styled(ListItem)(({ theme }) => ({
 }));
 
 // ! PORTFOLIO CHART STYLES
+export const ChartArea = styled(Container)(({ theme }) => ({
+  height: '100%',
+  width: '100%',
+  minHeight: '450px',
+  minWidth: '450px',
+  flexGrow: 1,
+  padding: theme.spacing(2),
+  margin: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  position: 'relative',
+  background: theme.palette.backgroundB.lightest,
+  // width: '100%',
+  // height: '100%',
+}));
+// A square, responsive container for the chart
+export const SquareChartContainer = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  width: '100%', // 100% of the parent width
+  paddingTop: '100%', // Maintain aspect ratio (1:1)
+  overflow: 'hidden',
+  '& > *': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+}));
 export const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
@@ -494,6 +531,7 @@ export const AspectRatioBoxSkeleton = styled(Box)(({ theme }) => ({
   width: '100%',
   position: 'relative',
   paddingTop: '56.25%', // 16:9 aspect ratio
+  flexGrow: '1',
 }));
 
 // ! FORMS / INPUTS
@@ -514,8 +552,14 @@ export const StyledFormControl = styled(FormControl)(({ theme }) => ({
     },
   },
 }));
-
 export const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   fontWeight: 'bold', // Making label text bold
   color: theme.palette.backgroundB.dark,
+}));
+
+// ! FORM B
+export const SearchSettingsBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
 }));

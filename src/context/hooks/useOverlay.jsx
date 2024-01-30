@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 export const useOverlay = (theme) => {
-  const [selectedRarity, setSelectedRarity] = useState(null); // State to track selected rarity
+  const { rarity, rarityOverlay } = theme.palette;
+  const [selectedRarity, setSelectedRarity] = useState('superRare');
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const overlayColor = useMemo(() => {
+    return rarityOverlay[selectedRarity] || rarityOverlay['default'];
+  }, [rarityOverlay, selectedRarity]);
 
-  // Function to handle rarity chip click
-  const handleRarityClick = (rarity) => {
-    setSelectedRarity(rarity);
-    console.log(`Rarity ${rarity} was clicked.`);
+  const handleRarityClick = (rarityInput) => {
+    console.log(`Rarity ${rarityInput} was clicked.`);
+    setSelectedRarity(rarityInput === selectedRarity ? '' : rarityInput);
+    setIsOverlayVisible(!isOverlayVisible);
   };
 
-  // Function to generate the overlay component
   const generateOverlay = () => {
     if (!selectedRarity) return null;
 
@@ -21,8 +25,8 @@ export const useOverlay = (theme) => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: theme.palette.rarityOverlay[selectedRarity],
-          opacity: 0.5, // Adjust the opacity as needed
+          backgroundColor: overlayColor,
+          opacity: 0.5,
         }}
       />
     );
@@ -30,6 +34,9 @@ export const useOverlay = (theme) => {
 
   return {
     selectedRarity,
+    overlayColor,
+    backgroundColor: overlayColor,
+    isOverlayVisible,
     handleRarityClick,
     generateOverlay,
   };

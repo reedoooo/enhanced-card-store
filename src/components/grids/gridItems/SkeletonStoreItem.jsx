@@ -1,36 +1,19 @@
 import React from 'react';
-import { Box, Card, CardContent, Skeleton, styled } from '@mui/material';
+import { Box, CardContent, Skeleton } from '@mui/material';
 import { useMode } from '../../../context';
-
-const StyledSkeletonCard = styled(Card)(({ theme }) => ({
-  // Use the same styles as in StyledCard
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: '109px',
-  maxWidth: '100%',
-  width: 'auto',
-  maxHeight: '80vh',
-  backgroundColor: theme.palette.backgroundA.lightest,
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[5],
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'scale(1.03)',
-  },
-}));
-
-const AspectRatioBoxSkeleton = styled('div')(({ theme }) => ({
-  width: '100%',
-  position: 'relative',
-  paddingTop: '56.25%', // 16:9 aspect ratio
-}));
-
+import {
+  AspectRatioBoxSkeleton,
+  StyledSkeletonCard,
+} from '../../../pages/pageStyles/StyledComponents';
 const SkeletonStoreItem = () => {
   const { theme } = useMode();
   return (
-    <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
-      <StyledSkeletonCard theme={theme}>
-        <AspectRatioBoxSkeleton>
+    <Box sx={{ marginBottom: '1rem', flexGrow: '1', width: '100%' }}>
+      <StyledSkeletonCard
+        theme={theme}
+        sx={{ marginBottom: '1rem', flexGrow: '1', width: '100%' }}
+      >
+        <AspectRatioBoxSkeleton theme={theme}>
           <Skeleton
             variant="rectangular"
             width="100%"

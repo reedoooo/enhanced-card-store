@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-// ! DEFAULT VALUES FOR CARD OBJECTS
-
 import { createNewPriceEntry } from './Helpers';
-
+// ! DEFAULT VALUES FOR CARD OBJECTS
 // Default values for common API data fields
 const defaultCommonAPIFields = {
   name: '',
@@ -39,6 +37,14 @@ const defaultUniqueCustomDynamicFields = {
   priceHistory: [],
   dailyPriceHistory: [],
   chart_datasets: [],
+  nivoChartData: [
+    {
+      id: '',
+      color: '',
+      // TODO: set x as defauly value for dates
+      data: [{ x: new Date(), y: 0 }],
+    },
+  ],
 };
 // Default values for unique variant fields
 const defaultUniqueVariantFields = {
@@ -119,10 +125,17 @@ const defaultCollection = {
   dailyCollectionPriceHistory: defaultPriceHistory,
   collectionPriceHistory: defaultPriceHistory,
   chartData: defaultChartData,
+  nivoChartData: [
+    {
+      id: '',
+      color: '',
+      // TODO: set x as defauly value for dates
+      data: [{ x: new Date(), y: 0 }],
+    },
+  ],
   collectionStatistics: defaultCollectionStatistics,
   cards: [defaultCardObject],
 };
-
 // ! DEFAULT VALUES FOR DECK OBJECTS
 const defaultDeck = {
   userId: null,
@@ -135,7 +148,6 @@ const defaultDeck = {
   color: '',
   cards: [],
 };
-
 // ! DEFAULT VALUES FOR CART OBJECTS
 const defaultCart = {
   userId: null,
@@ -143,7 +155,6 @@ const defaultCart = {
   totalQuantity: 0,
   cart: [],
 };
-
 // ! DEFAULT VALUES FOR USER OBJECTS
 const defaultUser = {
   userId: null,
@@ -154,8 +165,6 @@ const defaultUser = {
   decks: [],
   cart: [],
 };
-
-// ! DEFAULT VALUES FOR USER SETTINGS OBJECTS
 // CONSTANTS
 export const DEFAULT_CARD_OBJECT = defaultCardObject;
 export const DEFAULT_CARDS_ARRAY = [defaultCardObject];
@@ -360,19 +369,83 @@ const defaultStatisticsContextValues = {
   allStats: [],
   statsByCollectionId: {},
   selectedStat: {},
-  markers: [],
+  markers: [
+    {
+      axis: 'y',
+      value: 0,
+      lineStyle: { stroke: 'red', strokeWidth: 2 },
+      legend: '',
+      legendOrientation: 'vertical',
+      legendPosition: 'top',
+      legendOffsetY: -10,
+      legendOffsetX: 0,
+      legendColor: 'red',
+    },
+  ],
+
   // PRIMARY FUNCTIONS
   setSelectedStat: () => {},
+
   // SECONDARY DATA
   totalValue: 0,
   topFiveCards: [],
   chartData: [],
+
   // SECONDARY FUNCTIONS
   calculateTotalPriceOfAllCollections: () => {},
   calculatePriceChanges: () => {},
   getTopCard: () => {},
   getTopCollection: () => {},
   calculateStatsByCollectionId: () => {},
+};
+// default values for LINEAR CHART from nivo
+const defaultNivoChartData = [
+  {
+    id: '',
+    color: '',
+    data: [{ x: new Date(), y: 0 }],
+  },
+];
+// default values for PIE CHART from MUI
+const defaultMuiChartData = [
+  {
+    id: '',
+    label: '',
+    value: 0,
+    color: '',
+  },
+];
+
+// ! DEFAULT VALUES FOR CHART CONTEXT
+const defaultChartContextValues = {
+  // Data
+  latestData: null,
+  timeRange: 86400000, // Default to 24 hours
+  timeRanges: [
+    { label: '2 hours', value: 7200000 }, // 2 * 60 * 60 * 1000
+    { label: '24 hours', value: 86400000 }, // 24 * 60 * 60 * 1000
+    { label: '7 days', value: 604800000 }, // 7 * 24 * 60 * 60 * 1000
+    { label: '1 month', value: 2592000000 }, // 30 * 24 * 60 * 60 * 1000
+  ],
+  finalizedNivoData: null,
+  currentValue: null,
+  tickValues: null,
+  xFormat: null,
+  nivoChartData: defaultNivoChartData,
+  muiChartData: defaultMuiChartData,
+
+  // Functions
+  setTimeRange: () => {},
+  setLatestData: () => {},
+  handleChange: () => {},
+
+  // Chart specific helper functions
+  finalizeNivoData: () => {},
+  groupAndAverageData: () => {},
+  convertDataForNivo2: () => {},
+  getTickValues: () => {},
+  getFilteredData: () => {},
+  formatDateToString: () => {},
 };
 
 export const defaultContextValue = {
@@ -392,4 +465,26 @@ export const defaultContextValue = {
   USER_CONTEXT: defaultUserContextValues,
   // STATISTICS CONTEXT
   STATISTICS_CONTEXT: defaultStatisticsContextValues,
+  // CHART CONTEXT
+  CHART_CONTEXT: defaultChartContextValues,
+};
+
+// ! DEFAULT VALUES FOR SPECIfIC COMPONENTS ----------------------
+// ! --- DEFAULT VALUES FOR CHART COMPONENTS
+// ! COMPONENT - CollectionPortfolioChartContainer
+export const chartConstants = {
+  HEIGHT_TO_WIDTH_RATIO: 7 / 10,
+  DEFAULT_THRESHOLD: 600000,
+  TIME_RANGES: [
+    { label: '2 hours', value: 7200000 / 6 || 2 * 60 * 60 * 1000 },
+    { label: '24 hours', value: 86400000 / 6 || 24 * 60 * 60 * 1000 },
+    { label: '7 days', value: 604800000 / 6 || 7 * 24 * 60 * 60 * 1000 },
+    { label: '1 month', value: 2592000000 / 6 || 30 * 24 * 60 * 60 * 1000 },
+    { label: '3 months', value: 7776000000 / 6 || 90 * 24 * 60 * 60 * 1000 },
+    { label: '6 months', value: 15552000000 / 6 || 180 * 24 * 60 * 60 * 1000 },
+    { label: '12 months', value: 31104000000 / 6 || 365 * 24 * 60 * 60 * 1000 },
+  ],
+  TIME_RANGE: '24 hours',
+  TICK_VALUES: 'every hour',
+  X_FORMAT: '%H:%M',
 };

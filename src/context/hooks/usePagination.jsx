@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
+import CustomPagination from '../../components/reusable/CustomPagination';
 
-const usePagination = (items, itemsPerPage) => {
+const usePagination = (items, itemsPerPage, totalCount) => {
   const [page, setPage] = useState(0);
   const [rowsPerPageOptions] = useState([
     5,
@@ -35,6 +36,14 @@ const usePagination = (items, itemsPerPage) => {
       rowsPerPage === -1 ? items?.length : startIndex + rowsPerPage;
     return items?.slice(startIndex, endIndex);
   }, [page, rowsPerPage, items]);
+  const PaginationComponent = (
+    <CustomPagination
+      totalCount={totalCount}
+      itemsPerPage={itemsPerPage}
+      currentPage={page}
+      handlePagination={(event, value) => setPage(value)}
+    />
+  );
 
   // Additional pagination actions
   const goToFirstPage = () => setPage(0);
@@ -53,6 +62,8 @@ const usePagination = (items, itemsPerPage) => {
     rowsPerPageOptions,
     emptyRows,
     paginatedItems,
+    PaginationComponent,
+
     handleChangePage,
     handleChangeRowsPerPage,
     handleChangeColsPerPage,

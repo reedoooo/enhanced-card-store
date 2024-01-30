@@ -83,8 +83,8 @@ const useCollectionManager = (isLoggedIn, userId) => {
       const data = handleApiResponse(response, 'getAllCollectionsForUser');
       // console.log('getAllCollectionsForUser', data);
       setCollectionData({ data: data });
-      setAllCollections(data?.allCollections);
-      setSelectedCollection(data?.allCollections?.[0]);
+      setAllCollections(data?.data);
+      setSelectedCollection(data?.data?.[0]);
       setHasFetchedCollections(true);
     } catch (error) {
       logger.logEvent(

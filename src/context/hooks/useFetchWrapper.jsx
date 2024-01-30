@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import useSnackBar from './useSnackBar';
+// import useSnackBar from './useSnackBar';
 import useLogger from './useLogger';
 const useFetchWrapper = () => {
-  const handleSnackBar = useSnackBar()[1];
+  // const handleSnackBar = useSnackBar()[1];
   const { logEvent } = useLogger();
 
   const fetchWrapper = useCallback(
@@ -14,24 +14,24 @@ const useFetchWrapper = () => {
       };
 
       try {
-        handleSnackBar('Loading data...', 'info'); // Notify user data is loading
+        // handleSnackBar('Loading data...', 'info'); // Notify user data is loading
         const response = await fetch(url, options);
         if (!response.ok) {
           // Handle non-ok responses immediately
           const errorMsg = `API request failed with status: ${response.status} ${response.statusText}`;
-          handleSnackBar(errorMsg, 'error'); // Notify user of the error
+          // handleSnackBar(errorMsg, 'error'); // Notify user of the error
           throw new Error(errorMsg);
         }
         const data = await response.json(); // Parse the JSON response
-        handleSnackBar('Data loaded successfully!', 'success'); // Notify user of success
+        // handleSnackBar('Data loaded successfully!', 'success'); // Notify user of success
         return data;
       } catch (error) {
         logEvent('error', error.message); // Log the error
-        handleSnackBar(`Error: ${error.message}`, 'error'); // Notify user of the error
+        // handleSnackBar(`Error: ${error.message}`, 'error'); // Notify user of the error
         throw error; // Re-throwing the error for upstream catch blocks to handle
       }
     },
-    [handleSnackBar]
+    [logEvent]
   );
 
   return fetchWrapper;

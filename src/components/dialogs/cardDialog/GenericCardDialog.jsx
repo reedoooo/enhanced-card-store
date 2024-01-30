@@ -18,6 +18,7 @@ import {
   List,
   CardContent,
   ListItem,
+  Backdrop,
 } from '@mui/material';
 import useSnackbar from '../../../context/hooks/useSnackBar';
 import useSelectedContext from '../../../context/hooks/useSelectedContext';
@@ -25,14 +26,13 @@ import { useModalContext, useMode } from '../../../context';
 import CardMediaSection from '../../cards/media/CardMediaSection';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
-import useResponsiveStyles from '../../../context/hooks/style-hooks/useResponsiveStyles';
 import CardDetail from '../../cards/CardDetail';
 import CardDetailsContainer from '../../../layout/CardDetailsContainer';
 import { useOverlay } from '../../../context/hooks/useOverlay';
 
 const GenericCardDialog = (props) => {
   const { theme } = useMode();
-  const { selectedRarity, handleRarityClick, generateOverlay } =
+  const { generateOverlay, handleRarityClick, openOverlay, closeOverlay } =
     useOverlay(theme);
 
   const {
@@ -60,7 +60,7 @@ const GenericCardDialog = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { closeModal } = useModalContext();
-  const { getHeaderStyle, isMobile } = useResponsiveStyles(theme);
+  const { getHeaderStyle, isSmall } = theme.responsiveStyles;
   const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
   const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackbar();
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
@@ -72,31 +72,6 @@ const GenericCardDialog = (props) => {
     },
     [handleSnackBar]
   );
-  // Update card data from the server if necessary
-  // useEffect(() => {
-  //   async function updateCardData() {
-  //     if (card.card_images.length === 0) {
-  //       try {
-  //         const response = await axios.patch(
-  //           `${process.env.REACT_APP_SERVER}/api/cards/ygopro/${card.id}`,
-  //           { id: card.id, name: card.name, card, user }
-  //         );
-  //         if (response.data && response.data.data) {
-  //           setUpdatedCard(response.data.data);
-  //           setImageUrl(response.data.data.card_images[0]?.image_url);
-  //           updateCollection(response.data.data, 'update', selectedCollection);
-  //         }
-  //       } catch (err) {
-  //         console.error('Error fetching card images:', err);
-  //       }
-  //     }
-  //   }
-
-  //   if (open) {
-  //     updateCardData();
-  //   }
-  // }, [card, user, updateCollection, selectedCollection, open]);
-  // Snackbar handling for loading card details
   useEffect(() => {
     if (open && card && !hasLoggedCard) {
       handleSnackBar('Card details loaded successfully.', 'success');
@@ -114,7 +89,6 @@ const GenericCardDialog = (props) => {
     },
     [setContext, setIsContextSelected]
   );
-
   return (
     <Dialog
       open={open}
@@ -123,26 +97,33 @@ const GenericCardDialog = (props) => {
       onClose={closeModal}
       fullScreen={fullScreen}
       aria-describedby="alert-dialog-slide-description"
-      maxWidth="md" // Adjust this value as per your requirement
-      // fullWidth
+      maxWidth="md"
       PaperProps={{
-        style: {
-          width: '75%', // Set dialog width to 75% of screen width
-          height: 'auto', // Set height to auto
-          maxHeight: '90vh', // Optional: Set max height to 90% of view height
-          borderRadius: theme.shape.borderRadius, // Use theme's border radius
-          // Add more PaperProps styles if needed
+        sx: {
+          width: '75%',
+          height: 'auto',
+          maxHeight: '90vh',
+          borderRadius: theme.shape.borderRadius,
         },
       }}
     >
-      <DialogTitle sx={getHeaderStyle(theme)}>
+      <DialogTitle sx={getHeaderStyle(theme.breakpoints)}>
         {title}
         {closeIcon && (
-          <IconButton aria-label="close" onClick={close} sx={closeIconSx}>
+          <IconButton
+            aria-label="close"
+            onClick={close}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: theme.palette.backgroundA.contrastTextA,
+            }}
+          >
             <CloseIcon />
           </IconButton>
         )}
-      </DialogTitle>{' '}
+      </DialogTitle>
       <DialogContent
         sx={{
           padding: 0,
@@ -152,14 +133,13 @@ const GenericCardDialog = (props) => {
           <Grid container spacing={2}>
             {/* these two grid items are for the card media and card details */}
             <Grid item xs={12} sm={6} md={6} lg={6}>
-              <div style={{ position: 'relative' }}>
-                <CardMediaSection
-                  isRequired={!isMobile}
-                  card={card}
-                  imgUrl={imageUrl}
-                />
-                {generateOverlay()}
-              </div>
+              {' '}
+              <CardMediaSection
+                isRequired={!isSmall}
+                card={card}
+                imgUrl={imageUrl}
+              />
+              {generateOverlay()}
             </Grid>
 
             {/* these two grid items are for the card details */}

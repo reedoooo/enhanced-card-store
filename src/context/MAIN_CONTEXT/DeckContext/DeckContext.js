@@ -8,22 +8,15 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import { useCookies } from 'react-cookie';
-import { createApiUrl } from '../../Helpers.jsx';
 import { BASE_API_URL } from '../../Helpers.jsx';
 import {
   calculateAndUpdateTotalPrice,
-  removeDuplicateDecks,
-  formatCardData,
   defaultContextValue,
-  handleCardAddition,
-  handleCardUpdate,
   getCardQuantity,
   shouldFetchDecks,
 } from './helpers.jsx';
-import useFetchWrapper from '../../hooks/useFetchWrapper.jsx';
 import { useAuthContext } from '../AuthContext/authContext.js';
-// import useCounter from '../hooks/useCounter.jsx';
+import useFetchWrapper from '../../hooks/useFetchWrapper.jsx';
 import useLogger from '../../hooks/useLogger.jsx';
 import useApiResponseHandler from '../../hooks/useApiResponseHandler.jsx';
 
@@ -37,40 +30,50 @@ export const DeckProvider = ({ children }) => {
   const [allDecks, setAllDecks] = useState([]);
   const [selectedDeck, setSelectedDeck] = useState({});
   const [selectedCards, setSelectedCards] = useState(selectedDeck?.cards || []);
+  const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
+
   const handleApiResponse = useApiResponseHandler();
+  const logger = useLogger('DeckProvider');
   const createApiUrl = useCallback(
     (path) =>
       `${process.env.REACT_APP_SERVER}/api/users/${userId}/decks${path}`,
     [userId]
   );
-  const logger = useLogger('DeckProvider');
-
   const updateSelectedDeck = useCallback((newDeck) => {
     console.log('Updating selected deck:', newDeck);
     setSelectedDeck(newDeck);
     setSelectedCards(newDeck?.cards || []);
   }, []);
+  // const userIdRef = useRef(userId);
+
+  // useEffect(() => {
+  //   userIdRef.current = userId; // Update ref when userId changes
+  // }, [userId]);
 
   const fetchAndUpdateDecks = useCallback(async () => {
-    logger.logEvent('fetchDecksForUser');
+    const currentUserId = userId;
+    logger.logEvent('fetchDecksForUser', { userId: currentUserId });
     try {
-      const response = await fetchWrapper(createApiUrl('/allDecks'), 'GET');
+      const response = await fetchWrapper(
+        createApiUrl('/allDecks', currentUserId),
+        'GET'
+      );
       const data = handleApiResponse(response, 'fetchDecksForUser');
       if (data && data.length > 0) {
+        setDeckData({ data: data });
         setAllDecks(data);
-        setDeckData(data[0]);
         setSelectedDeck(data[0]);
+        setHasFetchedDecks(true);
       } else {
         console.log('No decks found for user.', data);
         // No decks found for user
         const shouldCreateDeck = window.confirm(
           'No decks found. Would you like to create a new one?'
         );
-
         if (shouldCreateDeck) {
           const deckName = prompt('Enter the deck name:');
           const deckDescription = prompt('Enter the deck description:');
-          await createUserDeck(userId, {
+          await createUserDeck(currentUserId, {
             name: deckName,
             description: deckDescription,
           });
@@ -79,10 +82,19 @@ export const DeckProvider = ({ children }) => {
     } catch (error) {
       console.error(`Failed to fetch decks: ${error.message}`);
     }
-  }, [createApiUrl, handleApiResponse, logger, fetchWrapper]);
-  // useEffect(() => {
-  //   fetchAndUpdateDecks();
-  // }, [fetchAndUpdateDecks]);
+  }, [handleApiResponse, logger, fetchWrapper]); // Removed userId from dependencies
+  useEffect(() => {
+    if (userId && !hasFetchedDecks) {
+      fetchAndUpdateDecks();
+    }
+  }, [selectedDeck, setSelectedDeck]);
+  useEffect(() => {
+    if (hasFetchedDecks) {
+      // console.log('setAllCollections', collectionData?.data?.allCollections);
+      setAllDecks(deckData?.data);
+      updateSelectedDeck(deckData?.data?.[0]);
+    }
+  }, [hasFetchedDecks, deckData]);
   /**
    * Updates the details of a specific deck.
    * @param {string} deckId - The ID of the deck to be updated.
@@ -229,14 +241,14 @@ export const DeckProvider = ({ children }) => {
    * @returns {Promise<Object>} The response from the server.
    */
   const removeCardFromDeck = async (cards, cardIds, deck) => {
-    const deckId = deck._id;
+    const deckId = deck?._id;
     const cardsToRemove = [];
     const cardsToDecrement = [];
 
     for (const card of cards) {
       const existingCard = deck?.cards?.find((c) => c.id === card.id);
       if (existingCard) {
-        if (existingCard.quantity > 1) {
+        if (existingCard?.quantity > 1) {
           // Decrement card quantity
           existingCard.tag = 'decremented';
           cardsToDecrement.push(existingCard);
@@ -274,7 +286,9 @@ export const DeckProvider = ({ children }) => {
           { cards: cardsToDecrement, type: 'decrement' }
         );
         const data = handleApiResponse(response, 'removeCardsFromDeck');
-        updateSelectedDeck(data); // Assuming a function to update the current deck
+        if (data.includes('cards')) {
+          updateSelectedDeck(data); // Assuming a function to update the current deck
+        }
       }
     } catch (error) {
       logger.logEvent('removeCardsFromDeck error', error);
@@ -297,8 +311,8 @@ export const DeckProvider = ({ children }) => {
       //   0,
       setSelectedDeck,
       getTotalCost: () => calculateAndUpdateTotalPrice(selectedDeck),
-      addOneToDeck: (card, deck) => addCardToDeck(card, deck),
-      removeOneFromDeck: (card, deck) => removeCardFromDeck(card, deck),
+      addOneToDeck: (card, deck) => addCardToDeck([card], deck),
+      removeOneFromDeck: (card, deck) => removeCardFromDeck([card], deck),
       // addOneToDeck: (card, deck) => handleCardAddition(card, deck),
       // removeOneFromDeck: (card, deck) => handleCardUpdate(card, deck),
       updateDeckDetails: (deckId, updatedInfo) =>
@@ -316,11 +330,10 @@ export const DeckProvider = ({ children }) => {
       deckData,
       addCardToDeck,
       removeCardFromDeck,
-      // updateCardInDeck,
       createUserDeck,
       deleteUserDeck,
-      // updateAndSyncDeck,
-      // fetchAndSetDecks,
+      updateDeckDetails,
+      fetchAndUpdateDecks,
     ]
   );
 
@@ -333,7 +346,7 @@ export const DeckProvider = ({ children }) => {
       fetchAndUpdateDecks();
     }
     prevUserIdRef.current = userId;
-  }, [userId, fetchAndUpdateDecks]);
+  }, [userId, fetchAndUpdateDecks]); // fetchAndUpdateDecks is now stable and won't change unless necessary
 
   return (
     <DeckContext.Provider value={contextValue}>{children}</DeckContext.Provider>

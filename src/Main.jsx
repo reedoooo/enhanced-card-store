@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import PrivateRoute from './components/reusable/PrivateRoute';
 import LoginDialog from './components/dialogs/LoginDialog';
 import {
@@ -21,7 +20,6 @@ import {
   useSidebarContext,
 } from './context';
 import { AppContainer } from './pages/pageStyles/StyledComponents';
-
 // Layout imports
 import SideBar from './layout/headings/navigation/SideBar.jsx';
 import TopBar from './layout/headings/navigation/TopBar.jsx';
@@ -47,32 +45,8 @@ const Main = () => {
     useAuthContext();
   const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
   const menuItemsData = getMenuItemsData(isLoggedIn);
-
   const handleDrawerToggle = () => {
     toggleSidebar();
-  };
-  const renderRoutes = () => {
-    return (
-      <Routes>
-        {ROUTE_CONFIG.map(
-          ({ path, component: Component, isPrivate }, index) => (
-            <Route
-              key={index}
-              path={path}
-              element={
-                isPrivate ? (
-                  <PrivateRoute>
-                    <Component />
-                  </PrivateRoute>
-                ) : (
-                  <Component />
-                )
-              }
-            />
-          )
-        )}
-      </Routes>
-    );
   };
   return (
     <React.Fragment>
@@ -93,7 +67,25 @@ const Main = () => {
             isMobileView={isMobileView}
             menuItemsData={menuItemsData}
           />
-          {renderRoutes()}
+          <Routes>
+            {ROUTE_CONFIG.map(
+              ({ path, component: Component, isPrivate }, index) => (
+                <Route
+                  key={index}
+                  path={path}
+                  element={
+                    isPrivate ? (
+                      <PrivateRoute>
+                        <Component />
+                      </PrivateRoute>
+                    ) : (
+                      <Component />
+                    )
+                  }
+                />
+              )
+            )}
+          </Routes>{' '}
         </AppContainer>
       )}
     </React.Fragment>

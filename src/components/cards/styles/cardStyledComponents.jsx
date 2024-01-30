@@ -1,7 +1,7 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Typography } from '@mui/material';
 import styled from 'styled-components';
 
-export const AspectRatioBox = styled('div')(({ theme }) => ({
+export const AspectRatioBox = styled(Box)(({ theme }) => ({
   width: '100%', // Full width of the parent container
   position: 'relative',
   justifyContent: 'center',

@@ -7,6 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -15,6 +16,7 @@ import {
   CardHeader,
   Container,
   Grid,
+  IconButton,
   List,
   ListItem,
   Paper,
@@ -22,6 +24,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CardLinearChart from './CardLinearChart';
 import {
   ErrorBoundary,
@@ -72,62 +75,54 @@ const CardChart = ({ cardData = initialCardData }) => {
     useCardCronJob(initialCardData);
   const formatTimestamp = (timestamp) =>
     format(new Date(timestamp), "MMM do, yyyy 'at' HH:mm");
-
   const [chartDimensions, setChartDimensions] = useState({
     width: 0,
     height: 0,
   });
   const { setLoading, loadingStatus, returnDisplay } = usePageContext();
+  const safeCardData = cardData || { dailyPriceHistory: [] };
   if (!cardData || !cardData?.dailyPriceHistory) {
     console.log('Card data not found', cardData);
     // setLoading('isLoading', true);
   }
-  const safeCardData = cardData || { dailyPriceHistory: [] };
   const dailyPriceHistory = safeCardData?.dailyPriceHistory;
-
-  // effect for loading animation while data for chart is loading
-  // useEffect(() => {
-  //   // shouldLoad is true if cardData or cardData.dailyPriceHistory is null or empty
-  //   const shouldLoad =
-  //     !cardData ||
-  //     !cardData?.dailyPriceHistory ||
-  //     !cardData.dailyPriceHistory.length;
-  //   console.warn('Should load:', shouldLoad);
-  //   // Set loading status if shouldLoad is different from loadingStatus.isLoading
-  //   // if (shouldLoad !== loadingStatus.isLoading) {
-  //   //   setLoading('isLoading', shouldLoad);
-  //   // }
-  //   // if (shouldLoad) {
-  //   //   setLoading('isLoading', true);
-  //   // } else {
-  //   //   setLoading('isLoading', false);
-  //   // }
-  // }, [cardData, loadingStatus.isLoading, setLoading]); // Add loadingStatus.isLoading to dependencies
-
-  // useEffect to set image state when cardData changes
   useEffect(() => {
     if (cardData?.imageUrl) {
+      console.log('Setting image url', cardData?.imageUrl);
       setImageUrl(cardData?.image);
     }
   }, [cardData?.imageUrl]);
 
-  const chartData = useMemo(
-    () =>
-      dailyPriceHistory?.map((priceEntry) => ({
-        x: priceEntry?.timestamp,
-        y: priceEntry?.num,
-      })),
-    [dailyPriceHistory] // dependency array
-  );
+  // const chartData = useMemo(
+  //   () =>
+  //     dailyPriceHistory?.map((priceEntry) => ({
+  //       x: priceEntry?.timestamp,
+  //       y: priceEntry?.num,
+  //     })),
+  //   [dailyPriceHistory] // dependency array
+  // );
   const nivoReadyData = useMemo(
     () => [
       {
-        id: cardData?.name || 'default', // Fallback ID if cardData.name is not available
-        data: chartData,
+        id: cardData.name || 'default',
+        data: cardData.dailyPriceHistory.map(({ timestamp, num }) => ({
+          x: timestamp,
+          y: num,
+        })),
       },
     ],
-    [chartData, cardData?.name]
+    [cardData]
   );
+  const renderLoadingAnimation = () =>
+    isLgUp && <LoadingCardAnimation selected={true} />;
+  // const renderChart = () => (
+  //   <ErrorBoundary>
+  //     <CardLinearChart
+  //       nivoReadyData={nivoReadyData}
+  //       dimensions={chartDimensions}
+  //     />
+  //   </ErrorBoundary>
+  // );
   // Ensure this effect doesn't set loading when not necessary
   useEffect(() => {
     if (nivoReadyData && nivoReadyData.length > 0 && loadingStatus.isLoading) {
@@ -151,9 +146,9 @@ const CardChart = ({ cardData = initialCardData }) => {
     };
   }, []); // Empty array ensures this effect runs only once after initial render
   // Simplified for demonstration
-  const renderLoadingAnimation = () => {
-    return <LoadingCardAnimation selected={true} />;
-  };
+  // const renderLoadingAnimation = () => {
+  //   return <LoadingCardAnimation selected={true} />;
+  // };
   const renderHeaderWithAnimation = () => {
     return (
       <Box
@@ -164,7 +159,20 @@ const CardChart = ({ cardData = initialCardData }) => {
         }}
       >
         <CardHeader
+          // avatar={
+          //   <Avatar
+          //     alt="imageUrl"
+          //     src={imageUrl || cardData?.imageUrl || ''}
+          //     sx={{ width: 24, height: 24 }}
+          //   />
+          // }
+          action={
+            <IconButton aria-label="settings">
+              <MoreVertIcon />
+            </IconButton>
+          }
           title="Card Cron Job Simulator"
+          subheader={cardData?.name || 'Card Name'}
           sx={{
             padding: theme.spacing(1),
             margin: theme.spacing(1),
@@ -175,67 +183,6 @@ const CardChart = ({ cardData = initialCardData }) => {
       </Box>
     );
   };
-  // const renderImageLoadTestWithErrorHandling = () => {
-  //   const handleImageLoad = () => {
-  //     console.log('Image loaded');
-  //   };
-  //   const handleImageError = () => {
-  //     console.log('Image error');
-  //   };
-  //   return (
-  //     <ErrorBoundary>
-  //       <ImageDisplayFromHook
-  //         imageUrl={imageUrl}
-  //         handleImageLoad={handleImageLoad}
-  //         handleImageError={handleImageError}
-  //       />
-  //     </ErrorBoundary>
-  //   );
-  // };
-  // const renderImageLoadTest = () => {
-  //   if (!imageUrl && allCollections?.length > 0) return null;
-  //   // if (!imageUrl && allCollections?.length > 0) {
-  //   //   setImageUrl(allCollections[0]?.cards[0]?.image);
-  //   // }
-  //   const handleImageLoad = () => {
-  //     console.log('Image loaded');
-  //   };
-  //   const handleImageError = () => {
-  //     console.log('Image error');
-  //   };
-  //   return (
-  //     <ImageDisplayFromHook
-  //       imageUrl={imageUrl}
-  //       handleImageLoad={handleImageLoad}
-  //       handleImageError={handleImageError}
-  //     />
-  //   );
-  // };
-  // const renderLoadingAnimation = () => {
-  //   if (isLgUp) {
-  //     console.log('Loading animation');
-  //     return (
-  //       <Container
-  //         sx={{
-  //           display: 'flex',
-  //           flexDirection: 'column',
-  //           height: '50%',
-  //           width: '50%',
-  //         }}
-  //       >
-  //         {/* Use LoadingCardAnimation with the correct props */}
-  //         <LoadingCardAnimation
-  //           cards={[]}
-  //           isLoading={true}
-  //           error={null}
-  //           cardData={cardData}
-  //         />
-  //       </Container>
-  //     );
-  //   }
-  //   return null;
-  // };
-
   return (
     <React.Fragment>
       <Card
@@ -283,20 +230,7 @@ const CardChart = ({ cardData = initialCardData }) => {
           >
             {renderHeaderWithAnimation()}
           </Box>
-          {/* <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              // width: '100%',
-              maxWidth: '100%',
-              maxHeight: '100%',
-              padding: theme.spacing(2),
-            }}
-          >
-            {renderImageLoadTest()}
-          </Box> */}
+
           <SquareChartContainer>
             <ChartArea theme={theme}>
               {loadingStatus?.isLoading ? (
@@ -315,7 +249,6 @@ const CardChart = ({ cardData = initialCardData }) => {
 
         <Card
           sx={{
-            // background: theme.palette.backgroundA.lightest,
             elevation: 2,
             boxShadow: 2,
             // marginTop: 2,
@@ -323,7 +256,7 @@ const CardChart = ({ cardData = initialCardData }) => {
           }}
         >
           {/* Card displaying data with responsive typography */}
-          <Box
+          {/* <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-around',
@@ -332,8 +265,8 @@ const CardChart = ({ cardData = initialCardData }) => {
               width: '100%',
               height: '100%',
             }}
-          >
-            <CardActions
+          > */}
+          {/* <CardActions
               sx={{
                 justifyContent: 'space-between',
                 width: '100%',
@@ -342,8 +275,8 @@ const CardChart = ({ cardData = initialCardData }) => {
               }}
             >
               {/* Responsive Button Styling */}
-              {/* Iterate through buttons to reduce redundancy */}
-              {['Start Updates', 'Pause Updates', 'Reset Data'].map(
+          {/* Iterate through buttons to reduce redundancy */}
+          {/* {['Start Updates', 'Pause Updates', 'Reset Data'].map(
                 (text, index) => (
                   <Button
                     key={index}
@@ -376,11 +309,50 @@ const CardChart = ({ cardData = initialCardData }) => {
                   </Button>
                 )
               )}
-            </CardActions>
-          </Box>
-          <CardContent
-            sx={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
+            </CardActions>  */}
+          <CardActions
+            sx={{
+              justifyContent: 'space-between',
+              width: '100%',
+              m: 0,
+              p: 0,
+            }}
           >
+            {['Start Updates', 'Pause Updates', 'Reset Card Data'].map(
+              (text, index) => (
+                <Button
+                  key={index}
+                  variant={
+                    text === 'Reset Card Data' ? 'outlined' : 'contained'
+                  }
+                  onClick={() => {
+                    if (text === 'Start Updates') startUpdates();
+                    else if (text === 'Pause Updates') pauseUpdates();
+                    else if (text === 'Reset Card Data') resetData();
+                  }}
+                  sx={{
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    width: '30%',
+                    height: '100%',
+                    minHeight: '100%',
+                    mx: 0.5,
+                    my: 0.5,
+                    flexGrow: 1,
+                    color: theme.palette.backgroundA.contrastTextB,
+                    background: theme.palette.backgroundA.darker,
+                    '&:hover': {
+                      background: theme.palette.backgroundA.darkest,
+                    },
+                  }}
+                >
+                  {text}
+                </Button>
+              )
+            )}
+          </CardActions>
+          {/* </Box> */}
+          <CardContent sx={{ padding: 0, '&:last-child': { pb: 0 } }}>
             <Paper
               sx={{
                 background: theme.palette.backgroundA.lighter,

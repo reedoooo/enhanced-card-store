@@ -10,27 +10,17 @@ export const useCardStoreHook = () => {
   const { resetForm } = useFormContext(); // Assuming this is where you get your resetForm function
   const logger = useLogger('CardProvider');
   const handleApiResponse = useApiResponseHandler();
-  // const [previousSearchData, setPreviousSearchData] = useState([]); // For pagination
-  // const initialSearchData = useRef([]);
-  // Use custom hook for persistent state
-  // const [searchData, setSearchData] = useLocalStorage(
-  //   'searchData',
-  //   initialSearchData
+  // const [previousSearchData, setPreviousSearchData] = useLocalStorage(
+  //   'previousSearchData',
+  //   []
   // );
-  // const [cardsArray, setCardsArray] = useLocalStorage('cardsArray', []);
-  // // const [isDataValid, setIsDataValid] = useState(false);
-  // const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
-  // Use custom hook for persistent state
-  const [previousSearchData, setPreviousSearchData] = useLocalStorage(
-    'previousSearchData',
-    []
-  );
   const [searchData, setSearchData] = useLocalStorage(
-    'searchData',
-    previousSearchData || []
+    'searchData'
+    // previousSearchData || []
   );
   const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
   const [initialLoad, setInitialLoad] = useState(true); // New state to track the initial load
+  const [loadingSearchResults, setLoadingSearchResults] = useState(false);
 
   useEffect(() => {
     if (initialLoad) {
@@ -41,19 +31,19 @@ export const useCardStoreHook = () => {
   useEffect(() => {
     logger.logEvent('ALL SEARCH DATA', {
       current: searchData,
-      previous: previousSearchData,
+      // previous: previousSearchData,
     });
   }, [searchData]);
-  useEffect(() => {
-    // Whenever searchData updates, store its previous value
-    setPreviousSearchData(searchData);
-  }, [searchData]);
-  useEffect(() => {
-    // Log previousSearchData only if it's not the initial load
-    if (!initialLoad) {
-      logger.logEvent('PREVIOUS SEARCH VALUES', { previousSearchData });
-    }
-  }, [searchData]);
+  // useEffect(() => {
+  //   // Whenever searchData updates, store its previous value
+  //   setPreviousSearchData(searchData);
+  // }, [searchData]);
+  // useEffect(() => {
+  //   // Log previousSearchData only if it's not the initial load
+  //   if (!initialLoad) {
+  //     logger.logEvent('PREVIOUS SEARCH VALUES', { previousSearchData });
+  //   }
+  // }, [searchData]);
 
   const clearSearchData = () => {
     setSearchData([]);
@@ -62,6 +52,7 @@ export const useCardStoreHook = () => {
   };
 
   const handleRequest = async (searchParams) => {
+    setLoadingSearchResults(true);
     // clearSearchData(); // Clear existing search data before making a new request
     // resetForm(); // Reset the form when a new request is made
     try {
@@ -91,6 +82,8 @@ export const useCardStoreHook = () => {
       logger.logEvent('Error fetching card data', err);
       clearSearchData();
       resetForm();
+    } finally {
+      setLoadingSearchResults(false); // Set loading to false once the request is complete
     }
   };
 
@@ -108,12 +101,14 @@ export const useCardStoreHook = () => {
 
   return {
     searchData,
-    previousSearchData,
+    // previousSearchData,
     isDataValid,
     setSearchData,
-    setPreviousSearchData,
+    // setPreviousSearchData,
     setIsDataValid,
     clearSearchData,
     handleRequest,
+    loadingSearchResults,
+    setLoadingSearchResults,
   };
 };

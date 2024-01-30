@@ -154,6 +154,8 @@ export const CardValueStyle = styled('span')(({ theme }) => ({
 // COLLLECTION LIST ITEM
 export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
   margin: theme.spacing(1),
+  width: '100%',
+  flexGrow: 1,
   transition: '0.3s',
   boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
   '&:hover': {

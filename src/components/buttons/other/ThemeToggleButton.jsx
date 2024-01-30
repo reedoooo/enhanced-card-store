@@ -19,7 +19,6 @@ const ThemeToggleButton = () => {
   const handleThemeChange = (mode) => {
     toggleColorMode(mode); // Updated this line
     console.log('mode', mode);
-    // console.log('colorMode', colorMode);
     handleClose();
   };
 

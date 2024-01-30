@@ -1,17 +1,5 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import {
-  List,
-  ListItem,
-  ButtonBase,
-  ListItemText,
-  Divider,
-  Button,
-  Grid,
-  Typography,
-  useTheme,
-  Skeleton,
-  Card,
-} from '@mui/material';
+import React, { useCallback } from 'react';
+import { List, Skeleton } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useCollectionStore } from '../../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { useStatisticsStore } from '../../../context/SECONDARY_CONTEXT/StatisticsContext/StatisticsContext';
@@ -43,9 +31,6 @@ const SelectCollectionList = ({ allCollections, openDialog }) => {
     showCollections && (
       <List>
         {allCollections?.map((collection, index) => {
-          {
-            /* const isLoading = loadingCollectionIds?.includes(collection?._id); */
-          }
           if (!allCollections || allCollections.length === 0) {
             setIsDataLoading(true);
           }
@@ -69,7 +54,6 @@ const SelectCollectionList = ({ allCollections, openDialog }) => {
               key={
                 collection?._id ||
                 `collectionListItem-${index}-${collection?._id}`
-                // `${collection?.name}-${collection?.totalPrice}-${index}`
               }
               collection={collection}
               handleOpenDialog={handleOpenDialog}
@@ -86,10 +70,7 @@ const SelectCollectionList = ({ allCollections, openDialog }) => {
 };
 
 SelectCollectionList.propTypes = {
-  // onSave: PropTypes.func.isRequired,
   openDialog: PropTypes.func.isRequired,
-  // handleSelectCollection: PropTypes.func.isRequired,
-  // isLoadingNewCollection: PropTypes.bool,
   allCollections: PropTypes.array.isRequired, // Ensure this is passed or obtained from context
 };
 
