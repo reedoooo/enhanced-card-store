@@ -1,7 +1,6 @@
 import Icon from '@mui/material/Icon';
 // Images
-import usePagination from '../../../context/hooks/usePagination';
-import MDTypography from '../MDTYPOGRAPHY/MDTypography';
+import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import React from 'react';
 const Name = ({ name }) => (
   <MDTypography
@@ -62,28 +61,33 @@ export default function prepareTableData(selectedCards) {
       {
         Header: 'Name',
         accessor: 'name',
+        id: 'name',
         Cell: ({ value }) => <Name name={value} />,
       },
       {
         Header: 'Price',
         accessor: 'price',
+        id: 'price',
         Cell: ({ value }) => <Price price={value} />,
       },
       {
         Header: 'Total Price',
         accessor: 'tPrice',
+        id: 'tPrice',
         Cell: ({ value }) => <TPrice tPrice={roundToNearestTenth(value)} />,
       },
       {
         Header: 'Quantity',
         accessor: 'quantity',
+        id: 'quantity',
         Cell: ({ value }) => <Quantity quantity={value} />,
       },
-      // {
-      //   Header: 'Action',
-      //   accessor: 'action',
-      //   Cell: ({ value }) => <Action value={value} />,
-      // },
+      {
+        Header: 'Action',
+        accessor: 'action',
+        id: 'action',
+        Cell: ({ value }) => <Action value={value} />,
+      },
     ],
     []
   );

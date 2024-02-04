@@ -193,7 +193,7 @@ const defaultPageContextValues = {
     loadingTimeoutExpired: false,
     loadingType: '',
   },
-  activelyLoading: false,
+  error: null,
   setActivelyLoading: () => {},
   returnDisplay: () => null,
   setLoading: () => {},
@@ -448,6 +448,30 @@ const defaultChartContextValues = {
   formatDateToString: () => {},
 };
 
+// ! DEFAULT VALUES FOR FORM CONTEXT
+const defaultFormContextValues = {
+  forms: {},
+  formErrors: {},
+  initialFormStates: {},
+  currentForm: {},
+  schemas: {},
+  currentFormType: '',
+  errors: {},
+  isSubmitting: false,
+  setForms: () => {},
+  setFormErrors: () => {},
+  setCurrentForm: () => {},
+  handleChange: () => {},
+  handleSubmit: () => {},
+  onSubmit: () => {},
+  resetForm: () => {},
+  handleRequest: () => {},
+  register: () => {},
+  setFormType: () => {},
+  setCurrentFormType: () => {},
+  setValueAtPath: () => {},
+};
+
 export const defaultContextValue = {
   // PAGE CONTEXT
   PAGE_CONTEXT: defaultPageContextValues,
@@ -467,6 +491,8 @@ export const defaultContextValue = {
   STATISTICS_CONTEXT: defaultStatisticsContextValues,
   // CHART CONTEXT
   CHART_CONTEXT: defaultChartContextValues,
+  // FORM CONTEXT
+  FORM_CONTEXT: defaultFormContextValues,
 };
 
 // ! DEFAULT VALUES FOR SPECIfIC COMPONENTS ----------------------

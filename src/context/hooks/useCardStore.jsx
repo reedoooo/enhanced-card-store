@@ -10,14 +10,7 @@ export const useCardStoreHook = () => {
   const { resetForm } = useFormContext(); // Assuming this is where you get your resetForm function
   const logger = useLogger('CardProvider');
   const handleApiResponse = useApiResponseHandler();
-  // const [previousSearchData, setPreviousSearchData] = useLocalStorage(
-  //   'previousSearchData',
-  //   []
-  // );
-  const [searchData, setSearchData] = useLocalStorage(
-    'searchData'
-    // previousSearchData || []
-  );
+  const [searchData, setSearchData] = useLocalStorage('searchData');
   const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
   const [initialLoad, setInitialLoad] = useState(true); // New state to track the initial load
   const [loadingSearchResults, setLoadingSearchResults] = useState(false);
@@ -57,7 +50,11 @@ export const useCardStoreHook = () => {
     // resetForm(); // Reset the form when a new request is made
     try {
       logger.logEvent('handleRequest start', { searchParams, userId });
-      const requestBody = { ...searchParams, user: userId };
+      const requestBody = {
+        searchParams,
+        user: userId,
+        searchTerm: searchParams,
+      };
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
         requestBody
@@ -93,12 +90,6 @@ export const useCardStoreHook = () => {
       logger.logEvent('UPDATED SEARCH VALUES', { searchData });
     }
   }, [searchData]);
-
-  // const getCardData = (cardId) =>
-  //   currentCartArray.find((card) => card.id === cardId);
-  // const getRandomCard = () =>
-  //   currentCartArray[Math.floor(Math.random() * currentCartArray.length)];
-
   return {
     searchData,
     // previousSearchData,

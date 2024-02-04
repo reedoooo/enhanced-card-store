@@ -30,7 +30,6 @@ const CollectionPage = () => {
       }}
     >
       <Grid container sx={{ height: '100vh', width: '100vw', p: 0 }}>
-        {' '}
         {loadingStatus?.isPageLoading && returnDisplay()}
         {!selectedCollection && (
           <Grid
@@ -39,7 +38,6 @@ const CollectionPage = () => {
             sx={{
               height: heroBannerHeight,
               width: '100vw',
-              // position: 'relative',
               top: '70px',
             }}
           >
@@ -62,12 +60,7 @@ const CollectionPage = () => {
             </Box>
           </Grid>
         )}
-        <CollectionPortfolio
-          allCollections={allCollections}
-          // onCollectionSelect={(collection) => {
-          //   show(collection);
-          // }}
-        />
+        <CollectionPortfolio allCollections={allCollections} />
         {isModalOpen && (
           <GenericCardDialog
             open={isModalOpen}

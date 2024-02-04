@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FormWrapper,
   StyledButton,
@@ -7,17 +7,35 @@ import {
 } from './styled';
 
 import { Button, Grid } from '@mui/material';
-import { useMode } from '../../context';
+import { useFormContext, useMode, usePageContext } from '../../context';
+import FormField from '../reusable/FormField';
 
-const SearchForm = ({
-  searchTerm,
-  handleChange, // Make sure this is the adjusted function from SearchBar
-  handleSubmit,
-  handleKeyPress,
-  onFocus,
-  onBlur,
-}) => {
+const SearchForm = ({ onFocus, onBlur }) => {
   const { theme } = useMode();
+  const { returnDisplay, loadingStatus, setIsFormDataLoading } =
+    usePageContext();
+  const {
+    errors,
+    isSubmitting,
+    currentFormType,
+    onSubmit,
+    register,
+    handleChange,
+    handleSubmit,
+    setFormType,
+  } = useFormContext();
+
+  useEffect(() => setFormType('searchForm'), [setFormType]);
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSubmit((data) => {
+        onSubmit(data);
+      });
+    }
+  };
+
   return (
     <StyledFormPaper
       theme={theme}
@@ -25,8 +43,34 @@ const SearchForm = ({
         background: theme.palette.backgroundB.lightest,
       }}
     >
-      <FormWrapper onSubmit={handleSubmit} theme={theme}>
-        <StyledTextField
+      <form
+        onSubmit={handleSubmit((data) => {
+          onSubmit(data);
+        })}
+        // theme={theme}
+      >
+        <FormField
+          name="searchTerm"
+          label="Search for cards"
+          register={register}
+          errors={errors}
+          required
+          value={currentFormType?.searchForm?.searchTerm}
+          onChange={(event) => {
+            const { name, value } = event.target;
+            handleChange(name, value);
+          }}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onKeyDown={handleKeyPress}
+          theme={theme}
+        />
+        {errors.searchTerm && (
+          <Grid item xs={12}>
+            <p>{errors.searchTerm.message}</p>
+          </Grid>
+        )}
+        {/* <StyledTextField
           value={searchTerm}
           onChange={handleChange}
           onFocus={onFocus}
@@ -36,10 +80,11 @@ const SearchForm = ({
           fullWidth
           onKeyDown={handleKeyPress}
           theme={theme}
-        />
+        /> */}
         <Button
           fullWidth
           variant="contained"
+          disabled={isSubmitting}
           color="primary"
           type="submit"
           sx={{
@@ -49,9 +94,10 @@ const SearchForm = ({
             '&:hover': { background: theme.palette.backgroundA.darkest },
           }}
         >
-          Search
+          {isSubmitting ? 'Loading...' : 'Search'}
         </Button>
-      </FormWrapper>
+        {errors.root && <p>{errors.root.message}</p>}
+      </form>
     </StyledFormPaper>
   );
 };

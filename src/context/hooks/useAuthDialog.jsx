@@ -16,7 +16,7 @@ const useAuthDialog = () => {
     }
   }, [isLoggedIn, openDialog, closeDialog, logout]);
 
-  return { toggleLoginDialog, isLoggedIn };
+  return { toggleLoginDialog, isLoggedIn, logout };
 };
 
 export default useAuthDialog;

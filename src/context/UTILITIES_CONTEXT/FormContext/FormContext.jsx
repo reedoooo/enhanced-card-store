@@ -1,206 +1,157 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
 import { usePageContext } from '../PageContext/PageContext';
-import {
-  defaultContextValue,
-  initialFormStates,
-  setValueAtPath,
-} from './helpers';
+// import { defaultContextValue } from './helpers';
 import { useCardStoreHook } from '../../hooks/useCardStore';
-
+import { useForm, FormProvider as RHFormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { formSchemas } from './schemas';
+import { defaultContextValue } from '../../constants';
 // Define the context
-const FormContext = createContext(defaultContextValue);
-
-// Hook for consuming context
-export const useFormContext = () => useContext(FormContext);
-// Define form validations if needed
-const formValidations = {
-  // loginForm: (values) => {
-  //   let errors = {};
-  //   if (!values.username) errors.username = 'Username is required';
-  //   if (!values.password) errors.password = 'Password is required';
-  //   return errors;
-  // },
-  // signupForm: (values) => {
-  //   let errors = {};
-  //   // Example: Add validations specific to signup form
-  //   if (!values.firstName) errors.firstName = 'First name is required';
-  //   if (!values.lastName) errors.lastName = 'Last name is required';
-  //   // ... more validations
-  //   return errors;
-  // },
-  updateUserDataForm: (values) => {
-    let errors = {};
-    // Example: Add validations specific to user data update form
-    if (!values.firstName) errors.firstName = 'First name is required';
-    if (!values.lastName) errors.lastName = 'Last name is required';
-    // ... more validations
-    return errors;
-  },
-  updateCollectionForm: (values) => {
-    let errors = {};
-    // Example: Add validations specific to collection update form
-    if (!values.name) errors.name = 'Collection name is required';
-    if (!values.description) errors.description = 'Description is required';
-    // ... more validations
-    return errors;
-  },
-};
+const FormContext = createContext(defaultContextValue.FORM_CONTEXT);
+// const formValidations = {
+//   updateUserDataForm: (values) => {
+//     let errors = {};
+//     // Example: Add validations specific to user data update form
+//     if (!values.firstName) errors.firstName = 'First name is required';
+//     if (!values.lastName) errors.lastName = 'Last name is required';
+//     // ... more validations
+//     return errors;
+//   },
+//   updateCollectionForm: (values) => {
+//     let errors = {};
+//     // Example: Add validations specific to collection update form
+//     if (!values.name) errors.name = 'Collection name is required';
+//     if (!values.description) errors.description = 'Description is required';
+//     // ... more validations
+//     return errors;
+//   },
+// };
 
 export const FormProvider = ({ children }) => {
-  const { signup, login } = useAuthContext();
-  const { handleRequest } = useCardStoreHook();
+  const [currentFormType, setCurrentFormType] = useState('defaultForm');
+  const currentSchema = formSchemas[currentFormType] || formSchemas.default;
+  const defaultValues = formSchemas.defaultValues[currentFormType];
+  const methods = useForm({
+    mode: 'onTouched',
+    defaultValues,
+    resolver: zodResolver(currentSchema),
+  });
   const {
-    loadingStatus,
-    setIsFormDataLoading, // Use setLoading instead of individual state setters
-    returnDisplay,
-  } = usePageContext();
-  const [forms, setForms] = useState(initialFormStates);
-  const [currentForm, setCurrentForm] = useState({}); // For multiple forms
-  const [formErrors, setFormErrors] = useState(null); // For a single form
-  const [limitedCards, setLimitedCards] = useState([]); // For a single form
-  const resetForm = (formName) => {
-    setForms((prevForms) => ({
-      ...prevForms,
-      [formName]: initialFormStates[formName],
-    }));
-    setFormErrors((prevErrors) => ({ ...prevErrors, [formName]: {} }));
+    reset,
+    handleSubmit,
+    setValue,
+    register,
+    setError,
+    formState: { errors, isSubmitting },
+  } = methods;
+  const { signup, login } = useAuthContext();
+  const { setIsFormDataLoading } = usePageContext();
+  const { handleRequest } = useCardStoreHook();
+  const setFormType = (formType) => {
+    console.log('Setting form type:', formType);
+    setCurrentFormType(formType);
   };
-  const handleChange = (formName, path) => (event) => {
-    const { value } = event.target;
-    setForms((prevForms) => {
-      const form = { ...prevForms[formName] };
-      setValueAtPath(form, path, value);
-      return { ...prevForms, [formName]: form };
-    });
-    // Specific logic for the search form
-    if (formName === 'searchForm' && path === 'searchTerm') {
-      handleRequest({ searchTerm: value });
-    }
-    if (formValidations[formName]) {
-      const newErrors = formValidations[formName](forms[formName]);
-      setFormErrors({ ...formErrors, [formName]: newErrors });
-    }
-  };
-  // !--------------------------------
-  // TODO: integrate functionaltity below
-  // // Search input value state
-  // const [search, setSearch] = useState(globalFilter);
-
-  // // Search input state handle
-  // const onSearchChange = useAsyncDebounce((value) => {
-  //   setGlobalFilter(value || undefined);
-  // }, 100);
-  // !----------------------
-  // const handleChange = (formName, path) => (event) => {
-  //   const { value } = event.target;
-  //   setForms((prevForms) => {
-  //     const form = { ...prevForms[formName] };
-  //     setValueAtPath(form, path, value);
-  //     return { ...prevForms, [formName]: form };
-  //   });
-
-  //   // Check if the form being changed is the search form and specifically the searchTerm field
-  //   if (formName === 'searchForm' && path === 'searchTerm') {
-  //     // Call handleRequest for immediate search
-  //     const updatedSearchForm = {
-  //       ...forms.searchForm,
-  //       searchTerm: value,
-  //     };
-  //     handleRequest(updatedSearchForm);
-  //   }
-
-  //   if (formValidations[formName]) {
-  //     const newErrors = formValidations[formName](forms[formName]);
-  //     setFormErrors({ ...formErrors, [formName]: newErrors });
-  //   }
-  // };
-  const handleSubmit = (formName) => async (event) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
+    console.log('Submitting form:', currentFormType);
+    console.log('Form data:', data);
     setIsFormDataLoading(true);
-    setCurrentForm(forms[formName]);
-    const currentErrors = formValidations[formName]
-      ? formValidations[formName](currentForm)
-      : {};
 
-    console.log('currentForm', currentForm);
-
-    if (Object.values(currentErrors).every((x) => x === '')) {
-      // Proceed based on form type
-      switch (formName) {
+    try {
+      switch (currentFormType) {
         case 'signupForm':
-          console.log('Submitting signup form:', currentForm);
-          await signup(currentForm?.securityData, currentForm.basicData); // Use the appropriate function from AuthContext
-          // await signup(securityData, basicData); // Use the appropriate function from AuthContext
+          await signup(
+            data.firstName,
+            data.lastName,
+            data.username,
+            data.password,
+            data.email
+          );
           break;
         case 'loginForm':
-          console.log('Submitting login form:', currentForm);
-          await login(
-            currentForm?.securityData?.username,
-            currentForm?.securityData?.password
-          ); // Use the appropriate function from AuthContext
+          await login(data.username, data.password);
           break;
         case 'updateUserDataForm':
-          console.log('Submitting update user data form:', currentForm);
-          // await updateUserData(currentForm); // Adjust as necessary
+          // await updateUserData(data); // Adjust as necessary
           break;
         case 'updateCollectionForm':
-          console.log('Submitting update collection form:', currentForm);
-          // await updateCollection(currentForm); // Adjust as necessary
+          // await updateCollection(data); // Adjust as necessary
           break;
         case 'addCollectionForm':
-          console.log('Submitting add collection form:', currentForm);
-          // await addCollection(currentForm); // Adjust as necessary
+          // await addCollection(data); // Adjust as necessary
           break;
         case 'searchForm':
-          console.log('Submitting search form:', forms.searchForm);
-          await handleRequest(currentForm); // Use handleRequest for the search form
+          console.log('Submitting search form:', data);
+          await handleRequest(data.searchTerm); // Use handleRequest for the search form
           break;
         default:
           console.log('No form type specified');
           break;
       }
+      // console.log(`${currentFormType} submitted`, data);
       console.log(
         `${
-          formName?.charAt(0).toUpperCase() + formName.slice(1)
-        } Form submitted successfully`
+          currentFormType?.charAt(0).toUpperCase() + currentFormType.slice(1)
+        } Form submitted successfully`,
+        data
       );
-      resetForm(formName);
-    } else {
-      setFormErrors(currentErrors); // Update error state
-      console.log('Form errors:', currentErrors);
+      reset(); // Reset form after successful submission
+    } catch (error) {
+      console.error('Form submission error:', error);
+    } finally {
+      setIsFormDataLoading(false);
     }
-    setIsFormDataLoading(false); // indicate form submission is done
   };
+  const handleChange = (name, value) => {
+    console.log('Setting value:', name, value);
+
+    // Get the previous value from the form state
+    // const prevValue = methods.getValues(name);
+
+    // Check if the new value is different from the previous value
+    setValue(name, value);
+
+    if (currentFormType === 'searchForm') {
+      handleRequest(value);
+    }
+    // if (value !== prevValue) {
+    //   setValue(name, value);
+
+    //   if (currentFormType === 'searchForm') {
+    //     handleRequest(value);
+    //   }
+    // }
+  };
+
   const contextValue = {
-    forms,
-    formErrors,
-    initialFormStates,
-    currentForm,
-    limitedCards,
-    setForms,
-    setFormErrors,
-    setCurrentForm,
+    ...methods,
+    currentFormType,
+    currentSchema,
+    errors,
+    isSubmitting,
+
+    setCurrentFormType,
+    register,
+    setFormType,
     handleChange,
+    onSubmit,
     handleSubmit,
-    resetForm,
-    handleRequest,
   };
 
   return (
-    <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>
+    <FormContext.Provider value={contextValue}>
+      <RHFormProvider {...methods}>{children}</RHFormProvider>
+    </FormContext.Provider>
   );
 };
 
 export default FormProvider;
-// // Utility to set value at a given path in an object
-// // Example: setValueAtPath(obj, 'address.line1', '123 Main St')
-// const setValueAtPath = (obj, path, value) => {
-//   const keys = path.split('.');
-//   let current = obj;
-//   for (let i = 0; i < keys.length - 1; i++) {
-//     current[keys[i]] = current[keys[i]] || {};
-//     current = current[keys[i]];
-//   }
-//   current[keys[keys.length - 1]] = value;
-// };
+
+// Hook for consuming context
+export const useFormContext = () => {
+  const context = useContext(FormContext);
+  if (!context) {
+    throw new Error('useFormContext must be used within FormProvider');
+  }
+  return context;
+};

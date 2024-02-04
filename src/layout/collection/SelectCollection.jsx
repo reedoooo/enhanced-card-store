@@ -14,7 +14,7 @@ import TopFiveExpensiveCards from '../../components/other/dataDisplay/TopFiveExp
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
 import useCollectionVisibility from '../../context/hooks/useCollectionVisibility';
 import DashboardLayout from './DashBoard/DashBoardLayout';
-import MDBox from './MDBOX';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 const SelectCollection = (onSelectCollection) => {
   const { theme } = useMode();
   const [isDialogOpen, setDialogOpen] = useState(false);

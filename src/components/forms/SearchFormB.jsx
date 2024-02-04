@@ -1,8 +1,8 @@
 // SearchForm.jsx
 import React from 'react';
 import { TextField, MenuItem, Select, InputLabel } from '@mui/material';
-import { StyledFormControl } from '../../../pages/pageStyles/StyledComponents';
-import { useMode } from '../../../context';
+import { StyledFormControl } from '../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../context';
 
 const SearchFormB = ({
   searchSettings,

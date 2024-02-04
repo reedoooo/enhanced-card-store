@@ -7,6 +7,8 @@ import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialo
 import DeckSearch from '../components/other/search/DeckSearch';
 import DeckDisplay from '../layout/deck/DeckDisplay';
 import { useMode } from '../context';
+import DeckBuilder from '../layout/deck';
+import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 
 const DeckBuilderPage = () => {
   const { theme } = useMode();
@@ -16,16 +18,16 @@ const DeckBuilderPage = () => {
     md: '20vh', // 25% for medium screens and up
     lg: '25vh', // 30% for large screens and up
   };
-  const deckBuilderHeight = {
-    xs: '90vh', // 90% for mobile screens
-    sm: '85vh', // 80% for small screens and up
-    md: '80vh', // 75% for medium screens and up
-    lg: '75vh', // 70% for large screens and up
-  };
+  // const deckBuilderHeight = {
+  //   xs: '90vh', // 90% for mobile screens
+  //   sm: '85vh', // 80% for small screens and up
+  //   md: '80vh', // 75% for medium screens and up
+  //   lg: '75vh', // 70% for large screens and up
+  // };
   const { loadingStatus, returnDisplay, setIsPageLoading } = usePageContext();
   const { isModalOpen, modalContent } = useModalContext();
   return (
-    <Box
+    <MDBox
       sx={{
         top: 0,
         left: -20,
@@ -42,6 +44,7 @@ const DeckBuilderPage = () => {
           sx={{
             height: heroBannerHeight,
             width: '100vw',
+            top: '70px',
           }}
         >
           <Box
@@ -62,43 +65,7 @@ const DeckBuilderPage = () => {
             />
           </Box>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sx={{
-            height: deckBuilderHeight,
-            position: 'relative',
-            px: 'auto',
-            mx: 'auto',
-          }}
-        >
-          <Box
-            sx={{
-              height: '100%',
-              overflow: 'auto', // Add scroll for overflow content
-              padding: theme.spacing(3),
-              backgroundColor: theme.palette.backgroundB.default,
-              borderRadius: theme.shape.borderRadius,
-              color: theme.palette.text.primary,
-            }}
-          >
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                display: 'flex',
-                alignItems: 'flex-start',
-              }}
-            >
-              <Grid item xs={12} md={6}>
-                <DeckSearch />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <DeckDisplay />
-              </Grid>
-            </Grid>
-          </Box>
-        </Grid>
+        <DeckBuilder />
         {isModalOpen && (
           <GenericCardDialog
             open={isModalOpen}
@@ -107,7 +74,7 @@ const DeckBuilderPage = () => {
           />
         )}
       </Grid>
-    </Box>
+    </MDBox>
   );
 };
 

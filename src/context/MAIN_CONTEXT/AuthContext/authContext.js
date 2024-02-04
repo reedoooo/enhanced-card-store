@@ -15,16 +15,15 @@ import { processResponseData } from './helpers';
 import useLogger from '../../hooks/useLogger';
 import useApiResponseHandler from '../../hooks/useApiResponseHandler';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
-export const AuthContext = createContext();
+import { defaultContextValue } from '../../constants';
 
-const cookieOptions = { path: '/' };
+export const AuthContext = createContext(defaultContextValue.AUTH_CONTEXT);
+
 const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
 export default function AuthProvider({ children }) {
   const { setIsDataLoading } = usePageContext();
   const { logEvent } = useLogger('AuthContext');
-  const handleApiResponse = useApiResponseHandler();
-  const fetchWrapper = useFetchWrapper();
   const [lastTokenCheck, setLastTokenCheck] = useState(Date.now());
   const checkInterval = 120000; // 2 minutes in milliseconds
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -39,22 +38,9 @@ export default function AuthProvider({ children }) {
   ]);
   const [responseMessage, setResponseMessage] = useState('');
   const logoutTimerRef = useRef(null);
-
-  // const setCookies = (data) => {
-  //   Object.entries(data).forEach(([key, value]) => {
-  //     logEvent('Setting cookie for: ', value);
-  //     setCookie(key, value, cookieOptions);
-  //   });
-  // };
-
   const executeAuthAction = async (actionType, url, requestData) => {
     setIsDataLoading(true);
     try {
-      // const response = await fetchWrapper(
-      //   `${REACT_APP_SERVER}/api/users/${url}`,
-      //   'POST',
-      //   requestData
-      // );
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/${url}`,
         requestData
@@ -183,6 +169,7 @@ export default function AuthProvider({ children }) {
       basicData: cookies.userBasicData,
       securityData: cookies.userSecurityData,
       userId: cookies.userId,
+
       login,
       signup,
       logout,

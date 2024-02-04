@@ -23,17 +23,11 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import {
-  useCardStore,
-  useDeckStore,
-  useFormContext,
-  useMode,
-} from '../../../context';
+import { useMode } from '../../../context';
 import SearchForm from '../../forms/SearchForm';
 
 const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
   const { theme } = useMode();
-  const { forms, handleChange, handleSubmit } = useFormContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -80,15 +74,18 @@ const SearchBar = ({ onSearchFocus, onSearchBlur }) => {
         >
           {/* eslint-disable-next-line max-len */}
           <SearchForm
-            searchTerm={forms?.searchForm?.searchTerm}
-            handleChange={handleChange('searchForm', 'searchTerm')}
-            handleSubmit={handleSubmit('searchForm')}
-            handleKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSubmit('searchForm')(e);
-              }
-            }}
+            // searchTerm={currentFormType?.searchForm?.searchTerm}
+            // handleChange={handleChange(
+            //   'searchForm',
+            //   currentFormType?.searchForm?.searchTerm
+            // )}
+            // handleSubmit={handleSubmit}
+            // handleKeyPress={(e) => {
+            //   if (e.key === 'Enter') {
+            //     e.preventDefault();
+            //     handleSubmit('searchForm')(e);
+            //   }
+            // }}
             onFocus={onSearchFocus}
             onBlur={onSearchBlur}
           />

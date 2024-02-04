@@ -95,70 +95,6 @@ const getGridItemProps = (title) => ({
   md: title === 'Enterprise' ? 12 : 4,
   style: { display: 'flex' },
 });
-// export const AnimatedFeatureCard = ({ tier, onOpenModal, theme }) => {
-//   const [tiltAnimation, api] = useSpring(() => ({
-//     transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
-//   }));
-
-//   const handleMouseEnter = () =>
-//     api.start({
-//       transform: 'perspective(600px) rotateX(5deg) rotateY(5deg) scale(1.05)',
-//     });
-//   const handleMouseLeave = () =>
-//     api.start({
-//       transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
-//     });
-//   return (
-//     <AnimatedBox
-//       style={tiltAnimation}
-//       onMouseEnter={handleMouseEnter}
-//       onMouseLeave={handleMouseLeave}
-//       sx={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         flexGrow: 1,
-//         height: '100%',
-//         width: '100%',
-//       }}
-//     >
-//       <FeatureCard
-//         theme={theme}
-//         sx={{
-//           display: 'flex',
-//           flexDirection: 'column',
-//           height: '100%',
-//         }}
-//       >
-//         <CardHeader
-//           title={tier.title}
-//           subheader={tier.subheader}
-//           titleTypographyProps={{ align: 'center' }}
-//           subheaderTypographyProps={{ align: 'center' }}
-//           sx={{ backgroundColor: theme.palette.backgroundA.dark }}
-//         />
-//         <CardContent>
-//           <CardUnorderedList>
-//             {tier.description.map((line, index) => (
-//               <CardListItem key={index} theme={theme}>
-//                 {line}
-//               </CardListItem>
-//             ))}
-//           </CardUnorderedList>
-//         </CardContent>
-//         <CardActions sx={{ alignSelf: 'end' }}>
-//           <ActionButton
-//             fullWidth
-//             variant="contained"
-//             theme={theme}
-//             onClick={() => onOpenModal(tier.title)}
-//           >
-//             {tier.buttonText}
-//           </ActionButton>
-//         </CardActions>
-//       </FeatureCard>
-//     </AnimatedBox>
-//   );
-// };
 const HomePage = () => {
   const { theme } = useMode();
   const breakpoints = theme.breakpoints;
@@ -315,10 +251,12 @@ const HomePage = () => {
             <Grid
               container
               spacing={isSmUp ? 5 : 2}
-              sx={{
-                // m: 0,
-                mt: 2,
-              }}
+              sx={
+                {
+                  // m: 0,
+                  // mt: 2,
+                }
+              }
             >
               {tiers.map((tier, index) => (
                 <Grid

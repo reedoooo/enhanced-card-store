@@ -1,9 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 const usePagination = (items, defaultPageSize) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
   // Setup for react-table pagination
   // Assumes items is the total dataset you want to paginate over
   const data = useMemo(() => items, [items]);
+
   // Pagination settings for react-table
   const initialState = useMemo(
     () => ({
@@ -23,6 +26,12 @@ const usePagination = (items, defaultPageSize) => {
     [items.length, initialState.pageSize]
   );
 
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * defaultPageSize;
+    const end = start + defaultPageSize;
+    return data.slice(start, end);
+  }, [data, currentPage, defaultPageSize]);
+
   // You can still create a custom pagination component if you like,
   // but you would control it using the state and actions provided by react-table.
 
@@ -34,6 +43,9 @@ const usePagination = (items, defaultPageSize) => {
     data,
     initialState,
     pageCount,
+    paginatedData,
+    currentPage,
+    setCurrentPage,
     // No need to return handlers like handleChangePage or handleChangeRowsPerPage
     // as react-table's usePagination hook provides these functionalities.
   };

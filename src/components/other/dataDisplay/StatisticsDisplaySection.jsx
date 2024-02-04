@@ -6,7 +6,7 @@ import { useMode } from '../../../context';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import MDBox from '../../../layout/collection/MDBOX';
+import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 
 const StatisticCard = styled(Card)(({ theme }) => ({
   height: '100%',

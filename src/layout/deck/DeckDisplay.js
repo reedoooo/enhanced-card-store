@@ -10,6 +10,7 @@ import {
   DeckDisplayPaper,
   DeckDisplayTitleTypography,
 } from '../../pages/pageStyles/StyledComponents';
+import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
 const DeckDisplay = () => {
   const { theme } = useMode();
@@ -53,9 +54,9 @@ const DeckDisplay = () => {
   return (
     <DeckDisplayBox theme={theme}>
       <DeckDisplayPaper theme={theme}>
-        <DeckDisplayTitleTypography variant="h5" theme={theme}>
+        <MDTypography variant="h5" theme={theme}>
           Your Decks
-        </DeckDisplayTitleTypography>
+        </MDTypography>
         <DeckListToggle
           showAllDecks={showAllDecks}
           setShowAllDecks={setShowAllDecks}

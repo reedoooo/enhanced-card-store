@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Container,
   Grid,
   IconButton,
   Paper,
@@ -21,16 +22,53 @@ import {
 import { useMode } from '../../context';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import the icon for the back button
 import DashboardLayout from './DashBoard/DashBoardLayout';
-import MDBox from './MDBOX';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import ComplexStatisticsCard from '../../components/other/dataDisplay/ComplexStatisticsCard';
-import MDTypography from './MDTYPOGRAPHY/MDTypography';
+import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import DataTable from '../../components/grids/collectionGrids';
 import collectionPortfolioData from './data/collectionPortfolioData';
+const commonMDBoxStyles = {
+  py: 3,
+  px: { xs: 2, sm: 3, md: 4 },
+  variant: 'gradient',
+  borderRadius: 'lg',
+  coloredShadow: 'info',
+  background: 'linear-gradient(60deg, #26c6da, #00acc1)',
+  boxShadow:
+    '0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 172, 193, 0.4)',
+};
 
+const commonInnerMDBoxStyles = (theme) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: theme.spacing(2),
+  gap: theme.spacing(2),
+  background: '#333',
+  color: '#fff',
+  border: '1px solid #555',
+  borderRadius: 2,
+});
+// Material Dashboard 2 React example components
+const SectionHeader = ({ title }) => (
+  <MDBox sx={commonMDBoxStyles}>
+    <MDTypography
+      variant="h6"
+      color="white"
+      sx={{
+        fontWeight: 500,
+        userSelect: 'none',
+        px: { xs: 1, sm: 2 },
+      }}
+    >
+      {title}
+    </MDTypography>
+  </MDBox>
+);
 const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
   const { theme } = useMode();
 
@@ -158,10 +196,16 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
               {/* PORTFOLIO CHARTS */}
               <Grid container spacing={1}>
                 <Grid item sm={12} md={12} lg={7}>
-                  <CollectionPortfolioChartContainer
-                    selectedCards={selectedCards}
-                    removeCard={removeCard}
-                  />
+                  <Card>
+                    <SectionHeader title="Collection Portfolio Chart" />
+                    {/* </MDBox> */}
+                    <MDBox maxWidth="lg" sx={commonInnerMDBoxStyles(theme)}>
+                      <CollectionPortfolioChartContainer
+                        selectedCards={selectedCards}
+                        removeCard={removeCard}
+                      />
+                    </MDBox>
+                  </Card>
                 </Grid>
                 {/* PORTFOLIO CARD LIST TABLE */}
                 <Grid item sm={12} md={12} lg={5}>
@@ -169,36 +213,8 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
                   {/* <CardListContainerGrid> */}
                   <Grid item xs={12}>
                     <Card>
-                      <MDBox
-                        // mx={2}
-                        py={3}
-                        px={{ xs: 2, sm: 3, md: 4 }}
-                        variant="gradient"
-                        borderRadius="lg"
-                        coloredShadow="info"
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          background:
-                            'linear-gradient(60deg, #26c6da, #00acc1)', // Example gradient background
-                          boxShadow:
-                            '0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 172, 193, 0.4)',
-                        }}
-                      >
-                        <MDTypography
-                          variant="h6"
-                          color="white"
-                          sx={{
-                            fontWeight: 500,
-                            userSelect: 'none',
-                            px: { xs: 1, sm: 2 }, // Responsive padding for the typography
-                          }}
-                        >
-                          Collection Card List
-                        </MDTypography>
-                      </MDBox>
-                      <MDBox pt={3}>
+                      <SectionHeader title="Collection Card List" />
+                      <MDBox maxWidth="lg" sx={commonInnerMDBoxStyles(theme)}>
                         <DataTable
                           table={{ columns, data }}
                           isSorted={true}

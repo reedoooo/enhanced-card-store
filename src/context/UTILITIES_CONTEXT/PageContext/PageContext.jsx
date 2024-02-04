@@ -9,11 +9,9 @@ import LoadingIndicator from '../../../components/reusable/indicators/LoadingInd
 import ErrorIndicator from '../../../components/reusable/indicators/ErrorIndicator';
 import SplashPage2 from '../../../pages/otherPages/SplashPage2';
 import useSnackBar from '../../hooks/useSnackBar';
-import { isEmpty } from '../../Helpers';
+import { defaultContextValue } from '../../constants';
 
-const PageContext = createContext();
-
-export const usePageContext = () => useContext(PageContext);
+const PageContext = createContext(defaultContextValue.PAGE_CONTEXT);
 
 export const PageProvider = ({ children }) => {
   const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackBar();
@@ -62,6 +60,7 @@ export const PageProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       loadingStatus,
+      error: loadingStatus.error,
       setActivelyLoading: (status) => setLoading('isLoading', status),
       returnDisplay,
       setError: (error) => setLoadingStatus((prev) => ({ ...prev, error })),
@@ -90,3 +89,5 @@ export const PageProvider = ({ children }) => {
     <PageContext.Provider value={contextValue}>{children}</PageContext.Provider>
   );
 };
+
+export const usePageContext = () => useContext(PageContext);

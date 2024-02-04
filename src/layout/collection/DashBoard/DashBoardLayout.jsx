@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // Material Dashboard 2 React components
-import MDBox from '../MDBOX/index';
+import MDBox from '../../REUSABLE_COMPONENTS/MDBOX/index';
 
 function DashboardLayout({ children }) {
   const { pathname } = useLocation();

@@ -1,8 +1,10 @@
 import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
+import { useMode } from '../../../context';
 
-export default styled(Typography)(({ theme, ownerstate }) => {
-  const { palette, typography, functions } = theme;
+export default styled(Typography)(({ ownerstate }) => {
+  // const { palette, typography, functions } = theme;
+  const { theme } = useMode();
   const {
     color,
     textTransform,
@@ -12,14 +14,14 @@ export default styled(Typography)(({ theme, ownerstate }) => {
     textGradient,
     darkMode,
   } = ownerstate;
-
+  const { palette } = theme;
   const { gradients, transparent, white } = palette;
   const {
     fontWeightLight,
     fontWeightRegular,
     fontWeightMedium,
     fontWeightBold,
-  } = typography;
+  } = theme.typography;
   // fontWeight styles
   const fontWeights = {
     light: fontWeightLight,

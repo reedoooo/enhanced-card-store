@@ -9,7 +9,13 @@ const GridLayout = ({ children, containerStyles }) => (
       minWidth: '99%',
     }}
   >
-    <Grid container spacing={1} sx={{}}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        height: '99%',
+      }}
+    >
       {children}
     </Grid>
   </Container>

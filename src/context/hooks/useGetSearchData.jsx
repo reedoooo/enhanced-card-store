@@ -2,6 +2,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import useLocalStorage from './useLocalStorage';
 import { useCardStoreHook } from './useCardStore';
+// Debounce function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
 
 export const useGetSearchData = () => {
   // const { loadingSearchResults, setLoadingSearchResults } = useCardStoreHook();

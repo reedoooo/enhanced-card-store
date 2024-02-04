@@ -21,8 +21,8 @@ import {
   StyledStatisticTypography,
 } from '../../../cards/styles/cardStyles';
 import useCollectionVisibility from '../../../../context/hooks/useCollectionVisibility';
-import MDBox from '../../../../layout/collection/MDBOX';
-import MDTypography from '../../../../layout/collection/MDTYPOGRAPHY/MDTypography';
+import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from '../../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 const CollectionListItem = memo(
   ({
     collection,

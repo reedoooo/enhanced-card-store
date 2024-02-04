@@ -7,9 +7,9 @@ import Icon from '@mui/material/Icon';
 // Material Dashboard 2 React components
 
 // Material Dashboard 2 React contexts
-import MDBox from '../../../layout/collection/MDBOX';
+import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../../context';
-import MDTypography from '../../../layout/collection/MDTYPOGRAPHY/MDTypography';
+import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
 function DataTableHeadCell({ width, children, sorted, align, ...rest }) {
   const { theme } = useMode();

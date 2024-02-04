@@ -1,15 +1,5 @@
-import React, { useEffect } from 'react';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Typography,
-} from '@mui/material';
-import LoginForm from '../forms/LoginForm';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import LoginForm from '../forms/AuthForms';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import {
@@ -25,12 +15,13 @@ import {
   StyledDialogTitle,
 } from '../forms/styled';
 import useAuthDialog from '../../context/hooks/useAuthDialog';
-import MDBox from '../../layout/collection/MDBOX';
+import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
+import { useEffect } from 'react';
 
 function LoginDialog() {
   const { theme } = useMode();
-  const { logout } = useAuthContext();
-  const { toggleLoginDialog, isLoggedIn } = useAuthDialog();
+  // const { logout } = useAuthContext();
+  const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
   const { forms } = useFormContext();
   const loginValues = forms?.loginForm;
   const signupValues = forms?.signupForm;
@@ -59,7 +50,7 @@ function LoginDialog() {
       theme={theme}
     >
       <MDBox py={3}>
-        <StyledDialogContent dividers theme={theme}>
+        <StyledDialogContent theme={theme}>
           <StyledDialogTitle theme={theme}>
             <Box
               display="flex"
@@ -75,7 +66,7 @@ function LoginDialog() {
             </Box>
           </StyledDialogTitle>
         </StyledDialogContent>
-        <StyledDialogActions dividers theme={theme}>
+        <StyledDialogActions theme={theme}>
           {isLoggedIn ? (
             <Button
               color="primary"

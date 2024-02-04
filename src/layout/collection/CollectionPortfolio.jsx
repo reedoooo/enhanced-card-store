@@ -5,7 +5,7 @@ import useCollectionVisibility from '../../context/hooks/useCollectionVisibility
 import { PortfolioBoxA } from '../../context/hooks/style-hooks/usePortfolioStyles';
 import { useCollectionStore, useMode } from '../../context';
 import DashboardLayout from './DashBoard/DashBoardLayout';
-import MDBox from './MDBOX';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import PageLayout from '../Containers/PageLayout';
 
 const CollectionPortfolio = () => {

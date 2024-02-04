@@ -38,38 +38,75 @@ import Autocomplete from '@mui/material/Autocomplete';
 // Material Dashboard 2 React components
 import DataTableHeadCell from './DataTableHeadCell';
 import DataTableBodyCell from './DataTableBodyCell';
-import MDPagination from '../../../layout/collection/MDPAGINATION';
-import MDBox from '../../../layout/collection/MDBOX';
-import MDTypography from '../../../layout/collection/MDTYPOGRAPHY/MDTypography';
-import MDInput from '../../../layout/collection/MDINPUT';
+import MDPagination from '../../../layout/REUSABLE_COMPONENTS/MDPAGINATION';
+import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDInput from '../../../layout/REUSABLE_COMPONENTS/MDINPUT';
 import { TextField } from '@mui/material';
-
-// Material Dashboard 2 React example components
+import useScreenWidth from '../../../context/hooks/useScreenWidth';
+import { themeSettings } from '../../../assets/themes/themeSettings';
+import { useMode } from '../../../context';
 
 function DataTable({
   entriesPerPage,
   canSearch,
   showTotalEntries,
   table,
-  rowsPerPage,
   pagination,
   isSorted,
   noEndBorder,
-  rows,
 }) {
-  // const defaultValue = entriesPerPage.defaultValue
-  //   ? entriesPerPage.defaultValue
-  //   : 10;
-  // Use useMemo for performance optimization to avoid recalculating columns and data on every render
+  const { isSmallScreen, isMediumScreen, isLargeScreen } = useScreenWidth();
+  const { theme } = useMode();
   const columns = useMemo(() => {
-    // Example: Adjust columns based on screen width (pseudo-code)
-    const isSmallScreen = window.innerWidth < 768; // Example breakpoint check
-    return table.columns.map((column) => ({
-      ...column,
-      // Optionally hide some columns on smaller screens
-      show: isSmallScreen ? column.showOnSmallScreen : true,
-    }));
-  }, [table.columns]);
+    // Define all your columns here, including potentially hideable ones
+    const allColumns = [
+      { Header: 'Name', accessor: 'name' },
+      { Header: 'Price', accessor: 'price' },
+      { Header: 'Total Price', accessor: 'tPrice', show: !isSmallScreen }, // Hide on small screens
+      {
+        Header: 'Quantity',
+        accessor: 'quantity',
+        show: !isSmallScreen && !isMediumScreen,
+      }, // Hide on small and medium screens
+      {
+        Header: 'Action',
+        accessor: 'action',
+        show: !isSmallScreen && !isMediumScreen && !isLargeScreen,
+      }, // Hide on small screens
+    ];
+
+    // Filter based on the 'show' property
+    return allColumns.filter((column) => column.show !== false);
+  }, [isSmallScreen, isMediumScreen]);
+  // const columns = useMemo(() => {
+  //   const baseColumns = table.columns.map((column) => ({
+  //     ...column,
+  //     // Optionally hide some columns on smaller screens
+  //     show: isSmallScreen ? column.showOnSmallScreen : true,
+  //   }));
+  //   if (isSmallScreen) {
+  //     // Return a subset of columns for small screens
+  //     return baseColumns.filter(
+  //       (column) =>
+  //         column.accessor !== 'action' &&
+  //         column.accessor !== 'tPrice' &&
+  //         column.accessor !== 'quantity'
+  //     ); // Example: omit 'tPrice' and 'quantity' columns on small screens
+  //   }
+  //   if (isMediumScreen) {
+  //     // Return a subset of columns for medium screens
+  //     return baseColumns.filter(
+  //       (column) => column.accessor !== 'action' && column.accessor !== 'tPrice'
+  //     ); // Example: omit 'quantity' column on medium screens
+  //   }
+  //   if (isLargeScreen) {
+  //     // Return a subset of columns for large screens
+  //     return baseColumns.filter((column) => column.accessor !== 'action'); // Example: omit 'quantity' column on medium screens
+  //   }
+  //   return baseColumns;
+  //   // return baseColumns;
+  // }, [table.columns]);
   const data = useMemo(() => table.data, [table]); // Adjusted from table.rows to table.data for consistency
   const {
     getTableProps,
@@ -116,30 +153,6 @@ function DataTable({
     setPageSize(entriesPerPage.defaultValue || 10);
   }, [entriesPerPage, setPageSize]);
   // Render the paginations
-  const renderPagination = pageOptions.map((option) => (
-    <MDPagination
-      item
-      key={option}
-      onClick={() => gotoPage(Number(option))}
-      count={pageOptions.length}
-      active={pageIndex === option}
-      onPageChange={(_, num) => gotoPage(num - 1)}
-      page={pageIndex + 1}
-      showFirstButton
-      showLastButton
-      containerProps={{
-        justifyContent: 'center',
-        display: 'flex',
-        padding: '8px',
-        '.MuiPagination-ul': {
-          flexWrap: 'wrap', // Allow pagination items to wrap on small screens
-        },
-      }}
-    >
-      {option + 1}
-    </MDPagination>
-  ));
-
   // Handler for the input to set the pagination index
   const handleInputPagination = ({ target: { value } }) =>
     value > pageOptions.length || value < 0
@@ -191,8 +204,32 @@ function DataTable({
     entriesEnd = pageSize * (pageIndex + 1);
   }
 
+  const renderPagination = pageOptions.map((option) => (
+    <MDPagination
+      item
+      key={option}
+      onClick={() => gotoPage(Number(option))}
+      count={pageOptions.length}
+      active={pageIndex === option}
+      onPageChange={(_, num) => gotoPage(num - 1)}
+      page={pageIndex + 1}
+      showFirstButton
+      showLastButton
+      containerProps={{
+        justifyContent: 'center',
+        display: 'flex',
+        padding: '8px',
+        '.MuiPagination-ul': {
+          flexWrap: 'wrap', // Allow pagination items to wrap on small screens
+        },
+      }}
+    >
+      {option + 1}
+    </MDPagination>
+  ));
+
   return (
-    <TableContainer sx={{ boxShadow: 'none' }}>
+    <TableContainer sx={{ boxShadow: 'none', pt: 0 }}>
       {/* Search and Entries Per Page Options */}
       {entriesPerPage || canSearch ? (
         <MDBox
@@ -203,33 +240,37 @@ function DataTable({
           sx={{
             flexDirection: { xs: 'column', sm: 'row' },
             gap: { xs: 2, sm: 0 }, // Adds space between elements when in column layout
+            mt: 0,
+            color: 'white',
+            // pt: 0,
           }}
         >
           {entriesPerPage && (
-            <Autocomplete
-              options={entriesPerPage?.entries?.map((option) =>
-                option.toString()
-              )}
-              value={pageSize.toString()}
-              onChange={handleEntriesChange}
-              renderInput={(params) => (
-                <TextField {...params} label="Rows per page" />
-              )}
-            />
+            <MDBox display="flex" alignItems="center">
+              <Autocomplete
+                options={entriesPerPage?.entries?.map((option) =>
+                  option.toString()
+                )}
+                value={pageSize.toString()}
+                onChange={handleEntriesChange}
+                sx={{ width: '5rem' }}
+                renderInput={(params) => (
+                  <MDInput {...params} label="Rows per page" />
+                )}
+              />
+            </MDBox>
           )}
           {canSearch && (
-            <MDBox width={{ xs: '100%', sm: 'auto' }} ml={{ sm: 'auto' }}>
+            <MDBox
+              width={{ xs: '100%', sm: 'auto', pt: 0 }}
+              ml={{ sm: 'auto' }}
+            >
               <MDInput
                 placeholder="Search..."
                 value={searchInput}
                 size="small"
                 fullWidth
                 onChange={handleSearchChange}
-
-                // onChange={({ currentTarget }) => {
-                //   setSearch(search);
-                //   onSearchChange(currentTarget.value);
-                // }}
               />
             </MDBox>
           )}
@@ -286,11 +327,7 @@ function DataTable({
       >
         {showTotalEntries && (
           <MDBox mb={{ xs: 3, sm: 0 }}>
-            <MDTypography
-              variant="button"
-              color="secondary"
-              fontWeight="regular"
-            >
+            <MDTypography variant="button" color="white" fontWeight="regular">
               Showing {entriesStart} to {entriesEnd} of {data?.length} entries
             </MDTypography>
           </MDBox>
@@ -324,11 +361,11 @@ function DataTable({
                 </MDTypography>
               </MDBox>
             )}
-            {/* {canNextPage && (
+            {canNextPage && (
               <MDPagination item onClick={() => nextPage()}>
                 <Icon sx={{ fontWeight: 'bold' }}>chevron_right</Icon>
               </MDPagination>
-            )} */}
+            )}
 
             {renderPagination}
           </MDPagination>

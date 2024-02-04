@@ -152,20 +152,7 @@ const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
   );
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: theme.spacing(2),
-        gap: theme.spacing(2),
-        background: '#333', // Darker background for Paper
-        color: '#fff', // White text color
-        border: '1px solid #555',
-        borderRadius: 2,
-      }}
-    >
+    <>
       <ChartArea theme={theme} style={{ width: '100%', height: '100%' }}>
         <AutoSizer>
           {({ width, height }) => (
@@ -188,7 +175,7 @@ const CollectionPortfolioChartContainer = ({ selectedCards, removeCard }) => {
         stats={stats}
       />
       <TopCardsDisplayRow isSmall={isSmall} theme={theme} />
-    </Container>
+    </>
   );
 };
 

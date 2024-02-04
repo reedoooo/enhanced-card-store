@@ -1,9 +1,9 @@
 import React from 'react';
 import { Grid, Grow } from '@mui/material';
-import ReusableSkeletonItem from '../gridItems/ReusableSkeletonItem';
-import StoreItem from '../gridItems/StoreItem';
-import DeckItem from '../gridItems/DeckItem';
-import { useCardStoreHook } from '../../../context/hooks/useCardStore';
+import ReusableSkeletonItem from '../../components/grids/gridItems/ReusableSkeletonItem';
+import StoreItem from '../../components/grids/gridItems/StoreItem';
+import DeckItem from '../../components/grids/gridItems/DeckItem';
+import { useCardStoreHook } from './useCardStore';
 
 const useGridItems = ({ itemsPerPage, cards, pageContext }) => {
   const { loadingSearchResults } = useCardStoreHook();

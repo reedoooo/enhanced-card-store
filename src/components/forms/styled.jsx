@@ -89,7 +89,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     position: 'relative',
     transition: 'border-color 0.5s ease', // Add transition for border color
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'transparent',
+      borderColor: theme.palette.transparent.main,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
       color: theme.palette.backgroundA.darker,
