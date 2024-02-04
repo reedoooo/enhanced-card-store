@@ -11,15 +11,16 @@ function DataTableBodyCell({ noBorder, align, children }) {
     <MDBox
       component="td"
       textAlign={align}
-      // py={1.5}
+      py={1.5}
       // px={3}
       px={{ xs: 1, sm: 2 }}
       borders={1}
       sx={{
+        color: theme.palette.text.tertiary,
         fontSize: { xs: '0.75rem', sm: '1rem' }, // Example of responsive font size
         borderBottom: noBorder
           ? 'none'
-          : `${theme.borders.borderWidth[1]} solid ${theme.palette.backgroundE.darkest}`,
+          : `${theme.borders.borderWidth[1]} solid ${theme.palette.backgroundB.lightest}`,
       }}
     >
       <MDBox

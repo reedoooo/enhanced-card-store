@@ -46,7 +46,7 @@ const commonInnerMDBoxStyles = (theme) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  padding: theme.spacing(2),
+  padding: theme.spacing(1.5),
   gap: theme.spacing(2),
   background: '#333',
   color: '#fff',
@@ -221,6 +221,10 @@ const CollectionPortfolioContent = ({ selectedCards, removeCard, onBack }) => {
                           entriesPerPage={{
                             defaultValue: 10,
                             entries: [5, 10, 15, 20, 25],
+                          }}
+                          entriesPerPageOptions={{
+                            defaultValue: 10,
+                            options: [5, 10, 15, 20, 25],
                           }}
                           canSearch={true}
                           showTotalEntries={true}

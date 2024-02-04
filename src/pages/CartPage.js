@@ -3,8 +3,8 @@ import { useCookies } from 'react-cookie';
 import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
 import CartContent from '../layout/cart/CartContent';
 import { useCartStore, useMode, usePageContext } from '../context';
-import Checkout from '../containers/cartPageContainers/Checkout';
 import CartSummary from '../components/other/dataDisplay/CartSummary';
+import Checkout from '../layout/cart/cartPageContainers/Checkout';
 
 const CartPage = () => {
   const { theme } = useMode();

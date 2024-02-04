@@ -1,3 +1,12 @@
+import input from './forms/input';
+import inputLabel from './forms/inputLabel';
+import button from './buttons/index';
+import container from './container/container';
+import divider from './divider/divider';
+import tableContainer from './table/tableContainer';
+import tableCell from './table/tableCell';
+import tableHead from './table/tableHead';
+
 const cssbaseline = {
   styleOverrides: {
     display: 'flex',
@@ -7,32 +16,14 @@ const cssbaseline = {
   },
 };
 
-const button = {
-  styleOverrides: {
-    root: {
-      borderRadius: 4,
-      padding: '0.5rem 1rem',
-      textTransform: 'none', // Disable uppercase text
-      backgroundColor: '#4cceac',
-      '&:hover': {
-        backgroundColor: '#3da58a',
-      },
-      '@media (max-width:600px)': {
-        // Responsive styles
-        fontSize: '0.875rem',
-      },
-    },
-  },
-};
-
-const container = {
-  styleOverrides: {
-    root: {
-      margin: 0,
-      padding: 0,
-    },
-  },
-};
+// const container = {
+//   styleOverrides: {
+//     root: {
+//       margin: 0,
+//       padding: 0,
+//     },
+//   },
+// };
 
 const listItemButton = {
   styleOverrides: {
@@ -101,8 +92,17 @@ const outlinedInput = {
 export const components = {
   MuiCssBaseline: cssbaseline,
   MuiButton: button,
-  MuiContainer: container,
   MuiListItemButton: listItemButton,
+  MuiContainer: container,
+  MuiDivider: divider,
+
+  MuiTableContainer: tableContainer,
+  MuiTableCell: tableCell,
+  MuiTableHead: tableHead,
+
+  MuiOutlinedInput: outlinedInput,
+  MuiInput: input,
+  MuiInputLabel: inputLabel,
   // MuiOutlinedInput: outlinedInput,
 };
 

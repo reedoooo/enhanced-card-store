@@ -173,15 +173,15 @@ export default function AuthProvider({ children }) {
       login,
       signup,
       logout,
-      // checkTokenValidity,
+      checkTokenValidity,
       resetLogoutTimer,
     }),
     [cookies, login, logout, resetLogoutTimer]
   );
 
-  // useEffect(() => {
-  //   console.log('AUTH CONTEXT:', contextValue);
-  // }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
+  useEffect(() => {
+    console.log('AUTH CONTEXT:', contextValue);
+  }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

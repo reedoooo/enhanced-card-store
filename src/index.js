@@ -23,7 +23,7 @@ const AppWrapper = () => {
     <Router>
       <Helmet>
         {/* Basic */}
-        <title>Your Website Title</title>
+        <title>Enhanced Cardstore</title>
         <meta name="description" content="Description of your site or page" />
         <link
           rel="canonical"
@@ -34,9 +34,11 @@ const AppWrapper = () => {
           rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
-
         {/* SEO */}
-        <meta name="keywords" content="your, tags" />
+        <meta
+          name="keywords"
+          content="YuGiOh, cards, collection, deckbuilder"
+        />
         {/* Social Media */}
         <meta property="og:title" content="Title Here" />
         <meta property="og:description" content="Description Here" />
@@ -55,12 +57,6 @@ const AppWrapper = () => {
           href="https://fonts.gstatic.com"
           crossOrigin="true"
         />
-        {/* Specify language and character set */}
-        <html lang="en" />
-        <meta charSet="utf-8" />
-        {/* Scripts */}
-        {/* Example: Add a script needed for a service or functionality */}
-        {/* <script src="https://cdn.service.com/library.js"></script> */}
       </Helmet>
       <ColorModeProvider>
         <PageProvider>

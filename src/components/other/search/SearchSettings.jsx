@@ -8,7 +8,7 @@ import { SearchSettingsBox } from '../../../pages/pageStyles/StyledComponents';
 export const commonPaperStyles = (theme) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.success.dark,
+  background: theme.palette.backgroundA.dark,
   boxShadow: theme.shadows[3],
   margin: 'auto',
   width: '100%',

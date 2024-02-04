@@ -339,15 +339,26 @@ const defaultCartContextValues = {
 };
 
 // ! DEFAULT VALUES FOR USER CONTEXT
-const defaultUserContextValues = {
-  user: {},
+const defaultUserProps = {
   userId: null,
+  firstName: '',
+  lastName: '',
+
   username: '',
-  email: '',
   password: '',
+  email: '',
+
   collections: [],
+  totalNumberOfCollections: 0,
   decks: [],
+  totalNumberOfDecks: 0,
   cart: [],
+  totalNumberOfCardsInCart: 0,
+};
+
+const defaultUserContextValues = {
+  ...defaultUserProps,
+  user: {},
   setUser: () => {},
   setUserId: () => {},
   setUsername: () => {},

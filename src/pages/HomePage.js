@@ -42,12 +42,14 @@ import {
   useCollectionStore,
   useMode,
   usePageContext,
+  useUserContext,
 } from '../context';
 import CardChart from '../tests/CardChart';
 import useCardCronJob from '../tests/useCardCronJob';
 import useSkeletonRender from '../context/hooks/useSkeletonRender';
 import { AnimatedFeatureCard } from '../components/cards/AnimatedFeatureCard';
-
+import MDAvatar from '../layout/REUSABLE_COMPONENTS/MDAVATAR';
+import placeHolder from '../assets/images/placeholder.jpeg';
 const getHomePageSkeletonConfigs = (tiers) => {
   const { theme } = useMode();
   const { tertiaryContent, secondaryContent, mainContentFeatureCard } =
@@ -102,7 +104,8 @@ const HomePage = () => {
   const isMdUp = useMediaQuery(breakpoints.up('md'));
   const isLgUp = useMediaQuery(breakpoints.up('lg'));
   const { homeCardStyles, homeTypographyStyles } = theme.pageStyles;
-  const { authUser } = useAuthContext();
+  const { authUser, basicData } = useAuthContext();
+  const { user } = useUserContext();
   const { allCollections, selectedCollection } = useCollectionStore();
   const isDataLoaded = allCollections && allCollections.length > 0;
   const { tiers, introText } = pages;
@@ -209,8 +212,10 @@ const HomePage = () => {
                 <Card>
                   <CardHeader
                     title="User Account"
-                    subheader={`Welcome back, ${authUser.name}!`}
-                    avatar={<Avatar src={authUser.photoURL} />}
+                    subheader={`Welcome back, ${basicData.firstName}!`}
+                    avatar={
+                      <MDAvatar src={placeHolder} size="xs" alt={'alt-desc'} />
+                    }
                   />
                   <CardContent>
                     <Stack direction={isMdUp ? 'row' : 'column'} spacing={2}>
@@ -218,13 +223,26 @@ const HomePage = () => {
                         'Total Value of Collections',
                         selectedCollection?.totalPrice
                       )}
-                      {renderStatItem('Number of Decks', 5)}
-                      {renderStatItem('Number of Collections', 5)}
-                      {renderStatItem('Total Cards Purchased', 5)}
+                      {renderStatItem(
+                        'Number of Decks',
+                        user?.allDecks?.length
+                      )}
+                      {renderStatItem(
+                        'Number of Collections',
+                        allCollections?.length
+                      )}
+                      {renderStatItem(
+                        'Total Cards Purchased',
+                        user?.allCollections?.reduce(
+                          (acc, collection) => acc + collection.cards.length,
+                          0
+                        )
+                      )}
                       {/* Add more stats as needed */}
                     </Stack>
                   </CardContent>
                   <CardActions
+                    background={theme.palette.backgroundE.light}
                     sx={{
                       justifyContent: 'space-between',
                       padding: theme.spacing(2),
@@ -232,6 +250,8 @@ const HomePage = () => {
                   >
                     <Button
                       variant="contained"
+                      background={theme.palette.backgroundE.light}
+                      color="primary"
                       // color={theme.palette.backgroundA.darker}
                     >
                       Manage Collections
@@ -264,7 +284,8 @@ const HomePage = () => {
                   key={index}
                   xs={12}
                   sm={12}
-                  md={tier.title === 'Enterprise' ? 12 : 4}
+                  md={4}
+                  // md={tier.title === 'Store' ? 12 : 4}
                   style={{ display: 'flex', flexGrow: 1 }} // Ensure flex display for grid item
                 >
                   <AnimatedFeatureCard

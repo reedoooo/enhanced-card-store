@@ -1,7 +1,6 @@
 // App.js
 import React, { useEffect } from 'react';
 import Main from './Main';
-import { Helmet } from 'react-helmet';
 import {
   FormProvider,
   ModalProvider,
@@ -87,10 +86,7 @@ const App = () => {
                                         {logProviderStatus(
                                           'AppContextProvider'
                                         )}
-                                        {/* <Elements stripe={stripePromise}> */}
-                                        {/* {renderHelmet()} */}
                                         <Main />
-                                        {/* </Elements> */}
                                       </AppContextProvider>
                                     </SidebarProvider>
                                   </StatisticsProvider>
@@ -107,8 +103,6 @@ const App = () => {
             </UserProvider>
           </SocketProvider>
         </FormProvider>
-        {/* </AuthProvider> */}
-        {/* </PageProvider> */}
       </ThemeProvider>
     </ErrorBoundary>
   );

@@ -1,18 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { useMemo, useEffect, useState } from 'react';
 
 // prop-types is a library for typechecking of props
@@ -25,6 +11,7 @@ import {
   useGlobalFilter,
   useAsyncDebounce,
   useSortBy,
+  useRowSelect,
 } from 'react-table';
 
 // @mui material components
@@ -42,13 +29,51 @@ import MDPagination from '../../../layout/REUSABLE_COMPONENTS/MDPAGINATION';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDInput from '../../../layout/REUSABLE_COMPONENTS/MDINPUT';
-import { TextField } from '@mui/material';
 import useScreenWidth from '../../../context/hooks/useScreenWidth';
-import { themeSettings } from '../../../assets/themes/themeSettings';
 import { useMode } from '../../../context';
+import { Checkbox, Grid, TextField } from '@mui/material';
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+const setSortedValue = (column, isSorted) => {
+  let sortedValue;
 
+  if (isSorted && column.isSorted) {
+    sortedValue = column.isSortedDesc ? 'desc' : 'asce';
+  } else if (isSorted) {
+    sortedValue = 'none';
+  } else {
+    sortedValue = false;
+  }
+
+  return sortedValue;
+};
 function DataTable({
-  entriesPerPage,
+  entriesPerPageOptions,
+
+  // entriesPerPage,
   canSearch,
   showTotalEntries,
   table,
@@ -56,57 +81,29 @@ function DataTable({
   isSorted,
   noEndBorder,
 }) {
-  const { isSmallScreen, isMediumScreen, isLargeScreen } = useScreenWidth();
+  // STYLES
   const { theme } = useMode();
-  const columns = useMemo(() => {
-    // Define all your columns here, including potentially hideable ones
-    const allColumns = [
+  const { isSmallScreen, isMediumScreen, isLargeScreen } = useScreenWidth();
+
+  // DATA AND TABLE SETUP
+  const columns = useMemo(
+    () => [
       { Header: 'Name', accessor: 'name' },
       { Header: 'Price', accessor: 'price' },
-      { Header: 'Total Price', accessor: 'tPrice', show: !isSmallScreen }, // Hide on small screens
+      { Header: 'Total Price', accessor: 'tPrice', show: !isSmallScreen },
       {
         Header: 'Quantity',
         accessor: 'quantity',
         show: !isSmallScreen && !isMediumScreen,
-      }, // Hide on small and medium screens
+      },
       {
         Header: 'Action',
         accessor: 'action',
         show: !isSmallScreen && !isMediumScreen && !isLargeScreen,
-      }, // Hide on small screens
-    ];
-
-    // Filter based on the 'show' property
-    return allColumns.filter((column) => column.show !== false);
-  }, [isSmallScreen, isMediumScreen]);
-  // const columns = useMemo(() => {
-  //   const baseColumns = table.columns.map((column) => ({
-  //     ...column,
-  //     // Optionally hide some columns on smaller screens
-  //     show: isSmallScreen ? column.showOnSmallScreen : true,
-  //   }));
-  //   if (isSmallScreen) {
-  //     // Return a subset of columns for small screens
-  //     return baseColumns.filter(
-  //       (column) =>
-  //         column.accessor !== 'action' &&
-  //         column.accessor !== 'tPrice' &&
-  //         column.accessor !== 'quantity'
-  //     ); // Example: omit 'tPrice' and 'quantity' columns on small screens
-  //   }
-  //   if (isMediumScreen) {
-  //     // Return a subset of columns for medium screens
-  //     return baseColumns.filter(
-  //       (column) => column.accessor !== 'action' && column.accessor !== 'tPrice'
-  //     ); // Example: omit 'quantity' column on medium screens
-  //   }
-  //   if (isLargeScreen) {
-  //     // Return a subset of columns for large screens
-  //     return baseColumns.filter((column) => column.accessor !== 'action'); // Example: omit 'quantity' column on medium screens
-  //   }
-  //   return baseColumns;
-  //   // return baseColumns;
-  // }, [table.columns]);
+      },
+    ],
+    [isSmallScreen, isMediumScreen, isLargeScreen]
+  );
   const data = useMemo(() => table.data, [table]); // Adjusted from table.rows to table.data for consistency
   const {
     getTableProps,
@@ -122,80 +119,55 @@ function DataTable({
     previousPage,
     setPageSize,
     setGlobalFilter,
-    state: { pageIndex, pageSize, globalFilter },
+    toggleAllRowsSelected,
+    selectedFlatRows,
+    state: { pageIndex, pageSize, globalFilter, selectedRowIds },
   } = useTable(
     {
       columns,
       data,
-      initialState: {
-        pageIndex: 0,
-        pageSize: entriesPerPage.defaultValue || 10,
-      },
+      initialState: { pageIndex: 0, pageSize: entriesPerPageOptions[0] || 10 },
+      getRowId: (row) => row.id,
+      autoResetSelectedRows: false,
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect
   );
-  // Handling search input state
-  const [searchInput, setSearchInput] = useState(globalFilter);
-  const handleSearchChange = (event) => {
-    const value = event.target.value || undefined;
-    setGlobalFilter(value);
-    setSearchInput(value);
-  };
-
-  // Custom function to handle entries per page change
-  const handleEntriesChange = (event, newValue) => {
-    setPageSize(Number(newValue));
-  };
-  // Set the default value for the entries per page when component mounts
+  // OPTIONS HANDLERS: SEARCH AND ENTRIES PER PAGE
+  const [search, setSearch] = useState(globalFilter);
+  const onSearchChange = useAsyncDebounce((value) => {
+    setGlobalFilter(value || undefined);
+    setSearch(value);
+  }, 100);
   useEffect(() => {
-    setPageSize(entriesPerPage.defaultValue || 10);
-  }, [entriesPerPage, setPageSize]);
-  // Render the paginations
-  // Handler for the input to set the pagination index
+    setGlobalFilter(search);
+  }, [search, setGlobalFilter]);
+  // PAGINATION: PAGE SIZE
+  useEffect(() => {
+    setPageSize(entriesPerPageOptions.defaultValue || 10);
+  }, [entriesPerPageOptions, setPageSize]);
+  // Pagination handlers
+  const handlePageChange = (event, value) => gotoPage(value - 1);
+  const handleRowsPerPageChange = (event, newValue) =>
+    setPageSize(Number(newValue));
+  // Checkbox functionality
+  const handleSelectAllClick = (event) => {
+    toggleAllRowsSelected(event.target.checked);
+  };
   const handleInputPagination = ({ target: { value } }) =>
     value > pageOptions.length || value < 0
       ? gotoPage(0)
       : gotoPage(Number(value));
-
-  // Customized page options starting from 1
   const customizedPageOptions = pageOptions.map((option) => option + 1);
-
-  // Setting value for the pagination input
   const handleInputPaginationValue = ({ target: value }) =>
     gotoPage(Number(value.value - 1));
 
-  // Search input value state
-  const [search, setSearch] = useState(globalFilter);
-
-  // Search input state handle
-  const onSearchChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined);
-  }, 100);
-
-  // A function that sets the sorted value for the table
-  const setSortedValue = (column) => {
-    let sortedValue;
-
-    if (isSorted && column.isSorted) {
-      sortedValue = column.isSortedDesc ? 'desc' : 'asce';
-    } else if (isSorted) {
-      sortedValue = 'none';
-    } else {
-      sortedValue = false;
-    }
-
-    return sortedValue;
-  };
-
-  // Setting the entries starting point
+  // PAGINATION: TOTAL ENTRIES
   const entriesStart =
     pageIndex === 0 ? pageIndex + 1 : pageIndex * pageSize + 1;
-
-  // Setting the entries ending point
   let entriesEnd;
-
   if (pageIndex === 0) {
     entriesEnd = pageSize;
   } else if (pageIndex === pageOptions.length - 1) {
@@ -204,12 +176,12 @@ function DataTable({
     entriesEnd = pageSize * (pageIndex + 1);
   }
 
-  const renderPagination = pageOptions.map((option) => (
+  const renderPagination = customizedPageOptions?.map((option) => (
     <MDPagination
       item
       key={option}
       onClick={() => gotoPage(Number(option))}
-      count={pageOptions.length}
+      count={customizedPageOptions?.length}
       active={pageIndex === option}
       onPageChange={(_, num) => gotoPage(num - 1)}
       page={pageIndex + 1}
@@ -227,81 +199,134 @@ function DataTable({
       {option + 1}
     </MDPagination>
   ));
+  // const [searchInput, setSearchInput] = useState(globalFilter);
+  // const handleSearchChange = (event) => {
+  //   const value = event.target.value || undefined;
+  //   setGlobalFilter(value);
+  //   setSearchInput(value);
+  // };
+  // const handleEntriesChange = (event, newValue) => {
+  //   setPageSize(Number(newValue));
+  // };
+  const renderOptions = () => (
+    <MDBox
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      p={1.5}
+      sx={{
+        flexDirection: { xs: 'column', sm: 'row' },
+        color: 'white',
+        borderRadius: theme.shape.borderRadius,
+      }}
+    >
+      <Grid container spacing={2}>
+        {canSearch && (
+          <Grid item xs={12} sm={8}>
+            <TextField
+              placeholder="Search..."
+              value={search}
+              // onChange={(e) => handleSearchChange(e.target.value)}
+              onChange={({ currentTarget }) => {
+                setSearch(search);
+                onSearchChange(currentTarget.value);
+              }}
+              size="small"
+              fullWidth
+              variant="outlined"
+            />
+          </Grid>
+        )}
+        <Grid item xs={12} sm={4}>
+          <Autocomplete
+            options={entriesPerPageOptions?.map((option) => option.toString())}
+            value={pageSize.toString()}
+            // onChange={(event, newValue) => setPageSize(Number(newValue))}
+            onChange={(event, newValue) => {
+              event.preventDefault();
+              setPageSize(parseInt(newValue, 10));
+              handleRowsPerPageChange(event, newValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Rows per page" variant="outlined" />
+            )}
+          />
+        </Grid>
+      </Grid>
+    </MDBox>
+  );
+  function enhancedTableHead(props) {
+    const {
+      onSelectAllClick,
+      order,
+      orderBy,
+      numSelected,
+      rowCount,
+      onRequestSort,
+    } = props;
+    const createSortHandler = (property) => (event) => {
+      onRequestSort(event, property);
+    };
+
+    return (
+      <MDBox component="thead">
+        {headerGroups?.map((headerGroup, key) => (
+          <TableRow
+            key={key}
+            {...headerGroup.getHeaderGroupProps()}
+            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+          >
+            {headerGroup.headers.map((column, idx) => (
+              <DataTableHeadCell
+                key={idx}
+                {...column.getHeaderProps(
+                  isSorted && column.getSortByToggleProps()
+                )}
+                width={column.width ? column.width : 'auto'}
+                align={column.align ? column.align : 'left'}
+                sorted={setSortedValue(column, isSorted)}
+              >
+                {column.render('Header')}
+              </DataTableHeadCell>
+            ))}
+          </TableRow>
+        ))}
+      </MDBox>
+    );
+  }
 
   return (
     <TableContainer sx={{ boxShadow: 'none', pt: 0 }}>
       {/* Search and Entries Per Page Options */}
-      {entriesPerPage || canSearch ? (
-        <MDBox
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          p={3}
-          sx={{
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 2, sm: 0 }, // Adds space between elements when in column layout
-            mt: 0,
-            color: 'white',
-            // pt: 0,
-          }}
-        >
-          {entriesPerPage && (
-            <MDBox display="flex" alignItems="center">
-              <Autocomplete
-                options={entriesPerPage?.entries?.map((option) =>
-                  option.toString()
-                )}
-                value={pageSize.toString()}
-                onChange={handleEntriesChange}
-                sx={{ width: '5rem' }}
-                renderInput={(params) => (
-                  <MDInput {...params} label="Rows per page" />
-                )}
-              />
-            </MDBox>
-          )}
-          {canSearch && (
-            <MDBox
-              width={{ xs: '100%', sm: 'auto', pt: 0 }}
-              ml={{ sm: 'auto' }}
-            >
-              <MDInput
-                placeholder="Search..."
-                value={searchInput}
-                size="small"
-                fullWidth
-                onChange={handleSearchChange}
-              />
-            </MDBox>
-          )}
-        </MDBox>
-      ) : null}
-
-      <Table {...getTableProps()}>
-        <MDBox component="thead">
-          {headerGroups?.map((headerGroup, key) => (
-            <TableRow key={key} {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column, idx) => (
-                <DataTableHeadCell
-                  key={idx}
-                  {...column.getHeaderProps(
-                    isSorted && column.getSortByToggleProps()
-                  )}
-                  width={column.width ? column.width : 'auto'}
-                  align={column.align ? column.align : 'left'}
-                  sorted={setSortedValue(column)}
-                >
-                  {column.render('Header')}
-                </DataTableHeadCell>
-              ))}
-            </TableRow>
-          ))}
-        </MDBox>
+      {renderOptions()}
+      {/* Table */}
+      <Table {...getTableProps()} sx={{}}>
+        {/* Table Head */}
+        {enhancedTableHead({
+          onSelectAllClick: () => {},
+          order: 'asc',
+          orderBy: 'name',
+          numSelected: 0,
+          rowCount: data?.length,
+          onRequestSort: () => {},
+        })}
+        {/* Table Body */}
         <TableBody {...getTableBodyProps()}>
           {page?.map((row, key) => {
             prepareRow(row);
             return (
-              <TableRow key={key} {...row.getRowProps()}>
+              <TableRow
+                key={key}
+                {...row.getRowProps()}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <DataTableBodyCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    checked={row.isSelected}
+                    onChange={(e) => row.toggleRowSelected(e.target.checked)}
+                  />
+                </DataTableBodyCell>
                 {row.cells.map((cell, idx) => (
                   <DataTableBodyCell
                     key={idx}
@@ -416,3 +441,120 @@ DataTable.propTypes = {
 };
 
 export default DataTable;
+// function tableSearchFunction() {
+//   {
+//     entriesPerPage || canSearch ? (
+//       <MDBox
+//         display="flex"
+//         justifyContent="space-between"
+//         alignItems="center"
+//         p={1.5}
+//         sx={{
+//           flexDirection: { xs: 'column', sm: 'row' },
+//           color: 'white',
+//           borderRadius: theme.shape.borderRadius,
+//         }}
+//       >
+//         <Grid container spacing={2}>
+//           {canSearch && (
+//             <Grid item xs={12} sm={8}>
+//               <TextField
+//                 placeholder="Search..."
+//                 value={searchInput}
+//                 size="small"
+//                 fullWidth
+//                 onChange={handleSearchChange}
+//                 variant="outlined"
+//               />
+//             </Grid>
+//           )}
+//           {entriesPerPage && (
+//             <Grid item xs={12} sm={4}>
+//               <Autocomplete
+//                 options={entriesPerPage?.entries?.map((option) =>
+//                   option.toString()
+//                 )}
+//                 value={pageSize.toString()}
+//                 onChange={handleEntriesChange}
+//                 renderInput={(params) => (
+//                   <TextField
+//                     {...params}
+//                     label="Rows per page"
+//                     variant="outlined"
+//                   />
+//                 )}
+//               />
+//             </Grid>
+//           )}
+//         </Grid>
+//       </MDBox>
+//     ) : null;
+//   }
+// }
+{
+  /* {entriesPerPage && (
+            <MDBox
+              display="flex"
+              alignItems="center"
+              px={{ xs: 0, sm: 2, md: 2, lg: 0 }}
+              width={{ xs: '100%', sm: '100%', md: '100%' }}
+              height={{ xs: '100%', sm: '100%', md: '100%' }}
+            >
+              <Autocomplete
+                options={entriesPerPage?.entries?.map((option) =>
+                  option.toString()
+                )}
+                value={pageSize.toString()}
+                onChange={handleEntriesChange}
+                sx={{ width: 200, borderRadius: theme.shape.borderRadius }}
+                renderInput={(params) => (
+                  <MDInput {...params} label="Rows per page" />
+                )}
+              />
+            </MDBox>
+          )}
+          {canSearch && (
+            <MDBox
+              width={{ xs: '100%', sm: '100%', md: '100%' }}
+              height={{ xs: '100%', sm: '100%', md: '100%' }}
+              px={{ xs: 0, sm: 2, md: 2, lg: 0 }}
+              ml={{ sm: 'auto' }}
+            >
+              <MDInput
+                placeholder="Search..."
+                value={searchInput}
+                size="small"
+                fullWidth
+                onChange={handleSearchChange}
+              />
+            </MDBox>
+          )} */
+}
+// const columns = useMemo(() => {
+//   const baseColumns = table.columns.map((column) => ({
+//     ...column,
+//     // Optionally hide some columns on smaller screens
+//     show: isSmallScreen ? column.showOnSmallScreen : true,
+//   }));
+//   if (isSmallScreen) {
+//     // Return a subset of columns for small screens
+//     return baseColumns.filter(
+//       (column) =>
+//         column.accessor !== 'action' &&
+//         column.accessor !== 'tPrice' &&
+//         column.accessor !== 'quantity'
+//     ); // Example: omit 'tPrice' and 'quantity' columns on small screens
+//   }
+//   if (isMediumScreen) {
+//     // Return a subset of columns for medium screens
+//     return baseColumns.filter(
+//       (column) => column.accessor !== 'action' && column.accessor !== 'tPrice'
+//     ); // Example: omit 'quantity' column on medium screens
+//   }
+//   if (isLargeScreen) {
+//     // Return a subset of columns for large screens
+//     return baseColumns.filter((column) => column.accessor !== 'action'); // Example: omit 'quantity' column on medium screens
+//   }
+//   return baseColumns;
+//   // return baseColumns;
+// }, [table.columns]);

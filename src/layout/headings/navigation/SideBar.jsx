@@ -17,9 +17,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import {
   DrawerHeader,
+  StyledBox,
   StyledSwipeableDrawer,
 } from '../../../pages/pageStyles/StyledComponents';
-import { StyledBox } from '../../../components/forms/styled';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 // ==============================|| SIDEBAR DRAWER ||============================== //

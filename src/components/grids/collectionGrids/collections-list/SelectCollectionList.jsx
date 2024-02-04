@@ -44,7 +44,7 @@ const SelectCollectionList = ({ allCollections, openDialog }) => {
       <List ref={listRef}>
         {/* Attach the ref to the List component */}
         {allCollections?.map((collection, index) => {
-          if (!allCollections || allCollections.length === 0) {
+          if (!allCollections || allCollections?.length === 0) {
             setIsDataLoading(true);
           }
           return loadingStatus?.isDataLoading ? (

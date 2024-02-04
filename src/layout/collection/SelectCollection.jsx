@@ -51,13 +51,13 @@ const SelectCollection = (onSelectCollection) => {
               </Grid>
               <Grid item xs={12} md={6} lg={4}>
                 <TotalValueOfCollectionsDisplay
-                  totalValue={totalValue}
+                  totalValue={totalValue && totalValue.toFixed(2)}
                   iconName="AttachMoneyIcon"
                 />
               </Grid>
               <Grid item xs={12} md={6} lg={4}>
                 <TopFiveExpensiveCards
-                  topFiveCards={topFiveCards}
+                  topFiveCards={topFiveCards && topFiveCards}
                   iconName="EmojiEventsIcon"
                 />
               </Grid>
@@ -71,7 +71,7 @@ const SelectCollection = (onSelectCollection) => {
                 // isLoadingNewCollection={isLoadingNewCollection}
                 allCollections={allCollections || []}
               />
-            </SelectCollectionListContainer>{' '}
+            </SelectCollectionListContainer>
           </MDBox>
           {isDialogOpen && (
             <CollectionDialog

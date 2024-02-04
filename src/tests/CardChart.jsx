@@ -39,6 +39,7 @@ import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
 import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import ImageDisplayFromHook from '../components/other/dataDisplay/ImageDisplayFromHook';
 import styled from 'styled-components';
+import MDButton from '../layout/REUSABLE_COMPONENTS/MDBUTTON';
 
 // Adjust the padding, margin, and other styles as needed
 const ChartArea = styled(Box)(({ theme }) => ({
@@ -320,34 +321,39 @@ const CardChart = ({ cardData = initialCardData }) => {
           >
             {['Start Updates', 'Pause Updates', 'Reset Card Data'].map(
               (text, index) => (
-                <Button
+                <MDButton
                   key={index}
-                  variant={
-                    text === 'Reset Card Data' ? 'outlined' : 'contained'
-                  }
+                  // variant={
+                  //   text === 'Reset Card Data' ? 'outlined' : 'contained'
+                  // }
                   onClick={() => {
                     if (text === 'Start Updates') startUpdates();
                     else if (text === 'Pause Updates') pauseUpdates();
                     else if (text === 'Reset Card Data') resetData();
                   }}
-                  sx={{
-                    fontSize: '0.7rem',
-                    fontWeight: 'bold',
-                    width: '30%',
-                    height: '100%',
-                    minHeight: '100%',
-                    mx: 0.5,
-                    my: 0.5,
-                    flexGrow: 1,
-                    color: theme.palette.backgroundA.contrastTextB,
-                    background: theme.palette.backgroundA.darker,
-                    '&:hover': {
-                      background: theme.palette.backgroundA.darkest,
-                    },
-                  }}
+                  color="primary"
+                  variant="contained"
+                  fontSize="0.7rem"
+                  sx={
+                    {
+                      // fontSize: '0.7rem',
+                      // fontWeight: 'bold',
+                      // width: '30%',
+                      // height: '100%',
+                      // minHeight: '100%',
+                      // mx: 0.5,
+                      // my: 0.5,
+                      // flexGrow: 1,
+                      // // color: theme.palette.backgroundA.contrastTextA,
+                      // background: theme.palette.backgroundA.darker,
+                      // '&:hover': {
+                      //   background: theme.palette.backgroundA.darkest,
+                      // },
+                    }
+                  }
                 >
                   {text}
-                </Button>
+                </MDButton>
               )
             )}
           </CardActions>

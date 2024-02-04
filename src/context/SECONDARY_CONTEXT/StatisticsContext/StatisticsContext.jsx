@@ -20,9 +20,13 @@ import { defaultContextValue } from '../../constants';
 const StatisticsContext = createContext(defaultContextValue.STATISTICS_CONTEXT);
 
 export const StatisticsProvider = ({ children }) => {
-  const { timeRange } = useChartContext();
   const { allCollections, allXYValues, selectedCollection } =
     useCollectionStore();
+  const { timeRange } = useChartContext();
+
+  if (!Array.isArray(allCollections)) {
+    return null;
+  }
   const [selectedStat, setSelectedStat] = useState('');
 
   // Calculate statistics for all collections
@@ -37,24 +41,26 @@ export const StatisticsProvider = ({ children }) => {
   }, [allCollections, timeRange]);
   // Calculate the total value of all collections
   const totalValue = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections.length === 1) {
+    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
       return 0;
     }
-    return allCollections.reduce(
+    return allCollections?.reduce(
       (acc, collection) => acc + collection.totalPrice,
       0
     );
   }, [allCollections]);
+  // console.log('totalValue:', totalValue);
   // Get the top five cards among all collections
   const topFiveCards = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections.length === 1) {
+    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
       return [];
     }
-    const allCards = allCollections.flatMap(
+    const allCards = allCollections?.flatMap(
       (collection) => collection.cards || []
     );
     return allCards.sort((a, b) => b.price - a.price).slice(0, 5);
   }, [allCollections]);
+  // console.log('topFiveCards:', topFiveCards);
   // Prepare markers for high and low points
   const markers = useMemo(() => {
     return [

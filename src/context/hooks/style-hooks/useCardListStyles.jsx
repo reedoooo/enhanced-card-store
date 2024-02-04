@@ -36,7 +36,7 @@ const useCardListStyles = () => {
   }));
   const StyledTableHeader = styled(TableHead)(({ theme }) => ({
     background: theme.palette.backgroundB.lightest,
-    color: theme.palette.success.main,
+    color: theme.palette.backgroundA.darker,
   }));
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     // color: '#ddd', // Lighter text for better readability

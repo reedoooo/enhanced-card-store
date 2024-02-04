@@ -2,7 +2,7 @@
 export const commonPaperStyles = (theme) => ({
   padding: 3,
   borderRadius: 2,
-  background: theme.palette.success.dark,
+  background: theme.palette.backgroundE.light,
   boxShadow: 3,
   margin: 'auto',
   width: '100%',

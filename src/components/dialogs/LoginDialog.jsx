@@ -2,31 +2,22 @@ import { Box, Button, IconButton, Typography } from '@mui/material';
 import LoginForm from '../forms/AuthForms';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import {
-  useAuthContext,
-  useFormContext,
-  useMode,
-  usePageContext,
-} from '../../context';
-import {
-  StyledDialog,
-  StyledDialogContent,
-  StyledDialogActions,
-  StyledDialogTitle,
-} from '../forms/styled';
+import { useFormContext, useMode } from '../../context';
 import useAuthDialog from '../../context/hooks/useAuthDialog';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import { useEffect } from 'react';
+import {
+  StyledDialog,
+  StyledDialogActions,
+  StyledDialogContent,
+  StyledDialogTitle,
+} from '../../pages/pageStyles/StyledComponents';
 
 function LoginDialog() {
   const { theme } = useMode();
   // const { logout } = useAuthContext();
   const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
-  const { forms } = useFormContext();
-  const loginValues = forms?.loginForm;
-  const signupValues = forms?.signupForm;
-  const signupMode = signupValues?.signupMode;
-
+  const { currentFormType } = useFormContext();
   useEffect(() => {
     if (!isLoggedIn) {
       toggleLoginDialog();
@@ -58,7 +49,7 @@ function LoginDialog() {
               alignItems="center"
             >
               <Typography variant="h6">
-                {signupMode ? 'Sign Up' : 'Login'}
+                {currentFormType === 'signupForm' ? 'Sign Up' : 'Login'}
               </Typography>
               <IconButton onClick={toggleColorMode} color="inherit">
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}

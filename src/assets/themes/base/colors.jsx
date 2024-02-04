@@ -3,7 +3,15 @@ import {
   backgroundA,
   backgroundB,
   backgroundE,
+  backgroundF,
   rarity,
+  info,
+  warning,
+  success,
+  error,
+  text,
+  divider,
+  action,
 } from './customColorPalettes';
 const colors = {
   // transparent: 'transparent',
@@ -33,6 +41,7 @@ const colors = {
   },
   // TERTIARY COLORS
   backgroundE,
+  backgroundF,
   // COLORS FOR CARD RARITY OVERLAY
   rarity,
   // CARD RARITY OVERLAYS
@@ -55,11 +64,26 @@ const colors = {
   background: {
     default: '#f0f2f5',
   },
+  // TEXT COLORS
+  text,
+  // DIVIDER COLORS
+  divider,
+  // ACTION COLORS
+  action,
+  // INFO COLORS
+  info,
+  // SUCCESS COLORS
+  success,
+  // WARNING COLORS
+  warning,
+  // ERROR COLORS
+  error,
+
   // OTHER COLORS
-  text: {
-    main: '#7b809a',
-    focus: '#7b809a',
-  },
+  // text: {
+  //   main: '#7b809a',
+  //   focus: '#7b809a',
+  // },
 
   transparent: {
     main: 'transparent',

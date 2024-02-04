@@ -27,7 +27,7 @@ import CardMediaSection from '../../cards/media/CardMediaSection';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
 import CardDetail from '../../cards/CardDetail';
-import CardDetailsContainer from '../../../layout/CardDetailsContainer';
+import CardDetailsContainer from '../../../layout/cards/CardDetailsContainer';
 import { useOverlay } from '../../../context/hooks/useOverlay';
 
 const GenericCardDialog = (props) => {

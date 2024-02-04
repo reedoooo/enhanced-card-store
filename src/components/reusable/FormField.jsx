@@ -1,7 +1,6 @@
 // components/form/FormField.js
 import React from 'react';
-import { TextField } from '@mui/material';
-import { StyledTextField } from '../forms/styled';
+import { StyledTextField } from '../../pages/pageStyles/StyledComponents';
 
 const FormField = ({ name, register, errors, theme, ...props }) => (
   <StyledTextField

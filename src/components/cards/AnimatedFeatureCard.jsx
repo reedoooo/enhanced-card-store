@@ -8,6 +8,7 @@ import {
   FeatureCard,
 } from '../../pages/pageStyles/StyledComponents';
 import { useMode } from '../../context';
+import MDButton from '../../layout/REUSABLE_COMPONENTS/MDBUTTON';
 
 const AnimatedBox = animated(Box);
 
@@ -63,20 +64,23 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           </CardUnorderedList>
         </CardContent>
         <CardActions sx={{ alignSelf: 'end' }}>
-          <ActionButton
+          <MDButton
             fullWidth
-            variant="outlined"
-            theme={theme}
+            variant="contained"
+            color="primary"
+            size="small"
             onClick={() => onOpenModal(tier.title)}
             sx={{
-              ...theme.responsiveStyles.getButtonTypographyVariant2(
-                theme.breakpoints
-              ),
-              ...theme.genericButtonStyles.addButton,
+              color: theme.palette.backgroundA.default,
+              bg: theme.palette.backgroundF.light,
+              borderColor: theme.palette.backgroundA.darkest,
+              flexGrow: 1,
+              height: '100%',
+              width: '100%',
             }}
           >
             {tier.buttonText}
-          </ActionButton>
+          </MDButton>
         </CardActions>
       </FeatureCard>
     </AnimatedBox>

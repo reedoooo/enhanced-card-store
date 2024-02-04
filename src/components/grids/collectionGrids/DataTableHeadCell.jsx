@@ -23,8 +23,9 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }) {
         // width: width || 'auto',
         // fontSize: theme.typography.body1.fontSize,
         borderBottom: `2px solid ${theme.palette.divider}`,
+        border: `1px solid ${theme.palette.divider}`,
         textAlign: align,
-        background: theme.palette.backgroundA.lightest, // Ensures contrast with the table body
+        background: theme.palette.backgroundE.light, // Ensures contrast with the table body
         fontWeight: theme.typography.fontWeightMedium,
         letterSpacing: '0.0075em',
         lineHeight: 1.5,

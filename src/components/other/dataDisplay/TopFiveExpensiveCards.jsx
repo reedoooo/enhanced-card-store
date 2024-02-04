@@ -16,7 +16,7 @@ const TopFiveExpensiveCards = ({ topFiveCards, isLoading, iconName }) => {
       ));
     }
 
-    return topFiveCards.map((card, index) => (
+    return topFiveCards?.map((card, index) => (
       <Box
         key={card.id || index}
         sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}

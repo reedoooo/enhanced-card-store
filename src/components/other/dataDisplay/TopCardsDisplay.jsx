@@ -22,7 +22,7 @@ const StyledStepper = styled(MobileStepper)(({ theme }) => ({
   background: theme.palette.backgroundB.dark,
   border: `1px solid ${theme.palette.backgroundB.lighter}`,
   borderRadius: theme.shape.borderRadiusLarge,
-  color: theme.palette.success.light,
+  color: theme.palette.backgroundA.light,
   overflow: 'hidden',
   padding: theme.spacing(1),
   height: '100%',
@@ -127,7 +127,7 @@ const TopCardsDisplay = () => {
                 onClick={handleNext}
                 disabled={activeStep === maxSteps - 1}
                 sx={{
-                  color: theme.palette.success.main,
+                  color: theme.palette.backgroundA.light,
                 }}
               >
                 {theme.direction === 'rtl' ? (
@@ -144,7 +144,7 @@ const TopCardsDisplay = () => {
                 onClick={handleBack}
                 disabled={activeStep === 0}
                 sx={{
-                  color: theme.palette.success.main,
+                  color: theme.palette.backgroundA.light,
                   '&.Mui-disabled': {
                     // background: theme.palette.background.disabled,
                     color: theme.palette.background.disabled,

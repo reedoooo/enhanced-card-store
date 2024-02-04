@@ -19,6 +19,7 @@ import ProfileForm from '../../components/forms/ProfileForm';
 import useResponsiveStyles from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
 import UserStats from '../../layout/profile/UserStats';
+import Overview from '../../layout/profile/index';
 
 const ProfilePage = () => {
   const { updateUser } = useUserContext();
@@ -45,9 +46,16 @@ const ProfilePage = () => {
     openSnackbar('Saved changes.');
   };
 
-  return (
-    <Container maxWidth={isLarge ? 'lg' : 'md'}>
-      <Box my={5} display="flex" flexDirection="column" alignItems="center">
+  return <Overview />;
+};
+
+export default ProfilePage;
+{
+  /* <Container maxWidth={isLarge ? 'lg' : 'md'}> */
+}
+
+{
+  /* <Box my={5} display="flex" flexDirection="column" alignItems="center">
         <Avatar
           sx={{ width: 120, height: 120 }}
           src={placeholder}
@@ -85,9 +93,8 @@ const ProfilePage = () => {
         autoHideDuration={6000}
         onClose={() => setSnackbarData({ ...snackbarData, open: false })}
         message={snackbarData.message}
-      />
-    </Container>
-  );
-};
-
-export default ProfilePage;
+      /> */
+}
+{
+  /* </Container> */
+}

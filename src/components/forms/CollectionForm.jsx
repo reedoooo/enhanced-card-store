@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FormWrapper, StyledTextField, StyledButton } from './styled';
-import { useMode } from '../../context';
+import { useFormContext, useMode, usePageContext } from '../../context';
+import FormField from '../reusable/FormField';
+import { StyledButton } from '../cards/styles/cardStyles';
 
 const CollectionForm = ({ onSave, isNew }) => {
   const { theme } = useMode();
@@ -9,23 +10,65 @@ const CollectionForm = ({ onSave, isNew }) => {
     name: '',
     description: '',
   });
+  const { returnDisplay, loadingStatus, setIsFormDataLoading } =
+    usePageContext();
+  const {
+    errors,
+    isSubmitting,
+    currentFormType,
+    onSubmit,
+    register,
+    handleChange,
+    handleSubmit,
+    setFormType,
+  } = useFormContext();
 
-  const handleValueChange = (fieldName) => (event) => {
-    setFormValues((prev) => ({ ...prev, [fieldName]: event.target.value }));
-  };
+  useEffect(() => setFormType('updateCollectionForm'), [setFormType]);
+  // const handleValueChange = (fieldName) => (event) => {
+  //   setFormValues((prev) => ({ ...prev, [fieldName]: event.target.value }));
+  // };
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    onSave(formValues); // Assuming onSave is properly provided and handles the form submission
-  };
+  // const handleFormSubmit = (event) => {
+  //   event.preventDefault();
+  //   onSave(formValues); // Assuming onSave is properly provided and handles the form submission
+  // };
 
   return (
-    <FormWrapper onSubmit={handleFormSubmit} theme={theme}>
-      <StyledTextField
+    <form
+      onSubmit={handleSubmit((data) => {
+        setIsFormDataLoading(true);
+        onSubmit(data);
+      })}
+      // theme={theme}
+    >
+      {loadingStatus?.isFormDataLoading && returnDisplay()}
+      <FormField
+        name="name"
         label="Collection Name"
         placeholder="Enter collection name"
-        value={formValues.name}
-        onChange={handleValueChange('name')}
+        register={register}
+        value={currentFormType?.updateCollectionForm?.name}
+        errors={errors}
+        theme={theme}
+        required
+      />
+      <FormField
+        name="description"
+        label="Collection Description"
+        placeholder="Enter collection description"
+        register={register}
+        errors={errors}
+        required
+        value={currentFormType?.updateCollectionForm?.description}
+        theme={theme}
+        multiline
+        rows={4}
+      />
+      {/* <StyledTextField
+        label="Collection Name"
+        placeholder="Enter collection name"
+        value={currentFormType?.updateCollectionForm?.name}
+        // onChange={handleValueChange('name')}
         margin="normal"
         variant="outlined"
         required
@@ -35,19 +78,28 @@ const CollectionForm = ({ onSave, isNew }) => {
       <StyledTextField
         label="Collection Description"
         placeholder="Enter collection description"
-        value={formValues.description}
-        onChange={handleValueChange('description')}
+        value={currentFormType?.updateCollectionForm?.description}
+        // onChange={handleValueChange('description')}
         margin="normal"
         variant="outlined"
         multiline
         rows={4}
         fullWidth
         theme={theme}
-      />
-      <StyledButton type="submit" variant="contained" theme={theme}>
-        {isNew ? 'Create Collection' : 'Update Collection'}
+      /> */}
+      <StyledButton
+        disabled={isSubmitting}
+        type="submit"
+        variant="contained"
+        theme={theme}
+      >
+        {isSubmitting
+          ? 'Loading...'
+          : isNew
+            ? 'Create Collection'
+            : 'Update Collection'}
       </StyledButton>
-    </FormWrapper>
+    </form>
   );
 };
 

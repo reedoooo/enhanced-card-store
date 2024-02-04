@@ -15,11 +15,11 @@ export const useGenericActionButtonStyles = () => {
       },
     },
     addButton: {
-      color: theme.palette.success.contrastText,
+      color: theme.palette.backgroundA.contrastText,
       flexGrow: 1,
-      backgroundColor: theme.palette.success.main,
+      backgroundColor: theme.palette.backgroundA.darker,
       '&:hover': {
-        backgroundColor: theme.palette.success.darker,
+        backgroundColor: theme.palette.backgroundA.light,
       },
       marginRight: theme2.spacing(0.5),
     },

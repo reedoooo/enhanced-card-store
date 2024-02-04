@@ -75,9 +75,11 @@ export const FormProvider = ({ children }) => {
           // await updateUserData(data); // Adjust as necessary
           break;
         case 'updateCollectionForm':
+          console.log('Updating collection:', data);
           // await updateCollection(data); // Adjust as necessary
           break;
         case 'addCollectionForm':
+          console.log('Adding collection:', data);
           // await addCollection(data); // Adjust as necessary
           break;
         case 'searchForm':

@@ -16,7 +16,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
         width: '100%',
         height: '100%',
         textAlign: 'center',
-        background: theme.palette.success.light,
+        background: theme.palette.backgroundE.light,
         padding: theme2.spacing(2), // Adjust padding as needed
       }}
     >

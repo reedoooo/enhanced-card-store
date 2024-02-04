@@ -134,7 +134,7 @@ export const ComponentGridContainer = styled('div')(({ theme }) => ({
 export const ComponentGridItem = styled(Grid)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  background: theme.palette.success.main,
+  background: theme.palette.backgroundA.main,
   borderRadius: theme.shape.borderRadius,
 }));
 

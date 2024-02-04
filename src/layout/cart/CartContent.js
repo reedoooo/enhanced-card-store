@@ -2,9 +2,7 @@ import React from 'react';
 import { Typography, Skeleton, Box, Grid, Container } from '@mui/material';
 import CartContainer from './CartContainer';
 import CartItem from '../../components/grids/gridItems/CartItem';
-import CartTotal from '../../components/other/dataDisplay/CartTotal';
 import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
-import Checkout from '../../containers/cartPageContainers/Checkout';
 import { useMode } from '../../context';
 
 const CartContent = () => {

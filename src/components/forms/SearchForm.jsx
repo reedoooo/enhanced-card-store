@@ -1,14 +1,8 @@
 import React, { useEffect } from 'react';
-import {
-  FormWrapper,
-  StyledButton,
-  StyledFormPaper,
-  StyledTextField,
-} from './styled';
-
 import { Button, Grid } from '@mui/material';
 import { useFormContext, useMode, usePageContext } from '../../context';
 import FormField from '../reusable/FormField';
+import { StyledFormPaper } from '../../pages/pageStyles/StyledComponents';
 
 const SearchForm = ({ onFocus, onBlur }) => {
   const { theme } = useMode();

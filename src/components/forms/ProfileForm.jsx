@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TextField, Button } from '@mui/material';
-import { FormWrapper } from './styled';
 import { useFormContext } from '../../context';
+import FormField from '../reusable/FormField';
 
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const { forms, handleChange, handleSubmit } = useFormContext();
@@ -14,8 +14,8 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
   };
 
   return (
-    <FormWrapper onSubmit={handleFormSubmit}>
-      <TextField
+    <form onSubmit={handleFormSubmit}>
+      <FormField
         label="Username"
         id="username"
         value={profileValues?.username}
@@ -23,7 +23,7 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
         fullWidth
         margin="normal"
       />
-      <TextField
+      <FormField
         label="First Name"
         id="firstName"
         value={profileValues?.firstName}
@@ -31,7 +31,7 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
         fullWidth
         margin="normal"
       />
-      <TextField
+      <FormField
         label="Last Name"
         id="lastName"
         value={profileValues?.lastName}
@@ -39,7 +39,7 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
         fullWidth
         margin="normal"
       />
-      <TextField
+      <FormField
         label="Age"
         id="age"
         value={profileValues?.age}
@@ -47,7 +47,7 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
         fullWidth
         margin="normal"
       />
-      <TextField
+      <FormField
         label="Status"
         id="status"
         value={profileValues?.status}
@@ -58,7 +58,7 @@ const ProfileForm = ({ userName, name, age, status, onSave }) => {
       <Button type="submit" variant="contained" color="primary" fullWidth>
         Save Changes
       </Button>
-    </FormWrapper>
+    </form>
   );
 };
 

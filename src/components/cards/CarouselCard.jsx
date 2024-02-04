@@ -82,7 +82,7 @@ const CarouselCard = ({ card }) => {
           <ChartContainerMobile>
             <Grid item xs={12}>
               <CardDetails>
-                <Typography variant="h6" color={theme.palette.success.main}>
+                <Typography variant="h6" color={theme.palette.backgroundA.dark}>
                   {card?.name}
                 </Typography>
               </CardDetails>
