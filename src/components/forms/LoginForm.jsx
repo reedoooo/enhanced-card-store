@@ -8,45 +8,52 @@ import {
 import { useFormContext, useMode, usePageContext } from '../../context';
 import SignupSwitch from '../buttons/other/SignupSwitch';
 import { Box } from '@mui/material';
+import MDBox from '../../layout/collection/MDBOX';
 
 const LoginForm = () => {
-  const { theme } = useMode(); // Ensures theme is applied correctly
-  const { returnDisplay, loadingStatus } = usePageContext(); // Access loading display or error status
+  const { theme } = useMode();
+  const { returnDisplay, loadingStatus } = usePageContext();
   const { forms, handleChange, handleSubmit } = useFormContext();
-  const loginValues = forms?.loginForm || {};
+
+  const loginValues = forms?.loginForm?.securityData || {};
   const signupValues = forms?.signupForm || {};
   const signupMode = signupValues?.signupMode;
   const formType = signupMode ? 'signupForm' : 'loginForm';
-  const valueType = signupMode ? signupValues : loginValues;
+
+  // Determine the correct values to display based on form type
+  const valueType = signupMode ? signupValues.securityData : loginValues;
+
   const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    handleSubmit(formType)(event); // Pass the event to your form handler
+    event.preventDefault();
+    handleSubmit(formType)(event);
   };
 
   return (
-    <>
+    <MDBox
+      sx={{
+        maxWidth: '100%',
+        // background: theme.palette.backgroundB.darker,
+        borderRadius: theme.shape.borderRadius,
+        // display: 'flex',
+        // flexDirection: 'row',
+        // flexGrow: 1,
+        // margin: 'auto',
+        width: { xs: '100%', md: '100%' },
+        padding: theme.spacing(2),
+      }}
+    >
       {loadingStatus?.isFormDataLoading && returnDisplay()}
 
       <FormWrapper onSubmit={handleFormSubmit}>
         {/* Conditional rendering of signup fields */}
         {signupMode && (
           <>
-            <StyledTextField
-              label="Email"
-              placeholder="Enter your email"
-              value={valueType.email || ''}
-              onChange={handleChange(formType, 'email')}
-              margin="normal"
-              variant="outlined"
-              type="email"
-              required
-              theme={theme}
-            />
+            {/* Fields from basicData for signup */}
             <StyledTextField
               label="First Name"
               placeholder="Enter your first name"
-              value={valueType.firstName || ''}
-              onChange={handleChange(formType, 'firstName')}
+              value={signupValues.basicData.firstName || ''}
+              onChange={handleChange(formType, 'basicData.firstName')}
               margin="normal"
               variant="outlined"
               required
@@ -55,44 +62,44 @@ const LoginForm = () => {
             <StyledTextField
               label="Last Name"
               placeholder="Enter your last name"
-              value={valueType.lastName || ''}
-              onChange={handleChange(formType, 'lastName')}
+              value={signupValues.basicData.lastName || ''}
+              onChange={handleChange(formType, 'basicData.lastName')}
               margin="normal"
               variant="outlined"
               required
               theme={theme}
             />
             <StyledTextField
-              label="Phone"
-              placeholder="Enter your phone number"
-              value={valueType.phone || ''}
-              onChange={handleChange(formType, 'phone')}
+              label="Email"
+              placeholder="Enter your email"
+              value={signupValues.securityData.email || ''}
+              onChange={handleChange(formType, 'securityData.email')}
               margin="normal"
               variant="outlined"
+              type="email"
               required
               theme={theme}
             />
           </>
         )}
 
-        {/* Common fields for both login and signup */}
+        {/* Common fields for both login and signup from securityData */}
         <StyledTextField
           label="Username"
           placeholder="Enter your username"
           value={valueType.username || ''}
-          onChange={handleChange(formType, 'username')}
+          onChange={handleChange(formType, 'securityData.username')}
           margin="normal"
           variant="outlined"
           required
           theme={theme}
         />
-
         <StyledTextField
           label="Password"
           placeholder="Enter your password"
           value={valueType.password || ''}
           type="password"
-          onChange={handleChange(formType, 'password')}
+          onChange={handleChange(formType, 'securityData.password')}
           margin="normal"
           variant="outlined"
           required
@@ -103,12 +110,10 @@ const LoginForm = () => {
           <StyledButton type="submit" variant="contained" theme={theme}>
             {signupMode ? 'Sign Up' : 'Login'}
           </StyledButton>
-
-          {/* Toggle between login and signup modes */}
           <SignupSwitch signupMode={signupMode} />
         </StyledBox>
       </FormWrapper>
-    </>
+    </MDBox>
   );
 };
 

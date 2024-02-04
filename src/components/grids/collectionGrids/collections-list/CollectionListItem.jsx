@@ -13,16 +13,16 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PropTypes from 'prop-types';
-import { useCollectionStore, useMode } from '../../../context';
-import LongMenu from '../../../layout/navigation/LongMenu';
+import { useCollectionStore, useMode } from '../../../../context';
+import LongMenu from '../../../../layout/navigation/LongMenu';
 import {
   StyledCollectionListCard,
   StyledCollectionListCardContent,
   StyledStatisticTypography,
-} from '../../cards/styles/cardStyles';
-import useCollectionVisibility from '../../../context/hooks/useCollectionVisibility';
-import MDBox from '../../../layout/collection/MDBOX';
-import MDTypography from '../../../layout/collection/MDTypography';
+} from '../../../cards/styles/cardStyles';
+import useCollectionVisibility from '../../../../context/hooks/useCollectionVisibility';
+import MDBox from '../../../../layout/collection/MDBOX';
+import MDTypography from '../../../../layout/collection/MDTYPOGRAPHY/MDTypography';
 const CollectionListItem = memo(
   ({
     collection,

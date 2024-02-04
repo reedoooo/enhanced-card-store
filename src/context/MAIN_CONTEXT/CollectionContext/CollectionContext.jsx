@@ -46,6 +46,7 @@ export const CollectionProvider = ({ children }) => {
     setSelectedCollection,
     setSelectedCards,
     getTotalPrice,
+    checkAndUpdateCardPrices,
   } = useCollectionManager(isLoggedIn, userId);
 
   const contextValue = useMemo(
@@ -89,6 +90,9 @@ export const CollectionProvider = ({ children }) => {
         updateCardsInCollection(collectionId, [card], incrementType);
       },
       updateChartDataInCollection,
+
+      // CRON JOB ACTIONS
+      checkAndUpdateCardPrices,
 
       // OTHER ACTIONS
       getTotalPrice,

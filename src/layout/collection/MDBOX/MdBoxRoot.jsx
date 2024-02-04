@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { styled } from 'styled-components';
 import { useSidebarContext } from '../../../context';
 
-export default styled(Box)(({ theme, ownerState }) => {
+export default styled(Box)(({ theme, ownerstate }) => {
   // const { backgroundA, backgroundB, backgroundC, rarity } = theme;
   const { isSidebarOpen } = useSidebarContext();
   const {
@@ -20,10 +20,12 @@ export default styled(Box)(({ theme, ownerState }) => {
     opacity = 1, // default value
     borderRadius = 'sm', // default value
     shadow = 'none', // default value
-  } = ownerState;
+  } = ownerstate;
   // Define additional styles that DashboardLayout might expect
   const additionalStyles = {
     marginLeft: isSidebarOpen ? pxToRem(250) : pxToRem(0),
+    borderWidth: pxToRem(1),
+    borderStyle: 'solid',
     transition: transitions.create(['margin-left', 'margin-right'], {
       easing: transitions.easing.easeInOut,
       duration: transitions.duration.standard,

@@ -158,6 +158,7 @@ export const themeSettings = (mode) => {
     functions,
     palette: {
       mode: mode,
+      transparent: 'transparent',
       // PRIMARY COLORS
       backgroundA: {
         darkest: '#2e7c67', // '#70d8bd',
@@ -427,6 +428,13 @@ export const themeSettings = (mode) => {
       caption: { fontSize: '0.75rem' },
       body3: { fontSize: '0.625rem' },
       body4: { fontSize: '0.5rem' },
+    },
+    borders: {
+      borderWidth: [0, 1, 2, 4, 8, 16, 32],
+      tableCell: {
+        border: '1px solid',
+        borderColor: color.grey300,
+      },
     },
     // STYLING FOR REUSABLE COMPONENTS
     responsiveStyles: {

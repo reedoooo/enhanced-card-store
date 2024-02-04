@@ -278,7 +278,10 @@ const HomePage = () => {
                   />
                   <CardContent>
                     <Stack direction={isMdUp ? 'row' : 'column'} spacing={2}>
-                      {renderStatItem('Total Value of Collections', 5)}
+                      {renderStatItem(
+                        'Total Value of Collections',
+                        selectedCollection?.totalPrice
+                      )}
                       {renderStatItem('Number of Decks', 5)}
                       {renderStatItem('Number of Collections', 5)}
                       {renderStatItem('Total Cards Purchased', 5)}

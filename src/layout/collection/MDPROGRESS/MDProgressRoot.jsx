@@ -17,9 +17,9 @@ Coded by www.creative-tim.com
 import { styled } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 
-export default styled(LinearProgress)(({ theme, ownerState }) => {
+export default styled(LinearProgress)(({ theme, ownerstate }) => {
   const { palette, functions } = theme;
-  const { color, value, variant } = ownerState;
+  const { color, value, variant } = ownerstate;
 
   const { text, gradients } = palette;
 

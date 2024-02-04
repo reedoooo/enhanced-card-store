@@ -47,6 +47,7 @@
     "react-spring": "^9.7.3",
     "react-stripe-checkout": "^2.6.3",
     "react-swipeable-views": "^0.14.0",
+    "react-table": "^7.8.0",
     "react-transition-group": "^4.4.5",
     "react-virtualized": "^9.22.5",
     "sass": "^1.69.7",

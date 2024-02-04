@@ -15,20 +15,20 @@ const FormContext = createContext(defaultContextValue);
 export const useFormContext = () => useContext(FormContext);
 // Define form validations if needed
 const formValidations = {
-  loginForm: (values) => {
-    let errors = {};
-    if (!values.username) errors.username = 'Username is required';
-    if (!values.password) errors.password = 'Password is required';
-    return errors;
-  },
-  signupForm: (values) => {
-    let errors = {};
-    // Example: Add validations specific to signup form
-    if (!values.firstName) errors.firstName = 'First name is required';
-    if (!values.lastName) errors.lastName = 'Last name is required';
-    // ... more validations
-    return errors;
-  },
+  // loginForm: (values) => {
+  //   let errors = {};
+  //   if (!values.username) errors.username = 'Username is required';
+  //   if (!values.password) errors.password = 'Password is required';
+  //   return errors;
+  // },
+  // signupForm: (values) => {
+  //   let errors = {};
+  //   // Example: Add validations specific to signup form
+  //   if (!values.firstName) errors.firstName = 'First name is required';
+  //   if (!values.lastName) errors.lastName = 'Last name is required';
+  //   // ... more validations
+  //   return errors;
+  // },
   updateUserDataForm: (values) => {
     let errors = {};
     // Example: Add validations specific to user data update form
@@ -135,12 +135,10 @@ export const FormProvider = ({ children }) => {
           break;
         case 'loginForm':
           console.log('Submitting login form:', currentForm);
-          // await login(currentForm?, currentForm?.password); // Adjust as necessary
           await login(
             currentForm?.securityData?.username,
             currentForm?.securityData?.password
           ); // Use the appropriate function from AuthContext
-
           break;
         case 'updateUserDataForm':
           console.log('Submitting update user data form:', currentForm);
@@ -172,23 +170,8 @@ export const FormProvider = ({ children }) => {
       setFormErrors(currentErrors); // Update error state
       console.log('Form errors:', currentErrors);
     }
-    // Specific logic for the search form
-    // if (formName === 'searchForm') {
-    //   await handleRequest(forms.searchForm);
-    // }
     setIsFormDataLoading(false); // indicate form submission is done
   };
-
-  // useEffect(() => {
-  //   if (initialFormStates?.searchForm?.searchTerm) {
-  //     const limitedCards = handleRequest(
-  //       initialFormStates?.searchForm?.searchTerm
-  //     );
-  //     setLimitedCards(limitedCards);
-  //   }
-  // }, [returnDisplay]);
-
-  // Provide each form's data, handleChange, and handleSubmit through context
   const contextValue = {
     forms,
     formErrors,

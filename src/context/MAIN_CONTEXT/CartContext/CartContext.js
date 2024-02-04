@@ -51,7 +51,6 @@ export const CartProvider = ({ children }) => {
       0
     );
   };
-
   const totalCost = useMemo(
     () =>
       cartData?.cart?.reduce(
@@ -61,6 +60,7 @@ export const CartProvider = ({ children }) => {
       ),
     [cartData.cart]
   );
+
   const createUserCart = useCallback(async () => {
     if (!userId) return;
     try {

@@ -21,9 +21,11 @@ import {
 import {
   StyledDialog,
   StyledDialogContent,
+  StyledDialogActions,
   StyledDialogTitle,
 } from '../forms/styled';
 import useAuthDialog from '../../context/hooks/useAuthDialog';
+import MDBox from '../../layout/collection/MDBOX';
 
 function LoginDialog() {
   const { theme } = useMode();
@@ -56,30 +58,38 @@ function LoginDialog() {
       fullWidth
       theme={theme}
     >
-      <StyledDialogTitle theme={theme}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">
-            {signupMode ? 'Sign Up' : 'Login'}
-          </Typography>
-          <IconButton onClick={toggleColorMode} color="inherit">
-            {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Box>
-      </StyledDialogTitle>
-      <StyledDialogContent dividers theme={theme}>
-        {isLoggedIn ? (
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleLogout}
-            fullWidth
-          >
-            Log Out
-          </Button>
-        ) : (
-          <LoginForm />
-        )}
-      </StyledDialogContent>
+      <MDBox py={3}>
+        <StyledDialogContent dividers theme={theme}>
+          <StyledDialogTitle theme={theme}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h6">
+                {signupMode ? 'Sign Up' : 'Login'}
+              </Typography>
+              <IconButton onClick={toggleColorMode} color="inherit">
+                {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Box>
+          </StyledDialogTitle>
+        </StyledDialogContent>
+        <StyledDialogActions dividers theme={theme}>
+          {isLoggedIn ? (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleLogout}
+              fullWidth
+            >
+              Log Out
+            </Button>
+          ) : (
+            <LoginForm />
+          )}
+        </StyledDialogActions>
+      </MDBox>
     </StyledDialog>
   );
 }

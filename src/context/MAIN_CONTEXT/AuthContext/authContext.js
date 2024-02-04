@@ -128,6 +128,8 @@ export default function AuthProvider({ children }) {
   };
 
   const checkTokenValidity = useCallback(async () => {
+    logEvent('Checking token validity.');
+
     try {
       const accessToken = cookies.accessToken;
       if (!accessToken) return false;
@@ -149,7 +151,8 @@ export default function AuthProvider({ children }) {
       return isValid;
     } catch (error) {
       console.error('Token validation error:', error);
-      return false;
+      logEvent(`Token validation failed: ${error}`);
+      logout(); // Log out if token validation fails
     }
   }, [cookies.accessToken, logout]);
 

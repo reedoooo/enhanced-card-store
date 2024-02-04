@@ -22,8 +22,8 @@ import Divider from '@mui/material/Divider';
 import Icon from '@mui/material/Icon';
 
 // Material Dashboard 2 React components
-import MDBox from './MDBOX/index';
-import MDTypography from './/MDTypography';
+import MDBox from '../../../layout/collection/MDBOX/index';
+import MDTypography from '../../../layout/collection/MDTYPOGRAPHY/MDTypography';
 
 function ComplexStatisticsCard({ color, title, count, percentage, icon }) {
   return (

@@ -27,9 +27,9 @@ import {
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext, useMode } from '../context';
-import Transitions from './Transitions';
-import MainCard from './MainCard';
+import { useAuthContext, useMode } from '../../context';
+import Transitions from '../Transitions';
+import MainCard from '../MainCard';
 
 // ==============================|| PROFILE MENU ||============================== //
 

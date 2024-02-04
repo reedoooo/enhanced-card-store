@@ -170,8 +170,6 @@ const LinearChart = ({ nivoChartData, width, height, specialPoints }) => {
       tickPadding: 5,
       tickValues: tickValues,
       format: '%Y-%m-%d', // Adjust this format to display the dates as you need
-      // format: '%d',
-      // format: '%S.%L',
     },
     yFormat: '$.2f',
     axisLeft: {

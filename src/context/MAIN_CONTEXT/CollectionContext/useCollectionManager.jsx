@@ -279,57 +279,6 @@ const useCollectionManager = (isLoggedIn, userId) => {
     }
   };
   /**
-   * Updates specific cards within a collection.
-   * @param {string} userId - The ID of the user who owns the collection.
-   * @param {string} collectionId - The ID of the collection in which cards are being updated.
-   * @param {Array} cards - Array of card objects with updated data. Each card object should include card ID and updated quantity.
-   * @param {string} incrementType - Determines if the card count should be incremented or decremented.
-   * @returns {Promise<Object>} The response from the server.
-   */
-  // const updateCardsInCollection = async (
-  //   collectionId,
-  //   cards,
-  //   incrementType
-  // ) => {
-  //   logger.logEvent('updateCardsInCollection start', {
-  //     collectionId,
-  //     cards,
-  //     incrementType,
-  //   });
-
-  //   // Modify card quantities based on incrementType
-  //   const modifiedCards = cards.map((card) => ({
-  //     ...card,
-  //     quantity:
-  //       incrementType === 'increment'
-  //         ? card.quantity + 1
-  //         : Math.max(card.quantity - 1, 0),
-  //   }));
-
-  //   // Remove cards with quantity 0
-  //   const cardsToUpdate = modifiedCards.filter((card) => card.quantity > 0);
-  //   const cardsToRemove = modifiedCards
-  //     .filter((card) => card.quantity === 0)
-  //     .map((card) => card.id);
-
-  //   if (cardsToUpdate.length > 0) {
-  //     const updateResponse = await fetchWrapper(
-  //       createApiUrl(`/${collectionId}/update`),
-  //       'PUT',
-  //       { cards: cardsToUpdate }
-  //     );
-  //     const updateData = handleApiResponse(
-  //       updateResponse,
-  //       'updateCardsInCollection'
-  //     );
-  //     updateSelectedCollection(updateData);
-  //   }
-
-  //   if (cardsToRemove.length > 0) {
-  //     await removeCardsFromCollection(collectionId, cardsToRemove);
-  //   }
-  // };
-  /**
    * Updates the chart data for a specific collection.
    * @param {string} userId - The ID of the user who owns the collection.
    * @param {string} collectionId - The ID of the collection for which chart data is being updated.
@@ -356,6 +305,15 @@ const useCollectionManager = (isLoggedIn, userId) => {
       throw error;
     }
   };
+  const checkAndUpdateCardPrices = useCallback(async (cards, collection) => {
+    const response = await fetchWrapper(
+      createApiUrl('/allCollections/automatedPriceUpdate'),
+      'PUT',
+      { cards, type: 'automated' }
+    );
+    const data = handleApiResponse(response, 'checkAndUpdateCardPrices');
+    updateSelectedCollection(data);
+  });
 
   return {
     // STATE
@@ -387,12 +345,13 @@ const useCollectionManager = (isLoggedIn, userId) => {
     updateAndSyncCollection,
     deleteCollection,
     updateSelectedCollection,
-    // updateCollectionDataCookie,
 
     // CARD ACTIONS
     addCardsToCollection,
     removeCardsFromCollection,
-    // updateCardsInCollection,
+
+    // CRON JOB ACTIONS
+    checkAndUpdateCardPrices,
 
     // CHART ACTIONS
     updateChartDataInCollection,

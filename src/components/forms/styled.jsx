@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
@@ -14,6 +15,7 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(4),
+    display: 'flex',
     backgroundColor: theme.palette.backgroundB.lightest, // Choose a subtle color
     color: theme.palette.text.primary,
     boxShadow: theme.shadows[5],
@@ -29,17 +31,30 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
 export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  flexGrow: 1,
+  width: '100%',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
   backgroundColor: theme.palette.backgroundA.lightest,
 }));
 
+export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  flexGrow: 1,
+  width: '100%',
+  gap: theme.spacing(2),
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.backgroundA.lightest,
+}));
 // FORM STYLES
 export const FormWrapper = styled('form')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  flexGrow: 1,
   gap: theme.spacing(2),
   padding: theme.spacing(3),
+  margin: 'auto',
   alignItems: 'center',
   backgroundColor: theme.palette.backgroundA.light,
   borderRadius: theme.shape.borderRadius,

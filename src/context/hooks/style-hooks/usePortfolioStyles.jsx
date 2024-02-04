@@ -305,7 +305,9 @@ export const PortfolioTablePaper = styled(Paper)(({ theme }) => ({
 }));
 export const PortfolioTable = styled(Table)(({ theme }) => ({
   minWidth: 300,
+  minHeight: 300,
   width: '100%',
+  height: '100%',
   background: theme.palette.backgroundA.lightest,
 }));
 // TABLE HEADER

@@ -9,8 +9,8 @@ import {
 } from 'react-icons/fa';
 import { GiAxeSword } from 'react-icons/gi';
 import CardDetail from '../components/cards/CardDetail';
-import { styled } from '@mui/system';
 import { useMode } from '../context';
+import styled from 'styled-components';
 
 const IconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',

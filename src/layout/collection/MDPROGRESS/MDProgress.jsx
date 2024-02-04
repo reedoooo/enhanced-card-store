@@ -37,7 +37,7 @@ const MDProgress = forwardRef(
         ref={ref}
         variant="determinate"
         value={value}
-        ownerState={{ color, value, variant }}
+        ownerstate={{ color, value, variant }}
       />
     </>
   )

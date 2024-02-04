@@ -38,7 +38,7 @@ const MDBox = forwardRef(
     <MDBoxRoot
       {...rest}
       ref={ref}
-      ownerState={{
+      ownerstate={{
         variant,
         bgColor,
         color,
@@ -67,6 +67,7 @@ MDBox.defaultProps = {
 // Typechecking props for the MDBox
 MDBox.propTypes = {
   variant: PropTypes.oneOf(['contained', 'gradient']),
+  borderWidth: PropTypes.number,
   bgColor: PropTypes.string,
   color: PropTypes.string,
   opacity: PropTypes.number,
