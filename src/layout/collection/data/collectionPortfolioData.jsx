@@ -2,6 +2,7 @@ import Icon from '@mui/material/Icon';
 // Images
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import React from 'react';
+import GenericActionButtons from '../../../components/buttons/actionButtons/GenericActionButtons';
 const Name = ({ name }) => (
   <MDTypography
     component="a"
@@ -46,16 +47,8 @@ const Quantity = ({ quantity }) => (
     {quantity}
   </MDTypography>
 );
-const Action = ({ value }) => (
-  <MDTypography component="a" href="#" color="text">
-    <Icon>more_vert</Icon>
-  </MDTypography>
-);
 export default function prepareTableData(selectedCards) {
-  // Helper function to round total price to the nearest tenth
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-
-  // Define column structure for react-table
   const columns = React.useMemo(
     () => [
       {
@@ -83,26 +76,17 @@ export default function prepareTableData(selectedCards) {
         Cell: ({ value }) => <Quantity quantity={value} />,
       },
       {
+        id: 'action',
         Header: 'Action',
         accessor: 'action',
-        id: 'action',
-        Cell: ({ value }) => <Action value={value} />,
+        Cell: ({ value }) => (
+          <GenericActionButtons card={value} context={'collection'} />
+        ),
       },
     ],
     []
   );
 
-  const rows = selectedCards.map((card, index) => ({
-    // Assuming each card has a unique 'id' for key, or use index as fallback
-    key: card.id || `row-${index}`,
-    name: <Name name={card.name} />,
-    price: <Price price={card.price} />,
-    tPrice: <TPrice tPrice={roundToNearestTenth(card.totalPrice)} />,
-    quantity: <Quantity quantity={card.quantity} />,
-    action: <Action />,
-  }));
-
-  // Map selectedCards to rows for react-table
   const data = React.useMemo(
     () =>
       selectedCards.map((card) => ({
@@ -113,41 +97,5 @@ export default function prepareTableData(selectedCards) {
     [selectedCards]
   );
 
-  // You don't need to return PaginationComponent, page, and rowsPerPage anymore
-  // since react-table handles pagination internally. You just need to provide data and columns.
   return { columns, data };
 }
-
-// export default function data(selectedCards) {
-//   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-//   const {
-//     data,
-//     PaginationComponent, // Assume this is your custom pagination component
-//     page,
-//     rowsPerPage,
-//   } = usePagination(selectedCards, 10, selectedCards?.length || 0);
-
-//   const rows = data?.map((card, index) => ({
-//     // Assuming each card has a unique 'id' for key, or use index as fallback
-//     key: card.id || `row-${index}`,
-//     name: <Name name={card.name} />,
-//     price: <Price price={card.price} />,
-//     tPrice: <TPrice tPrice={roundToNearestTenth(card.totalPrice)} />,
-//     quantity: <Quantity quantity={card.quantity} />,
-//     action: <Action />,
-//   }));
-
-//   return {
-//     columns: [
-//       { Header: 'name', accessor: 'name', width: '30%', align: 'left' },
-//       { Header: 'price', accessor: 'price', align: 'left' },
-//       { Header: 'total price', accessor: 'tPrice', align: 'center' },
-//       { Header: 'quantity', accessor: 'quantity', align: 'center' },
-//       { Header: 'action', accessor: 'action', align: 'center' },
-//     ],
-//     rows,
-//     PaginationComponent,
-//     page,
-//     rowsPerPage,
-//   };
-// }

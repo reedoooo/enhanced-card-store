@@ -1,26 +1,12 @@
-/* eslint-disable prefer-destructuring */
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
+import { useMode } from '../../../context';
 
-export default styled(Button)(({ theme, ownerState }) => {
+export default styled(Button)(({ ownerState }) => {
+  // const { palette, functions, borders, boxShadows } = theme;
+  const { color, variant, size, circular, iconOnly, darkMode, theme } =
+    ownerState;
   const { palette, functions, borders, boxShadows } = theme;
-  const { color, variant, size, circular, iconOnly, darkMode } = ownerState;
 
   const { white, text, transparent, gradients, grey } = palette;
   const { boxShadow, linearGradient, pxToRem, rgba } = functions;
@@ -30,7 +16,9 @@ export default styled(Button)(({ theme, ownerState }) => {
   // styles for the button with variant="contained"
   const containedStyles = () => {
     // background color value
-    const backgroundValue = palette[color] ? palette[color].main : white.main;
+    const backgroundValue = palette[color]
+      ? palette[color].main || palette[color].default
+      : white.main;
 
     // backgroundColor value when button is focused
     const focusedBackgroundValue = palette[color]
@@ -106,7 +94,7 @@ export default styled(Button)(({ theme, ownerState }) => {
   };
 
   // styles for the button with variant="outlined"
-  const outliedStyles = () => {
+  const outlinedStyles = () => {
     // background color value
     const backgroundValue =
       color === 'white' ? rgba(white.main, 0.1) : transparent.main;
@@ -278,11 +266,48 @@ export default styled(Button)(({ theme, ownerState }) => {
     };
   };
 
+  const customContainedStyles = {
+    backgroundColor: palette.backgroundF.dark,
+    // background:
+    // backgroundColor: theme.palette.backgroundE.light,
+    // color: theme.palette.primary.main,
+    borderColor: palette.backgroundB.dark,
+    // color: theme.palette.primary.main,
+    borderWidth: 2,
+    flexGrow: 1,
+    justifySelf: 'bottom',
+    bottom: 0,
+    '&:hover': {
+      fontWeight: 'bold',
+      background: palette.backgroundF.dark,
+      border: `1px solid ${palette.backgroundF.darkest}`,
+      // border: `1px solid ${theme.palette.backgroundB.darkest}`,
+    },
+    transition: 'opacity 0.3s ease, transform 0.3s ease',
+    // Add any other styles you want to apply specifically to this variant
+  };
+
+  const customContained = () => {
+    const backgroundValue = palette[color] ? palette[color].main : white.main;
+    return (
+      // ...containedStyles(),
+      customContainedStyles,
+      {
+        background: backgroundValue,
+        color: white.main,
+        '&:hover': {
+          background: backgroundValue,
+        },
+      }
+    );
+  };
+
   return {
     ...(variant === 'contained' && containedStyles()),
-    ...(variant === 'outlined' && outliedStyles()),
+    ...(variant === 'outlined' && outlinedStyles()),
     ...(variant === 'gradient' && gradientStyles()),
     ...(variant === 'text' && textStyles()),
+    ...(variant === 'customContained' && customContained()),
     ...(circular && circularStyles()),
     ...(iconOnly && iconOnlyStyles()),
   };

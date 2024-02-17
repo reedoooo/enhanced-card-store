@@ -23,7 +23,7 @@ const root = {
   // borderRadius: 4,
   // padding: '0.5rem 1rem',
   // textTransform: 'none', // Disable uppercase text
-  backgroundColor: '#5CDB95',
+  background: '#5CDB95',
 
   // backgroundColor: '#4cceac',
   '&:hover': {

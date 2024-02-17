@@ -60,6 +60,7 @@ export const SidebarProvider = ({ children }) => {
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
+  const isMobileView = window.innerWidth < 768;
 
   return (
     <SidebarContext.Provider

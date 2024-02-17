@@ -45,6 +45,13 @@ const defaultUniqueCustomDynamicFields = {
       data: [{ x: new Date(), y: 0 }],
     },
   ],
+  newNivoChartData: [
+    {
+      id: '',
+      color: '',
+      data: [{ x: new Date(), y: 0 }],
+    },
+  ],
 };
 // Default values for unique variant fields
 const defaultUniqueVariantFields = {
@@ -81,6 +88,8 @@ const defaultCollectionStatistics = {
   collectionStatistics: {
     highPoint: 0,
     lowPoint: Infinity,
+    priceChange: 0,
+    percentageChange: 0,
     twentyFourHourAverage: {
       startDate: new Date(),
       endDate: new Date(),
@@ -130,6 +139,13 @@ const defaultCollection = {
       id: '',
       color: '',
       // TODO: set x as defauly value for dates
+      data: [{ x: new Date(), y: 0 }],
+    },
+  ],
+  newNivoChartData: [
+    {
+      id: '',
+      color: '',
       data: [{ x: new Date(), y: 0 }],
     },
   ],
@@ -290,6 +306,7 @@ const defaultCollectionContextValues = {
 
   // OTHER ACTIONS
   getTotalPrice: () => {},
+  getCardQuantity: () => 0,
 };
 
 // ! DEFAULT VALUES FOR DECK CONTEXT
@@ -426,18 +443,113 @@ const defaultMuiChartData = [
     color: '',
   },
 ];
-
 // ! DEFAULT VALUES FOR CHART CONTEXT
+const singleChartData = (id, color, data, _id) => {
+  return {
+    id: id,
+    color: color,
+    data: data,
+    _id: _id,
+  };
+};
+const timeRangeProps = {
+  ids: ['24hr', '7d', '30d', '90d', '180d', '270d', '365d'],
+  names: ['24hr', '7d', '30d', '90d', '180d', '270d', '365d'],
+  color: '#2e7c67',
+  data: [],
+  _id: [
+    '65cecbc3bc231bd7d9659871',
+    '65cecbc3bc231bd7d965988a',
+    '65cecbc3bc231bd7d9659892',
+    '65cecbc3bc231bd7d96598b1',
+    '65cecbc3bc231bd7d96598d0',
+    '65cecbc3bc231bd7d96598ef',
+  ],
+};
+const timeRanges = [
+  { id: '24hr', name: 'Last 24 Hours', value: '24hr' },
+  { id: '7d', name: 'Last 7 Days', value: '7d' },
+  { id: '30d', name: 'Last Month', value: '30d' },
+  { id: '90d', name: 'Last 3 Months', value: '90d' },
+  { id: '180d', name: 'Last 6 Months', value: '180d' },
+  { id: '270d', name: 'Last 9 Months', value: '270d' },
+  { id: '365d', name: 'Last Year', value: '365d' },
+];
+const allChartData = (timeRangeProps) => {
+  for (const id of timeRangeProps.ids) {
+    timeRangeProps.data.push({ x: new Date(), y: 0 });
+
+    return singleChartData(
+      id,
+      timeRangeProps.color,
+      timeRangeProps.data,
+      timeRangeProps._id[timeRangeProps.ids.indexOf(id)]
+    );
+  }
+};
+const createNewNivoChartData = () => {
+  return allChartData(timeRangeProps);
+};
+export const defaultChartConstants = {
+  HEIGHT_TO_WIDTH_RATIO: 7 / 10,
+  DEFAULT_THRESHOLD: 600000,
+  TIME_RANGES: timeRanges,
+  // TIME_RANGE: timeRanges[0],
+  TIME_RANGES_KEYS: timeRanges.map((range) => range.id),
+  TIME_RANGE_PROPS: timeRangeProps,
+  // TICK_VALUES: ({ ticks } = getFormatAndTicks(timeRangeProps[0])),
+  // X_FORMAT: ({ format } = getFormatAndTicks(timeRangeProps[0])),
+  // X_FORMAT: '%H:%M',
+  // X_FORMAT: 'time:%Y-%m-%d %H:%M:%S',
+  X_FORMAT: '%Y-%m-%d', // Adjust if necessary to match your input data format
+  TICK_VALUES: 'every hour',
+  CHART_CONSTANTS: {
+    margin: { top: 20, right: 40, bottom: 40, left: 30 },
+    padding: 0.3,
+    animate: true,
+    motionStiffness: 90,
+    motionDamping: 15,
+    // background: '#2c2121',
+    xFormat: 'time:%Y-%m-%d %H:%M:%S',
+    xScale: {
+      type: 'time',
+      format: '%Y-%m-%dT%H:%M:%S.%LZ', // Adjust if necessary to match your input data format
+      useUTC: false,
+      precision: 'second',
+    },
+    yFormat: '$.2f',
+    yScale: {
+      type: 'linear',
+      min: 'auto',
+      max: 'auto',
+      stacked: true,
+      reverse: false,
+    },
+    pointSize: 12,
+    pointBorderWidth: 2,
+    colors: { scheme: 'green_blue' },
+    curve: 'monotoneX',
+    useMesh: true,
+    motionConfig: 'wobbly',
+    enableSlices: 'x',
+    layers: [
+      'grid',
+      'markers',
+      'areas',
+      'lines',
+      'slices',
+      'points',
+      'axes',
+      'legends',
+    ],
+  },
+};
 const defaultChartContextValues = {
+  // ...defaultChartConstants,
   // Data
   latestData: null,
-  timeRange: 86400000, // Default to 24 hours
-  timeRanges: [
-    { label: '2 hours', value: 7200000 }, // 2 * 60 * 60 * 1000
-    { label: '24 hours', value: 86400000 }, // 24 * 60 * 60 * 1000
-    { label: '7 days', value: 604800000 }, // 7 * 24 * 60 * 60 * 1000
-    { label: '1 month', value: 2592000000 }, // 30 * 24 * 60 * 60 * 1000
-  ],
+  timeRange: defaultChartConstants.TIME_RANGE,
+  timeRanges: defaultChartConstants.TIME_RANGES,
   finalizedNivoData: null,
   currentValue: null,
   tickValues: null,
@@ -457,8 +569,8 @@ const defaultChartContextValues = {
   getTickValues: () => {},
   getFilteredData: () => {},
   formatDateToString: () => {},
+  getFormatAndTicks: () => {},
 };
-
 // ! DEFAULT VALUES FOR FORM CONTEXT
 const defaultFormContextValues = {
   forms: {},
@@ -469,18 +581,50 @@ const defaultFormContextValues = {
   currentFormType: '',
   errors: {},
   isSubmitting: false,
+  isFormDataLoading: false,
+  isFormValid: false,
+  formMethods: {},
+
+  handleSearchTermChange: () => {},
+  setIsFormValid: () => {},
   setForms: () => {},
   setFormErrors: () => {},
   setCurrentForm: () => {},
   handleChange: () => {},
   handleSubmit: () => {},
   onSubmit: () => {},
+  onChange: () => {},
   resetForm: () => {},
   handleRequest: () => {},
   register: () => {},
+  registerForm: () => {},
   setFormType: () => {},
   setCurrentFormType: () => {},
   setValueAtPath: () => {},
+  setError: () => {},
+  toggleAuthForm: () => {},
+  toggleCollectionForm: () => {},
+  toggleFormType: () => {},
+  getFormMethods: () => {},
+  toggleForm: () => {},
+  onBlur: () => {},
+  onFocus: () => {},
+  handleFocus: () => {},
+  handleBlur: () => {},
+  handleFieldChange: () => {},
+  handleFormChange: () => {},
+  handleFormSubmit: () => {},
+};
+
+// ! DEFAULT VALUES FOR APP CONTEXT
+const defaultAppContextValues = {
+  deck: defaultDeckContextValues,
+  collection: defaultCollectionContextValues,
+  cart: defaultCartContextValues,
+  isCardInContext: () => {},
+  isCollectionInContext: () => {},
+  getCardQuantities: () => {},
+  checkIfCardIsInContext: () => {},
 };
 
 export const defaultContextValue = {
@@ -504,24 +648,40 @@ export const defaultContextValue = {
   CHART_CONTEXT: defaultChartContextValues,
   // FORM CONTEXT
   FORM_CONTEXT: defaultFormContextValues,
+  // MISC CONTEXT
+  APP_CONTEXT: defaultAppContextValues,
 };
-
 // ! DEFAULT VALUES FOR SPECIfIC COMPONENTS ----------------------
 // ! --- DEFAULT VALUES FOR CHART COMPONENTS
 // ! COMPONENT - CollectionPortfolioChartContainer
-export const chartConstants = {
-  HEIGHT_TO_WIDTH_RATIO: 7 / 10,
-  DEFAULT_THRESHOLD: 600000,
-  TIME_RANGES: [
-    { label: '2 hours', value: 7200000 / 6 || 2 * 60 * 60 * 1000 },
-    { label: '24 hours', value: 86400000 / 6 || 24 * 60 * 60 * 1000 },
-    { label: '7 days', value: 604800000 / 6 || 7 * 24 * 60 * 60 * 1000 },
-    { label: '1 month', value: 2592000000 / 6 || 30 * 24 * 60 * 60 * 1000 },
-    { label: '3 months', value: 7776000000 / 6 || 90 * 24 * 60 * 60 * 1000 },
-    { label: '6 months', value: 15552000000 / 6 || 180 * 24 * 60 * 60 * 1000 },
-    { label: '12 months', value: 31104000000 / 6 || 365 * 24 * 60 * 60 * 1000 },
-  ],
-  TIME_RANGE: '24 hours',
-  TICK_VALUES: 'every hour',
-  X_FORMAT: '%H:%M',
-};
+
+// ! ICONS ----------------------
+// ! ICONS - COLLECTION ICONS
+import AppsIcon from '@mui/icons-material/Apps';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CollectionsIcon from '@mui/icons-material/Collections';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
+// ! ICONS - CARD ICONS
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
+// ! ICONS - DECK ICONS
+import DeckIcon from '@mui/icons-material/Deck';
+
+// ! ICONS - USER ICONS
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+// ! ICONS - NAVIGATION ICONS
+import HomeIcon from '@mui/icons-material/Home';

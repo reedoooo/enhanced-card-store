@@ -43,7 +43,9 @@ MDTypography.displayName = 'MDTypography';
 
 // Setting default values for the props of MDTypography
 MDTypography.defaultProps = {
-  color: 'dark',
+  // color: 'dark',
+  // color: 'white',
+  color: 'primary',
   fontWeight: false,
   textTransform: 'none',
   verticalAlign: 'unset',

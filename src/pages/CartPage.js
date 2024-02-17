@@ -5,6 +5,7 @@ import CartContent from '../layout/cart/CartContent';
 import { useCartStore, useMode, usePageContext } from '../context';
 import CartSummary from '../components/other/dataDisplay/CartSummary';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
+import PageLayout from '../layout/Containers/PageLayout';
 
 const CartPage = () => {
   const { theme } = useMode();
@@ -100,7 +101,8 @@ const CartPage = () => {
   );
 
   return (
-    <React.Fragment>
+    <PageLayout>
+      {/* <React.Fragment> */}
       {/* <PageLayout> */}
       {loadingStatus?.isPageLoading && returnDisplay()}
       {/* {loadingStatus?.isLoading && returnDisplay()} */}
@@ -117,7 +119,8 @@ const CartPage = () => {
         {renderCartLayout()}
       </Box>
       {/* </PageLayout> */}
-    </React.Fragment>
+      {/* </React.Fragment> */}
+    </PageLayout>
   );
 };
 export default CartPage;

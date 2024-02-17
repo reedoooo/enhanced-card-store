@@ -151,28 +151,6 @@ export const CardValueStyle = styled('span')(({ theme }) => ({
   fontWeight: 400,
   color: theme.palette.text.secondary,
 }));
-// COLLLECTION LIST ITEM
-export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
-  margin: theme.spacing(1),
-  width: '100%',
-  flexGrow: 1,
-  transition: '0.3s',
-  boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
-  '&:hover': {
-    boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
-  },
-}));
-export const StyledCollectionListCardContent = styled(CardContent)(
-  ({ theme }) => ({
-    textAlign: 'left',
-    padding: theme.spacing(2),
-  })
-);
-export const StyledStatisticTypography = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.text.secondary,
-}));
-
 // export const useStyles = makeStyles((theme) => ({
 //   card: {
 //     display: 'flex',

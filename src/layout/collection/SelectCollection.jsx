@@ -1,96 +1,84 @@
 import React, { useState, useCallback } from 'react';
-import { Box, Grid, Skeleton } from '@mui/material';
-import SelectCollectionList from '../../components/grids/collectionGrids/collections-list/SelectCollectionList';
+import { Box, Card, Grid, Skeleton } from '@mui/material';
 import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
-import {
-  PortfolioBoxB,
-  SelectCollectionListContainer,
-} from '../../context/hooks/style-hooks/usePortfolioStyles';
-import { useMode, useStatisticsStore } from '../../context';
-import SelectCollectionHeader from '../headings/collection/SelectCollectionHeader';
-import PieChartStats from '../../components/other/dataDisplay/PieChartStats';
-import TotalValueOfCollectionsDisplay from '../../components/other/dataDisplay/TotalValueOfCollectionsDisplay';
-import TopFiveExpensiveCards from '../../components/other/dataDisplay/TopFiveExpensiveCards';
+import { useFormContext, useMode } from '../../context';
+import SelectCollectionHeader from './sub-components/SelectCollectionHeader';
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
-import useCollectionVisibility from '../../context/hooks/useCollectionVisibility';
-import DashboardLayout from './DashBoard/DashBoardLayout';
+import DashboardLayout from '../Containers/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-const SelectCollection = (onSelectCollection) => {
+import SelectCollectionList from './collectionGrids/collections-list/SelectCollectionList';
+import CollectionListStats from './collectionGrids/CollectionListStats';
+import LoadingIndicator from '../../components/reusable/indicators/LoadingIndicator';
+
+const SelectCollection = () => {
   const { theme } = useMode();
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const openNewDialog = () => setDialogOpen(true);
+  const { currentForm } = useFormContext();
+  const openNewDialog = useCallback((addOrEdit) => {
+    setDialogOpen(true); // Correctly opens the dialog
+  }, []);
   const handleDialogToggle = () => setDialogOpen(!isDialogOpen);
-  // const [isNew, setIsNew] = useState(false);
-  const { setSelectedCollection, allCollections, selectedCollection } =
-    useCollectionStore();
-  const { topFiveCards, totalValue, chartData } = useStatisticsStore();
-  const { handleSelectCollection } = useCollectionVisibility();
-  const handleSave = (collection) => {
-    onSelectCollection(collection?._id);
-    setDialogOpen(false);
-  };
+  const handleCloseDialog = () => setDialogOpen(false);
+  const { allCollections, selectedCollection } = useCollectionStore();
+
   return (
-    <React.Fragment>
-      <DashboardLayout>
-        <MDBox py={3}>
-          <Grid container spacing={3}>
-            {/* <PortfolioBoxB theme={theme} sx={{ padding: theme.spacing(3) }}> */}
+    <DashboardLayout>
+      <MDBox
+        sx={{
+          // backgroundColor: theme.palette.backgroundE.darker,
+          p: theme.spacing(2),
+        }}
+      >
+        <Grid container spacing={2}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.backgroundE.darker,
+              flexGrow: 1,
+              width: '100%',
+            }}
+          >
             <SelectCollectionHeader openNewDialog={openNewDialog} />
-          </Grid>
-          <MDBox mt={4.5}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6} lg={4}>
-                {/* <PieChartStats
-                  title="Collection Statistics"
-                  description="(+15%) increase in overall collection value."
-                  date="updated 4 min ago"
-                  chartData={chartData}
-                  iconName="PieChartIcon"
-                /> */}
-                <Skeleton variant="rectangular" width="100%" height={200} />
-              </Grid>
-              <Grid item xs={12} md={6} lg={4}>
-                <TotalValueOfCollectionsDisplay
-                  totalValue={totalValue && totalValue.toFixed(2)}
-                  iconName="AttachMoneyIcon"
-                />
-              </Grid>
-              <Grid item xs={12} md={6} lg={4}>
-                <TopFiveExpensiveCards
-                  topFiveCards={topFiveCards && topFiveCards}
-                  iconName="EmojiEventsIcon"
-                />
-              </Grid>
-            </Grid>
-          </MDBox>
-          <MDBox mt={4.5}>
-            <SelectCollectionListContainer theme={theme}>
-              <SelectCollectionList
-                // onSave={handleSave}
-                openDialog={handleDialogToggle}
-                // isLoadingNewCollection={isLoadingNewCollection}
-                allCollections={allCollections || []}
-              />
-            </SelectCollectionListContainer>
-          </MDBox>
-          {isDialogOpen && (
-            <CollectionDialog
-              open={isDialogOpen}
-              onClose={handleDialogToggle}
-              onSave={handleSave}
-              isNew={!selectedCollection}
-              handleSelectCollection={handleSelectCollection}
-              name={selectedCollection?.name || ''}
-              description={selectedCollection?.description || ''}
-              // initialName={selectedCollection?.name || ''}
-              // initialDescription={selectedCollection?.description || ''}
-            />
-          )}
-          {/* </PortfolioBoxB> */}
-          {/* </Grid> */}
+          </Card>{' '}
+        </Grid>
+        <MDBox mt={4.5}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.backgroundE.darker,
+              flexGrow: 1,
+              width: '100%',
+              p: theme.spacing(2),
+            }}
+          >
+            <CollectionListStats />
+          </Card>
         </MDBox>
-      </DashboardLayout>
-    </React.Fragment>
+        <MDBox mt={4.5}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.backgroundE.darker,
+              flexGrow: 1,
+              width: '100%',
+              p: theme.spacing(2),
+            }}
+          >
+            <SelectCollectionList
+              openDialog={handleDialogToggle}
+              allCollections={allCollections || []}
+            />
+          </Card>
+        </MDBox>
+
+        {isDialogOpen && (
+          <CollectionDialog
+            open={isDialogOpen}
+            onClose={handleCloseDialog} // Use the simplified close function here
+            isNew={currentForm === 'addCollectionForm'}
+            collectionData={selectedCollection}
+            collectionMode={'add'}
+          />
+        )}
+      </MDBox>
+    </DashboardLayout>
   );
 };
 

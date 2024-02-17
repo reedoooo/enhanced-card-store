@@ -25,8 +25,8 @@ export const getQuantity = ({
     : findCardQuantity(allDecks, card.id);
 
   return {
-    cart: cartQuantity,
-    collection: collectionQuantity,
-    deck: deckQuantity,
+    cartQuantity,
+    collectionQuantity,
+    deckQuantity,
   };
 };

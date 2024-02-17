@@ -2,7 +2,7 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { transparent, light, info, secondary } = colors;
+const { transparent, light, info, secondary, backgroundE } = colors;
 const { size } = typography;
 
 const outlined = {
@@ -52,11 +52,11 @@ const outlined = {
   },
 
   secondary: {
-    backgroundColor: transparent.main,
+    backgroundColor: backgroundE.light,
     borderColor: secondary.main,
 
     '&:hover': {
-      backgroundColor: transparent.main,
+      backgroundColor: backgroundE.light,
     },
   },
 };

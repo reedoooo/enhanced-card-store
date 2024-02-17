@@ -5,6 +5,22 @@ import colors from './colors';
 
 const { dark } = colors;
 
+// const baseProperties = {
+//   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+//   fontWeightLighter: 100,
+//   fontWeightLight: 300,
+//   fontWeightRegular: 400,
+//   fontWeightMedium: 600,
+//   fontWeightBold: 700,
+//   fontSizeXXS: pxToRem(10.4),
+//   fontSizeXS: pxToRem(12),
+//   fontSizeSM: pxToRem(14),
+//   fontSizeMD: pxToRem(16),
+//   fontSizeLG: pxToRem(18),
+//   fontSizeXL: pxToRem(20),
+//   fontSize2XL: pxToRem(24),
+//   fontSize3XL: pxToRem(30),
+// };
 const baseProperties = {
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   fontWeightLighter: 100,
@@ -12,20 +28,30 @@ const baseProperties = {
   fontWeightRegular: 400,
   fontWeightMedium: 600,
   fontWeightBold: 700,
-  fontSizeXXS: pxToRem(10.4),
-  fontSizeXS: pxToRem(12),
-  fontSizeSM: pxToRem(14),
-  fontSizeMD: pxToRem(16),
-  fontSizeLG: pxToRem(18),
-  fontSizeXL: pxToRem(20),
-  fontSize2XL: pxToRem(24),
-  fontSize3XL: pxToRem(30),
+  // Define font sizes as functions to include responsive behavior
+  fontSizeXXS: () => `clamp(${pxToRem(8)}, 1vw, ${pxToRem(10)})`,
+  fontSizeXS: () => `clamp(${pxToRem(10)}, 1.25vw, ${pxToRem(12)})`,
+  fontSizeSM: () => `clamp(${pxToRem(12)}, 1.5vw, ${pxToRem(14)})`,
+  fontSizeMD: () => `clamp(${pxToRem(14)}, 1.75vw, ${pxToRem(16)})`,
+  fontSizeLG: () => `clamp(${pxToRem(16)}, 2vw, ${pxToRem(18)})`,
+  fontSizeXL: () => `clamp(${pxToRem(18)}, 2.25vw, ${pxToRem(20)})`,
+  fontSize2XL: () => `clamp(${pxToRem(20)}, 2.5vw, ${pxToRem(24)})`,
+  fontSize3XL: () => `clamp(${pxToRem(24)}, 2.75vw, ${pxToRem(30)})`,
 };
-
+// const baseHeadingProperties = {
+//   fontFamily: baseProperties.fontFamily,
+//   color: dark.main,
+//   fontWeight: baseProperties.fontWeightBold,
+// };
 const baseHeadingProperties = {
   fontFamily: baseProperties.fontFamily,
   color: dark.main,
   fontWeight: baseProperties.fontWeightBold,
+  // Include responsive font sizes in base properties
+  fontSize: baseProperties.fontSizeXL(), // Call the function for default size
+  '@media (max-width:600px)': {
+    fontSize: baseProperties.fontSizeMD(), // Adjust size for smaller screens
+  },
 };
 
 const baseDisplayProperties = {
@@ -44,22 +70,37 @@ const typography = {
   fontWeightBold: baseProperties.fontWeightBold,
 
   h1: {
-    fontSize: pxToRem(48),
-    lineHeight: 1.25,
     ...baseHeadingProperties,
+    fontSize: baseProperties.fontSize3XL(),
+    '@media (max-width:900px)': {
+      fontSize: baseProperties.fontSize2XL(),
+    },
   },
 
   h2: {
-    fontSize: pxToRem(36),
-    lineHeight: 1.3,
+    fontSize: baseProperties.fontSize2XL(),
     ...baseHeadingProperties,
   },
 
   h3: {
-    fontSize: pxToRem(30),
-    lineHeight: 1.375,
+    fontSize: baseProperties.fontSizeXL(),
     ...baseHeadingProperties,
+    '@media (max-width:600px)': {
+      fontSize: baseProperties.fontSizeLG(),
+    },
   },
+
+  // h2: {
+  //   fontSize: pxToRem(36),
+  //   lineHeight: 1.3,
+  //   ...baseHeadingProperties,
+  // },
+
+  // h3: {
+  //   fontSize: pxToRem(30),
+  //   lineHeight: 1.375,
+  //   ...baseHeadingProperties,
+  // },
 
   h4: {
     fontSize: pxToRem(24),
@@ -95,7 +136,7 @@ const typography = {
 
   body1: {
     fontFamily: baseProperties.fontFamily,
-    fontSize: baseProperties.fontSizeXL,
+    fontSize: baseProperties.fontSizeXL, // or directly use 'clamp()' if different sizes needed
     fontWeight: baseProperties.fontWeightRegular,
     lineHeight: 1.625,
   },

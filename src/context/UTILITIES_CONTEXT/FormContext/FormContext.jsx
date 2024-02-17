@@ -1,159 +1,246 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  formSchemas,
+  getDefaultValuesFromSchema,
+  validateFormData,
+  defaultValues,
+  handleZodValidation,
+} from './schemas'; // Update the path as necessary
+import { defaultContextValue } from '../../constants';
+import { ZodError } from 'zod';
 import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
 import { usePageContext } from '../PageContext/PageContext';
-// import { defaultContextValue } from './helpers';
 import { useCardStoreHook } from '../../hooks/useCardStore';
-import { useForm, FormProvider as RHFormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { formSchemas } from './schemas';
-import { defaultContextValue } from '../../constants';
-// Define the context
+import useCollectionManager from '../../MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import { useDeckStore } from '../../MAIN_CONTEXT/DeckContext/DeckContext';
+import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
+function objectToBoolean(obj) {
+  return Object.keys(obj).reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {});
+}
 const FormContext = createContext(defaultContextValue.FORM_CONTEXT);
-// const formValidations = {
-//   updateUserDataForm: (values) => {
-//     let errors = {};
-//     // Example: Add validations specific to user data update form
-//     if (!values.firstName) errors.firstName = 'First name is required';
-//     if (!values.lastName) errors.lastName = 'Last name is required';
-//     // ... more validations
-//     return errors;
-//   },
-//   updateCollectionForm: (values) => {
-//     let errors = {};
-//     // Example: Add validations specific to collection update form
-//     if (!values.name) errors.name = 'Collection name is required';
-//     if (!values.description) errors.description = 'Description is required';
-//     // ... more validations
-//     return errors;
-//   },
-// };
 
 export const FormProvider = ({ children }) => {
-  const [currentFormType, setCurrentFormType] = useState('defaultForm');
-  const currentSchema = formSchemas[currentFormType] || formSchemas.default;
-  const defaultValues = formSchemas.defaultValues[currentFormType];
+  const { signup, login, isLoggedIn, userId } = useAuthContext();
+  const { setIsFormDataLoading } = usePageContext();
+  const { handleRequest, setSearchSettings, searchSettings } =
+    useCardStoreHook();
+  const { createNewCollection, updateAndSyncCollection, selectedCollection } =
+    useCollectionManager(isLoggedIn, userId);
+  const { updateDeckDetails, deleteUserDeck, createUserDeck } = useDeckStore();
+  const { timeRange, setTimeRange, timeRanges } = useChartContext();
+
+  const [forms, setForms] = useState({});
+
+  const [currentForm, setCurrentForm] = useState({});
   const methods = useForm({
     mode: 'onTouched',
-    defaultValues,
-    resolver: zodResolver(currentSchema),
+    resolver: zodResolver(formSchemas[Object.keys(formSchemas)[0]]),
+    defaultValues: defaultValues[Object.keys(formSchemas)[0]],
   });
-  const {
-    reset,
-    handleSubmit,
-    setValue,
-    register,
-    setError,
-    formState: { errors, isSubmitting },
-  } = methods;
-  const { signup, login } = useAuthContext();
-  const { setIsFormDataLoading } = usePageContext();
-  const { handleRequest } = useCardStoreHook();
-  const setFormType = (formType) => {
-    console.log('Setting form type:', formType);
-    setCurrentFormType(formType);
+  const initialValues = getDefaultValuesFromSchema(
+    formSchemas[Object.keys(formSchemas)[0]]
+  );
+  const values = useRef(initialValues);
+  const touched = useRef(objectToBoolean(initialValues));
+  const dirty = useRef(objectToBoolean(initialValues));
+  const initializeFormStates = () => {
+    return Object.keys(formSchemas).reduce((acc, key) => {
+      acc[key] = defaultValues[key]; // Assuming defaultValues is a correctly mapped object
+      return acc;
+    }, {});
   };
-  const onSubmit = async (data) => {
-    console.log('Submitting form:', currentFormType);
-    console.log('Form data:', data);
+  const [formStates, setFormStates] = useState(initializeFormStates());
+  const handleFieldChange = (formId, field, value) => {
+    setFormStates((prev) => ({
+      ...prev,
+      [formId]: {
+        ...prev[formId],
+        [field]: value,
+      },
+    }));
+  };
+  const onSubmit = async (formData, formId, additionalData) => {
     setIsFormDataLoading(true);
+    const validation = handleZodValidation(formData, formSchemas[formId]);
+    console.log('isValid:', validation.isValid);
 
-    try {
-      switch (currentFormType) {
-        case 'signupForm':
+    if (validation.isValid) {
+      try {
+        if (formId === 'signupForm') {
+          console.log('Submitting signup form:', formData);
           await signup(
-            data.firstName,
-            data.lastName,
-            data.username,
-            data.password,
-            data.email
+            formData.firstName,
+            formData.lastName,
+            formData.username,
+            formData.password,
+            formData.email
           );
-          break;
-        case 'loginForm':
-          await login(data.username, data.password);
-          break;
-        case 'updateUserDataForm':
-          // await updateUserData(data); // Adjust as necessary
-          break;
-        case 'updateCollectionForm':
-          console.log('Updating collection:', data);
-          // await updateCollection(data); // Adjust as necessary
-          break;
-        case 'addCollectionForm':
-          console.log('Adding collection:', data);
-          // await addCollection(data); // Adjust as necessary
-          break;
-        case 'searchForm':
-          console.log('Submitting search form:', data);
-          await handleRequest(data.searchTerm); // Use handleRequest for the search form
-          break;
-        default:
-          console.log('No form type specified');
-          break;
+        } else if (formId === 'loginForm') {
+          console.log('Submitting login form:', formData);
+          await login(formData.username, formData.password);
+        } else if (formId === 'updateUserDataForm') {
+          console.log('Submitting update user data form:', formData);
+          // await updateUserData(formData);
+        } else if (formId === 'updateCollectionForm') {
+          console.log('Updating collection:', formData);
+          console.log('Selected collection:', additionalData);
+
+          const updatedData = {
+            name: formData.name,
+            description: formData.description,
+          };
+          await updateAndSyncCollection(additionalData, updatedData);
+        } else if (formId === 'addCollectionForm') {
+          console.log('Adding collection:', formData);
+          const newData = {
+            name: formData.name,
+            description: formData.description,
+          };
+          await createNewCollection(newData);
+        } else if (formId === 'updateDeckForm') {
+          console.log('Updating deck:', formData);
+          await updateDeckDetails(formData);
+        } else if (formId === 'addDeckForm') {
+          console.log('Adding deck:', formData);
+          await createUserDeck(formData.name, formData.description);
+        } else if (formId === 'searchForm') {
+          console.log('Submitting search form:', formData);
+          await handleRequest(formData.searchTerm); // Use handleRequest for the search form
+        } else if (formId === 'TimeRangeSchema') {
+          console.log('Submitting TimeRange form:', formData);
+          setTimeRange(formData.timeRange);
+          // handleTimeRangeChange(formData);
+        } else if (formId === 'searchSettingsForm') {
+          console.log('Submitting SearchSettings form:', formData);
+          setSearchSettings(formData);
+        } else if (formId === 'defaultForm') {
+          console.log('Submitting default form:', formData);
+        }
+        console.log(`${formId} form submitted successfully`, formData);
+        // Reset form logic here if needed
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      } finally {
+        setIsFormDataLoading(false);
       }
-      // console.log(`${currentFormType} submitted`, data);
-      console.log(
-        `${
-          currentFormType?.charAt(0).toUpperCase() + currentFormType.slice(1)
-        } Form submitted successfully`,
-        data
-      );
-      reset(); // Reset form after successful submission
-    } catch (error) {
-      console.error('Form submission error:', error);
-    } finally {
+    } else {
+      console.error('Form validation failed:', validation.errors);
+      // Optionally, display validation.errors using your UI logic
       setIsFormDataLoading(false);
     }
   };
-  const handleChange = (name, value) => {
-    console.log('Setting value:', name, value);
-
-    // Get the previous value from the form state
-    // const prevValue = methods.getValues(name);
-
-    // Check if the new value is different from the previous value
-    setValue(name, value);
-
-    if (currentFormType === 'searchForm') {
-      handleRequest(value);
+  const onChange = (formData, formId) => {
+    console.log('Form data changed:', formData, formId);
+    const validation = handleZodValidation(formData, formSchemas[formId]);
+    console.log('isValid:', validation.isValid);
+    if (validation.isValid && formId === 'searchForm') {
+      console.log('Form data is valid:', validation.data);
+      handleRequest(validation.data.searchTerm); // Use handleRequest for the search form
     }
-    // if (value !== prevValue) {
-    //   setValue(name, value);
-
-    //   if (currentFormType === 'searchForm') {
-    //     handleRequest(value);
-    //   }
-    // }
   };
+  const handleSetAllForms = useCallback(() => {
+    const allFormConfigs = Object.keys(formSchemas).map((formId) => ({
+      formId,
+      defaultValues: defaultValues[formId],
+      schema: formSchemas[formId],
+    }));
+    console.log('Setting all forms:', allFormConfigs);
+    setForms(allFormConfigs);
+  }, []);
+  const handleSearchTermChange = useCallback(
+    (value) => {
+      handleRequest(value); // Directly calling handleRequest with the new searchTerm value
+    },
+    [handleRequest]
+  );
+  const handleChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target;
+    console.log('e.target:', e.target);
+    const fieldValue = type === 'checkbox' ? checked : value;
+    values.current[name] = fieldValue;
+    console.log('Form field changed:', name, fieldValue);
+    formStates.current[currentForm] = {
+      ...formStates.current[currentForm],
+      [name]: fieldValue,
+    };
+  }, []);
+  const handleFocus = useCallback((e) => {
+    const { name } = e.target;
+    touched.current[name] = true;
 
-  const contextValue = {
-    ...methods,
-    currentFormType,
-    currentSchema,
-    errors,
-    isSubmitting,
+    console.log('Form field focused:', name);
+    // More logic here if needed
+  }, []);
+  const handleBlur = useCallback((e) => {
+    const { name } = e.target;
+    dirty.current[name] = true;
 
-    setCurrentFormType,
-    register,
-    setFormType,
-    handleChange,
-    onSubmit,
-    handleSubmit,
-  };
+    console.log('Form field blurred:', name);
+    // Validation logic here
+  }, []);
+
+  useEffect(() => {
+    console.log('SETTING ALL FORMS:', formSchemas);
+    handleSetAllForms(formSchemas);
+  }, [handleSetAllForms]);
+
+  const contextValue = useMemo(
+    () => ({
+      ...methods,
+      forms,
+
+      formMethods: methods,
+      formStates,
+      currentForm,
+      values,
+      touched,
+      dirty,
+      initialValues,
+
+      handleSearchTermChange,
+      handleFieldChange,
+      handleChange,
+      handleFocus,
+      handleBlur,
+
+      setCurrentForm,
+      onSubmit,
+      onChange,
+
+      toggleForm: (formId) => {
+        setCurrentForm(formId);
+      },
+    }),
+    [
+      methods,
+      forms,
+      formStates,
+      currentForm,
+      handleChange,
+      handleFocus,
+      handleBlur,
+      setCurrentForm,
+      onSubmit,
+      onChange,
+    ]
+  );
 
   return (
-    <FormContext.Provider value={contextValue}>
-      <RHFormProvider {...methods}>{children}</RHFormProvider>
-    </FormContext.Provider>
+    <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>
   );
 };
 
-export default FormProvider;
-
-// Hook for consuming context
-export const useFormContext = () => {
-  const context = useContext(FormContext);
-  if (!context) {
-    throw new Error('useFormContext must be used within FormProvider');
-  }
-  return context;
-};
+export const useFormContext = () => useContext(FormContext);

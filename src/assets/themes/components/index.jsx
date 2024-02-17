@@ -6,10 +6,13 @@ import divider from './divider/divider';
 import tableContainer from './table/tableContainer';
 import tableCell from './table/tableCell';
 import tableHead from './table/tableHead';
-
+import card from './card/index';
+import cardMedia from './card/cardMedia';
+import cardContent from './card/cardContent';
 const cssbaseline = {
   styleOverrides: {
     display: 'flex',
+    flexGrow: 1,
     // body: {
     //   backgroundColor: mode === 'dark' ? '#333' : '#ffffff',
     // },
@@ -103,7 +106,10 @@ export const components = {
   MuiOutlinedInput: outlinedInput,
   MuiInput: input,
   MuiInputLabel: inputLabel,
-  // MuiOutlinedInput: outlinedInput,
+
+  MuiCard: card,
+  MuiCardMedia: cardMedia,
+  MuiCardContent: cardContent,
 };
 
 export default components;

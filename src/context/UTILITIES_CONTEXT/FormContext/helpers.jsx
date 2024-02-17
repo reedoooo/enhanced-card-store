@@ -1,25 +1,25 @@
 import { z } from 'zod';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-export const defaultContextValue = {
-  forms: {},
-  formErrors: {},
-  initialFormStates: {},
-  currentForm: {},
-  schemas: {},
-  currentFormType: '',
-  errors: {},
-  setForms: () => {},
-  setFormErrors: () => {},
-  setCurrentForm: () => {},
-  handleChange: () => {},
-  handleSubmit: () => {},
-  resetForm: () => {},
-  handleRequest: () => {},
-  register: () => {},
-  setFormType: () => {},
-  setCurrentFormType: () => {},
-};
+// export const defaultContextValue = {
+//   forms: {},
+//   formErrors: {},
+//   initialFormStates: {},
+//   currentForm: {},
+//   schemas: {},
+//   currentFormType: '',
+//   errors: {},
+//   setForms: () => {},
+//   setFormErrors: () => {},
+//   setCurrentForm: () => {},
+//   handleChange: () => {},
+//   handleSubmit: () => {},
+//   resetForm: () => {},
+//   handleRequest: () => {},
+//   register: () => {},
+//   setFormType: () => {},
+//   setCurrentFormType: () => {},
+// };
 
 // Utility function to set value at a given path in an object
 export const setValueAtPath = (obj, path, value) => {

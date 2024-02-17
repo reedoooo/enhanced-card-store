@@ -35,9 +35,7 @@ import {
 import useCardCronJob from './useCardCronJob';
 import initialCardData from './initialCardData';
 import { format } from 'date-fns';
-import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
 import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
-import ImageDisplayFromHook from '../components/other/dataDisplay/ImageDisplayFromHook';
 import styled from 'styled-components';
 import MDButton from '../layout/REUSABLE_COMPONENTS/MDBUTTON';
 
@@ -204,7 +202,6 @@ const CardChart = ({ cardData = initialCardData }) => {
       >
         <CardContent
           sx={{
-            // background: theme.palette.backgroundA.lightest,
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -223,7 +220,6 @@ const CardChart = ({ cardData = initialCardData }) => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              // width: '100%',
               maxWidth: '100%',
               maxHeight: '100%',
               padding: theme.spacing(2),
@@ -252,65 +248,8 @@ const CardChart = ({ cardData = initialCardData }) => {
           sx={{
             elevation: 2,
             boxShadow: 2,
-            // marginTop: 2,
-            // py: 1,
           }}
         >
-          {/* Card displaying data with responsive typography */}
-          {/* <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              background: theme.palette.backgroundA.lightest,
-              // py: 1,
-              width: '100%',
-              height: '100%',
-            }}
-          > */}
-          {/* <CardActions
-              sx={{
-                justifyContent: 'space-between',
-                width: '100%',
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {/* Responsive Button Styling */}
-          {/* Iterate through buttons to reduce redundancy */}
-          {/* {['Start Updates', 'Pause Updates', 'Reset Data'].map(
-                (text, index) => (
-                  <Button
-                    key={index}
-                    variant={text === 'Reset Data' ? 'outlined' : 'contained'}
-                    onClick={() => {
-                      if (text === 'Start Updates') {
-                        startUpdates();
-                      } else if (text === 'Pause Updates') {
-                        pauseUpdates();
-                      } else if (text === 'Reset Data') {
-                        resetData();
-                      }
-                    }}
-                    sx={{
-                      // padding: theme.spacing(1), // Reduced padding
-                      fontSize: '0.7rem', // Reduced font size
-                      width: '30%', // Adjusted width
-                      height: '75%',
-                      mx: '0.5rem',
-                      my: '0.5rem',
-                      // margin: '0 5px', // Adjust margin for spacing
-                      color: theme.palette.text.primary,
-                      background: theme.palette.backgroundA.darker,
-                      '&:hover': {
-                        background: theme.palette.backgroundA.darkest,
-                      },
-                    }}
-                  >
-                    {text}
-                  </Button>
-                )
-              )}
-            </CardActions>  */}
           <CardActions
             sx={{
               justifyContent: 'space-between',
@@ -319,7 +258,7 @@ const CardChart = ({ cardData = initialCardData }) => {
               p: 0,
             }}
           >
-            {['Start Updates', 'Pause Updates', 'Reset Card Data'].map(
+            {['Start Updates', 'Pause Updates', 'Reset Data'].map(
               (text, index) => (
                 <MDButton
                   key={index}
@@ -329,28 +268,28 @@ const CardChart = ({ cardData = initialCardData }) => {
                   onClick={() => {
                     if (text === 'Start Updates') startUpdates();
                     else if (text === 'Pause Updates') pauseUpdates();
-                    else if (text === 'Reset Card Data') resetData();
+                    else if (text === 'Reset Data') resetData();
                   }}
                   color="primary"
                   variant="contained"
-                  fontSize="0.7rem"
-                  sx={
-                    {
-                      // fontSize: '0.7rem',
-                      // fontWeight: 'bold',
-                      // width: '30%',
-                      // height: '100%',
-                      // minHeight: '100%',
-                      // mx: 0.5,
-                      // my: 0.5,
-                      // flexGrow: 1,
-                      // // color: theme.palette.backgroundA.contrastTextA,
-                      // background: theme.palette.backgroundA.darker,
-                      // '&:hover': {
-                      //   background: theme.palette.backgroundA.darkest,
-                      // },
-                    }
-                  }
+                  sx={{
+                    color: theme.palette.backgroundA.contrastText,
+                    background: theme.palette.backgroundF.darker,
+                    borderColor: theme.palette.backgroundB.darkest,
+                    borderWidth: 2,
+                    mt: 'auto',
+                    flexGrow: 1,
+                    justifySelf: 'bottom',
+                    bottom: 0,
+                    width: '100%',
+                    '&:hover': {
+                      color: theme.palette.backgroundA.contrastTextC,
+                      fontWeight: 'bold',
+                      background: theme.palette.backgroundF.dark,
+                      borderColor: theme.palette.backgroundB.darkest,
+                      border: `1px solid ${theme.palette.backgroundB.darkest}`,
+                    },
+                  }}
                 >
                   {text}
                 </MDButton>

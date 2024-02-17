@@ -113,6 +113,7 @@ export default styled(Box)(({ ownerstate }) => {
     marginLeft: isSidebarOpen ? functions.pxToRem(250) : functions.pxToRem(0),
     borderWidth: functions.pxToRem(1),
     borderStyle: 'solid',
+    justifyContent: 'center',
     transition: transitions.create(['margin-left', 'margin-right'], {
       easing: transitions.easing.easeInOut,
       duration: transitions.duration.standard,

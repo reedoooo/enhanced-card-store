@@ -148,7 +148,8 @@ export default function DeckBuilderIcon(props) {
     >
       <g
         transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)"
-        fill="rgba(0, 0, 0, 0.54)"
+        // fill="rgba(0, 0, 0, 0.54)"
+        fill={props.color || 'rgba(0, 0, 0, 0.54)'}
         stroke="none"
       >
         {paths?.map((d, i) => (

@@ -15,7 +15,13 @@ export const AppContextProvider = ({ children }) => {
   const Collection = useContext(CollectionContext);
 
   // Combine the context values into one object
-  const appContextValues = { Deck, Cart, Collection };
+  const appContextValues = {
+    Deck,
+    Cart,
+    Collection,
+    // isCardInContext,
+    setContext,
+  };
 
   return (
     <AppContext.Provider value={appContextValues}>

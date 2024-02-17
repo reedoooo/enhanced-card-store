@@ -6,41 +6,77 @@ import {
   Switch,
   Box,
 } from '@mui/material';
-import DeckEditPanel from '../../components/other/InputComponents/DeckEditPanel';
+import DeckEditPanel from '../../components/dialogs/DeckEditPanel';
 import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
+import { SwitchControl } from '../../pages/pageStyles/StyledComponents';
+import { useFormContext, useMode } from '../../context';
+import DeckSwitch from '../../components/buttons/other/DeckSwitch';
 
-const DeckEditor = ({
-  selectedDeck,
-  setSelectedDeck,
-  isEditing,
-  handleToggleEdit,
-}) => {
-  const [editorKey, setEditorKey] = useState(Math.random());
+const DeckEditor = () => {
+  const { selectedDeck, setSelectedDeck } = useDeckStore();
+  const { theme } = useMode();
+  const {
+    formStates, // Assuming this provides access to the current form state including errors
+    formMethods, // Assuming this provides access to register, handleSubmit, etc.
+    onSubmit,
+    currentForm,
+    toggleForm,
 
-  useEffect(() => {
-    setEditorKey(Math.random()); // Reset key to remount the editor component when the selected deck changes
-  }, [selectedDeck]);
+    // handleChange,
+    // handleBlur,
+    // handleFocus,
+    // formMethods, // Assuming formMethods provides access to register, handleSubmit, etc.
+  } = useFormContext();
+
+  // const { currentForm: currentFormType } = formStates;
+
+  const handleToggleEdit = () => {
+    if (currentForm === 'updateDeckForm') {
+      toggleForm('addDeckForm');
+      setSelectedDeck(null);
+    }
+    if (currentForm === 'addDeckForm') {
+      toggleForm('updateDeckForm');
+    }
+  };
 
   return (
-    <>
-      <Box key={editorKey} elevation={3}>
-        {isEditing ? (
-          selectedDeck ? (
-            <DeckEditPanel
-              selectedDeck={selectedDeck}
-              handleToggleEdit={handleToggleEdit}
-              isEditing={isEditing}
+    <Box sx={{ margin: theme.spacing(3) }}>
+      <Paper elevation={3} sx={{ padding: theme.spacing(3) }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
+            {selectedDeck ? 'Edit Deck' : 'Create New Deck'}
+          </Typography>
+          {/* <FormControlLabel
+            control={<Switch checked={isEditing} onChange={handleToggleEdit} />}
+            label={isEditing ? 'Editing' : 'Adding'}
+          /> */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              flexGrow: 1,
+              mx: 'auto',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <DeckSwitch
+              editMode={currentForm === 'updateDeckForm'}
+              onToggle={handleToggleEdit}
             />
-          ) : null
-        ) : (
-          <DeckEditPanel
-            handleToggleEdit={handleToggleEdit}
-            isEditing={isEditing}
-          />
-        )}
-      </Box>
-    </>
+          </Box>
+        </Box>
+        <DeckEditPanel selectedDeck={selectedDeck} />
+      </Paper>
+    </Box>
   );
 };
 

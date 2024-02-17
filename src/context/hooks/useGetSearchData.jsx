@@ -1,54 +1,30 @@
-// useGetSearchData.jsx
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import useLocalStorage from './useLocalStorage';
-import { useCardStoreHook } from './useCardStore';
-// Debounce function
-const debounce = (func, delay) => {
-  let timeoutId;
-  return (...args) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
-};
 
 export const useGetSearchData = () => {
-  // const { loadingSearchResults, setLoadingSearchResults } = useCardStoreHook();
   const [isLoading, setIsLoading] = useState(false);
-  const [previousSearchData, setPreviousSearchData] = useLocalStorage(
-    'previousSearchData',
-    []
-  );
-  const [searchData, setSearchData] = useLocalStorage(
-    'searchData',
-    previousSearchData || []
-  );
-  const uniqueCards = useMemo(() => {
-    return Array.from(
-      new Map(searchData?.map((card) => [card.id, card])).values()
-    );
-  }, [searchData]);
+  const [searchData, setSearchData] = useLocalStorage('searchData', []);
+
+  // Optimizing unique cards calculation
+  // const uniqueCards = searchData.reduce((acc, card) => {
+  //   if (!acc.some((accCard) => accCard.id === card.id)) {
+  //     acc.push(card);
+  //   }
+  //   return acc;
+  // }, []);
+
   useEffect(() => {
-    let isMounted = true;
+    // Simulate data loading if necessary
     setIsLoading(true);
     const timeoutId = setTimeout(() => {
-      if (isMounted) {
-        // setSelectedCards(selectedDeck?.cards?.slice(0, 30) || []);
-        const updatedData = JSON.parse(
-          localStorage.getItem('searchData') || '[]'
-        );
-        setSearchData(updatedData);
-        setIsLoading(false);
-      }
-    }, 1000);
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-    };
-  }, [searchData]);
+      const initialData = JSON.parse(
+        localStorage.getItem('searchData') || '[]'
+      );
+      setSearchData(initialData);
+      setIsLoading(false);
+    }, 1000); // Simulate async operation delay
+    return () => clearTimeout(timeoutId);
+  }, []); // Empty array ensures this runs once on mount
 
-  return { searchData, isLoading, uniqueCards, setIsLoading };
+  return { searchData, isLoading, setIsLoading };
 };

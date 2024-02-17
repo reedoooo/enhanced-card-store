@@ -7,12 +7,10 @@ import {
   Container,
   Grid,
   IconButton,
-  ListItemText,
   MenuItem,
   Paper,
   Toolbar,
   Typography,
-  Drawer,
   ListItem,
   ListItemIcon,
   SwipeableDrawer,
@@ -25,8 +23,17 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
+  CardContent,
+  TableCell,
+  TableRow,
+  TableFooter,
+  TablePagination,
+  TableBody,
+  Table,
+  TableHead,
 } from '@mui/material';
 import styled from 'styled-components';
+import { SwiperSlide } from 'swiper/react';
 
 // ! APP CONTAINER -----------------------------
 export const AppContainer = styled(Container)(({ theme }) => ({
@@ -49,13 +56,13 @@ export const AppContainer = styled(Container)(({ theme }) => ({
 // ! TOP BAR STYLES -----------------------------
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   minWidth: '100vw',
+  // minWidth: '100%',
   border: '2px solid white',
-  left: -20,
+  // left: -20,
   // borderRadius: '30px',
   background:
     'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
 }));
-
 export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // display: 'flex',
   // flexDirection: 'row',
@@ -93,7 +100,6 @@ export const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   color: 'inherit',
   textDecoration: 'none',
 }));
-
 // ! MENU ITEMS COMPONENT STYLES -----------------------------
 export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   cursor: 'pointer',
@@ -149,7 +155,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
-  width: 250,
+  // width: 250,
 }));
 
 // ! SIDEBAR COMPONENT STYLES -----------------------------
@@ -191,20 +197,24 @@ export const StyledListItemButton = styled(ListItem)(({ theme }) => ({
   },
 }));
 // ! TOP CARDS DISPLAY
-export const MainContainer = styled(Box)(({ theme }) => ({
+export const MainContainer = styled(Container)(({ theme }) => ({
   background: '#222', // Dark background
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
-  maxHeight: '100%',
-  width: '100%',
+  maxWidth: '100%',
+  // maxHeight: '400px',
+  // maxHeight: '100%',
+  // maxWidth: '1600px',
+  // width: '100%',
   display: 'flex',
+  overflow: 'hidden',
   flexDirection: 'column',
   alignItems: 'center',
   boxShadow: theme.shadows[3],
   borderRadius: theme.shape.borderRadius,
 }));
 // ! CAROUSEL CARD
-export const MainContainer2 = styled('div')(({ theme }) => ({
+export const MainContainer2 = styled(Box)(({ theme }) => ({
   background: '#333', // Dark background
   padding: theme.spacing(4),
   marginBottom: theme.spacing(2),
@@ -329,7 +339,7 @@ export const DeckDisplayPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.backgroundA.light,
   color: theme.palette.text.primary,
   display: 'flex',
   flexDirection: 'column',
@@ -409,7 +419,7 @@ export const ActionButton = styled(Button)(({ theme }) => ({
     background: theme.palette.backgroundA.light, // Darken button on hover for feedback
   },
 }));
-export const MainContentContainer = styled(Container)(({ theme }) => ({
+export const MainContentContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2, 4, 6),
   borderRadius: theme.shape.borderRadius,
   backgroundColor: theme.palette.backgroundD.dark,
@@ -417,7 +427,7 @@ export const MainContentContainer = styled(Container)(({ theme }) => ({
   marginTop: theme.spacing(2),
   margin: theme.spacing(4, 0), // added vertical spacing
 }));
-export const SecondaryContentContainer = styled(Box)(({ theme }) => ({
+export const SecondaryContentContainer = styled(Paper)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
@@ -453,8 +463,10 @@ export const CardListItem = styled(ListItem)(({ theme }) => ({
 export const ChartArea = styled(Container)(({ theme }) => ({
   height: '100%',
   width: '100%',
-  minHeight: '450px',
-  minWidth: '450px',
+  minHeight: '500px',
+  // minWidth: '450px',
+  position: 'relative',
+  // justifyContent: 'space-between',
   flexGrow: 1,
   padding: theme.spacing(2),
   margin: theme.spacing(2),
@@ -464,12 +476,8 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   justifyContent: 'center',
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
-  position: 'relative',
   background: theme.palette.backgroundB.lightest,
-  // width: '100%',
-  // height: '100%',
 }));
-// A square, responsive container for the chart
 export const SquareChartContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
   width: '100%', // 100% of the parent width
@@ -516,10 +524,17 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   // Use the same styles as in StyledCard
   display: 'flex',
   flexDirection: 'column',
-  minWidth: '109px',
+  // minWidth: '109px',
+  minWidth: '100%',
   maxWidth: '100%',
-  width: 'auto',
-  maxHeight: '80vh',
+  width: '100%',
+  height: '100%',
+  // minHeight: '100%',
+  minHeight: 100,
+  alignItems: 'center',
+  flexGrow: 1,
+  // width: 'auto',
+  maxHeight: '14vh',
   backgroundColor: theme.palette.backgroundA.lightest,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
@@ -529,14 +544,49 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   },
 }));
 export const ListItemSkeleton = styled(ListItem)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  borderRadius: theme.shape.borderRadius,
+  // margin: theme.spacing(1, 0),
+  // borderRadius: theme.shape.borderRadius,
+  margin: theme.spacing(1),
+  width: '100%',
+  minWidth: 200,
+  minHeight: 200,
+  maxHeight: 200,
+  flexGrow: 1,
+  transition: '0.3s',
+  boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
+  '&:hover': {
+    boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
+  },
 }));
 export const AspectRatioBoxSkeleton = styled(Box)(({ theme }) => ({
   width: '100%',
   position: 'relative',
   paddingTop: '56.25%', // 16:9 aspect ratio
   flexGrow: '1',
+}));
+// COLLLECTION LIST ITEM
+export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
+  // margin: theme.spacing(1),
+  width: '100%',
+  // height: '100%',
+  flexGrow: 1,
+  transition: 'transform 0.3s ease-in-out',
+  boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',
+  '&:hover': {
+    boxShadow: '0 16px 70px -12.125px rgba(0,0,0,0.3)',
+    transform: 'scale(1.03)',
+  },
+}));
+export const StyledCollectionListCardContent = styled(CardContent)(
+  ({ theme }) => ({
+    textAlign: 'center',
+    alignItems: 'center',
+    // padding: theme.spacing(2),
+  })
+);
+export const StyledStatisticTypography = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  color: theme.palette.text.secondary,
 }));
 
 // ! FORMS / INPUTS
@@ -562,17 +612,17 @@ export const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   color: theme.palette.backgroundB.dark,
 }));
 // FORM STYLES
-export const FormWrapper = styled('form')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  flexGrow: 1,
-  gap: theme.spacing(2),
-  padding: theme.spacing(3),
-  margin: 'auto',
-  alignItems: 'center',
-  backgroundColor: theme.palette.backgroundA.light,
-  borderRadius: theme.shape.borderRadius,
-}));
+// export const FormWrapper = styled('form')(({ theme }) => ({
+//   display: 'flex',
+//   flexDirection: 'column',
+//   flexGrow: 1,
+//   gap: theme.spacing(2),
+//   padding: theme.spacing(3),
+//   margin: 'auto',
+//   alignItems: 'center',
+//   backgroundColor: theme.palette.backgroundA.light,
+//   borderRadius: theme.shape.borderRadius,
+// }));
 export const StyledFormPaper = styled(Paper)(({ theme }) => ({
   width: '100%',
 
@@ -688,4 +738,217 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   gap: theme.spacing(2),
   padding: theme.spacing(3),
   backgroundColor: theme.palette.backgroundA.lightest,
+}));
+
+// ! PORTFOLIO TABLE STYLES
+export const PortfolioTablePaper = styled(Paper)(({ theme }) => ({
+  maxWidth: 'lg',
+  margin: 'auto',
+  overflowX: 'auto', // Ensures table doesn't overflow the paper
+  background: theme.palette.backgroundB.default,
+  padding: theme.spacing(2),
+  [theme.breakpoints.up('xs')]: {
+    padding: theme.spacing(1), // Smaller padding for xs
+  },
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(2), // Medium padding for sm
+  },
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(2), // Larger padding for md
+  },
+  [theme.breakpoints.up('lg')]: {
+    padding: theme.spacing(2), // Extra larger padding for lg
+  },
+  [theme.breakpoints.up('xl')]: {
+    padding: theme.spacing(2), // Maximum padding for xl
+  },
+}));
+export const PortfolioTable = styled(Table)(({ theme }) => ({
+  minWidth: 300,
+  minHeight: 300,
+  width: '100%',
+  height: '100%',
+  background: theme.palette.backgroundA.lightest,
+}));
+// TABLE HEADER
+export const PortfolioTableHeader = styled(TableHead)(({ theme }) => ({
+  background: theme.palette.backgroundA.lighter,
+  color: theme.palette.backgroundA.contrastTextA,
+  [theme.breakpoints.up('md')]: {
+    fontSize: '1rem',
+  },
+}));
+// TABLE BODY
+export const PortfolioTableBody = styled(TableBody)(({ theme }) => ({
+  background: theme.palette.backgroundA.lightest,
+  border: '2px solid',
+  borderColor: theme.palette.divider,
+}));
+export const PortfolioTableRow = styled(TableRow)(({ theme }) => ({
+  // '&:nth-of-type(odd)': {
+  //   background: theme.palette.backgroundA.light,
+  // },
+  // '&:nth-of-type(even)': {
+  //   background: theme.palette.backgroundA.lighter,
+  // },
+}));
+export const PortfolioTableCell = styled(TableCell)(({ theme }) => ({
+  border: '2px solid',
+  borderColor: theme.palette.divider,
+  // background: theme.palette.backgroundA.light,
+
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    fontSize: '0.7rem',
+  },
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(2),
+    fontSize: '1rem',
+  },
+}));
+// TABLE FOOTER
+export const PortfolioTableFooter = styled(TableFooter)(({ theme }) => ({
+  backgroundColor: theme.palette.backgroundA.lighter,
+  borderTop: `1px solid ${theme.palette.divider}`,
+  '& .MuiTableCell-root': {
+    padding: theme.spacing(2),
+  },
+}));
+export const PortfolioPaginationActionsTableRow = styled(TableRow)(
+  ({ theme }) => ({
+    // Example styling, you can customize as needed
+    backgroundColor: theme.palette.backgroundA.lighter,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '& .MuiTableCell-root': {
+      textAlign: 'right',
+      padding: theme.spacing(1),
+    },
+  })
+);
+export const PortfolioPaginationActionsTableCell = styled(TableCell)(
+  ({ theme }) => ({
+    // Example styling, you can customize as needed
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    color: theme.palette.backgroundA.contrastTextA,
+    backgroundColor: theme.palette.backgroundA.lighter,
+
+    '&:hover': {
+      color: theme.palette.backgroundA.contrastTextA,
+    },
+    '& .MuiTableCell-root': {
+      textAlign: 'right',
+      padding: theme.spacing(1),
+    },
+  })
+);
+export const PortfolioPaginationActionsTableContentsContainer = styled(Box)(
+  ({ theme }) => ({
+    display: 'flex',
+    flexShrink: 0,
+    justifyContent: 'flex-end',
+    // ml: 2.5,
+    width: '100%',
+    flexDirection: 'row',
+    borderRadius: '5px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    '&:hover': {
+      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+    },
+  })
+);
+// TABLE PRICE BOX
+export const PortfolioTablePriceBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(2),
+  background: theme.palette.backgroundB.lighter,
+}));
+// ! CHART AND DATATABLES
+export const StyledChartBox = styled(Box)(({ theme }) => ({
+  padding: '15px',
+  border: '2px solid #444',
+  borderRadius: '8px',
+  backgroundColor: '#222',
+  color: '#fff',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  maxWidth: '400px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  height: '100%', // Adjust height here
+  width: '100%', // Adjust width here
+}));
+// ! CARD CAROUSEL
+export const StyledCarousel = styled(Box)(({ theme }) => ({
+  bottom: theme.spacing(2),
+  right: theme.spacing(2),
+  width: '100%',
+  height: 180,
+  perspective: '1200px',
+  [theme.breakpoints.up('md')]: {
+    width: '50%',
+    height: 250,
+  },
+}));
+export const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+  '& .swiper-slide': {
+    opacity: 0.5,
+    transform: 'scale(0.85)',
+    transition: 'transform 0.3s, opacity 0.3s',
+    '&-active': {
+      opacity: 1,
+      transform: 'scale(1.2)',
+    },
+    '&-next, &-prev': {
+      transform: 'scale(0.8)',
+    },
+  },
+}));
+// ! +++++++++ COMMON +++++++++
+export const PortfolioBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  maxWidth: '100vw',
+  width: '100%',
+  height: '100%',
+  margin: theme.spacing(0, 'auto'),
+  padding: theme.spacing(1, 2, 3),
+  // backgroundColor: theme.palette.backgroundE.lightest,
+  color: theme.palette.text.primary,
+}));
+export const PortfolioBoxA = styled(Box)(({ theme }) => ({
+  flexDirection: 'column',
+  flexGrow: 1,
+  height: 'auto',
+  width: '100%',
+  minHeight: '100vh', // Reducing height by 128px
+  boxShadow: theme.shadows[5],
+  backgroundColor: theme.palette.backgroundE.lightestBlue,
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+  },
+}));
+export const PortfolioBoxB = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius,
+  flexGrow: 1,
+  background: theme.palette.backgroundD.dark,
+  padding: theme.spacing(4),
+  width: '100%',
+  height: '100%',
+  boxShadow: theme.shadows[5],
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+  },
 }));

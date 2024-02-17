@@ -37,7 +37,7 @@ export const themeSettings = (mode) => {
     isXLarge: (breakpoints) => breakpoints.up('xl'),
   };
   return {
-    // width: '100vw',
+    components: components,
     functions: {
       boxShadow,
       hexToRgb,
@@ -50,7 +50,8 @@ export const themeSettings = (mode) => {
       ...colorsA,
       mode: mode,
     },
-    components,
+    specialBreakpoints: specialBreakpoints,
+    // components,
     borders,
     boxShadows,
     spacing: (factor) => `${0.25 * factor}rem`,
@@ -76,34 +77,6 @@ export const themeSettings = (mode) => {
       '0px 5px 15px rgba(0,0,0,0.1)', // example for theme.shadows[10]
     ],
     typography,
-    // typography: themeTypography(color),
-    // typography: {
-    //   fontFamily: ['Source Sans Pro', 'sans-serif'].join(','),
-    //   fontWeightLight: 300,
-    //   fontWeightRegular: 400,
-    //   fontWeightMedium: 600,
-    //   fontWeightBold: 700,
-    //   fontSize: 14,
-    //   h1: { fontSize: '2.5rem' },
-    //   h2: { fontSize: '2rem' },
-    //   h3: { fontSize: '1.75rem' },
-    //   h4: { fontSize: '1.5rem' },
-    //   h5: { fontSize: '1.25rem' },
-    //   h6: { fontSize: '1rem' },
-    //   body1: { fontSize: '1rem' },
-    //   body2: { fontSize: '0.875rem' },
-    //   button: { fontSize: '0.875rem' },
-    //   caption: { fontSize: '0.75rem' },
-    //   body3: { fontSize: '0.625rem' },
-    //   body4: { fontSize: '0.5rem' },
-    // },
-    // borders: {
-    //   borderWidth: [0, 1, 2, 4, 8, 16, 32],
-    //   tableCell: {
-    //     border: '1px solid',
-    //     borderColor: colorsA.grey[300],
-    //   },
-    // },
     // STYLING FOR REUSABLE COMPONENTS
     responsiveStyles: {
       // BREAKPOINT GENERAL VALUES: UP/DOWN

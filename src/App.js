@@ -22,8 +22,11 @@ import {
   useAuthContext,
   usePageContext,
   ErrorBoundary,
+  ConfiguratorProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
+import { SnackbarProvider, useSnackbar } from 'notistack';
+
 import { useNavigate } from 'react-router-dom';
 import { CssBaseline, GlobalStyles } from '@mui/material';
 
@@ -36,11 +39,6 @@ const App = () => {
     useAuthContext();
   const { loadingStatus, returnDisplay, setLoading, setError } =
     usePageContext();
-  const logProviderStatus = (providerName) => {
-    useEffect(() => {
-      console.log(`${providerName} initialized successfully.`);
-    }, []);
-  };
   useEffect(() => {
     if (!isLoggedIn && !loadingStatus.isPageLoading) navigate('/login');
   }, [isLoggedIn, navigate, loadingStatus.isPageLoading]);
@@ -52,57 +50,43 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyles />
-        <FormProvider>
-          {logProviderStatus('FormProvider')}
-          <SocketProvider>
-            {logProviderStatus('SocketProvider')}
-            <UserProvider>
-              {logProviderStatus('UserProvider')}
-              <ModalProvider>
-                {logProviderStatus('ModalProvider')}
-                <PopoverProvider>
-                  {logProviderStatus('PopoverProvider')}
-                  <CollectionProvider>
-                    {logProviderStatus('CollectionProvider')}
-                    <CombinedProvider>
-                      {logProviderStatus('CombinedProvider')}
-                      <CardProvider>
-                        {logProviderStatus('CardProvider')}
-                        <CronJobProvider>
-                          {logProviderStatus('CronJobProvider')}
-                          <DeckProvider>
-                            {logProviderStatus('DeckProvider')}
-                            <CartProvider>
-                              {logProviderStatus('CartProvider')}
-                              <CardImagesProvider>
-                                {logProviderStatus('CardImagesProvider')}
-                                <ChartProvider>
-                                  {logProviderStatus('ChartProvider')}
-                                  <StatisticsProvider>
-                                    {logProviderStatus('StatisticsProvider')}
-                                    <SidebarProvider>
-                                      {logProviderStatus('SidebarProvider')}
-                                      <AppContextProvider>
-                                        {logProviderStatus(
-                                          'AppContextProvider'
-                                        )}
-                                        <Main />
-                                      </AppContextProvider>
-                                    </SidebarProvider>
-                                  </StatisticsProvider>
-                                </ChartProvider>
-                              </CardImagesProvider>
-                            </CartProvider>
-                          </DeckProvider>
-                        </CronJobProvider>
-                      </CardProvider>
-                    </CombinedProvider>
-                  </CollectionProvider>
-                </PopoverProvider>
-              </ModalProvider>
-            </UserProvider>
-          </SocketProvider>
-        </FormProvider>
+        <ConfiguratorProvider>
+          <FormProvider>
+            <SocketProvider>
+              <UserProvider>
+                <ModalProvider>
+                  <SnackbarProvider>
+                    <PopoverProvider>
+                      <CollectionProvider>
+                        <CombinedProvider>
+                          <CardProvider>
+                            <CronJobProvider>
+                              <DeckProvider>
+                                <CartProvider>
+                                  <CardImagesProvider>
+                                    <ChartProvider>
+                                      <StatisticsProvider>
+                                        <SidebarProvider>
+                                          <AppContextProvider>
+                                            <Main />
+                                          </AppContextProvider>
+                                        </SidebarProvider>
+                                      </StatisticsProvider>
+                                    </ChartProvider>
+                                  </CardImagesProvider>
+                                </CartProvider>
+                              </DeckProvider>
+                            </CronJobProvider>
+                          </CardProvider>
+                        </CombinedProvider>
+                      </CollectionProvider>
+                    </PopoverProvider>
+                  </SnackbarProvider>
+                </ModalProvider>
+              </UserProvider>
+            </SocketProvider>
+          </FormProvider>
+        </ConfiguratorProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

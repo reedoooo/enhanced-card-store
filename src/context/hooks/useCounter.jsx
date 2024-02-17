@@ -3,7 +3,7 @@ import useLogger from './useLogger'; // Assuming you have a useLogger hook for l
 import { isEqual } from 'lodash';
 
 const useCounter = (inputData, options = {}) => {
-  const logger = useLogger('useCounter');
+  // const logger = useLogger('useCounter');
   const { min, max, deckLimit, page } = options;
   const isDeckBuilderPage = page === 'DeckBuilder';
 
@@ -52,12 +52,12 @@ const useCounter = (inputData, options = {}) => {
     );
   };
 
-  useEffect(() => {
-    if (!isEqual(data, initialData.current)) {
-      logger.logEvent('Data updated', data);
-      initialData.current = data;
-    }
-  }, [data, logger]);
+  // useEffect(() => {
+  //   if (!isEqual(data, initialData.current)) {
+  //     logger.logEvent('Data updated', data);
+  //     initialData.current = data;
+  //   }
+  // }, [data, logger]);
 
   return {
     data,

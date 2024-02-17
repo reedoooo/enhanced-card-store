@@ -34,6 +34,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'flex-end',
         flexGrow: 1,
         height: '100%',
         width: '100%',
@@ -63,20 +64,34 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             ))}
           </CardUnorderedList>
         </CardContent>
-        <CardActions sx={{ alignSelf: 'end' }}>
+        <CardActions
+          sx={{
+            alignSelf: 'end',
+            justifyContent: 'flex-end',
+            alignItems: 'baseline',
+            flexGrow: 1,
+          }}
+        >
           <MDButton
             fullWidth
             variant="contained"
             color="primary"
-            size="small"
+            size="medium"
             onClick={() => onOpenModal(tier.title)}
             sx={{
-              color: theme.palette.backgroundA.default,
-              bg: theme.palette.backgroundF.light,
-              borderColor: theme.palette.backgroundA.darkest,
+              color: theme.palette.backgroundA.contrastText,
+              background: theme.palette.backgroundF.darker,
+              borderColor: theme.palette.backgroundB.darkest,
+              borderWidth: 2,
+              mt: 'auto',
               flexGrow: 1,
-              height: '100%',
+              justifySelf: 'bottom',
+              bottom: 0,
               width: '100%',
+              '&:hover': {
+                color: theme.palette.backgroundA.contrastTextC,
+                background: theme.palette.backgroundF.default,
+              },
             }}
           >
             {tier.buttonText}

@@ -1,41 +1,23 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useEffect } from 'react';
-
-// react-router-dom components
 import { useLocation } from 'react-router-dom';
-
-// prop-types is a library for typechecking of props.
 import PropTypes from 'prop-types';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import { Grid } from '@mui/material';
+import { useMode } from '../../context';
 
-// Material Dashboard 2 React components
-
-function PageLayout({ background, children }) {
+function PageLayout({ background, backCol, children }) {
   const { pathname } = useLocation();
-
+  const { theme } = useMode();
   return (
     <MDBox
       width="100vw"
       height="100%"
       minHeight="100vh"
-      bgColor={background}
+      bgColor={backCol ? '#3D3D3D' : 'transparent'}
       sx={{ overflowX: 'hidden' }}
     >
-      {children}
+      <Grid container sx={{ height: '100vh', width: '100vw', p: 0 }}>
+        {children}
+      </Grid>
     </MDBox>
   );
 }
@@ -43,12 +25,14 @@ function PageLayout({ background, children }) {
 // Setting default values for the props for PageLayout
 PageLayout.defaultProps = {
   background: 'default',
+  backCol: true,
 };
 
 // Typechecking props for the PageLayout
 PageLayout.propTypes = {
   background: PropTypes.oneOf(['white', 'light', 'default']),
   children: PropTypes.node.isRequired,
+  backCol: PropTypes.bool,
 };
 
 export default PageLayout;

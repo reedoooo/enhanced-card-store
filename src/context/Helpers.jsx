@@ -24,14 +24,42 @@ const lastRequestTime = {
   GET: 0,
   PATCH: 0,
 };
-
 /**
- * Checks if a given request is allowed based on the rate limit.
- * @param {String} method - The HTTP method for the request.
- * @returns {Boolean} - Whether the request is allowed or not.
+ * Filters a collection of data points based on a time threshold.
+ *
+ * @param {Array} collection - The data points collection.
+ * @param {number} threshold - Time threshold for filtering.
+ * @returns {Array} - Array with data points filtered by the time threshold.
  */
-const updateLastRequestTime = (method) => {
-  lastRequestTime[method] = Date.now();
+const filterCollectionByTimeRange = (collection, threshold) => {
+  return collection?.filter((point) => {
+    const pointTime = new Date(point.x).getTime();
+    return pointTime >= threshold;
+  });
+};
+/**
+ * Filters data points based on a time range.
+ *
+ * @param {Array} data - Array of objects containing data points.
+ * @param {string} timeRange - Time range string for filtering data points.
+ * @returns {Array} - Array with data points filtered by the time range.
+ */
+export const filterDataByTimeRange = (data, timeRange) => {
+  if (!data || data.length === 0) return [];
+
+  const now = new Date().getTime();
+  console.log('TIME RANGE:', timeRange);
+  const timeThreshold = timeRange;
+  console.log('Time Threshold:', timeThreshold);
+  if (!timeThreshold) {
+    console.error(`Invalid timeRange provided: ${timeRange}`);
+    return [];
+  }
+
+  return data?.map((collection) => ({
+    ...collection,
+    data: filterCollectionByTimeRange(collection.data, now - timeThreshold),
+  }));
 };
 
 export const removeDuplicateCollections = (collections) => {

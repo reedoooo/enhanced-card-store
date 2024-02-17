@@ -7,14 +7,15 @@ import React, {
 } from 'react';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../../components/reusable/indicators/ErrorIndicator';
-import SplashPage2 from '../../../pages/otherPages/SplashPage2';
+import SplashPage2 from '../../../pages/SplashPage2';
 import useSnackBar from '../../hooks/useSnackBar';
 import { defaultContextValue } from '../../constants';
+import { DynamicSnackbar } from '../../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
 
 const PageContext = createContext(defaultContextValue.PAGE_CONTEXT);
 
 export const PageProvider = ({ children }) => {
-  const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackBar();
+  const { snackbar, handleSnackBar, handleCloseSnackbar } = useSnackBar();
   // const [activelyLoading, setActivelyLoading] = useState(false); // [false, setActivelyLoading
   const [loadingStatus, setLoadingStatus] = useState({
     isLoading: false,
@@ -28,10 +29,10 @@ export const PageProvider = ({ children }) => {
   useEffect(() => {
     const isCompleted = Object.values(loadingStatus).every((status) => !status);
     if (isCompleted) {
-      handleSnackBar({
-        message: `Loading ${loadingStatus.loadingType} completed`,
-        severity: 'success',
-      });
+      handleSnackBar(
+        `Loading ${loadingStatus.loadingType} completed`,
+        'success'
+      );
     }
   }, [loadingStatus, handleSnackBar]);
   const setLoading = (type, status) => {
@@ -86,7 +87,15 @@ export const PageProvider = ({ children }) => {
   );
 
   return (
-    <PageContext.Provider value={contextValue}>{children}</PageContext.Provider>
+    <PageContext.Provider value={contextValue}>
+      {children}{' '}
+      {/* <DynamicSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        variant={snackbar.severity}
+        onClose={handleCloseSnackbar}
+      /> */}
+    </PageContext.Provider>
   );
 };
 

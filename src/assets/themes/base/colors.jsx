@@ -14,7 +14,6 @@ import {
   action,
 } from './customColorPalettes';
 const colors = {
-  // transparent: 'transparent',
   // PRIMARY COLORS
   backgroundA,
   backgroundD: {
@@ -100,10 +99,26 @@ const colors = {
     focus: '#000000',
   },
 
-  primary: {
-    main: '#e91e63',
-    focus: '#e91e63',
+  green: {
+    main: '#5CDB95',
+    focus: '#379683',
   },
+
+  // COLOR TO COMPLEMENT GREEN
+  greenComplement: {
+    main: '#05386B',
+    focus: '#05386B',
+  },
+
+  primary: {
+    main: '#5CDB95',
+    focus: '#379683',
+  },
+
+  // primary: {
+  //   main: '#e91e63',
+  //   focus: '#e91e63',
+  // },
 
   secondary: {
     main: '#7b809a',
@@ -170,6 +185,19 @@ const colors = {
     dark: {
       main: '#42424a',
       state: '#191919',
+    },
+
+    backgroundA: {
+      main: '#f8f9fa',
+      state: '#f8f9fa',
+    },
+    backgroundB: {
+      main: '#f0f2f5',
+      state: '#f0f2f5',
+    },
+    backgroundF: {
+      main: '#f8f9fa',
+      state: '#f8f9fa',
     },
   },
 
@@ -286,6 +314,8 @@ const colors = {
     error: '#f44336',
     light: '#adb5bd',
     dark: '#404040',
+    backgroundA: '#f8f9fa',
+    backgroundF: '#f8f9fa',
   },
 
   inputBorderColor: '#d2d6da',

@@ -21,6 +21,7 @@ import {
 import { AspectRatio } from '@mui/joy';
 import { debounce } from 'lodash';
 import { useMode } from '../../context';
+import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 const CarouselCard = ({ card }) => {
   const { theme } = useMode();
   const { openModalWithCard } = useContext(ModalContext); // Assuming ModalContext is imported
@@ -55,6 +56,8 @@ const CarouselCard = ({ card }) => {
   }, []);
   return (
     <MainContainer2>
+      {/* <Box sx={{ width: '100%', overflow: 'hidden' }}> */}{' '}
+      {/* Ensure the container doesn't overflow */}
       <Grid
         container
         spacing={2}
@@ -62,14 +65,41 @@ const CarouselCard = ({ card }) => {
           justifyContent: 'space-between',
         }}
       >
-        <CardMobile item xs={12} sm={4}>
-          <GenericCard
-            card={card}
-            onClick={() => handleClick()}
-            context={'Collection'}
-            ref={cardRef}
-          />
-        </CardMobile>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          // md={4}
+          // lg={4}
+          zeroMinWidth
+          sx={{
+            flexGrow: '1',
+            maxHeight: '90%',
+            minHeight: '90%',
+            // width: 'auto',
+            // height: '100%',
+          }}
+        >
+          <Container
+            sx={{
+              '&.MuiContainer-root': {
+                padding: '0 !important',
+                margin: '0',
+                width: '100%',
+                height: '100%',
+                flexGrow: '1',
+                display: 'flex',
+              },
+            }}
+          >
+            <GenericCard
+              card={card}
+              // onClick={() => handleClick()}
+              context={'Collection'}
+              ref={cardRef}
+            />
+          </Container>
+        </Grid>
         {/* Top section for card details */}
         <Grid
           item
@@ -88,12 +118,12 @@ const CarouselCard = ({ card }) => {
               </CardDetails>
 
               <CardDetails>
-                <Typography variant="subtitle2" color={'white'}>
+                <MDTypography variant="subtitle2" color={'white'}>
                   Price: ${card?.latestPrice?.num || card?.price || 0}
-                </Typography>
-                <Typography variant="subtitle2" color={'white'}>
+                </MDTypography>
+                <MDTypography variant="subtitle2" color={'white'}>
                   Quantity: {card?.quantity}
-                </Typography>
+                </MDTypography>
                 {/* </Box> */}
               </CardDetails>
             </Grid>
@@ -122,6 +152,7 @@ const CarouselCard = ({ card }) => {
           </ChartContainerMobile>
         </Grid>
       </Grid>
+      {/* </Box> */}
     </MainContainer2>
   );
 };

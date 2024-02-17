@@ -1,9 +1,9 @@
 import React from 'react';
 import { Typography, Skeleton, Box, Grid, Container } from '@mui/material';
 import CartContainer from './CartContainer';
-import CartItem from '../../components/grids/gridItems/CartItem';
 import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useMode } from '../../context';
+import GenericCard from '../../components/cards/GenericCard';
 
 const CartContent = () => {
   const { theme } = useMode();
@@ -27,10 +27,11 @@ const CartContent = () => {
         <Grid container spacing={3}>
           {cartData?.cart?.map((card, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <CartItem
+              <GenericCard
                 key={card.id + index}
                 index={index}
                 card={card}
+                page={'Cart'}
                 context={'Cart'}
               />
             </Grid>

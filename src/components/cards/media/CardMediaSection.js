@@ -86,6 +86,7 @@ const CardMediaSection = forwardRef(
           component="img"
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
+          loading="lazy"
         />
 
         {anchorEl && isHovered && (
@@ -93,6 +94,7 @@ const CardMediaSection = forwardRef(
             open={isHovered}
             anchorEl={anchorEl}
             placement="right-start"
+            loading="lazy"
           >
             <CardToolTip card={card} />
           </MediaPopover>

@@ -20,87 +20,123 @@ import { defaultContextValue } from '../../constants';
 const StatisticsContext = createContext(defaultContextValue.STATISTICS_CONTEXT);
 
 export const StatisticsProvider = ({ children }) => {
-  const { allCollections, allXYValues, selectedCollection } =
-    useCollectionStore();
+  const {
+    allCollections,
+    allXYValues,
+    selectedCollection,
+    hasFetchedCollections,
+  } = useCollectionStore();
   const { timeRange } = useChartContext();
 
   if (!Array.isArray(allCollections)) {
     return null;
   }
   const [selectedStat, setSelectedStat] = useState('');
+  const validCollections =
+    Array.isArray(allCollections) && allCollections.length > 0;
 
   // Calculate statistics for all collections
-  const statsByCollectionId = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
-      return {};
+  const statsByCollectionId = useMemo(
+    () =>
+      validCollections
+        ? allCollections.reduce((acc, collection) => {
+            acc[collection._id] = calculateStatsForCollection(
+              collection,
+              timeRange
+            );
+            return acc;
+          }, {})
+        : {},
+    [allCollections, timeRange]
+  );
+
+  const totalValue = useMemo(() => {
+    if (!validCollections) {
+      return 0; // Ensure a default numeric value
     }
     return allCollections?.reduce((acc, collection) => {
-      acc[collection._id] = calculateStatsForCollection(collection, timeRange);
-      return acc;
-    }, {});
-  }, [allCollections, timeRange]);
-  // Calculate the total value of all collections
-  const totalValue = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
-      return 0;
-    }
-    return allCollections?.reduce(
-      (acc, collection) => acc + collection.totalPrice,
-      0
-    );
+      const collectionPrice = parseFloat(collection.totalPrice);
+      return acc + (isNaN(collectionPrice) ? 0 : collectionPrice);
+    }, 0);
   }, [allCollections]);
-  // console.log('totalValue:', totalValue);
-  // Get the top five cards among all collections
-  const topFiveCards = useMemo(() => {
-    if (!Array.isArray(allCollections) || allCollections?.length === 1) {
+
+  const topFiveCards = useMemo(
+    () =>
+      validCollections
+        ? allCollections
+            .flatMap((collection) => collection.cards || [])
+            .sort((a, b) => b.price - a.price)
+            .slice(0, 5)
+        : [],
+    [allCollections]
+  );
+
+  // if (hasFetchedCollections) {
+  //   console.log('SELECTED', selectedCollection);
+  //   console.log('ALL', allCollections);
+  //   console.log('VALID', validCollections);
+  // }
+  // Function to create markers for a given collection
+  const createMarkers = (selectedCollection) => {
+    if (!selectedCollection || !selectedCollection.collectionStatistics)
       return [];
-    }
-    const allCards = allCollections?.flatMap(
-      (collection) => collection.cards || []
-    );
-    return allCards.sort((a, b) => b.price - a.price).slice(0, 5);
-  }, [allCollections]);
-  // console.log('topFiveCards:', topFiveCards);
-  // Prepare markers for high and low points
-  const markers = useMemo(() => {
+
+    const { highPoint, lowPoint, avgPrice } =
+      selectedCollection.collectionStatistics;
     return [
       {
         axis: 'y',
-        value: selectedCollection?.collectionStatistics?.highPoint,
+        value: highPoint,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: 'High Point',
+        legend: `${selectedCollection.name} High`,
         legendOrientation: 'vertical',
       },
       {
         axis: 'y',
-        value: selectedCollection?.collectionStatistics?.lowPoint,
+        value: lowPoint,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: 'Low Point',
+        legend: `${selectedCollection.name} Low`,
         legendOrientation: 'vertical',
       },
       {
         axis: 'y',
-        value: selectedCollection?.collectionStatistics?.average,
+        value: avgPrice,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: 'Average',
+        legend: `${selectedCollection.name} Avg`,
         legendOrientation: 'vertical',
       },
     ];
-  }, [selectedCollection]);
-  // Prepare chart data for the pie chart
-  const chartData = useMemo(() => {
-    return allCollections?.map((collection) => ({
-      id: collection.id,
-      value: collection.totalPrice,
-      label: collection.name,
-    }));
-  }, [allCollections]);
+  };
+
+  // Example use of createMarkers within useMemo for selectedCollection
+  const markers = useMemo(() => {
+    // Assuming selectedCollection is obtained from somewhere, e.g., state or context
+    if (!selectedCollection) return [];
+    // console.log('SELECTED COLLECTION:', selectedCollection);
+    // const selectedCollection = allCollections.find(
+    //   (collection) => collection._id === someSelectedCollectionId
+    // );
+    return createMarkers(selectedCollection);
+  }, [allCollections]); // Add dependencies as necessary, e.g., someSelectedCollectionId
+
+  const chartData = useMemo(
+    () =>
+      validCollections
+        ? allCollections.map((collection) => ({
+            id: collection.id,
+            value: collection.totalPrice,
+            label: collection.name,
+          }))
+        : [],
+    [allCollections]
+  );
+
   const contextValue = useMemo(
     () => ({
       // PRIMARY DATA
       stats:
-        calculateStatistics({ data: allXYValues }, timeRange, allCollections) ||
-        {},
+        calculateStatistics({ data: null }, timeRange, allCollections) || {},
+
       allStats: [statsByCollectionId],
       statsByCollectionId: statsByCollectionId[selectedCollection?._id],
       selectedStat,
@@ -126,6 +162,7 @@ export const StatisticsProvider = ({ children }) => {
       topFiveCards,
       chartData,
       setSelectedStat,
+      timeRange,
     ]
   );
 
@@ -139,56 +176,3 @@ export const StatisticsProvider = ({ children }) => {
 export default StatisticsProvider;
 
 export const useStatisticsStore = () => useContext(StatisticsContext);
-
-// const stats = useMemo(() => {
-//   try {
-//     return calculateStatistics(
-//       { data: allXYValues },
-//       timeRange,
-//       allCollections
-//     );
-//   } catch (error) {
-//     console.error('Error calculating statistics:', error);
-//     return {};
-//   }
-// }, [allXYValues, timeRange, allCollections]);
-
-// const statsByCollectionId = useMemo(calculateStatsByCollectionId, [
-//   calculateStatsByCollectionId,
-// ]);
-
-// // Calculate the total value of all collections
-// if (!Array.isArray(allCollections)) {
-//   return null;
-// }
-// const totalValue = allCollections?.reduce(
-//   (acc, collection) => acc + collection.totalPrice,
-//   0
-// );
-// const topFiveCards = allCollections
-//   .flatMap((collection) => collection.cards) // Flatten all cards into one array
-//   .sort((a, b) => b.price - a.price) // Sort by price in descending order
-//   .slice(0, 5);
-// const chartData = allCollections?.map((collection) => ({
-//   id: collection.id,
-//   value: collection.totalPrice,
-//   label: collection.name,
-// }));
-// const calculateStatsByCollectionId = useCallback(() => {
-//   if (!Array.isArray(allCollections) || allCollections.length === 0) {
-//     return {};
-//   }
-//   return allCollections.reduce((acc, collection) => {
-//     try {
-//       const data = collection?.chartData?.allXYValues || [];
-//       acc[collection._id] = calculateStatistics({ data }, timeRange) || {};
-//     } catch (error) {
-//       console.error(
-//         `Error calculating statistics for collection ${collection._id}:`,
-//         error
-//       );
-//       acc[collection._id] = {}; // Default value in case of error
-//     }
-//     return acc;
-//   }, {});
-// }, [allCollections, timeRange]);

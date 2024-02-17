@@ -12,13 +12,17 @@ import { useCookies } from 'react-cookie';
 import { useUserContext } from '../UserContext/UserContext';
 import { getCardQuantity } from './helpers';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
+import useApiResponseHandler from '../../hooks/useApiResponseHandler';
+import useLogger from '../../hooks/useLogger';
 
 export const CartContext = createContext({
   cartData: {
     _id: '',
+    userId: '',
     cart: [],
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
+    totalQuantity: 0,
   },
   cart: [],
   getCardQuantity: () => {},
@@ -31,23 +35,38 @@ export const CartContext = createContext({
 });
 
 export const CartProvider = ({ children }) => {
-  // const { user, setUser } = useUserContext();
-  // const userId = user?.id;
+  const [cookies, setCookie] = useCookies(['authUser', 'isLoggedIn', 'userId']);
+  const { authUser, isLoggedIn, userId } = cookies;
+  const createApiUrl = useCallback(
+    (path) => `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart${path}`,
+    [userId]
+  );
   const fetchWrapper = useFetchWrapper();
+  const handleApiResponse = useApiResponseHandler();
+  const logger = useLogger('useCollectionManager');
   const [cartData, setCartData] = useState({
     _id: '',
+    userId: '',
     cart: [],
     quantity: 0, // Total quantity of items
     totalPrice: 0, // Total price of items
+    totalQuantity: 0,
   });
-  const [cookies, setCookie] = useCookies(['authUser', 'isLoggedIn', 'userId']);
-  const { authUser, isLoggedIn, userId } = cookies;
+  const [selectedCart, setSelectedCart] = useState([]);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const cartId = useRef(selectedCart?.cart?._id);
+  const [hasFetchedCart, setHasFetchedCart] = useState(false);
+  // Function to update the selected collection and its cards
+  const updateSelectedCart = useCallback((cart) => {
+    setSelectedCart(cart);
+    setSelectedCards(cart?.cart?.slice(0, 30) || []);
+  }, []);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const getTotalCost = () => {
     return cartData?.cart?.reduce(
-      (acc, card) => acc + card.card_prices[0].tcgplayer_price * card.quantity,
+      (acc, card) => acc + card?.card_prices[0].tcgplayer_price * card.quantity,
       0
     );
   };
@@ -55,7 +74,7 @@ export const CartProvider = ({ children }) => {
     () =>
       cartData?.cart?.reduce(
         (total, item) =>
-          total + item.quantity * item.card_prices[0].tcgplayer_price,
+          total + item.quantity * item.card_prices[0]?.tcgplayer_price,
         0
       ),
     [cartData.cart]
@@ -110,6 +129,7 @@ export const CartProvider = ({ children }) => {
     (newCartData) => {
       if (newCartData && Array.isArray(newCartData?.cart)) {
         setCartData(newCartData);
+        setSelectedCart(newCartData);
         setCookie('cartData', newCartData, {
           path: '/',
           secure: true,
@@ -143,7 +163,7 @@ export const CartProvider = ({ children }) => {
   }, [cartData.cart, totalCost]);
 
   const updateCart = useCallback(
-    async (cartId, updatedCart, method) => {
+    async (cartId, updatedCart, method, type) => {
       if (!userId || !cartId) return;
 
       const formattedCartData = {
@@ -155,6 +175,7 @@ export const CartProvider = ({ children }) => {
           // Include other necessary fields as per your cart item structure
         })),
         method: method, // 'POST' for adding items, 'DELETE' for removing items, 'PUT' for updating items
+        type: type,
         // Calculating total quantity and total price outside of the cart array
         quantity: updatedCart.reduce((total, item) => total + item.quantity, 0),
         totalPrice: updatedCart.reduce(
@@ -194,6 +215,114 @@ export const CartProvider = ({ children }) => {
     },
     [userId, setCartDataAndCookie] // dependencies array
   );
+  const addCardsToCart = async (cards, cart) => {
+    console.log('ADD CARDS TO CART: ', cards, cart);
+    const newCards = [];
+    const updatedCards = [];
+
+    for (const card of cards) {
+      const existingCard = cart?.cart?.find((c) => c.id === card.id);
+
+      if (existingCard) {
+        // If the card already exists in the cart, increment quantity
+        existingCard.tag = 'incremented';
+        updatedCards.push(existingCard);
+      } else {
+        // If the card doesn't exist in the cart, add it with quantity 1
+        card.tag = 'added';
+        newCards.push({ ...card, quantity: 1 });
+      }
+    }
+
+    // Add new cards to the cart
+    if (newCards.length > 0) {
+      logger.logEvent('addCardsToCart ADD', { newCards, cart });
+      const response = await fetchWrapper(
+        createApiUrl(`/${cart._id}/add`),
+        'POST',
+        { userId, cartUpdates: newCards, method: 'POST', type: 'addNew' }
+      );
+      const data = handleApiResponse(response, 'addCardsToCart');
+      updateSelectedCart(data);
+      setCartDataAndCookie(data);
+    }
+
+    // Update existing cards in the cart
+    if (updatedCards.length > 0) {
+      logger.logEvent('addCardsToCart UPDATE', { updatedCards, cart });
+      const response = await fetchWrapper(
+        createApiUrl(`/${cart._id}/update`),
+        'PUT',
+        {
+          userId,
+          cartUpdates: updatedCards,
+          method: 'PUT',
+          type: 'increment',
+        }
+      );
+      const data = handleApiResponse(response, 'addCardsToCart');
+      updateSelectedCart(data);
+      setCartDataAndCookie(data);
+    }
+  };
+
+  const removeCardsFromCart = async (cards, cardIds, cart) => {
+    const cardsToRemove = [];
+    const cardsToDecrement = [];
+
+    for (const card of cards) {
+      const existingCard = cart?.cart?.find((c) => c.id === card.id);
+      if (existingCard) {
+        if (existingCard.quantity > 1) {
+          // Decrement card quantity if more than one
+          existingCard.tag = 'decremented';
+          cardsToDecrement.push(existingCard);
+        } else {
+          // Remove the card if quantity is 1
+          card.tag = 'removed';
+          cardsToRemove.push(card);
+        }
+      }
+    }
+
+    // Remove cards from the cart
+    try {
+      if (cardsToRemove.length > 0) {
+        logger.logEvent('removeCardsFromCart REMOVE', {
+          cartId,
+          cardsToRemove,
+        });
+        const response = await fetchWrapper(
+          createApiUrl(`/${cart._id}/remove`),
+          'DELETE',
+          { cards: cardsToRemove }
+        );
+        const data = handleApiResponse(response, 'removeCardsFromCart');
+        updateSelectedCart(data);
+        setCartDataAndCookie(data);
+      }
+
+      // Decrement quantity of cards in the cart
+      if (cardsToDecrement.length > 0) {
+        logger.logEvent('removeCardsFromCart DECREMENT', {
+          cartId,
+          cardsToDecrement,
+        });
+        const response = await fetchWrapper(
+          createApiUrl(`/${cart._id}/update`),
+          'PUT',
+          { userId, cart: cardsToDecrement, method: 'PUT', type: 'decrement' }
+        );
+        const data = handleApiResponse(response, 'removeCardsFromCart');
+        updateSelectedCart(data);
+        setCartDataAndCookie(data);
+      }
+    } catch (error) {
+      logger.logEvent('removeCardsFromCart error', error);
+      throw error;
+    }
+  };
+
   const updateItemQuantity = (cart, cardInfo, increment = true) => {
     const itemIndex = cart.findIndex((item) => item.id === cardInfo.id);
 
@@ -288,13 +417,16 @@ export const CartProvider = ({ children }) => {
       cartCardCount: cartData?.cart?.length,
       cartValue: cartData?.cart?.reduce(
         (acc, card) =>
-          acc + card.card_prices[0].tcgplayer_price * card.quantity,
+          acc + card.card_prices[0]?.tcgplayer_price * card.quantity,
         0
       ),
       getTotalCost,
       getCardQuantity,
-      addOneToCart,
-      removeOneFromCart,
+      // addOneToCart,
+      // removeOneFromCart,
+      addOneToCart: (cardInfo) => addCardsToCart([cardInfo], selectedCart),
+      removeOneFromCart: (cardInfo) =>
+        removeCardsFromCart([cardInfo], [cardInfo.id], selectedCart),
       deleteFromCart,
       fetchCartForUser: fetchUserCart,
       createUserCart,

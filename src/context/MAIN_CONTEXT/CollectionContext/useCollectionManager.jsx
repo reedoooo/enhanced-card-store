@@ -18,18 +18,17 @@ const useCollectionManager = (isLoggedIn, userId) => {
   const [allCollections, setAllCollections] = useState(
     [DEFAULT_COLLECTION] || []
   );
-  const [selectedCollection, setSelectedCollection] = useState(
-    DEFAULT_COLLECTION || {}
-  );
+  const [selectedCollection, setSelectedCollection] =
+    useState(DEFAULT_COLLECTION);
   const [selectedCards, setSelectedCards] = useState(
-    DEFAULT_COLLECTION.cards || []
+    selectedCollection?.cards?.slice(0, 30) || []
   );
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
 
   // Function to update the selected collection and its cards
   const updateSelectedCollection = useCallback((newCollection) => {
     setSelectedCollection(newCollection);
-    setSelectedCards(newCollection?.cards?.slice(0, 30) || []);
+    // setSelectedCards(newCollection?.cards?.slice(0, 30) || []);
   }, []);
   // const updateCollectionDataCookie = (data) => {
   //   setCookie('collectionData', data, { path: '/' });
@@ -49,10 +48,11 @@ const useCollectionManager = (isLoggedIn, userId) => {
     logger.logEvent('[createNewCollection] start', coData);
 
     try {
-      const newCollectionData = { ...coData };
-      const response = await fetchWrapper(createApiUrl('/create'), 'POST', {
-        newCollectionData,
-      });
+      const response = await fetchWrapper(
+        createApiUrl('/create'),
+        'POST',
+        coData
+      );
       const data = handleApiResponse(response, 'createNewCollection');
       updateSelectedCollection(data);
       return data;
@@ -105,15 +105,21 @@ const useCollectionManager = (isLoggedIn, userId) => {
   // Call getAllCollectionsForUser on component mount
   useEffect(() => {
     if (userId && !hasFetchedCollections) {
-      // console.log('getAllCollectionsForUser');
       getAllCollectionsForUser();
     }
-  }, [userId, hasFetchedCollections, collectionData]);
+  }, [userId, hasFetchedCollections, getAllCollectionsForUser]);
+
+  // useEffect(() => {
+  //   if (userId && !hasFetchedCollections) {
+  //     // console.log('getAllCollectionsForUser');
+  //     getAllCollectionsForUser();
+  //   }
+  // }, [userId, getAllCollectionsForUser, hasFetchedCollections]);
   useEffect(() => {
     if (hasFetchedCollections) {
       // console.log('setAllCollections', collectionData?.data?.allCollections);
       setAllCollections(collectionData?.data);
-      updateSelectedCollection(collectionData?.data?.[0]);
+      // updateSelectedCollection(collectionData?.data?.[0]);
     }
   }, [hasFetchedCollections, collectionData]);
 
@@ -134,10 +140,11 @@ const useCollectionManager = (isLoggedIn, userId) => {
     });
     try {
       const response = await fetchWrapper(
-        `/${collectionId}`,
+        createApiUrl(`/${collectionId}`),
         'PUT',
         updatedData
       );
+
       const data = handleApiResponse(response, 'updateAndSyncCollection');
       setAllCollections((prev) =>
         prev.map((collection) =>
@@ -158,9 +165,15 @@ const useCollectionManager = (isLoggedIn, userId) => {
    */
   const deleteCollection = async (collectionId) => {
     try {
-      const response = await fetchWrapper(`/${collectionId}`, 'DELETE');
+      const response = await fetchWrapper(
+        createApiUrl(`/${collectionId}`),
+        'DELETE',
+        { collectionId }
+      );
+      const data = handleApiResponse(response, 'addCardsToCollection');
+
       setAllCollections((prev) =>
-        prev.filter((collection) => collection._id !== collectionId)
+        prev.filter((collection) => collection?._id !== collectionId)
       );
       return response;
     } catch (error) {
@@ -198,7 +211,7 @@ const useCollectionManager = (isLoggedIn, userId) => {
         collection,
       });
       const response = await fetchWrapper(
-        createApiUrl(`/${collection._id}/add`),
+        createApiUrl(`/${collection?._id}/add`),
         'POST',
         { cards: newCards }
       );
@@ -321,7 +334,7 @@ const useCollectionManager = (isLoggedIn, userId) => {
     allCollections,
     selectedCollection,
     selectedCards,
-
+    hasFetchedCollections,
     // SECONDARY STATE (derived from main state selectedCollection)
     collectionStatistics: selectedCollection?.collectionStatistics,
     chartData: selectedCollection?.chartData,
@@ -332,7 +345,7 @@ const useCollectionManager = (isLoggedIn, userId) => {
     lastSavedPrice: selectedCollection?.lastSavedPrice,
     latestPrice: selectedCollection?.latestPrice,
     cards: selectedCollection?.cards,
-
+    newNivoChartData: selectedCollection?.newNivoChartData,
     // STATE SETTERS
     setCollectionData,
     setAllCollections,

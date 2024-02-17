@@ -5,6 +5,7 @@ export const TopCardsDisplayRow = ({ isSmall, theme }) => (
   <Grid
     container
     spacing={2}
+    py={2}
     sx={{
       display: 'flex',
       flexDirection: 'column',

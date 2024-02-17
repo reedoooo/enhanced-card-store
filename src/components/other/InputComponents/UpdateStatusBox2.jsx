@@ -1,47 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Snackbar, Typography } from '@mui/material';
+import { Snackbar, Typography, Box, Button } from '@mui/material';
 import { useCookies } from 'react-cookie';
-import { useCombinedContext } from '../../../context';
-
-const styles = {
-  container: {
-    padding: '15px',
-    border: '2px solid #444',
-    borderRadius: '8px',
-    backgroundColor: '#222',
-    color: '#fff',
-    // margin: '20px auto',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-    fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    maxWidth: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%', // Adjust height here
-    width: '100%', // Adjust width here
-  },
-  statusBox: {
-    marginTop: '15px',
-    padding: '10px',
-    background: '#333',
-    borderRadius: '6px',
-    border: '1px solid #555',
-  },
-  button: {
-    padding: '10px 20px',
-    marginTop: '10px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    backgroundColor: '#5CDB95',
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: '14px',
-    letterSpacing: '1px',
-    outline: 'none',
-  },
-};
+import { useCombinedContext, useMode } from '../../../context';
+import { StyledChartBox } from '../../../pages/pageStyles/StyledComponents';
 
 const UpdateStatusBox2 = ({ socket }) => {
   const { listOfMonitoredCards, handleSendAllCardsInCollections } =
@@ -53,60 +14,77 @@ const UpdateStatusBox2 = ({ socket }) => {
     open: false,
     message: '',
   });
+
   const userId = cookies?.authUser?.userId;
+  const { theme } = useMode();
   const openSnackbar = (message) => {
     setSnackbarData({ open: true, message });
   };
+
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
 
     const handleStatusUpdate = (statusUpdate) => {
-      setUpdateStatus(statusUpdate.message || 'Waiting for updates...');
+      setUpdateStatus(
+        (prevStatus) =>
+          statusUpdate.message || prevStatus || 'Waiting for updates...'
+      );
     };
 
-    if (socket) {
-      socket.on('INITIAL_RESPONSE', handleStatusUpdate);
-    }
+    socket?.on('INITIAL_RESPONSE', handleStatusUpdate);
 
-    // Cleanup function
     return () => {
       clearInterval(timeInterval);
-      if (socket) {
-        socket.off('INITIAL_RESPONSE', handleStatusUpdate);
-      }
+      socket?.off('INITIAL_RESPONSE', handleStatusUpdate);
     };
-  }, [socket]);
+  }, [socket]); // Assuming `socket` is stable and doesn't change on every render
+
   const handleTriggerCronJob = () => {
-    console.log('TRIGGERING CRON JOB');
-    console.log('USER ID:', userId);
-    console.log('LIST OF MONITORED CARDS:', listOfMonitoredCards);
-    if (userId && listOfMonitoredCards) {
+    if (userId && listOfMonitoredCards.length > 0) {
       handleSendAllCardsInCollections(userId, listOfMonitoredCards);
-      console.log('SENDING ALL CARDS IN COLLECTIONS');
       openSnackbar('Triggered the cron job.');
     }
   };
 
   return (
-    <div style={styles.container}>
-      <Typography variant="subtitle1">
+    <StyledChartBox theme={theme}>
+      <Typography variant="subtitle1" sx={{ mb: 2 }}>
         Current Time: {currentTime.toLocaleTimeString()}
       </Typography>
-      <div style={styles.statusBox}>
+      <Box
+        sx={{
+          marginTop: '15px',
+          padding: '10px',
+          background: '#333',
+          borderRadius: '6px',
+          border: '1px solid #555',
+          width: '100%', // Ensure consistent width
+        }}
+      >
         <Typography variant="body1">Update Status: {updateStatus}</Typography>
-      </div>
-      <button style={styles.button} onClick={() => handleTriggerCronJob()}>
+      </Box>
+      <Button
+        variant="contained"
+        sx={{
+          marginTop: '10px',
+          backgroundColor: '#5CDB95',
+          '&:hover': {
+            backgroundColor: '#45a379',
+          },
+        }}
+        onClick={handleTriggerCronJob}
+      >
         Request CRON
-      </button>
+      </Button>
       <Snackbar
         open={snackbarData.open}
         autoHideDuration={6000}
         onClose={() => setSnackbarData({ ...snackbarData, open: false })}
         message={snackbarData.message}
       />
-    </div>
+    </StyledChartBox>
   );
 };
 

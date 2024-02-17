@@ -55,6 +55,7 @@ export default styled(Typography)(({ ownerstate }) => {
   // color value
   let colorValue =
     color === 'inherit' || !palette[color] ? 'inherit' : palette[color].main;
+  // let colorValue = palette[color] ? palette[color].main : white.main;
 
   if (darkMode && (color === 'inherit' || !palette[color])) {
     colorValue = 'inherit';

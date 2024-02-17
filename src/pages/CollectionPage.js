@@ -1,64 +1,38 @@
-import React, { useContext, useEffect, useState } from 'react';
-import CollectionPortfolio from '../layout/collection/CollectionPortfolio';
-import HeroCenter from './pageStyles/HeroCenter';
-import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
-import {
-  useCollectionStore,
-  useModalContext,
-  usePageContext,
-} from '../context';
+import React from 'react';
 import { Box, Grid } from '@mui/material';
+import CollectionPortfolio from '../layout/collection';
+import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
+import { useCollectionStore, useMode } from '../context';
+import useLoadingAndModal from './pageStyles/useLoadingAndModal';
+import HeroBanner from './pageStyles/HeroBanner';
+import PageLayout from '../layout/Containers/PageLayout';
 
 const CollectionPage = () => {
+  const { theme } = useMode();
   const { selectedCollection, allCollections } = useCollectionStore();
-  const { closeModal, isModalOpen, modalContent } = useModalContext();
-  const { loadingStatus, returnDisplay } = usePageContext();
-  const heroBannerHeight = {
-    xs: '10vh', // 10% for extra-small screens
-    sm: '15vh', // 20% for small screens and up
-    md: '20vh', // 25% for medium screens and up
-    lg: '25vh', // 30% for large screens and up
-  };
+  const {
+    loadingStatus,
+    returnDisplay,
+    isModalOpen,
+    modalContent,
+    closeModal,
+  } = useLoadingAndModal();
+
   return (
-    <Box
-      sx={{
-        top: 0,
-        left: -20,
-        position: 'relative',
-        width: '100%',
-        minHeight: '100vh',
-      }}
-    >
-      <Grid container sx={{ height: '100vh', width: '100vw', p: 0 }}>
+    <PageLayout backCol={true}>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          backgroundColor: '#3D3D3D',
+        }}
+      >
         {loadingStatus?.isPageLoading && returnDisplay()}
         {!selectedCollection && (
-          <Grid
-            item
-            xs={12}
-            sx={{
-              height: heroBannerHeight,
-              width: '100vw',
-              top: '70px',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                margin: 'auto',
-                flexGrow: 1,
-              }}
-            >
-              <HeroCenter
-                title="Your Collection's Home"
-                subtitle="Welcome to your collection! ..."
-              />
-            </Box>
-          </Grid>
+          <HeroBanner
+            title="Your Collection's Home"
+            subtitle="Welcome to your collection! ..."
+          />
         )}
         <CollectionPortfolio allCollections={allCollections} />
         {isModalOpen && (
@@ -70,7 +44,7 @@ const CollectionPage = () => {
           />
         )}
       </Grid>
-    </Box>
+    </PageLayout>
   );
 };
 

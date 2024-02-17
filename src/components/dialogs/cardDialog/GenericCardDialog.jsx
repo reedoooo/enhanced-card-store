@@ -27,14 +27,13 @@ import CardMediaSection from '../../cards/media/CardMediaSection';
 import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
 import CardDetail from '../../cards/CardDetail';
-import CardDetailsContainer from '../../../layout/cards/CardDetailsContainer';
 import { useOverlay } from '../../../context/hooks/useOverlay';
+import CardDetailsContainer from '../../cards/CardDetailsContainer';
 
 const GenericCardDialog = (props) => {
   const { theme } = useMode();
   const { generateOverlay, handleRarityClick, openOverlay, closeOverlay } =
     useOverlay(theme);
-
   const {
     open = false,
     transition = false,
@@ -58,11 +57,10 @@ const GenericCardDialog = (props) => {
     ...other
   } = props || {};
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
   const { closeModal } = useModalContext();
   const { getHeaderStyle, isSmall } = theme.responsiveStyles;
   const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
-  const [snackbar, handleSnackBar, handleCloseSnackbar] = useSnackbar();
+  const { handleSnackBar, handleCloseSnackbar } = useSnackbar();
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { setContext, setIsContextSelected } = useSelectedContext();
   const handleAction = useCallback(
@@ -131,9 +129,7 @@ const GenericCardDialog = (props) => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={2}>
-            {/* these two grid items are for the card media and card details */}
             <Grid item xs={12} sm={6} md={6} lg={6}>
-              {' '}
               <CardMediaSection
                 isRequired={!isSmall}
                 card={card}
@@ -162,11 +158,12 @@ const GenericCardDialog = (props) => {
                 values={card?.card_sets?.map((set) => set.set_rarity)}
                 onRarityClick={handleRarityClick}
               />
-
-              {/* Price History Dropdown */}
-              {/* <Grid item xs={12} sm={6} md={6} lg={6}> */}
-              {/* Price History Dropdown */}
-              {/* </Grid> */}
+              <CardDetail
+                className={'card-detail'}
+                title="Card Sets"
+                values={card?.card_sets?.map((set) => set.set_code)}
+                onRarityClick={handleRarityClick}
+              />
             </Grid>
             <Grid item xs={6} sm={6} md={6} lg={6}>
               <CardDetailsContainer card={card} className={'card-detail'} />
@@ -198,11 +195,20 @@ const GenericCardDialog = (props) => {
                     originalContext={context}
                     onClick={() => handleContextSelect(mappedContext)}
                     onSuccess={() =>
-                      handleAction('Action was successful!', 'success')
+                      handleAction(
+                        {
+                          title: 'Action successful',
+                          message: `Card added to ${mappedContext} successfully.`,
+                        },
+                        'success'
+                      )
                     }
                     onFailure={(error) =>
                       handleAction(
-                        'Action failed. Please try again.',
+                        {
+                          title: 'Action failed',
+                          message: `Failed to add card to ${mappedContext}.`,
+                        },
                         'error',
                         error
                       )
@@ -214,7 +220,7 @@ const GenericCardDialog = (props) => {
           </Grid>
         </Container>
       </DialogContent>
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
@@ -226,7 +232,7 @@ const GenericCardDialog = (props) => {
         >
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Dialog>
   );
 };

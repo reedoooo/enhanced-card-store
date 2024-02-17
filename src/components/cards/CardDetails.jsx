@@ -11,6 +11,7 @@ import {
   useCardDetailStyles,
 } from './styles/cardStyles';
 import { useMode } from '../../context';
+import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
 const CardDetails = ({ details, className }) => {
   // details expected to be an array of objects with { icon, title, value }
@@ -25,10 +26,10 @@ const CardDetails = ({ details, className }) => {
       {details.map(({ icon, title, value }, index) => (
         <CardDetailRow theme={theme} key={index}>
           {icon && <CardIconWrapper theme={theme}>{icon}</CardIconWrapper>}
-          <Typography variant="subtitle1">
+          <MDTypography variant="subtitle1">
             <CardTitleStyle theme={theme}>{title}:</CardTitleStyle>
             <CardValueStyle theme={theme}> {value || ''}</CardValueStyle>
-          </Typography>
+          </MDTypography>
         </CardDetailRow>
       ))}
     </CardDetailContainer>

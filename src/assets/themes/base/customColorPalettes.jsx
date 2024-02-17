@@ -1,32 +1,40 @@
 import hexToRgba from '../functions/hexToRgba';
 const error = {
   main: '#f44336',
+  focus: '#f44336',
   dark: '#d32f2f',
   contrastText: '#fff',
+  hoverContrastText: '#111',
 };
 const warning = {
   main: '#ff9800',
+  focus: '#ff9800',
   dark: '#f57c00',
   light: '#ffb74d',
 };
 const success = {
-  light: '#dcedc8',
-  lighter: '#c5e1a5',
-  evenLighter: '#aed581',
-  lightish: '#9ccc65',
-  main: '#8bc34a',
-  dark: '#689f38',
-  darker: '#558b2f',
+  // main: '#4caf50',
+  // dark: '#388e3c',
+  dark: '#3da58a',
+  main: '#4cceac',
+  focus: '#4cceac',
+  light: '#70d8bd', // '#4cceac',
   contrastText: '#fff',
   hoverContrastText: '#111',
 };
 const info = {
-  main: '#2196f3',
+  main: '#0d5d96',
+
+  // main: '#2196f3',
   dark: '#1976d2',
   light: '#64b5f6',
+  focus: '#64b5f6',
   contrastText: '#fff',
 };
 const text = {
+  main: '#212121',
+  focus: '#212121',
+  dark: '#424242',
   primary: '#212121',
   secondary: '#f5f5f5',
   tertiary: '#ffffff',
@@ -83,9 +91,14 @@ const backgroundE = {
   darker: '#206d9b',
   dark: '#4e93a6',
   default: '#7cb8b1',
+  main: '#7cb8b1',
+  focus: '#7cb8b1',
   light: '#8ec7b6',
+  lightBlue: '#57909F',
   lighter: '#b7ebde',
+  lighterBlue: '#7EACB9',
   lightest: '#dbf5ee',
+  lightestBlue: '#A5C8D2',
   contrastText: '#FBFAF2',
 };
 const backgroundF = {
@@ -93,6 +106,8 @@ const backgroundF = {
   darker: hexToRgba(backgroundE.darker, 0.8),
   dark: hexToRgba(backgroundE.dark, 0.7),
   default: hexToRgba(backgroundE.default, 0.6),
+  main: hexToRgba(backgroundE.main, 0.5),
+  focus: hexToRgba(backgroundE.focus, 0.4),
   light: hexToRgba(backgroundE.light, 0.5),
   lighter: hexToRgba(backgroundE.lighter, 0.4),
   lightest: hexToRgba(backgroundE.lightest, 0.3),

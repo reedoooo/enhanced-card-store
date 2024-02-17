@@ -3,8 +3,10 @@ import Icon from '@mui/material/Icon';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import React from 'react';
 import StoreItem from '../../../components/grids/gridItems/StoreItem';
+import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
 
 export default function prepareTableData(selectedCards) {
+  if (!selectedCards) return <LoadingIndicator />;
   // Helper function to round total price to the nearest tenth
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
 

@@ -33,14 +33,16 @@ function useLocalStorage(key, initialValue) {
     };
   }, [key]);
 
+  // Inside your useLocalStorage hook
   const setValue = (value) => {
     try {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      window.dispatchEvent(new Event('local-storage'));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -6,27 +6,40 @@ import DeckListToggle from './DeckListToggle';
 import DeckEditor from './DeckEditor';
 import CardsDisplay from './CardsDisplay';
 import {
+  DeckCardsContainer,
   DeckDisplayBox,
   DeckDisplayPaper,
   DeckDisplayTitleTypography,
+  DeckStyledButton,
 } from '../../pages/pageStyles/StyledComponents';
 import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Grid, IconButton } from '@mui/material';
+import { StyledContainerBoxPrimary } from '../../pages/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import SelectDeckList from '../../components/grids/deckBuilderGrids/SelectDeckList';
+import AppsIcon from '@mui/icons-material/Apps';
 
 const DeckDisplay = () => {
   const { theme } = useMode();
   const { setSelectedDeck, selectedDeck, allDecks, setSelectedCards } =
     useDeckStore();
   const [showAllDecks, setShowAllDecks] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+  const handleSelectDeck = (deckId) => {
+    const foundDeck = allDecks?.find((deck) => deck?._id === deckId);
+    if (foundDeck) {
+      setSelectedDeck(foundDeck);
+      setSelectedCards(foundDeck?.cards?.slice(0, 30) || []);
+    }
+  };
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
 
     const timeoutId = setTimeout(() => {
       if (isMounted) {
-        setSelectedCards(selectedDeck?.cards?.slice(0, 30) || []);
+        handleSelectDeck(selectedDeck?._id);
         setIsLoading(false);
       }
     }, 1000);
@@ -36,42 +49,117 @@ const DeckDisplay = () => {
       clearTimeout(timeoutId);
     };
   }, [selectedDeck]);
-  const handleSelectDeck = (deckId) => {
-    const foundDeck = allDecks?.find((deck) => deck?._id === deckId);
-    if (foundDeck) {
-      setSelectedDeck(foundDeck);
-      setSelectedCards(foundDeck?.cards?.slice(0, 30) || []);
-      handleToggleEdit({ target: { checked: true } });
-    }
-  };
-  const handleToggleEdit = (event) => {
-    setIsEditing(event.target.checked);
-    if (!event.target.checked) {
-      setSelectedDeck(null);
-    }
-  };
-
+  // useEffect(() => {
+  //   // Assuming setFormType is a function that can set the form context
+  //   setFormType('addDeckForm');
+  // }, []);
   return (
-    <DeckDisplayBox theme={theme}>
-      <DeckDisplayPaper theme={theme}>
-        <MDTypography variant="h5" theme={theme}>
-          Your Decks
-        </MDTypography>
-        <DeckListToggle
-          showAllDecks={showAllDecks}
-          setShowAllDecks={setShowAllDecks}
-          handleSelectDeck={handleSelectDeck}
-          allDecks={allDecks}
-        />
-        <DeckEditor
-          selectedDeck={selectedDeck}
-          setSelectedDeck={setSelectedDeck}
-          isEditing={isEditing}
-          handleToggleEdit={handleToggleEdit}
-        />
-        <CardsDisplay selectedDeck={selectedDeck} isLoading={isLoading} />
-      </DeckDisplayPaper>
-    </DeckDisplayBox>
+    <StyledContainerBoxPrimary theme={theme}>
+      {/* <DeckDisplayPaper theme={theme}> */}
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          flexGrow: 1,
+        }}
+      >
+        <Grid item xs={12}>
+          <MDBox
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: theme.spacing(2),
+            }}
+          >
+            <MDTypography
+              variant="h4"
+              align="left"
+              sx={{
+                fontWeight: 'bold',
+                color: theme.palette.backgroundA.dark,
+                textTransform: 'uppercase',
+              }}
+            >
+              Deck Display
+            </MDTypography>
+            <IconButton
+              aria-label="settings"
+              onClick={() => {
+                console.log('Settings Clicked');
+              }}
+              size="large"
+            >
+              <SettingsIcon />
+            </IconButton>
+          </MDBox>
+        </Grid>
+
+        <Grid item xs={12}>
+          <MDBox
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: theme.spacing(2),
+            }}
+          >
+            <Grid container spacing={2} direction="column">
+              <Grid item xs={12}>
+                <DeckStyledButton
+                  theme={theme}
+                  onClick={() => setShowAllDecks(!showAllDecks)}
+                  variant="contained"
+                  sx={{
+                    width: '100%',
+                    borderRadius: 0,
+                    borderTopLeftRadius: 4,
+                    borderTopRightRadius: 4,
+                    backgroundColor: theme.palette.backgroundA.dark,
+                    margin: theme.spacing(1),
+                    color: theme.palette.backgroundA.contrastTextA,
+                    display: 'flex',
+                    alignItems: 'center',
+                    '&:hover': {
+                      backgroundColor: theme.palette.backgroundA.light,
+                    },
+                  }}
+                >
+                  <AppsIcon sx={{ mr: 1 }} />
+                  {showAllDecks ? 'Hide Decks' : 'Show All Decks'}
+                </DeckStyledButton>
+              </Grid>
+              <Grid item xs={12}>
+                {showAllDecks && (
+                  <DeckCardsContainer theme={theme}>
+                    <SelectDeckList
+                      handleSelectDeck={handleSelectDeck}
+                      allDecks={allDecks}
+                    />
+                  </DeckCardsContainer>
+                )}
+              </Grid>
+            </Grid>
+          </MDBox>
+        </Grid>
+        {selectedDeck && (
+          <Grid item xs={12}>
+            <DeckEditor
+            // selectedDeck={selectedDeck}
+            // setSelectedDeck={setSelectedDeck}
+            // isEditing={isEditing}
+            // handleToggleEdit={handleToggleEdit}
+            />
+          </Grid>
+        )}
+
+        <Grid item xs={12}>
+          <CardsDisplay selectedDeck={selectedDeck} isLoading={isLoading} />
+        </Grid>
+      </Grid>
+      {/* </DeckDisplayPaper> */}
+    </StyledContainerBoxPrimary>
   );
 };
 

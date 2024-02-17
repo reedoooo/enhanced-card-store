@@ -18,6 +18,7 @@ export { useAuthContext } from './MAIN_CONTEXT/AuthContext/authContext';
 export { usePageContext } from './UTILITIES_CONTEXT/PageContext/PageContext';
 export { useFormContext } from './UTILITIES_CONTEXT/FormContext/FormContext';
 export { useMode } from './UTILITIES_CONTEXT/ColorModeContext/useMode';
+export { useConfiguratorContext } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';
 
 // Contexts
 export { default as ErrorBoundary } from './ErrorBoundary';
@@ -40,3 +41,4 @@ export { StatisticsProvider } from './SECONDARY_CONTEXT/StatisticsContext/Statis
 export { FormProvider } from './UTILITIES_CONTEXT/FormContext/FormContext';
 export { PageProvider } from './UTILITIES_CONTEXT/PageContext/PageContext';
 export { CardImagesProvider } from './MISC_CONTEXT/CardImagesContext/CardImagesContext';
+export { ConfiguratorProvider } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';

@@ -1,28 +1,64 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useCardStoreHook } from '../../hooks/useCardStore';
+import { defaultContextValue } from '../../constants';
+const { CARD_CONTEXT } = defaultContextValue;
 
-const CardContext = createContext();
+const CardContext = createContext(CARD_CONTEXT);
 
 export const CardProvider = ({ children }) => {
   const {
-    cardsArray,
     searchData,
+    searchSettings,
+    setSearchSettings,
+    // previousSearchData,
     isDataValid,
-    handleRequest,
+    setSearchData,
+    cardsVersion,
+    openConfigurator,
+    setOpenConfigurator,
+    // setPreviousSearchData,
     setIsDataValid,
     clearSearchData,
+    handleRequest,
+    loadingSearchResults,
+    setLoadingSearchResults,
   } = useCardStoreHook();
 
   const contextValue = useMemo(
     () => ({
-      cardsArray,
       searchData,
+      searchSettings,
+      setSearchSettings,
+      // previousSearchData,
       isDataValid,
+      setSearchData,
+      cardsVersion,
+      openConfigurator,
+      setOpenConfigurator,
+      // setPreviousSearchData,
       setIsDataValid,
       clearSearchData,
       handleRequest,
+      loadingSearchResults,
+      setLoadingSearchResults,
     }),
-    [cardsArray, searchData, isDataValid]
+    [
+      searchData,
+      searchSettings,
+      setSearchSettings,
+      // previousSearchData,
+      isDataValid,
+      setSearchData,
+      cardsVersion,
+      openConfigurator,
+      setOpenConfigurator,
+      // setPreviousSearchData,
+      setIsDataValid,
+      clearSearchData,
+      handleRequest,
+      loadingSearchResults,
+      setLoadingSearchResults,
+    ]
   );
 
   return (

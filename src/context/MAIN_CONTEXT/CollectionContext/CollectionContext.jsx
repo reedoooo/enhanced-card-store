@@ -22,6 +22,7 @@ export const CollectionProvider = ({ children }) => {
     collectionData,
     allCollections,
     selectedCollection,
+    hasFetchedCollections,
     selectedCards,
     collectionStatistics,
     chartData,
@@ -31,6 +32,7 @@ export const CollectionProvider = ({ children }) => {
     allXYValues,
     lastSavedPrice,
     latestPrice,
+    newNivoChartData,
 
     setCollectionData,
     createNewCollection,
@@ -57,7 +59,7 @@ export const CollectionProvider = ({ children }) => {
       allCollections,
       selectedCollection,
       selectedCards,
-
+      hasFetchedCollections,
       // SECONDARY STATE (derived from main state selectedCollection)
       collectionStatistics,
       chartData,
@@ -67,7 +69,7 @@ export const CollectionProvider = ({ children }) => {
       allXYValues,
       lastSavedPrice,
       latestPrice,
-
+      newNivoChartData,
       // STATE SETTERS
       setCollectionData,
       setAllCollections,
@@ -103,6 +105,7 @@ export const CollectionProvider = ({ children }) => {
       allCollections,
       selectedCollection,
       selectedCards,
+      newNivoChartData,
       setAllCollections,
       setSelectedCollection,
       setSelectedCards,

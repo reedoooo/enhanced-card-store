@@ -1,92 +1,75 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
 import PrivateRoute from './components/reusable/PrivateRoute';
 import LoginDialog from './components/dialogs/LoginDialog';
-import {
-  HomePage,
-  StorePage,
-  CartPage,
-  ProfilePage,
-  CollectionPage,
-  DeckBuilderPage,
-  NotFoundPage,
-  LoginPage,
-} from './pages';
-import {
-  useAuthContext,
-  usePageContext,
-  useMode,
-  useSidebarContext,
-} from './context';
-import { AppContainer } from './pages/pageStyles/StyledComponents';
-// Layout imports
-import SideBar from './layout/headings/navigation/SideBar.jsx';
-import TopBar from './layout/headings/navigation/TopBar.jsx';
-import getMenuItemsData from './layout/headings/header/menuItemsData.jsx';
+import { useAuthContext, useConfiguratorContext, useMode } from './context';
+import PageLayout from './layout/Containers/PageLayout.jsx';
+import Navigation from './layout/navigation/Navigation.jsx';
+import LoadingIndicator from './components/reusable/indicators/LoadingIndicator.js';
+import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
+import { useCardStoreHook } from './context/hooks/useCardStore.jsx';
 
+// Define all routes in a single array including the component name for laziness
 const ROUTE_CONFIG = [
-  { path: '/', component: HomePage, isPrivate: false },
-  { path: '/home', component: HomePage, isPrivate: false },
-  { path: '/store', component: StorePage, isPrivate: false },
-  { path: '/cart', component: CartPage, isPrivate: true },
-  { path: '/userprofile', component: ProfilePage, isPrivate: true },
-  { path: '/collection', component: CollectionPage, isPrivate: true },
-  { path: '/deckbuilder', component: DeckBuilderPage, isPrivate: true },
-  { path: '/profile', component: ProfilePage, isPrivate: false },
-  { path: '/login', component: LoginPage, isPrivate: false },
-  { path: '*', component: NotFoundPage, isPrivate: false },
+  { path: '/', componentName: 'HomePage', isPrivate: false },
+  { path: '/home', componentName: 'HomePage', isPrivate: false },
+  { path: '/deckbuilder', componentName: 'DeckBuilderPage', isPrivate: false },
+  { path: '/store', componentName: 'StorePage', isPrivate: false },
+  { path: '/cart', componentName: 'CartPage', isPrivate: true },
+  { path: '/collection', componentName: 'CollectionPage', isPrivate: true },
+  { path: '/profile', componentName: 'ProfilePage', isPrivate: true },
+  { path: '/login', componentName: 'LoginPage', isPrivate: false },
+  { path: '/signup', componentName: 'SignupPage', isPrivate: false },
+  { path: '/about', componentName: 'AboutPage', isPrivate: false },
+  { path: '/contact', componentName: 'ContactPage', isPrivate: false },
+  { path: '/terms', componentName: 'TermsPage', isPrivate: false },
+  { path: '/privacy', componentName: 'PrivacyPage', isPrivate: false },
+  { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
 
+// Dynamically import page components based on route configuration
+const LazyRoute = ({ componentName, ...rest }) => {
+  const Component = lazy(() => import(`./pages/${componentName}`));
+  return <Component {...rest} />;
+};
 const Main = () => {
   const { theme } = useMode();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  const { resetLogoutTimer, logout, authUser, userId, isLoggedIn } =
-    useAuthContext();
-  const { isOpen, toggleSidebar, setIsOpen } = useSidebarContext();
-  const menuItemsData = getMenuItemsData(isLoggedIn);
-  const handleDrawerToggle = () => {
-    toggleSidebar();
-  };
+  const { isLoggedIn } = useAuthContext();
+  const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
   return (
     <React.Fragment>
-      {!authUser ? (
+      {!isLoggedIn ? (
         <LoginDialog open={!isLoggedIn} />
       ) : (
-        <AppContainer>
-          <TopBar
-            isMobileView={isMobileView}
-            isLoggedIn={isLoggedIn}
-            handleDrawer={handleDrawerToggle}
-          />
-          <SideBar
-            isLoggedIn={isLoggedIn}
-            handleLogout={logout}
-            handleDrawer={handleDrawerToggle}
-            isOpen={isOpen}
-            isMobileView={isMobileView}
-            menuItemsData={menuItemsData}
-          />
-          <Routes>
-            {ROUTE_CONFIG.map(
-              ({ path, component: Component, isPrivate }, index) => (
+        <PageLayout
+          sx={{
+            backgroundColor: '#3D3D3D',
+          }}
+        >
+          <Navigation isLoggedIn={isLoggedIn} isMobileView={isMobileView} />
+          {isConfiguratorOpen && <Configurator />}
+          <Suspense fallback={<LoadingIndicator />}>
+            <Routes>
+              {ROUTE_CONFIG.map(({ path, componentName, isPrivate }, index) => (
                 <Route
                   key={index}
                   path={path}
                   element={
                     isPrivate ? (
                       <PrivateRoute>
-                        <Component />
+                        <LazyRoute componentName={componentName} />
                       </PrivateRoute>
                     ) : (
-                      <Component />
+                      <LazyRoute componentName={componentName} />
                     )
                   }
                 />
-              )
-            )}
-          </Routes>{' '}
-        </AppContainer>
+              ))}
+            </Routes>
+          </Suspense>
+        </PageLayout>
       )}
     </React.Fragment>
   );

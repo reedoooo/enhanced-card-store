@@ -1,8 +1,9 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
+import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 
 const GridLayout = ({ children, containerStyles }) => (
-  <Container
+  <MDBox
     sx={{
       ...containerStyles,
       width: '100%',
@@ -12,13 +13,19 @@ const GridLayout = ({ children, containerStyles }) => (
     <Grid
       container
       spacing={1}
-      sx={{
-        height: '99%',
-      }}
+      sx={
+        {
+          // height: '99%',
+          // // display: 'flex',
+          // flexDirection: 'row',
+          // width: '100%',
+          // minWidth: '99%',
+        }
+      }
     >
       {children}
     </Grid>
-  </Container>
+  </MDBox>
 );
 
 export default GridLayout;

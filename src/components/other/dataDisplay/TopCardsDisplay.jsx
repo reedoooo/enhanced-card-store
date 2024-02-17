@@ -49,7 +49,9 @@ const StyledSwipeableView = styled(SwipeableViews)(({ theme }) => ({
 const StyledContainer = styled(Container)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  // Set a maximum height to prevent expansion. Adjust according to your needs.
+  maxHeight: '100vh',
+  overflow: 'auto', // Add scroll if content exceeds container size
   alignItems: 'center',
   background: theme.palette.backgroundB.darker,
   borderRadius: theme.shape.borderRadiusLarge,
@@ -59,6 +61,9 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     padding: theme.spacing(1), // Reduced padding on mobile
   },
 }));
+
+// Assuming SwipeableViews and CarouselCard do not need custom styling here
+// If they do, use styled in a similar manner
 
 const TopCardsDisplay = () => {
   const { theme } = useMode();
@@ -87,7 +92,7 @@ const TopCardsDisplay = () => {
   const maxSteps = top5Cards?.length;
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handleBack = () => setActiveStep((prev) => prev - 1);
-
+  const isSmall = useMediaQuery(theme2.breakpoints.down('sm'));
   if (!selectedCollection) {
     return (
       <StyledContainer>
@@ -97,11 +102,24 @@ const TopCardsDisplay = () => {
   }
 
   return (
-    <StyledContainer>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        marginTop: 2,
+        marginBottom: 2,
+        flexDirection: isSmall ? 'column' : 'row',
+      }}
+    >
+      {/* <StyledContainer> */}
       <Grid item xs={12}>
         <Box
           sx={{
+            flexGrow: 1,
             background: theme.palette.backgroundB.darker,
+            // Ensure the box containing SwipeableViews does not exceed the viewport height
+            maxHeight: '100vh',
+            overflow: 'auto', // Allow scrolling within the box if content is larger
           }}
         >
           <StyledSwipeableView
@@ -162,7 +180,8 @@ const TopCardsDisplay = () => {
           />
         </Box>
       </Grid>
-    </StyledContainer>
+      {/* </StyledContainer> */}
+    </Grid>
   );
 };
 
