@@ -24,7 +24,8 @@ export const AppContextProvider = ({ children }) => {
   const Collection = useContext(CollectionContext);
   const [cardsWithQuantities, setCardsWithQuantities] = useState([]);
   const [allCardsWithQuantities, setAllCardsWithQuantities] = useLocalStorage(
-    'allCardsWithQuantities'
+    'allCardsWithQuantities',
+    []
   );
 
   const { selectedCollection, allCollections } = Collection;

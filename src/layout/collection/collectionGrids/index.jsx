@@ -62,7 +62,7 @@ function DataTable({
         Header: 'Action',
         accessor: 'action',
         Cell: ({ value }) => (
-          <GenericActionButtons card={value} context={'collection'} />
+          <GenericActionButtons card={value} context={'Collection'} />
         ),
       },
     ];

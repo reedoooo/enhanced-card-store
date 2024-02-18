@@ -107,19 +107,15 @@ function renderItem({ collection, roundToNearestTenth }) {
     />
   );
 }
-
 const SelectCollectionList = ({ allCollections, openDialog }) => {
   const { theme } = useMode();
   const [show, setShow] = useState(
     new Array(allCollections.length).fill(false)
   );
-
-  const listRef = useRef(null);
   const roundToNearestTenth = (number) => Math.ceil(number / 10) * 10;
   if (!allCollections) return <LoadingIndicator />;
-  // Trigger the animation for each item with a delay
   useEffect(() => {
-    allCollections.forEach((_, index) => {
+    allCollections?.forEach((_, index) => {
       setTimeout(() => {
         setShow((show) => {
           const updatedShow = [...show];

@@ -1,5 +1,15 @@
 import { roundToNearestTenth } from '../../Helpers';
 import { Tooltip, Typography } from '@mui/material';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { debounce } from 'lodash';
+import styled from 'styled-components';
+import { Box } from '@mui/system';
+import useMode from '../../UTILITIES_CONTEXT/ColorModeContext/useMode';
+import { useChartContext } from './ChartContext';
+import { useAuthContext } from '../AuthContext/authContext';
+import useCollectionManager from '../CollectionContext/useCollectionManager';
+import { ResponsiveLine } from '@nivo/line';
+import { useLoading } from '../../hooks/useLoading';
 
 export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
   if (!data || data.length === 0) return [];
@@ -80,49 +90,6 @@ export const getTickValues = (timeRange) => {
   return mapping[timeRange] || 'every day'; // Default to 'every week' if no match
 };
 
-// export const convertDataForNivo2 = (rawData2) => {
-//   if (!Array.isArray(rawData2) || rawData2?.length === 0) {
-//     console.error('Invalid or empty rawData provided', rawData2);
-//     return [];
-//   }
-
-//   console.log('rawData2: ', rawData2);
-//   // console.log('rawData2: ', rawData2);
-//   // console.log('rawData2.data: ', rawData2[0]);
-//   // rawData is assumed to be an array of objects with 'label', 'x', and 'y' properties
-//   switch (rawData2) {
-//     case rawData2[0].x instanceof Date:
-//       return rawData2.map((dataPoint) => ({
-//         x: dataPoint[0]?.x, // x value is already an ISO date string
-//         y: dataPoint.y, // y value
-//       }));
-//     // equals array
-//     case typeof rawData2[0] === Array.isArray:
-//       return rawData2.map((dataPoint) => ({
-//         x: new Date(dataPoint.x).toISOString(), // x value is already an ISO date string
-//         y: dataPoint.y, // y value
-//       }));
-//     default:
-//       console.error(
-//         'Invalid rawData2 provided. Expected an array of objects with "x" and "y" properties',
-//         rawData2
-//       );
-//       return [];
-//   }
-//   const nivoData = rawData2?.map((dataPoint) => ({
-//     x: dataPoint[0]?.x, // x value is already an ISO date string
-//     y: dataPoint[0]?.y, // y value
-//   }));
-
-//   // Wrapping the data for a single series. You can add more series similarly
-//   return [
-//     {
-//       id: 'Averaged Data',
-//       color: '#4cceac',
-//       data: nivoData,
-//     },
-//   ];
-// };
 export const convertDataForNivo2 = (rawData2) => {
   if (!Array.isArray(rawData2) || rawData2.length === 0) {
     console.error('Invalid or empty rawData provided', rawData2);
@@ -223,5 +190,255 @@ export const ChartTooltip = ({ point, lastData, hoveredData, latestData }) => {
         </Typography>
       </Tooltip>
     </>
+  );
+};
+
+export const useEventHandlers = () => {
+  const [hoveredData, setHoveredData] = useState(null);
+  const debouncedSetHoveredData = useCallback(
+    debounce(setHoveredData, 100),
+    []
+  );
+
+  const handleMouseMove = useCallback(
+    (point) => {
+      debouncedSetHoveredData(
+        point ? { x: point?.data?.x, y: point?.data?.y } : null
+      );
+    },
+    [debouncedSetHoveredData]
+  );
+
+  const handleMouseLeave = useCallback(
+    () => debouncedSetHoveredData(null),
+    [debouncedSetHoveredData]
+  );
+
+  return { hoveredData, handleMouseMove, handleMouseLeave };
+};
+const TooltipBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[3],
+  borderRadius: theme.shape.borderRadius,
+}));
+export const isSpecialPoint = (markers, point) =>
+  markers.some((sp) => sp.x === point.data.x && sp.y === point.data.y);
+export const CustomTooltipLayer = ({ points, xScale, yScale, markers }) => (
+  <>
+    {points?.map((point, index) => {
+      const specialPoint = markers?.find(
+        (sp) => sp.x === point.data.x && sp.y === point.data.y
+      );
+      return specialPoint ? (
+        <g
+          key={index}
+          transform={`translate(${xScale(point.data.x)},${yScale(point.data.y)})`}
+        >
+          <circle r={10} fill="red" stroke="white" strokeWidth={2} />
+          <text
+            x={15}
+            y={5}
+            textAnchor="start"
+            alignmentBaseline="middle"
+            fill="#fff"
+          >
+            {specialPoint.label}
+          </text>
+        </g>
+      ) : null;
+    })}
+  </>
+);
+export const CustomTooltip = ({ point, markers, timeRange }) => {
+  const { theme } = useMode();
+  return (
+    <Tooltip title={`Series: ${point.serieId}`}>
+      <TooltipBox theme={theme}>
+        <Typography variant="subtitle1">{`Card: ${point.data.label}`}</Typography>
+        <Typography variant="body2">{`Time: ${new Date(point.data.xFormatted).toLocaleString()}`}</Typography>
+        <Typography variant="h6">{`Value: $${parseFloat(point.data.yFormatted).toFixed(2)}`}</Typography>
+        {isSpecialPoint(markers, point) && (
+          <Typography color="secondary">Special Point!</Typography>
+        )}
+      </TooltipBox>
+    </Tooltip>
+  );
+};
+export const ChartConfiguration = ({
+  markers,
+  height,
+  timeRange,
+  nivoChartData,
+  loadingID,
+}) => {
+  const { theme } = useMode();
+  const { startLoading, stopLoading, isLoading, isAnyLoading } = useLoading();
+
+  const { tickValues } = useChartContext();
+  const { isLoggedIn, userId } = useAuthContext();
+  const { selectedCollection } = useCollectionManager(isLoggedIn, userId);
+  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
+  const validMarkers = markers.filter((marker) => marker.value !== undefined);
+
+  const chartProps = useMemo(
+    () => ({
+      data: [nivoChartData],
+      onMouseMove: handleMouseMove,
+      onMouseLeave: handleMouseLeave,
+      // tooltip: ({ point }) => <CustomTooltip point={point} markers={markers} />,
+      tooltip: CustomTooltip,
+
+      color: theme.palette.backgroundA.contrastTextA,
+      text: {
+        color: theme.palette.backgroundA.contrastTextA,
+        fill: theme.palette.backgroundA.contrastTextA,
+        fontSize: 12,
+      },
+      yFormat: '$.2f',
+
+      colors: theme.palette.backgroundE.dark,
+      axisBottom: {
+        tickRotation: 0,
+        legend: 'Time',
+        legendOffset: 40,
+        legendPosition: 'middle',
+        tickSize: 5,
+        tickPadding: 5,
+        tickValues: tickValues,
+        format: (value) => {
+          const d = new Date(value);
+          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        },
+      },
+      axisLeft: {
+        tickSize: 5,
+        tickPadding: 5,
+        tickRotation: 0,
+        legend: 'Value ($)',
+        legendOffset: -50,
+        legendPosition: 'middle',
+        color: theme.palette.text.primary,
+        format: (value) => `$${value.toFixed(2)}`,
+      },
+      margin: { top: 20, right: 40, bottom: 50, left: 55 },
+      padding: 0.3,
+      animate: true,
+      xFormat: 'time:%Y-%m-%d %H:%M:%S',
+      xScale: {
+        type: 'time',
+        format: '%Y-%m-%dT%H:%M:%S.%LZ', // Adjust if necessary to match your input data format
+        useUTC: false,
+        precision: 'second',
+      },
+      yScale: {
+        type: 'linear',
+        min: 'auto',
+        max: 'auto',
+        stacked: true,
+        reverse: false,
+      },
+      pointSize: 10,
+      pointBorderWidth: 1,
+      curve: 'monotoneX',
+      useMesh: true,
+      motionConfig: 'gentle',
+
+      stiffness: 90,
+      damping: 15,
+      enableSlices: 'x',
+      // pointBorderColor: { from: 'serieColor', modifiers: [] },
+      pointBorderColor: theme.palette.primary.main,
+      // pointColor: { from: 'color', modifiers: [] },
+      markers: validMarkers,
+      layers: [
+        'grid',
+        'markers',
+        'areas',
+        'lines',
+        'slices',
+        'points',
+        'axes',
+        'legends',
+        ({ points, xScale, yScale, markers }) => (
+          <CustomTooltipLayer
+            points={points}
+            xScale={xScale}
+            yScale={yScale}
+            markers={markers}
+          />
+        ),
+      ],
+      theme: {
+        axis: {
+          domain: {
+            line: {
+              stroke: theme.palette.backgroundA.contrastTextA,
+              strokeWidth: 1,
+            },
+          },
+          ticks: {
+            line: {
+              stroke: theme.palette.backgroundA.contrastTextA,
+              strokeWidth: 1,
+            },
+            text: {
+              fill: theme.palette.backgroundA.contrastTextA,
+              fontSize: 12,
+              fontWeight: 400,
+            },
+          },
+          legend: {
+            text: {
+              fill: theme.palette.text.primary,
+              fontSize: 12,
+              fontWeight: 500,
+            },
+          },
+        },
+        grid: {
+          line: {
+            stroke: theme.palette.divider,
+            strokeWidth: 1,
+          },
+        },
+      },
+    }),
+    [
+      nivoChartData,
+      handleMouseMove,
+      handleMouseLeave,
+      markers,
+      theme,
+      tickValues,
+    ]
+  );
+
+  const NivoContainer = ({ children, height }) => (
+    <div style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
+        <div style={{ height: height || '800px' }}>{children}</div>
+      </div>
+    </div>
+  );
+
+  // useEffect(() => {
+  //   startLoading(loadingID);
+  //   // Mock async data fetching
+  //   setTimeout(() => stopLoading(), 1000); // Remove this in real scenario
+  // }, [loadingID, startLoading, stopLoading, fetchWrapper, logger]);
+
+  if (
+    isLoading(
+      'http://localhost:3001/api/users/65b8e155b4885b451a5071c8/collections/allCollections'
+    )
+  ) {
+    return <Typography>Loading chart...</Typography>;
+  }
+
+  return (
+    <NivoContainer height={height}>
+      <ResponsiveLine {...chartProps} />
+    </NivoContainer>
   );
 };

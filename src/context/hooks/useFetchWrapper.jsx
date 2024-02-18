@@ -1,40 +1,72 @@
-import { useCallback } from 'react';
-// import useSnackBar from './useSnackBar';
+import { useState, useCallback } from 'react';
 import useLogger from './useLogger';
+import useLocalStorage from './useLocalStorage';
+import { useLoading } from './useLoading';
+
 const useFetchWrapper = () => {
-  // const handleSnackBar = useSnackBar()[1];
-  const { logEvent } = useLogger();
+  const [status, setStatus] = useState('idle'); // 'idle', 'loading', 'success', 'error'
+  const [data, setData] = useState(null);
+  const [responseCache, setResponseCache] = useLocalStorage('apiResponses', {});
+  const [error, setError] = useState(null);
+  const { logEvent } = useLogger('useFetchWrapper');
+  const { startLoading, stopLoading, isLoading } = useLoading();
 
   const fetchWrapper = useCallback(
-    async (url, method, body = null) => {
+    async (url, method = 'GET', body = null, loadingID) => {
+      setData(null);
+      setError(null);
+      setStatus('loading');
+      startLoading(loadingID);
+
+      const headers = { 'Content-Type': 'application/json' };
       const options = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         ...(body && { body: JSON.stringify(body) }),
       };
 
       try {
-        // handleSnackBar('Loading data...', 'info'); // Notify user data is loading
         const response = await fetch(url, options);
+        const responseData = await response.json(); // Assuming the server always returns JSON
+
         if (!response.ok) {
-          // Handle non-ok responses immediately
-          const errorMsg = `API request failed with status: ${response.status} ${response.statusText}`;
-          // handleSnackBar(errorMsg, 'error'); // Notify user of the error
-          throw new Error(errorMsg);
+          throw new Error(`An error occurred: ${response.statusText}`);
         }
-        const data = await response.json(); // Parse the JSON response
-        // handleSnackBar('Data loaded successfully!', 'success'); // Notify user of success
-        return data;
-      } catch (error) {
-        logEvent('error', error.message); // Log the error
-        // handleSnackBar(`Error: ${error.message}`, 'error'); // Notify user of the error
-        throw error; // Re-throwing the error for upstream catch blocks to handle
+        setStatus('success');
+        setData(responseData);
+        setResponseCache((prevCache) => ({
+          ...prevCache,
+          [loadingID]: responseData, // Use loadingID as the key
+        }));
+        logEvent('fetch completed', {
+          url,
+          status: response.status,
+          data: responseData,
+        });
+      } catch (err) {
+        setStatus('error');
+        setError(err.message || 'An error occurred. Awkward..');
+        logEvent('fetch error', { url, error: err.message });
+      } finally {
+        stopLoading(loadingID);
       }
     },
-    [logEvent]
+    [setResponseCache, logEvent, startLoading, stopLoading]
   );
+  const getLoadingState = useCallback(
+    (loadingID = 'globalLoading') => isLoading(loadingID),
+    [isLoading]
+  );
+  const responseData = {
+    status, // Include the fetch status
+    data,
+    responseCache,
+    error,
+    fetchWrapper,
+    getLoadingState,
+  };
 
-  return fetchWrapper;
+  return responseData;
 };
 
 export default useFetchWrapper;

@@ -10,12 +10,12 @@ function PageLayout({ background, backCol, children }) {
   return (
     <MDBox
       width="100vw"
-      height="100%"
+      // height="100%"
       minHeight="100vh"
       bgColor={backCol ? '#3D3D3D' : 'transparent'}
-      sx={{ overflowX: 'hidden' }}
+      sx={{ overflowX: 'hidden', m: 0, p: 0 }} // Ensure no margins or paddings
     >
-      <Grid container sx={{ height: '100vh', width: '100vw', p: 0 }}>
+      <Grid container sx={{ minHeight: '100vh', width: '100vw', m: 0, p: 0 }}>
         {children}
       </Grid>
     </MDBox>

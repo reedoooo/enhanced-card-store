@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 
 const GridLayout = ({ children, containerStyles }) => (
   <MDBox

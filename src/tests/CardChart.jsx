@@ -103,8 +103,8 @@ const CardChart = ({ cardData = initialCardData }) => {
   const nivoReadyData = useMemo(
     () => [
       {
-        id: cardData.name || 'default',
-        data: cardData.dailyPriceHistory.map(({ timestamp, num }) => ({
+        id: cardData?.name || 'default',
+        data: cardData?.dailyPriceHistory?.map(({ timestamp, num }) => ({
           x: timestamp,
           y: num,
         })),

@@ -33,6 +33,8 @@ export const CollectionProvider = ({ children }) => {
     lastSavedPrice,
     latestPrice,
     newNivoChartData,
+    error,
+    isLoading,
 
     setCollectionData,
     createNewCollection,
@@ -41,7 +43,7 @@ export const CollectionProvider = ({ children }) => {
     deleteCollection,
     addCardsToCollection,
     removeCardsFromCollection,
-    updateCardsInCollection,
+    // updateCardsInCollection,
     updateChartDataInCollection,
     updateSelectedCollection,
     setAllCollections,
@@ -63,13 +65,14 @@ export const CollectionProvider = ({ children }) => {
       // SECONDARY STATE (derived from main state selectedCollection)
       collectionStatistics,
       chartData,
-      totalPrice: getTotalPrice(selectedCollection),
       totalQuantity,
       collectionPriceHistory,
       allXYValues,
       lastSavedPrice,
       latestPrice,
       newNivoChartData,
+      error,
+      isLoading,
       // STATE SETTERS
       setCollectionData,
       setAllCollections,
@@ -88,9 +91,9 @@ export const CollectionProvider = ({ children }) => {
         addCardsToCollection([card], collection),
       removeOneFromCollection: (card, cardId, collection) =>
         removeCardsFromCollection([card], [cardId], collection),
-      updateOneInCollection: (collectionId, card, incrementType) => {
-        updateCardsInCollection(collectionId, [card], incrementType);
-      },
+      // updateOneInCollection: (collectionId, card, incrementType) => {
+      //   updateCardsInCollection(collectionId, [card], incrementType);
+      // },
       updateChartDataInCollection,
 
       // CRON JOB ACTIONS
@@ -115,7 +118,7 @@ export const CollectionProvider = ({ children }) => {
       deleteCollection,
       addCardsToCollection,
       removeCardsFromCollection,
-      updateCardsInCollection,
+      // updateCardsInCollection,
       updateChartDataInCollection,
       calculateCollectionValue,
     ]

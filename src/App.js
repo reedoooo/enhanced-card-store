@@ -1,5 +1,6 @@
 // App.js
 import React, { useEffect } from 'react';
+import './assets/css/index.css';
 import Main from './Main';
 import {
   FormProvider,
@@ -29,6 +30,7 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 
 import { useNavigate } from 'react-router-dom';
 import { CssBaseline, GlobalStyles } from '@mui/material';
+import { ParallaxProvider } from 'react-scroll-parallax';
 
 // ==============================|| APP ||============================== //
 
@@ -50,43 +52,45 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyles />
-        <ConfiguratorProvider>
-          <FormProvider>
-            <SocketProvider>
-              <UserProvider>
-                <ModalProvider>
-                  <SnackbarProvider>
-                    <PopoverProvider>
-                      <CollectionProvider>
-                        <CombinedProvider>
-                          <CardProvider>
-                            <CronJobProvider>
-                              <DeckProvider>
-                                <CartProvider>
-                                  <CardImagesProvider>
-                                    <ChartProvider>
-                                      <StatisticsProvider>
-                                        <SidebarProvider>
-                                          <AppContextProvider>
-                                            <Main />
-                                          </AppContextProvider>
-                                        </SidebarProvider>
-                                      </StatisticsProvider>
-                                    </ChartProvider>
-                                  </CardImagesProvider>
-                                </CartProvider>
-                              </DeckProvider>
-                            </CronJobProvider>
-                          </CardProvider>
-                        </CombinedProvider>
-                      </CollectionProvider>
-                    </PopoverProvider>
-                  </SnackbarProvider>
-                </ModalProvider>
-              </UserProvider>
-            </SocketProvider>
-          </FormProvider>
-        </ConfiguratorProvider>
+        <ParallaxProvider>
+          <ConfiguratorProvider>
+            <FormProvider>
+              <SocketProvider>
+                <UserProvider>
+                  <ModalProvider>
+                    <SnackbarProvider>
+                      <PopoverProvider>
+                        <CollectionProvider>
+                          <CombinedProvider>
+                            <CardProvider>
+                              <CronJobProvider>
+                                <DeckProvider>
+                                  <CartProvider>
+                                    <CardImagesProvider>
+                                      <ChartProvider>
+                                        <StatisticsProvider>
+                                          <SidebarProvider>
+                                            <AppContextProvider>
+                                              <Main />
+                                            </AppContextProvider>
+                                          </SidebarProvider>
+                                        </StatisticsProvider>
+                                      </ChartProvider>
+                                    </CardImagesProvider>
+                                  </CartProvider>
+                                </DeckProvider>
+                              </CronJobProvider>
+                            </CardProvider>
+                          </CombinedProvider>
+                        </CollectionProvider>
+                      </PopoverProvider>
+                    </SnackbarProvider>
+                  </ModalProvider>
+                </UserProvider>
+              </SocketProvider>
+            </FormProvider>
+          </ConfiguratorProvider>
+        </ParallaxProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

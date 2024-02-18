@@ -46,6 +46,7 @@
     "react-router-dom": "^6.17.0",
     "react-scale-text": "^1.2.2",
     "react-scripts": "5.0.1",
+    "react-scroll-parallax": "^3.4.5",
     "react-slick": "^0.29.0",
     "react-spinners": "^0.13.8",
     "react-spring": "^9.7.3",
@@ -60,7 +61,7 @@
     "socket.io-client": "^4.7.2",
     "stripe": "^12.14.0",
     "styled-components": "^6.1.8",
-    "swiper": "^11.0.5",
+    "swiper": "^11.0.6",
     "three": "^0.156.1",
     "web-vitals": "^2.1.4",
     "zod": "^3.22.4"

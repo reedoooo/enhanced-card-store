@@ -38,7 +38,7 @@ const { logEvent, setStateAndLog } = useLogger('ComponentName', {});
  * Used By:
  * @function CardProvider - src/context/hooks/useCardStore.jsx
  */
-const [value, setValue] = useLocalStorage('key', 'initialValue');
+// const [value, setValue] = useLocalStorage('key', 'initialValue');
 /**
  * Hook: useFetch
  * Description: Manages data fetching with loading and error states.

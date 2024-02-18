@@ -10,13 +10,14 @@ import card from './card/index';
 import cardMedia from './card/cardMedia';
 import cardContent from './card/cardContent';
 const cssbaseline = {
-  styleOverrides: {
+  styleOverrides: `
+  body {
+    background-color: #f0f2f5; // Example background color
+    font-family: 'Roboto', sans-serif; // Default font
     display: 'flex',
     flexGrow: 1,
-    // body: {
-    //   backgroundColor: mode === 'dark' ? '#333' : '#ffffff',
-    // },
-  },
+  }
+  `,
 };
 
 // const container = {

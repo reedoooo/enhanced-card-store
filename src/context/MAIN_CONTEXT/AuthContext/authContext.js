@@ -15,6 +15,7 @@ import { processResponseData } from './helpers';
 import useLogger from '../../hooks/useLogger';
 import { defaultContextValue } from '../../constants';
 import { Redirect, useNavigate } from 'react-router-dom';
+import { useLoading } from '../../hooks/useLoading';
 
 export const AuthContext = createContext(defaultContextValue.AUTH_CONTEXT);
 
@@ -22,6 +23,7 @@ const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
 export default function AuthProvider({ children }) {
   const { setIsDataLoading } = usePageContext();
+  const { startLoading, stopLoading } = useLoading(); // Utilize useLoading hook
   const { logEvent } = useLogger('AuthContext');
   const navigate = useNavigate(); // Create navigate instance
   const [lastTokenCheck, setLastTokenCheck] = useState(Date.now());
@@ -39,7 +41,8 @@ export default function AuthProvider({ children }) {
   const [responseMessage, setResponseMessage] = useState('');
   const logoutTimerRef = useRef(null);
   const executeAuthAction = async (actionType, url, requestData) => {
-    setIsDataLoading(true);
+    const loadingID = actionType;
+    startLoading(loadingID);
     try {
       const response = await axios.post(
         `${REACT_APP_SERVER}/api/users/${url}`,
@@ -71,11 +74,11 @@ export default function AuthProvider({ children }) {
     } catch (error) {
       logEvent('Auth error:', error);
     } finally {
-      setIsDataLoading(false);
+      stopLoading(loadingID);
     }
   };
   const logout = useCallback(async () => {
-    setIsDataLoading(true);
+    startLoading('logout');
     try {
       const { userId, refreshToken } = cookies;
       await axios.post(`${REACT_APP_SERVER}/api/users/signout`, {
@@ -87,9 +90,9 @@ export default function AuthProvider({ children }) {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      setIsDataLoading(false);
+      stopLoading('logout');
     }
-  }, [cookies, setIsDataLoading, removeCookie]);
+  }, [removeCookie, startLoading, stopLoading]);
 
   const resetLogoutTimer = useCallback(() => {
     clearTimeout(logoutTimerRef.current);
@@ -116,6 +119,7 @@ export default function AuthProvider({ children }) {
 
   const checkTokenValidity = useCallback(async () => {
     logEvent('Checking token validity.');
+    startLoading('checkTokenValidity');
 
     try {
       const accessToken = cookies.accessToken;
@@ -140,8 +144,10 @@ export default function AuthProvider({ children }) {
       console.error('Token validation error:', error);
       logEvent(`Token validation failed: ${error}`);
       logout(); // Log out if token validation fails
+    } finally {
+      stopLoading('checkTokenValidity');
     }
-  }, [cookies.accessToken, logout]);
+  }, [cookies.accessToken, logout, startLoading, stopLoading]);
 
   useEffect(() => {
     const currentTime = Date.now();

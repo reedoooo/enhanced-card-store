@@ -132,27 +132,24 @@ const HomePage = () => {
   );
 
   return (
-    <CssBaseline>
-      <PageLayout backCol={false}>
-        {renderSplashPage()}
-
-        <Grid container spacing={3}>
-          {/* INTRO SECTION */}
-          <Grid item xs={12}>
-            <HeroSection />
-          </Grid>
-          {/* MAIN CONTENT SECTION */}
-          <Grid item xs={12}>
-            <MainContentSection />
-          </Grid>
-          {/* FEATURE CARDS SECTION */}
-          <Grid item xs={12}>
-            <FeatureCardsSection />
-          </Grid>
-          {renderDialogs()}
+    <PageLayout backCol={true}>
+      {renderSplashPage()}
+      <Grid container spacing={3}>
+        {/* INTRO SECTION */}
+        <Grid item xs={12}>
+          <HeroSection />
         </Grid>
-      </PageLayout>
-    </CssBaseline>
+        {/* MAIN CONTENT SECTION */}
+        <Grid item xs={12}>
+          <MainContentSection />
+        </Grid>
+        {/* FEATURE CARDS SECTION */}
+        <Grid item xs={12}>
+          <FeatureCardsSection />
+        </Grid>
+        {renderDialogs()}
+      </Grid>
+    </PageLayout>
   );
 };
 

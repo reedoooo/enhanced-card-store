@@ -66,7 +66,7 @@ export const StatisticsProvider = ({ children }) => {
         ? allCollections
             .flatMap((collection) => collection.cards || [])
             .sort((a, b) => b.price - a.price)
-            .slice(0, 5)
+            .slice(0, 7)
         : [],
     [allCollections]
   );

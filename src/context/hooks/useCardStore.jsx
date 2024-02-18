@@ -27,8 +27,10 @@ export const useCardStoreHook = () => {
   const handleApiResponse = useApiResponseHandler();
   // const [openConfigurator, setOpenConfigurator] = useState(false);
 
-  const [previousSearchData, setPreviousSearchData] =
-    useLocalStorage('previousSearchData');
+  const [previousSearchData, setPreviousSearchData] = useLocalStorage(
+    'previousSearchData',
+    []
+  );
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
   const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
   const [initialLoad, setInitialLoad] = useState(true); // New state to track the initial load

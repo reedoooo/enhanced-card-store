@@ -12,14 +12,7 @@ import {
 } from '../../context/UTILITIES_CONTEXT/FormContext/schemas';
 
 const AddCollectionForm = ({ showSnackbar, setLoading }) => {
-  // const { formStates, onSubmit } = useFormContext();
   const formId = 'addCollectionForm';
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors, isSubmitting },
-  // } = formStates[formId];
   const { onSubmit } = useFormContext();
   const { theme } = useMode();
   const {
@@ -31,7 +24,6 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
     defaultValues: getDefaultValuesFromSchema(formSchemas.addCollectionForm),
   });
 
-  // Define only the fields relevant to the login form
   const fields = [
     { name: 'name', label: 'Name', type: 'text' },
     { name: 'description', label: 'Description', type: 'text' },

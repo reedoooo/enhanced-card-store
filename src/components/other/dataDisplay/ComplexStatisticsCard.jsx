@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types';
-
-// @mui material components
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
 import Icon from '@mui/material/Icon';
-
-// Material Dashboard 2 React components
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX/index';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useMode } from '../../../context';
@@ -69,15 +65,9 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, sx }) {
         m={0}
         sx={{
           minHeight: '100%',
-          // my: 'auto',
-          // py: 'auto',
           display: 'flex',
           flexDirection: 'row',
           flexGrow: 1,
-          // bgcolor: th100%me.palette[color]?.light || theme.palette.info.light,
-          // color:
-          //   theme.palette[color]?.contrastText ||
-          //   theme.palette.info.contrastText,
         }}
       >
         <MDBox
@@ -105,7 +95,7 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, sx }) {
           </Icon>
         </MDBox>
         <MDBox>
-          <MDTypography variant="caption" color="text.secondary">
+          <MDTypography variant="caption" color="primary">
             {title}
           </MDTypography>
           <MDTypography variant="h5">{count}</MDTypography>

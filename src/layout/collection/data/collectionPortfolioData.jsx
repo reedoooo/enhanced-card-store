@@ -80,7 +80,7 @@ export default function prepareTableData(selectedCards) {
         Header: 'Action',
         accessor: 'action',
         Cell: ({ value }) => (
-          <GenericActionButtons card={value} context={'collection'} />
+          <GenericActionButtons card={value} context={'Collection'} />
         ),
       },
     ],
@@ -89,7 +89,7 @@ export default function prepareTableData(selectedCards) {
 
   const data = React.useMemo(
     () =>
-      selectedCards.map((card) => ({
+      selectedCards?.map((card) => ({
         ...card,
         tPrice: roundToNearestTenth(card.totalPrice),
         action: '', // Assuming you have some action value or logic to insert here

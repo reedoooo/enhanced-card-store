@@ -23,7 +23,7 @@ const AuthSwitch = ({ signupMode, toggleAuthMode, formLabel }) => {
             }}
           />
         }
-        label={formLabel}
+        // label={formLabel}
         style={{
           margin: theme.spacing(1), // Provide some spacing
           justifyContent: 'space-between', // Align items nicely

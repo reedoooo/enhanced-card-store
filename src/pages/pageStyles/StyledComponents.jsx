@@ -926,15 +926,15 @@ export const PortfolioBox = styled(Box)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 export const PortfolioBoxA = styled(Box)(({ theme }) => ({
-  flexDirection: 'column',
+  // flexDirection: 'column',
   flexGrow: 1,
-  height: 'auto',
-  width: '100%',
-  minHeight: '100vh', // Reducing height by 128px
+  // height: 'auto',
+  // width: '100%',
+  // minHeight: '100vh', // Reducing height by 128px
   boxShadow: theme.shadows[5],
-  backgroundColor: theme.palette.backgroundE.lightestBlue,
+  // backgroundColor: theme.palette.backgroundE.lightestBlue,
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2),
+    // padding: theme.spacing(2),
   },
 }));
 export const PortfolioBoxB = styled(Box)(({ theme }) => ({

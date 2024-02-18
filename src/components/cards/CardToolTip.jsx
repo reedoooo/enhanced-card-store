@@ -1,108 +1,173 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  StyledAttributeSpan,
+  // StyledAttributeSpan,
   StyledDescriptionSpan,
   StyledToolTipBox,
   StyledTooltip,
   StyledTooltipTitle,
 } from './styles/cardStyles';
 import { useMode } from '../../context';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 
-const formatKey = (key) => {
-  return key
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+const formatKey = (key) =>
+  key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+const StyledAttributeSpan = ({ theme, children }) => (
+  <Typography
+    variant="body2"
+    sx={{
+      display: 'block',
+      marginBottom: theme.spacing(1),
+      '& strong': {
+        fontWeight: 'bold',
+      },
+    }}
+  >
+    {children}
+  </Typography>
+);
+
+const createTooltip = (card, theme) => {
+  const cardAttributes = {
+    ...card.attributes,
+    ...(card.desc && { Description: card.desc }), // Add description as a key-value pair if it exists
+    ...(card.set_code && { Set: card.set_code }),
+    ...(card.rarity && { Rarity: card.rarity }),
+    ...(card.set_price && { Price: card.set_price.value }),
+    ...(card.id && { ID: card.id }),
+    ...(card.tcgplayer_price && { TCGPlayer: card.tcgplayer_price.value }),
+    ...(card.cardmarket_price && { Cardmarket: card.cardmarket_price.value }),
+  };
+
+  return (
+    <MDBox
+      theme={theme}
+      sx={{
+        boxShadow: theme.shadows[3],
+        borderRadius: theme.shape.borderRadius,
+        border: `1px solid ${theme.palette.divider}`,
+        w: 'auto',
+        h: '100%',
+        bgColor: theme.palette.backgroundC.lightest,
+        p: theme.spacing(2),
+        color: theme.palette.text.primary,
+        alignContent: 'flex-start',
+
+        '&::before': {
+          content: '""',
+          display: 'block',
+          paddingTop: '100%',
+        },
+        '& > img': {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          w: '100%',
+          h: '100%',
+          objectFit: 'cover',
+        },
+      }}
+    >
+      {Object.entries(cardAttributes).map(([key, value]) => (
+        <StyledAttributeSpan theme={theme} key={key}>
+          <strong>{formatKey(key)}:</strong> {value}
+        </StyledAttributeSpan>
+      ))}
+    </MDBox>
+  );
 };
 
-const SingleCardToolTip = ({ card }) => {
-  // if (Array.isArray(card)) {
-  //   return card.map((card) => <CardToolTip card={card} />);
-  // }
+const CardToolTip = ({ card }) => {
   const { theme } = useMode();
-  const {
-    name,
-    desc,
-    attributes,
-    set_name,
-    set_code,
-    set_rarity,
-    set_rarity_code,
-    set_price,
-    id,
-    // image_url,
-    // image_url_small,
-    // image_url_cropped,
-    cardmarket_price,
-    tcgplayer_price,
-    cardkingdom_price,
-    cardhoarder_price,
-  } = card;
-
-  // Conditional handling for prices
-  const price = set_price?.value || 'N/A';
-  const cmPrice = cardmarket_price?.value || 'N/A';
-  const tcgPrice = tcgplayer_price?.value || 'N/A';
-  const ckPrice = cardkingdom_price?.value || 'N/A';
-  const chPrice = cardhoarder_price?.value || 'N/A';
-
-  // Ensure safe rendering for URLs
-  // const imageUrl = image_url || '';
-  // const imageUrlSmall = image_url_small || '';
-  // const imageUrlCropped = image_url_cropped || '';
   return (
-    <StyledTooltip
-      // title={
-      //   <>
-      //     <img
-      //       src={image_url}
-      //       alt={`${set_name} art`}
-      //       style={{ width: '100px' }}
-      //     />
-      //     <p>{`Set: ${set_name} (${set_code})`}</p>
-      //     <p>{`Rarity: ${set_rarity} (${set_rarity_code})`}</p>
-      //     <p>{`Price: ${set_price?.value || 'N/A'}`}</p>
-      //     <p>{`Cardmarket Price: ${cardmarket_price?.value || 'N/A'}`}</p>
-      //     <p>{`TCGPlayer Price: ${tcgplayer_price?.value || 'N/A'}`}</p>
-      //     <p>{`Card Kingdom Price: ${cardkingdom_price?.value || 'N/A'}`}</p>
-      //     <p>{`Cardhoarder Price: ${cardhoarder_price?.value || 'N/A'}`}</p>
-      //   </>
-      // }
-      arrow
-      title="Card"
-      placement="right-end"
-    >
+    <StyledTooltip arrow title="Card" placement="right-end">
       <StyledToolTipBox theme={theme}>
-        {name && <StyledTooltipTitle theme={theme}>{name}</StyledTooltipTitle>}
-        {attributes &&
-          Object.entries(attributes).map(([key, value]) => (
-            <StyledAttributeSpan theme={theme} key={key}>
-              <strong>{formatKey(key)}:</strong> {value}
-            </StyledAttributeSpan>
-          ))}
-        {desc && (
-          <StyledDescriptionSpan theme={theme}>
-            <strong>Description:</strong> {desc}
-          </StyledDescriptionSpan>
-        )}
+        {createTooltip(card, theme)}
       </StyledToolTipBox>
     </StyledTooltip>
   );
 };
-const CardToolTip = ({ card }) => {
-  if (Array.isArray(card)) {
-    return (
-      <div>
-        {card.map((singleCard, index) => (
-          <SingleCardToolTip key={index} card={singleCard} />
-        ))}
-      </div>
-    );
-  }
-  return <SingleCardToolTip card={card} />;
-};
+
+// const SingleCardToolTip = ({ card }) => {
+//   // if (Array.isArray(card)) {
+//   //   return card.map((card) => <CardToolTip card={card} />);
+//   // }
+//   const { theme } = useMode();
+//   const {
+//     name,
+//     desc,
+//     attributes,
+//     set_code,
+//     rarity,
+//     set_price,
+//     id,
+//     tcgplayer_price,
+//   } = card;
+
+//   const price = set_price?.value || 'N/A';
+//   const tcgPrice = tcgplayer_price?.value || 'N/A';
+//   return (
+//     <StyledTooltip arrow title="Card" placement="right-end">
+//       <StyledToolTipBox theme={theme}>
+//         <MDBox
+//           theme={theme}
+//           sx={{
+//             boxShadow: theme.shadows[3],
+//             borderRadius: theme.shape.borderRadius,
+//             border: `1px solid ${theme.palette.divider}`,
+//             w: 'auto',
+//             h: '100%',
+//             bgColor: theme.palette.backgroundC.lightest,
+//             p: theme.spacing(2),
+//             color: theme.palette.text.primary,
+//             alignContent: 'flex-start',
+//             alignItems: 'flex-start',
+//             maxWidth: 220,
+//             position: 'relative',
+//             '&::before': {
+//               content: '""',
+//               display: 'block',
+//               paddingTop: '100%',
+//             },
+//             '& > img': {
+//               position: 'absolute',
+//               top: 0,
+//               left: 0,
+//               w: '100%',
+//               h: '100%',
+//               objectFit: 'cover',
+//             },
+//           }}
+//         >
+//           {attributes &&
+//             Object.entries(attributes).map(([key, value]) => (
+//               <StyledAttributeSpan theme={theme} key={key}>
+//                 <strong>{formatKey(key)}:</strong> {value}
+//               </StyledAttributeSpan>
+//             ))}
+//           {desc && (
+//             <StyledDescriptionSpan theme={theme}>
+//               <strong>Description:</strong> {desc}
+//             </StyledDescriptionSpan>
+//           )}
+//         </MDBox>
+//       </StyledToolTipBox>
+//     </StyledTooltip>
+//   );
+// };
+// const CardToolTip = ({ card }) => {
+//   if (Array.isArray(card)) {
+//     return (
+//       <div>
+//         {card.map((singleCard, index) => (
+//           <SingleCardToolTip key={index} card={singleCard} />
+//         ))}
+//       </div>
+//     );
+//   }
+//   return <SingleCardToolTip card={card} />;
+// };
 CardToolTip.propTypes = {
   card: PropTypes.oneOfType([
     PropTypes.arrayOf(

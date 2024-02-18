@@ -10,17 +10,6 @@ import {
   Overlay,
 } from '../../../context/hooks/style-hooks/usePortfolioStyles';
 import { useOverlay } from '../../../context/hooks/useOverlay';
-
-const anchorOrigin = {
-  vertical: 'top',
-  horizontal: 'right',
-};
-
-const transformOrigin = {
-  vertical: 'top',
-  horizontal: 'left',
-};
-
 const CardMediaSection = forwardRef(
   (
     {
@@ -58,19 +47,7 @@ const CardMediaSection = forwardRef(
         setAnchorEl(null);
       }
     }, [isHovered, ref]);
-
     return (
-      // <Backdrop
-      //   sx={{
-      //     color: '#fff',
-      //     zIndex: (theme) => theme.zIndex.drawer + 1,
-      //     backgroundColor: backdropColor, // Set backdrop color
-      //   }}
-      //   open={isOverlayVisible}
-      //   onClick={() => handleOverlayChange(null)}
-      // >
-      // </Backdrop>
-
       <MediaContainer
         ref={ref}
         {...(isRequired && {

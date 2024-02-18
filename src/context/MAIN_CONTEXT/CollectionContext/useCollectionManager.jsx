@@ -1,38 +1,176 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import useFetchWrapper from '../../hooks/useFetchWrapper';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import useLogger from '../../hooks/useLogger';
 import useApiResponseHandler from '../../hooks/useApiResponseHandler';
 import { DEFAULT_COLLECTION } from '../../constants';
-import { calculateCollectionValue } from './collectionUtility';
+// import { calculateCollectionValue } from './collectionUtility';
+import { useLoading } from '../../hooks/useLoading';
+import useFetchWrapper from '../../hooks/useFetchWrapper';
+import { shouldFetchCollections } from './collectionUtility';
 
 const useCollectionManager = (isLoggedIn, userId) => {
+  const loadingID = 'fetchCollections'; // For fetchWrapper
   const createApiUrl = useCallback(
     (path) =>
       `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections${path}`,
     [userId]
   );
-  const fetchWrapper = useFetchWrapper();
+  const { fetchWrapper, responseCache } = useFetchWrapper();
   const handleApiResponse = useApiResponseHandler();
   const logger = useLogger('useCollectionManager');
+  const [error, setError] = useState(null);
+  const { startLoading, stopLoading, isLoading, isAnyLoading } = useLoading();
+  const prevUserIdRef = useRef(userId);
+
   const [collectionData, setCollectionData] = useState({});
   const [allCollections, setAllCollections] = useState(
-    [DEFAULT_COLLECTION] || []
+    collectionData?.data || []
   );
-  const [selectedCollection, setSelectedCollection] =
-    useState(DEFAULT_COLLECTION);
+  const [selectedCollection, setSelectedCollection] = useState(
+    collectionData?.data?.[0] || {}
+  );
   const [selectedCards, setSelectedCards] = useState(
     selectedCollection?.cards?.slice(0, 30) || []
   );
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
-
-  // Function to update the selected collection and its cards
   const updateSelectedCollection = useCallback((newCollection) => {
     setSelectedCollection(newCollection);
     // setSelectedCards(newCollection?.cards?.slice(0, 30) || []);
   }, []);
-  // const updateCollectionDataCookie = (data) => {
-  //   setCookie('collectionData', data, { path: '/' });
-  // };
+  // Function to update state based on fetched data
+  const updateStates = useCallback((data) => {
+    setCollectionData(data);
+    setAllCollections(data?.data || []);
+    setSelectedCollection(data?.data?.[0] || {});
+  }, []);
+  // Watch for changes in responseCache, specifically for the fetchCollections index
+  useEffect(() => {
+    const cachedData = responseCache[loadingID];
+    if (cachedData) {
+      updateStates(cachedData);
+    }
+  }, [responseCache, loadingID, updateStates]);
+  /**
+   * Retrieves all collections for a specific user.
+   * @param {string} userId - The ID of the user whose collections are to be fetched.
+   * @returns {Promise<Object>} The response from the server containing the collections.
+   * FUNCTION LOCATIONS: -->
+   * [ ]   @function Main - src/Main.jsx
+   */
+  // const getAllCollectionsForUser = useCallback(async () => {
+  //   const loadingID = 'fetchCollections'; // Define a unique loading ID
+  //   if (!userId || isLoading(loadingID) || hasFetchedCollections) return;
+  //   try {
+  //     const { data, error } = await fetchWrapper(
+  //       createApiUrl('/allCollections'),
+  //       'GET',
+  //       null,
+  //       loadingID
+  //     );
+  //     if (error) {
+  //       throw new Error(error);
+  //     }
+  //     const collectionData = JSON.parse(data);
+  //     console.log('GET ALL COLLECTIONS', collectionData);
+  //     setCollectionData({ data: collectionData });
+  //     setAllCollections(collectionData?.data || []);
+  //     setSelectedCollection(collectionData?.data?.[0] || DEFAULT_COLLECTION);
+  //     setHasFetchedCollections(true);
+  //   } catch (error) {
+  //     setError(error.message || 'Failed to fetch collections');
+  //     logger.logEvent(
+  //       'Error fetching collections getAllCollectionsForUser',
+  //       error.message
+  //     );
+  //   }
+  // }, [
+  //   userId,
+  //   hasFetchedCollections,
+  //   createApiUrl,
+  //   fetchWrapper,
+  //   logger,
+  //   isLoading,
+  //   setError,
+  //   setCollectionData,
+  //   setAllCollections,
+  //   setSelectedCollection,
+  //   setHasFetchedCollections,
+  // ]);
+  // useEffect(() => {
+  //   // if (isLoggedIn && userId && !hasFetchedCollections) {
+  //   if (userId && !hasFetchedCollections) {
+  //     getAllCollectionsForUser();
+  //   }
+  // }, [selectedCollection, setSelectedCollection]);
+  const getAllCollectionsForUser = useCallback(async () => {
+    const loadingID = 'fetchCollections'; // Define a unique loading ID
+    if (!userId || isLoading(loadingID) || hasFetchedCollections) {
+      return;
+    }
+    startLoading(loadingID); // Assuming startLoading is available via useLoading or similar context
+
+    try {
+      // fetchWrapper should return the data directly or throw an error if unsuccessful
+      const responseData = await fetchWrapper(
+        createApiUrl('/allCollections'),
+        'GET',
+        null,
+        loadingID
+      );
+      if (
+        (responseData && responseData?.status === 200) ||
+        responseData?.status === 201
+      ) {
+        console.log('SUCCESS: fetching collections');
+        const cachedData = responseCache[loadingID];
+        if (cachedData) {
+          updateStates(cachedData);
+        }
+      }
+      if (responseData && responseData?.status !== 200) {
+        console.error('ERROR: fetching collections');
+        setError(responseData?.data?.message || 'Failed to fetch collections');
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error.message || 'Failed to fetch collections');
+      logger.logEvent(
+        'Error fetching collections getAllCollectionsForUser',
+        error.message
+      );
+    } finally {
+      stopLoading(loadingID); // Ensure loading is stopped regardless of success or failure
+      setHasFetchedCollections(true); // Prevent re-fetching by updating state
+    }
+  }, [
+    userId,
+    hasFetchedCollections,
+    createApiUrl,
+    fetchWrapper,
+    logger,
+    isLoading,
+    setError,
+    setCollectionData,
+    setAllCollections,
+    setSelectedCollection,
+    setHasFetchedCollections,
+    startLoading, // Include startLoading and stopLoading if they are not globally available
+    stopLoading,
+  ]);
+  useEffect(() => {
+    const storedResponse = responseCache['fetchCollections'];
+    console.log('Stored response for collections:', storedResponse);
+    if (storedResponse) {
+      // Assuming you have similar functions or state setters as in your provided structure
+      setCollectionData(storedResponse);
+      setAllCollections(storedResponse.data);
+      setSelectedCollection(storedResponse.data[0] || DEFAULT_COLLECTION);
+    }
+  }, [responseCache]);
+
+  useEffect(() => {
+    getAllCollectionsForUser();
+  }, [selectedCards]); // Dependency array as needed
+
   /**
    * Creates a new collection for a specific user.
    * @param {string} userId - The ID of the user for whom the collection is being created.
@@ -45,18 +183,22 @@ const useCollectionManager = (isLoggedIn, userId) => {
    * [ ]   @function CollectionForm - src/components/forms/CollectionForm.jsx
    */
   const createNewCollection = async (coData) => {
-    logger.logEvent('[createNewCollection] start', coData);
-
+    const loadingID = 'createNewCollection';
+    if (!userId || isLoading(loadingID)) return;
     try {
-      const response = await fetchWrapper(
+      const { data, error } = await fetchWrapper(
         createApiUrl('/create'),
         'POST',
-        coData
+        coData,
+        loadingID
       );
-      const data = handleApiResponse(response, 'createNewCollection');
-      updateSelectedCollection(data);
-      return data;
+      if (error) {
+        throw new Error(error);
+      }
+      updateSelectedCollection(data.data); // Assuming updateSelectedCollection updates context or state
+      return data.data;
     } catch (error) {
+      setError(error.message || 'Failed to create new collection');
       logger.logEvent(
         'Error creating new collection',
         'createNewCollection',
@@ -65,63 +207,6 @@ const useCollectionManager = (isLoggedIn, userId) => {
       throw error;
     }
   };
-  /**
-   * Retrieves all collections for a specific user.
-   * @param {string} userId - The ID of the user whose collections are to be fetched.
-   * @returns {Promise<Object>} The response from the server containing the collections.
-   * FUNCTION LOCATIONS: -->
-   * [ ]   @function Main - src/Main.jsx
-   */
-  const getAllCollectionsForUser = useCallback(async () => {
-    if (!userId || hasFetchedCollections) return;
-
-    try {
-      const response = await fetchWrapper(
-        createApiUrl('/allCollections'),
-        'GET'
-      );
-      const data = handleApiResponse(response, 'getAllCollectionsForUser');
-      // console.log('getAllCollectionsForUser', data);
-      setCollectionData({ data: data });
-      setAllCollections(data?.data);
-      setSelectedCollection(data?.data?.[0]);
-      setHasFetchedCollections(true);
-    } catch (error) {
-      logger.logEvent(
-        'Error fetching collections',
-        'getAllCollectionsForUser',
-        error.message
-      );
-    }
-  }, [
-    createApiUrl,
-    fetchWrapper,
-    handleApiResponse,
-    logger,
-    allCollections,
-    hasFetchedCollections,
-    userId,
-  ]);
-  // Call getAllCollectionsForUser on component mount
-  useEffect(() => {
-    if (userId && !hasFetchedCollections) {
-      getAllCollectionsForUser();
-    }
-  }, [userId, hasFetchedCollections, getAllCollectionsForUser]);
-
-  // useEffect(() => {
-  //   if (userId && !hasFetchedCollections) {
-  //     // console.log('getAllCollectionsForUser');
-  //     getAllCollectionsForUser();
-  //   }
-  // }, [userId, getAllCollectionsForUser, hasFetchedCollections]);
-  useEffect(() => {
-    if (hasFetchedCollections) {
-      // console.log('setAllCollections', collectionData?.data?.allCollections);
-      setAllCollections(collectionData?.data);
-      // updateSelectedCollection(collectionData?.data?.[0]);
-    }
-  }, [hasFetchedCollections, collectionData]);
 
   /**
    * Updates and synchronizes a specific collection for a user.
@@ -134,49 +219,56 @@ const useCollectionManager = (isLoggedIn, userId) => {
    * @returns {Promise<Object>} The response from the server.
    */
   const updateAndSyncCollection = async (collectionId, updatedData) => {
-    logger.logEvent('updateAndSyncCollection start', {
-      collectionId,
-      updatedData,
-    });
+    const loadingID = 'updateAndSyncCollection';
+    if (!userId || isLoading(loadingID)) return;
     try {
-      const response = await fetchWrapper(
+      const { data, error } = await fetchWrapper(
         createApiUrl(`/${collectionId}`),
         'PUT',
-        updatedData
+        updatedData,
+        loadingID
       );
-
-      const data = handleApiResponse(response, 'updateAndSyncCollection');
+      if (error) {
+        throw new Error(error);
+      }
       setAllCollections((prev) =>
         prev.map((collection) =>
-          collection._id === collectionId ? data : collection
+          collection._id === collectionId ? data.data : collection
         )
       );
-      updateSelectedCollection(data);
-      return data;
+      updateSelectedCollection(data.data); // Assuming updateSelectedCollection updates context or state
+      return data.data;
     } catch (error) {
+      setError(error.message || 'Failed to update collection');
       logger.logEvent('updateAndSyncCollection error', error);
       throw error;
     }
   };
+
   /**
    * Deletes a specific collection for a user.
    * @param {string} collectionId - The ID of the collection to be deleted.
    * @returns {Promise<Object>} The response from the server.
    */
   const deleteCollection = async (collectionId) => {
+    const loadingID = 'deleteCollection';
+    if (!userId || isLoading(loadingID)) return;
+    setError(null);
     try {
       const response = await fetchWrapper(
         createApiUrl(`/${collectionId}`),
         'DELETE',
-        { collectionId }
+        { collectionId },
+        loadingID
       );
-      const data = handleApiResponse(response, 'addCardsToCollection');
+      // const data = handleApiResponse(response, 'addCardsToCollection');
 
       setAllCollections((prev) =>
         prev.filter((collection) => collection?._id !== collectionId)
       );
       return response;
     } catch (error) {
+      setError(error);
       logger.logEvent('deleteCollection error', error);
       throw error;
     }
@@ -189,6 +281,9 @@ const useCollectionManager = (isLoggedIn, userId) => {
    * @returns {Promise<Object>} The response from the server.
    */
   const addCardsToCollection = async (cards, collection) => {
+    const loadingID = 'addCardsToCollection';
+    if (!userId || isLoading(loadingID)) return;
+    setError(null);
     const newCards = [];
     const updatedCards = [];
 
@@ -210,26 +305,28 @@ const useCollectionManager = (isLoggedIn, userId) => {
         newCards,
         collection,
       });
-      const response = await fetchWrapper(
+      const data = await fetchWrapper(
         createApiUrl(`/${collection?._id}/add`),
         'POST',
-        { cards: newCards }
+        { cards: newCards },
+        loadingID
       );
-      const data = handleApiResponse(response, 'addCardsToCollection');
-      updateSelectedCollection(data);
+      // const data = handleApiResponse(response, 'addCardsToCollection');
+      updateSelectedCollection(data.data);
     }
     if (updatedCards.length > 0) {
       logger.logEvent('addCardsToCollection UPDATE', {
         updatedCards,
         collection,
       });
-      const response = await fetchWrapper(
+      const data = await fetchWrapper(
         createApiUrl(`/${collection._id}/update`),
         'PUT',
-        { cards: updatedCards, type: 'increment' }
+        { cards: updatedCards, type: 'increment' },
+        loadingID
       );
-      const data = handleApiResponse(response, 'addCardsToCollection');
-      updateSelectedCollection(data);
+      // const data = handleApiResponse(response, 'addCardsToCollection');
+      updateSelectedCollection(data.data);
     }
   };
   /**
@@ -240,6 +337,9 @@ const useCollectionManager = (isLoggedIn, userId) => {
    * @returns {Promise<Object>} The response from the server.
    */
   const removeCardsFromCollection = async (cards, cardIds, collection) => {
+    const loadingID = 'removeCardsFromCollection';
+    if (!userId || isLoading(loadingID)) return;
+    setError(null);
     const collectionId = collection._id;
     const cardsToRemove = [];
     const cardsToDecrement = [];
@@ -247,12 +347,9 @@ const useCollectionManager = (isLoggedIn, userId) => {
       const existingCard = collection?.cards?.find((c) => c.id === card.id);
       if (existingCard) {
         if (existingCard.quantity > 1) {
-          // Decrement card quantity
-          // existingCard?.quantity -= 1;
           existingCard.tag = 'decremented';
           cardsToDecrement.push(existingCard);
         } else {
-          // Quantity is 1, remove the card
           card.tag = 'removed';
           cardsToRemove.push(card);
         }
@@ -267,7 +364,8 @@ const useCollectionManager = (isLoggedIn, userId) => {
         const response = await fetchWrapper(
           createApiUrl(`/${collectionId}/remove`),
           'DELETE',
-          { cards: cardsToRemove }
+          { cards: cardsToRemove },
+          loadingID
         );
         const data = handleApiResponse(response, 'removeCardsFromCollection');
         updateSelectedCollection(data);
@@ -281,12 +379,14 @@ const useCollectionManager = (isLoggedIn, userId) => {
         const response = await fetchWrapper(
           createApiUrl(`/${collectionId}/update`),
           'PUT',
-          { cards: cardsToDecrement, type: 'decrement' }
+          { cards: cardsToDecrement, type: 'decrement' },
+          loadingID
         );
         const data = handleApiResponse(response, 'removeCardsFromCollection');
         updateSelectedCollection(data);
       }
     } catch (error) {
+      setError(error);
       logger.logEvent('removeCardsFromCollection error', error);
       throw error;
     }
@@ -327,9 +427,19 @@ const useCollectionManager = (isLoggedIn, userId) => {
     const data = handleApiResponse(response, 'checkAndUpdateCardPrices');
     updateSelectedCollection(data);
   });
+  useEffect(() => {
+    if (shouldFetchCollections(prevUserIdRef.current, userId)) {
+      console.log('getAllCollectionsForUser', userId);
+      getAllCollectionsForUser();
+    }
+    prevUserIdRef.current = userId;
+  }, [userId, getAllCollectionsForUser]); // fetchAndUpdateDecks is now stable and won't change unless necessary
 
   return {
     // STATE
+    error,
+    isLoading,
+    // MAIN STATE
     collectionData,
     allCollections,
     selectedCollection,
@@ -346,6 +456,7 @@ const useCollectionManager = (isLoggedIn, userId) => {
     latestPrice: selectedCollection?.latestPrice,
     cards: selectedCollection?.cards,
     newNivoChartData: selectedCollection?.newNivoChartData,
+    totalPrice: selectedCollection?.totalPrice,
     // STATE SETTERS
     setCollectionData,
     setAllCollections,
@@ -370,8 +481,59 @@ const useCollectionManager = (isLoggedIn, userId) => {
     updateChartDataInCollection,
 
     // OTHER
-    getTotalPrice: () => calculateCollectionValue(selectedCollection),
+    // getTotalPrice: () => calculateCollectionValue(selectedCollection),
   };
 };
 
 export default useCollectionManager;
+
+// const getAllCollectionsForUser = useCallback(async () => {
+//   if (!userId || hasFetchedCollections) return;
+
+//   try {
+//     const response = await fetchWrapper(
+//       createApiUrl('/allCollections'),
+//       'GET'
+//     );
+//     const data = handleApiResponse(response, 'getAllCollectionsForUser');
+//     // console.log('getAllCollectionsForUser', data);
+//     setCollectionData({ data: data });
+//     setAllCollections(data?.data);
+//     setSelectedCollection(data?.data?.[0]);
+//     setHasFetchedCollections(true);
+//   } catch (error) {
+//     logger.logEvent(
+//       'Error fetching collections',
+//       'getAllCollectionsForUser',
+//       error.message
+//     );
+//   }
+// }, [
+//   createApiUrl,
+//   fetchWrapper,
+//   handleApiResponse,
+//   logger,
+//   allCollections,
+//   hasFetchedCollections,
+//   userId,
+// ]);
+// Call getAllCollectionsForUser on component mount
+// useEffect(() => {
+//   if (userId && !hasFetchedCollections) {
+//     getAllCollectionsForUser();
+//   }
+// }, [userId, hasFetchedCollections, getAllCollectionsForUser]);
+
+// useEffect(() => {
+//   if (userId && !hasFetchedCollections) {
+//     // console.log('getAllCollectionsForUser');
+//     getAllCollectionsForUser();
+//   }
+// }, [userId, getAllCollectionsForUser, hasFetchedCollections]);
+// useEffect(() => {
+//   if (hasFetchedCollections) {
+//     // console.log('setAllCollections', collectionData?.data?.allCollections);
+//     setAllCollections(collectionData?.data);
+//     // updateSelectedCollection(collectionData?.data?.[0]);
+//   }
+// }, [hasFetchedCollections, collectionData]);
