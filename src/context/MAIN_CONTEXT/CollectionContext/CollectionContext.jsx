@@ -11,6 +11,8 @@ import { calculateCollectionValue } from './collectionUtility';
 import { useAuthContext } from '../AuthContext/authContext';
 import useCollectionManager from './useCollectionManager';
 import { defaultContextValue } from '../../constants';
+import useSelectedCollection from './useSelectedCollection';
+import { json } from 'react-router-dom';
 
 export const CollectionContext = createContext(
   defaultContextValue.COLLECTION_CONTEXT
@@ -19,114 +21,48 @@ export const CollectionContext = createContext(
 export const CollectionProvider = ({ children }) => {
   const { isLoggedIn, authUser, userId } = useAuthContext();
   const {
-    collectionData,
-    allCollections,
     selectedCollection,
-    hasFetchedCollections,
-    selectedCards,
-    collectionStatistics,
-    chartData,
-    totalPrice,
-    totalQuantity,
-    collectionPriceHistory,
-    allXYValues,
-    lastSavedPrice,
-    latestPrice,
-    newNivoChartData,
-    error,
-    isLoading,
-
-    setCollectionData,
+    allCollections,
+    showCollections,
+    selectedCollectionId,
+  } = useSelectedCollection();
+  const {
+    fetchCollections,
     createNewCollection,
-    getAllCollectionsForUser,
-    updateAndSyncCollection,
     deleteCollection,
+    updateCollection,
     addCardsToCollection,
     removeCardsFromCollection,
-    // updateCardsInCollection,
-    updateChartDataInCollection,
-    updateSelectedCollection,
-    setAllCollections,
-    setSelectedCollection,
-    setSelectedCards,
-    getTotalPrice,
-    checkAndUpdateCardPrices,
-  } = useCollectionManager(isLoggedIn, userId);
+    selectedCollectionError,
+    error,
+    hasFetchedCollections,
+    handleError,
+    setSelectedCollectionError,
+  } = useCollectionManager();
+
+  useEffect(() => {
+    // Check if collections need to be fetched for the logged-in user
+    if (!hasFetchedCollections && isLoggedIn && userId) {
+      fetchCollections();
+    }
+  }, []);
 
   const contextValue = useMemo(
     () => ({
-      // ...defaultContextValue.COLLECTION_CONTEXT,
-      // MAIN STATE
-      collectionData,
+      ...selectedCollection,
+      selectedCollection: selectedCollection,
+      selectedCollectionId,
       allCollections,
-      selectedCollection,
-      selectedCards,
-      hasFetchedCollections,
-      // SECONDARY STATE (derived from main state selectedCollection)
-      collectionStatistics,
-      chartData,
-      totalQuantity,
-      collectionPriceHistory,
-      allXYValues,
-      lastSavedPrice,
-      latestPrice,
-      newNivoChartData,
+      showCollections,
       error,
-      isLoading,
-      // STATE SETTERS
-      setCollectionData,
-      setAllCollections,
-      setSelectedCollection,
-      setSelectedCards,
-
-      // COLLECTION ACTIONS
-      createUserCollection: createNewCollection,
-      getAllCollectionsForUser,
-      updateAndSyncCollection,
-      deleteCollection,
-      updateSelectedCollection,
-
-      // CARD ACTIONS
-      addOneToCollection: (card, collection) =>
-        addCardsToCollection([card], collection),
-      removeOneFromCollection: (card, cardId, collection) =>
-        removeCardsFromCollection([card], [cardId], collection),
-      // updateOneInCollection: (collectionId, card, incrementType) => {
-      //   updateCardsInCollection(collectionId, [card], incrementType);
-      // },
-      updateChartDataInCollection,
-
-      // CRON JOB ACTIONS
-      checkAndUpdateCardPrices,
-
-      // OTHER ACTIONS
-      getTotalPrice,
-      // getTotalPrice: () => calculateCollectionValue(selectedCollection),
-      // toggleCollectionVisibility: () => {},
+      selectedCollectionError,
     }),
-    [
-      allCollections,
-      selectedCollection,
-      selectedCards,
-      newNivoChartData,
-      setAllCollections,
-      setSelectedCollection,
-      setSelectedCards,
-      createNewCollection,
-      getAllCollectionsForUser,
-      updateAndSyncCollection,
-      deleteCollection,
-      addCardsToCollection,
-      removeCardsFromCollection,
-      // updateCardsInCollection,
-      updateChartDataInCollection,
-      calculateCollectionValue,
-    ]
+    [selectedCollection, allCollections, showCollections, error]
   );
 
-  // useEffect(() => {
-  //   console.log('COLLECTION CONTEXT:', contextValue);
-  // }, [contextValue]);
+  useEffect(() => {
+    console.log('COLLECTION CONTEXT:', contextValue);
+  }, [contextValue]);
 
   return (
     <CollectionContext.Provider value={contextValue}>

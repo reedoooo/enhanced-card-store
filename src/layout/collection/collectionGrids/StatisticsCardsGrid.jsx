@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import ComplexStatisticsCard from '../../../components/other/dataDisplay/ComplexStatisticsCard';
+import ComplexStatisticsCard from '../sub-components/ComplexStatisticsCard';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
 const cardData = [
   {
     icon: 'attach_money',
     title: 'Cards Added',
     countFunc: (collection) =>
-      collection.cards.reduce((acc, card) => acc + card.quantity, 0),
+      collection?.cards?.reduce((acc, card) => acc + card.quantity, 0),
     percentage: { color: 'success', amount: '+55%', label: 'than last week' },
   },
   {
@@ -22,10 +23,10 @@ const cardData = [
     icon: 'store',
     title: 'Most Valuable Card',
     countFunc: (collection) => {
-      const mostValuableCard = collection.cards.reduce((acc, card) =>
+      const mostValuableCard = collection?.cards?.reduce((acc, card) =>
         acc.price > card.price ? acc : card
       );
-      return `${mostValuableCard.name} - $${mostValuableCard.price}`;
+      return `${mostValuableCard?.name} - $${mostValuableCard?.price}`;
     },
     percentage: { color: 'success', amount: '+1%', label: 'than yesterday' },
   },
@@ -45,19 +46,19 @@ const gridItemStyle = {
   height: '100%',
 };
 
-const StatisticsCardGrid = ({ selectedCollection }) => {
-  // ERROR HANDLING
-  if (!selectedCollection) return <LoadingIndicator />;
+const StatisticsCardGrid = () => {
+  const { allCollections, selectedCollection } = useSelectedCollection();
+
   return (
     <MDBox>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
-        {cardData.map((data, index) => (
+        {cardData?.map((data, index) => (
           <Grid item xs={3} sm={6} md={6} lg={6} key={index} sx={gridItemStyle}>
             <ComplexStatisticsCard
-              icon={data.icon}
-              title={data.title}
-              count={data.countFunc(selectedCollection)}
-              percentage={data.percentage}
+              icon={data?.icon}
+              title={data?.title}
+              count={data?.countFunc(selectedCollection)}
+              percentage={data?.percentage}
               sx={{ height: '100%', flexGrow: 1 }}
             />
           </Grid>

@@ -38,6 +38,7 @@ import { format } from 'date-fns';
 import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import styled from 'styled-components';
 import MDButton from '../layout/REUSABLE_COMPONENTS/MDBUTTON';
+import { useLoading } from '../context/hooks/useLoading';
 
 // Adjust the padding, margin, and other styles as needed
 const ChartArea = styled(Box)(({ theme }) => ({
@@ -78,13 +79,9 @@ const CardChart = ({ cardData = initialCardData }) => {
     width: 0,
     height: 0,
   });
-  const { setLoading, loadingStatus, returnDisplay } = usePageContext();
+  const { returnDisplay } = usePageContext();
+  const { isLoading } = useLoading();
   const safeCardData = cardData || { dailyPriceHistory: [] };
-  if (!cardData || !cardData?.dailyPriceHistory) {
-    console.log('Card data not found', cardData);
-    // setLoading('isLoading', true);
-  }
-  const dailyPriceHistory = safeCardData?.dailyPriceHistory;
   useEffect(() => {
     if (cardData?.imageUrl) {
       console.log('Setting image url', cardData?.imageUrl);
@@ -114,20 +111,11 @@ const CardChart = ({ cardData = initialCardData }) => {
   );
   const renderLoadingAnimation = () =>
     isLgUp && <LoadingCardAnimation selected={true} />;
-  // const renderChart = () => (
-  //   <ErrorBoundary>
-  //     <CardLinearChart
-  //       nivoReadyData={nivoReadyData}
-  //       dimensions={chartDimensions}
-  //     />
-  //   </ErrorBoundary>
-  // );
-  // Ensure this effect doesn't set loading when not necessary
   useEffect(() => {
-    if (nivoReadyData && nivoReadyData.length > 0 && loadingStatus.isLoading) {
-      setLoading('isLoading', false);
+    if (isLoading('fetchCollections')) {
+      console.log('Fetching collections');
     }
-  }, [nivoReadyData, setLoading, loadingStatus.isLoading]);
+  }, [isLoading('fetchCollections')]);
   // Add responsive chart dimension handling
   useEffect(() => {
     // Example of setting dynamic chart dimensions (could be more complex based on container size)
@@ -230,7 +218,7 @@ const CardChart = ({ cardData = initialCardData }) => {
 
           <SquareChartContainer>
             <ChartArea theme={theme}>
-              {loadingStatus?.isLoading ? (
+              {isLoading('fetchCollections') ? (
                 returnDisplay()
               ) : (
                 <ErrorBoundary>

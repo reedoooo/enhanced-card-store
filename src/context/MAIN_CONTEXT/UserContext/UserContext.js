@@ -17,118 +17,73 @@ import useLogger from '../../hooks/useLogger';
 export const UserContext = createContext(defaultContextValue.USER_CONTEXT);
 
 export const UserProvider = ({ children }) => {
+  const { userId, isLoggedIn } = useAuthContext(); // Assuming useAuthContext now provides userId directly
+
   const [user, setUser] = useLocalStorage('user', {});
   const logger = useLogger('UserProvider');
-  const { isLoading, startLoading, stopLoading } = useLoading();
-  const { fetchWrapper, responseCache } = useFetchWrapper();
-  const { isLoggedIn, userId } = useAuthContext(); // Removed authUser as it's unused
+  const { isLoading } = useLoading();
+  const { fetchWrapper, status } = useFetchWrapper();
+  const [hasFetchedUser, setHasFetchedUser] = useState(false);
   const [error, setError] = useState(null);
-
   const createApiUrl = useCallback(
     (path) => `${process.env.REACT_APP_SERVER}/api/users/${userId}/${path}`,
     [userId]
   );
 
   const fetchUserData = useCallback(async () => {
-    const loadingID = 'fetchUserData';
-    if (!isLoggedIn || !userId || isLoading(loadingID)) return;
-    startLoading(loadingID);
-
+    if (!userId || !isLoggedIn || status === 'loading') return;
     try {
       const responseData = await fetchWrapper(
-        createApiUrl('userData'),
+        `${process.env.REACT_APP_SERVER}/api/users/${userId}/userData`,
         'GET',
         null,
-        loadingID
+        'getUserData'
       );
-
-      if (
-        (responseData && responseData?.status === 200) ||
-        responseData?.status === 201
-      ) {
-        console.log('SUCCESS: fetching user data');
-        const cachedData = responseCache[loadingID];
-        if (cachedData) {
-          setUser(cachedData); // Assuming setUser updates local storage or state with user data
-        }
-      }
-      if (responseData && responseData?.status !== 200) {
-        console.error('ERROR: fetching user data');
-        setError(responseData?.data?.message || 'Failed to fetch user data');
-      }
+      setUser(responseData?.data);
+      setHasFetchedUser(true);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching user data:', error);
       setError(error.message || 'Failed to fetch user data');
       logger.logEvent('Failed to fetch user data', error.message);
-    } finally {
-      stopLoading(loadingID);
     }
-  }, [
-    isLoggedIn,
-    userId,
-    isLoading,
-    createApiUrl,
-    fetchWrapper,
-    responseCache,
-    startLoading,
-    stopLoading,
-    setUser,
-    setError,
-    logger,
-  ]);
-  useEffect(() => {
-    const storedResponse = responseCache['fetchUserData'];
-    console.log('Stored response for user data:', storedResponse);
-    if (storedResponse) {
-      // Assuming setUser is a function that updates the user's data in state or context
-      setUser(storedResponse.data); // Adjust according to your actual state update mechanism
-    }
-  }, [responseCache]);
+  }, [userId, isLoggedIn, fetchWrapper, setUser, logger]);
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
   const updateUser = useCallback(
-    async (updatedUser) => {
-      const loadingID = 'updateUserData';
-      if (isLoading(loadingID)) return;
-
-      startLoading(loadingID);
-      const url = createApiUrl('userData/update');
+    async (updatedUserData) => {
+      if (!userId || !isLoggedIn || isLoading('updateUserData')) return;
       try {
-        const responseData = await fetchWrapper(
-          url,
+        await fetchWrapper(
+          `${process.env.REACT_APP_SERVER}/api/users/${userId}/updateUserData`,
           'PUT',
-          updatedUser,
-          loadingID
+          updatedUserData,
+          'updateUserData'
         );
-
-        console.log('Response from server for update user:', responseData);
-        if (responseData && responseData.data) {
-          setUser(responseData.data); // Update user data in local storage
-        }
+        fetchUserData(); // Refetch user data to ensure UI is up-to-date
+        setError(null);
       } catch (error) {
-        console.error('Error updating user data:', error);
-      } finally {
-        stopLoading(loadingID);
+        setError('Failed to update user data');
+        logger.error('Error updating user data:', error);
       }
     },
-    [fetchWrapper, createApiUrl, setUser, isLoading, startLoading, stopLoading]
+    [userId, isLoggedIn, fetchWrapper, fetchUserData, logger, isLoading]
   );
 
-  // Removed dependency on `user` to prevent unnecessary re-fetching
-  // useEffect(() => {
-  //   if (isLoggedIn && userId) {
-  //     fetchUserData();
-  //   }
-  // }, [fetchUserData, isLoggedIn, userId]);
-
-  const contextValue = {
+  const values = {
+    userId,
+    isLoggedIn,
+    error,
+    hasFetchedUser,
     user,
     updateUser,
     getUserData: fetchUserData,
   };
+
+  const contextValue =
+    process.env.AUTH_ENVIRONMENT !== 'disabled' ? values : defaultContextValue;
 
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>

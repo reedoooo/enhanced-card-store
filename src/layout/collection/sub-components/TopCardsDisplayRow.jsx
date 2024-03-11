@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import TopCardsDisplay from '../../../components/other/dataDisplay/TopCardsDisplay';
+import TopCardsDisplay from './TopCardsDisplay';
 
 export const TopCardsDisplayRow = ({ isSmall, theme }) => (
   <Grid

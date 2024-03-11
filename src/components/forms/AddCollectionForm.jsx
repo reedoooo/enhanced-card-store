@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import FormField from '../reusable/FormField';
+import FormField from './reusable/FormField';
 import { LoadingButton } from '@mui/lab';
 import { useFormContext, useMode } from '../../context';
 import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
@@ -10,8 +10,12 @@ import {
   formSchemas,
   getDefaultValuesFromSchema,
 } from '../../context/UTILITIES_CONTEXT/FormContext/schemas';
+import {
+  FormBox,
+  FormFieldBox,
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
-const AddCollectionForm = ({ showSnackbar, setLoading }) => {
+const AddCollectionForm = ({ showSnackbar }) => {
   const formId = 'addCollectionForm';
   const { onSubmit } = useFormContext();
   const { theme } = useMode();
@@ -52,7 +56,9 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
     }
   };
   return (
-    <form
+    <FormBox
+      component={'form'}
+      theme={theme}
       onSubmit={handleSubmit(onFormSubmit)}
       style={{
         display: 'flex',
@@ -62,7 +68,7 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
         padding: 2,
       }}
     >
-      <Box mb={2}>
+      <FormFieldBox theme={theme}>
         <FormField
           name="name"
           label="Collection Name"
@@ -70,8 +76,8 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
           errors={errors}
           required
         />
-      </Box>
-      <Box mb={2}>
+      </FormFieldBox>
+      <FormFieldBox theme={theme}>
         <FormField
           name="description"
           label="Collection Description"
@@ -81,7 +87,7 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
           multiline
           rows={4}
         />
-      </Box>
+      </FormFieldBox>
       <LoadingButton
         type="submit"
         variant="contained"
@@ -90,7 +96,7 @@ const AddCollectionForm = ({ showSnackbar, setLoading }) => {
       >
         Create Collection
       </LoadingButton>
-    </form>
+    </FormBox>
   );
 };
 

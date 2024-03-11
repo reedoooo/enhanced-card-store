@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TextField, Button } from '@mui/material';
 import { useFormContext } from '../../context';
-import FormField from '../reusable/FormField';
+import FormField from './reusable/FormField';
 
 const ProfileForm = ({ userName, name, age, status, onSave }) => {
   const { forms, handleChange, handleSubmit } = useFormContext();

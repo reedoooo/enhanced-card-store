@@ -11,6 +11,11 @@
   --primary: #6a59ff;
   --white: #ffffff;
   --bg: #f5f5f5;
+  --button-bg-color: #1976d2; /* Original color, but let's introduce a blue scheme */
+  --button-hover-bg-color: #4a6da7; /* Subtle blue for hover state */
+  --button-hover-border-color: #34597f; /* A darker blue for border on hover */
+  --button-border-color: #6a59ff; /* Initial border color */
+  --button-focus-outline-color: #62a4ff; /* Bright blue for focus outline for accessibility */
 }
 
 html {
@@ -18,7 +23,7 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (min-width: 1440px) {
+/* @media (min-width: 1440px) {
   html {
     zoom: 1.5;
   }
@@ -34,10 +39,10 @@ html {
   html {
     zoom: 2.5;
   }
-}
+} */
 
 ::-webkit-scrollbar {
-  width: 1.3rem;
+  width: 0.1rem;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -55,40 +60,184 @@ html {
 }
 
 body {
-  font-size: 1.6rem;
+  font-size: 2.6rem;
   background: var(--bg);
 }
 
+form {
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.13);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 5px;
+  border: none;
+  background: #ffffff;
+  color: #080710;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.loading-button {
+  background-color: var(--button-bg-color);
+  border-color: var(--button-border-color);
+  border-width: 2px;
+  border-style: solid; /* Ensure border style is defined */
+  display: flex; /* Assuming you want to use flex properties */
+  flex-grow: 1;
+  align-items: center; /* Vertically center content */
+  justify-content: center; /* Horizontally center content */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 16px; /* Assuming 'my: 2' meant a vertical margin, adjust as needed */
+  margin-top: 16px;
+  position: relative; /* Assuming you want it positioned in a specific context */
+  bottom: 0; /* Keep at the bottom, adjust as necessary */
+  cursor: pointer; /* Indicates an interactive button */
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s; /* Smooth transition for hover and focus states */
+}
+
+.loading-button:hover {
+  font-weight: bold;
+  background-color: var(--button-hover-bg-color);
+  border-color: var(--button-hover-border-color);
+}
+
+.loading-button:focus {
+  outline: 2px solid var(--button-focus-outline-color); /* Accessible focus outline */
+  outline-offset: 2px; /* Ensures outline does not overlap element's border */
+}
+
+.dialog-login {
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.13);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+/* --------------------------------- */
+/* PAGES - home sections */
+/* --------------------------------- */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: '100%';
+  /* padding: 60px; */
+}
+
+.hero-section-container {
+  background: rgba(189, 181, 181, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  /* padding: 30px 0px; */
+  width: '100vw';
+  /* width: min(1200px, 100%); */
+}
+
+/* .hero-section h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  /* color: var(--primary); */
+/* text-align: center;
+  margin: 20px 0px 40px;
+}  */
+
+/* --------------------------------- */
+/* Swiper */
+/* --------------------------------- */
+
 .container {
-  max-width: 124rem;
+  /* max-width: 124rem; */
+  /* max-width: 100vw; */
   padding: 4rem 1rem;
   margin: 0 auto;
 }
 
-.heading {
+.hero-section-title {
   padding: 1rem 0;
   font-size: 3.5rem;
   text-align: center;
+  font-weight: 600;
+}
+
+.hero-section-subtitle {
+  padding: 1rem 0;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.hero-section-card-title {
+  padding: 1rem 0;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.hero-section-card-subtitle {
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+  margin-bottom: 1rem;
 }
 
 .swiper_container {
-  height: 52rem;
-  padding: 2rem 0;
-  position: relative;
+  width: 100vw; /* Adjust based on your design needs */
+  overflow: hidden; /* Prevent overflow */
 }
-
+.swiper-scrollbar {
+  --swipeer-scrollbar-bottom: 0;
+  --swipeer-scrollbar-drag-bg-color: #dda3b6;
+  --swipeer-scrollbar-drag-bg-opacity: 0.2;
+  --swipeer-scrollbar-drag-bg-radius: 0;
+  --swipeer-scrollbar-size: 5px;
+}
 .swiper-slide {
-  width: 37rem;
-  height: 42rem;
-  position: relative;
-}
-/* .swiper-slide {
+  width: calc(
+    (100vw - 120px) / 7
+  ); /* Adjust based on actual space between and number of slides */
+  height: auto; /* Adjust height as needed */
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Adjust the height as needed */
-  /* height: auto; /* Change from a fixed height to auto */
-/* } */
+}
+/* .swiper-slide {
+  width: auto; /* Adjust based on your content */
+/* height: auto; Adjust based on your content */
+
+/* Add more styling as needed */
+/* }  */
 
 @media (max-width: 500px) {
   .swiper_container {
@@ -104,22 +253,89 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .swiper_container {
+    width: 100%; /* Adjust for smaller screens */
+  }
+  .swiper-slide {
+    width: 30rem;
+    height: 36rem;
+    /* height: auto; */
+    /* Adjust the height as needed */
+  }
+  .swiper-slide img {
+    width: 30rem;
+    height: 36rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .swiper_container {
+    width: 100%; /* Adjust for smaller screens */
+  }
+  .swiper-slide {
+    width: 40rem;
+    height: 48rem;
+    /* height: auto; */
+    /* Adjust the height as needed */
+  }
+  .swiper-slide img {
+    width: 30rem;
+    height: 36rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .swiper_container {
+    width: 100%; /* Adjust for smaller screens */
+  }
+  .swiper-slide {
+    width: 30rem;
+    height: 36rem;
+    /* height: auto; */
+    /* Adjust the height as needed */
+  }
+  .swiper-slide img {
+    width: 30rem;
+    height: 36rem;
+  }
+}
+
+@media (max-width: 1440px) {
+  .swiper_container {
+    width: 100%; /* Adjust for smaller screens */
+  }
+  .swiper-slide {
+    width: 30rem;
+    height: 36rem;
+    /* height: auto; */
+    /* Adjust the height as needed */
+  }
+  .swiper-slide img {
+    width: 30rem;
+    height: 36rem;
+  }
+}
+
 .swiper-slide img {
   width: 37rem;
   height: 42rem;
   border-radius: 2rem;
   object-fit: cover;
+  /* maxWidth: '100%',
+  maxHeight: '100%',
+  objectFit: 'contain', */
 }
-/* .swiper-slide img {
-  width: auto;
-  height: 100%; 
-  max-height: 400px;
-  object-fit: contain;
-  border-radius: 2rem; 
-} */
+
 .swiper-slide-shadow-left,
 .swiper-slide-shadow-right {
   display: none;
+}
+
+.swiper-slide-active {
+  transform: scale(2); /* Make the active slide larger */
+  transition: transform 0.3s; /* Smooth transition */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a shadow */
 }
 
 .slider-controler {
@@ -184,8 +400,8 @@ body {
 
 .swiper-pagination {
   /* position: relative; */
-	position: absolute;
-	text-align: center;
+  position: absolute;
+  text-align: center;
   width: 15rem !important;
   bottom: 1rem;
 }
@@ -197,5 +413,3 @@ body {
 .swiper-pagination .swiper-pagination-bullet-active {
   background: var(--primary);
 }
-
-

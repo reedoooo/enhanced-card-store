@@ -15,6 +15,7 @@ import AddCollectionForm from '../forms/AddCollectionForm';
 import UpdateCollectionForm from '../forms/UpdateCollectionForm';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
 const CollectionDialog = ({
   open,
   onClose,
@@ -133,4 +134,4 @@ CollectionDialog.propTypes = {
   }),
 };
 
-export default CollectionDialog;
+export default withDynamicSnackbar(CollectionDialog);

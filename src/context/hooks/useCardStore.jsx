@@ -5,6 +5,7 @@ import useLogger from './useLogger';
 import useApiResponseHandler from './useApiResponseHandler';
 import useLocalStorage from './useLocalStorage'; // Ensure this is the correct path to your hook
 import { defaultContextValue } from '../constants';
+import { useLoading } from './useLoading';
 const { CARD_CONTEXT } = defaultContextValue;
 
 function debounce(func, wait) {
@@ -34,7 +35,16 @@ export const useCardStoreHook = () => {
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
   const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
   const [initialLoad, setInitialLoad] = useState(true); // New state to track the initial load
-  const [loadingSearchResults, setLoadingSearchResults] = useState(false);
+  const {
+    isLoading,
+    isAnyLoading,
+    startLoading,
+    stopLoading,
+    setError,
+    error,
+    clearLoading,
+  } = useLoading();
+  // const [loadingSearchResults, setLoadingSearchResults] = useState(false);
   const [cardsVersion, setCardsVersion] = useState(0); // New state for tracking data version
   const [searchSettings, setSearchSettings] = useLocalStorage(
     'searchSettings',
@@ -71,7 +81,7 @@ export const useCardStoreHook = () => {
 
   const handleRequest = useCallback(
     debounce(async (searchParams) => {
-      setLoadingSearchResults(true);
+      startLoading('isSearchLoading');
       try {
         logger.logEvent('handleRequest start', { searchParams, userId });
         const requestBody = {
@@ -102,7 +112,7 @@ export const useCardStoreHook = () => {
         clearSearchData();
         resetForm();
       } finally {
-        setLoadingSearchResults(false); // Set loading to false once the request is complete
+        stopLoading('isSearchLoading'); // Set loading to false once the request is complete
       }
     }, 100),
     []
@@ -128,7 +138,9 @@ export const useCardStoreHook = () => {
     setIsDataValid,
     clearSearchData,
     handleRequest,
-    loadingSearchResults,
-    setLoadingSearchResults,
+    loadingSearchResults: isLoading('isSearchLoading'),
+    setLoadingSearchResults: () => {
+      startLoading('isSearchLoading');
+    },
   };
 };

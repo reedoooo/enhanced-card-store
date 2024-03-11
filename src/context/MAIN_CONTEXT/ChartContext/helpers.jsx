@@ -10,6 +10,7 @@ import { useAuthContext } from '../AuthContext/authContext';
 import useCollectionManager from '../CollectionContext/useCollectionManager';
 import { ResponsiveLine } from '@nivo/line';
 import { useLoading } from '../../hooks/useLoading';
+import useSelectedCollection from '../CollectionContext/useSelectedCollection';
 
 export const groupAndAverageData = (data, threshold = 600000, timeRange) => {
   if (!data || data.length === 0) return [];
@@ -76,47 +77,33 @@ export const getAveragedData = (data) => {
   });
 };
 
-export const getTickValues = (timeRange) => {
-  console.log('timeRange: ', timeRange);
-  const mapping = {
-    600000: 'every 10 minutes',
-    900000: 'every 15 minutes',
-    3600000: 'every hour',
-    7200000: 'every 2 hours',
-    86400000: 'every day',
-    604800000: 'every week',
-    2592000000: 'every month',
-  };
-  return mapping[timeRange] || 'every day'; // Default to 'every week' if no match
-};
+// export const convertDataForNivo2 = (rawData2) => {
+//   if (!Array.isArray(rawData2) || rawData2.length === 0) {
+//     console.error('Invalid or empty rawData provided', rawData2);
+//     return [];
+//   }
 
-export const convertDataForNivo2 = (rawData2) => {
-  if (!Array.isArray(rawData2) || rawData2.length === 0) {
-    console.error('Invalid or empty rawData provided', rawData2);
-    return [];
-  }
+//   // Assuming rawData2 is an array of objects with 'x' and 'y' properties
+//   const nivoData = rawData2?.map((dataPoint) => {
+//     // Ensure the 'x' value is in ISO date string format
+//     const xValue =
+//       dataPoint[0]?.x instanceof Date
+//         ? dataPoint[0]?.x?.toISOString()
+//         : dataPoint[0]?.x;
+//     const yValue = dataPoint[0]?.y; // Assuming y value is directly usable
 
-  // Assuming rawData2 is an array of objects with 'x' and 'y' properties
-  const nivoData = rawData2?.map((dataPoint) => {
-    // Ensure the 'x' value is in ISO date string format
-    const xValue =
-      dataPoint[0]?.x instanceof Date
-        ? dataPoint[0]?.x?.toISOString()
-        : dataPoint[0]?.x;
-    const yValue = dataPoint[0]?.y; // Assuming y value is directly usable
+//     return { x: xValue, y: yValue };
+//   });
 
-    return { x: xValue, y: yValue };
-  });
-
-  // Wrapping the data for a single series. You can add more series similarly
-  return [
-    {
-      id: 'Your Data', // Replace with a meaningful id
-      color: 'hsl(252, 70%, 50%)', // Replace with color of your choice or logic for dynamic colors
-      data: nivoData,
-    },
-  ];
-};
+//   // Wrapping the data for a single series. You can add more series similarly
+//   return [
+//     {
+//       id: 'Your Data', // Replace with a meaningful id
+//       color: 'hsl(252, 70%, 50%)', // Replace with color of your choice or logic for dynamic colors
+//       data: nivoData,
+//     },
+//   ];
+// };
 
 export const finalizeNivoData = (nivoChartData) => {
   // return nivoData which is the data array, combined with id and color properties
@@ -199,7 +186,6 @@ export const useEventHandlers = () => {
     debounce(setHoveredData, 100),
     []
   );
-
   const handleMouseMove = useCallback(
     (point) => {
       debouncedSetHoveredData(
@@ -208,12 +194,10 @@ export const useEventHandlers = () => {
     },
     [debouncedSetHoveredData]
   );
-
   const handleMouseLeave = useCallback(
     () => debouncedSetHoveredData(null),
     [debouncedSetHoveredData]
   );
-
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
 const TooltipBox = styled(Box)(({ theme }) => ({
@@ -223,7 +207,7 @@ const TooltipBox = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
 }));
 export const isSpecialPoint = (markers, point) =>
-  markers.some((sp) => sp.x === point.data.x && sp.y === point.data.y);
+  markers?.some((sp) => sp?.x === point.data.x && sp.y === point.data.y);
 export const CustomTooltipLayer = ({ points, xScale, yScale, markers }) => (
   <>
     {points?.map((point, index) => {
@@ -263,182 +247,5 @@ export const CustomTooltip = ({ point, markers, timeRange }) => {
         )}
       </TooltipBox>
     </Tooltip>
-  );
-};
-export const ChartConfiguration = ({
-  markers,
-  height,
-  timeRange,
-  nivoChartData,
-  loadingID,
-}) => {
-  const { theme } = useMode();
-  const { startLoading, stopLoading, isLoading, isAnyLoading } = useLoading();
-
-  const { tickValues } = useChartContext();
-  const { isLoggedIn, userId } = useAuthContext();
-  const { selectedCollection } = useCollectionManager(isLoggedIn, userId);
-  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-  const validMarkers = markers.filter((marker) => marker.value !== undefined);
-
-  const chartProps = useMemo(
-    () => ({
-      data: [nivoChartData],
-      onMouseMove: handleMouseMove,
-      onMouseLeave: handleMouseLeave,
-      // tooltip: ({ point }) => <CustomTooltip point={point} markers={markers} />,
-      tooltip: CustomTooltip,
-
-      color: theme.palette.backgroundA.contrastTextA,
-      text: {
-        color: theme.palette.backgroundA.contrastTextA,
-        fill: theme.palette.backgroundA.contrastTextA,
-        fontSize: 12,
-      },
-      yFormat: '$.2f',
-
-      colors: theme.palette.backgroundE.dark,
-      axisBottom: {
-        tickRotation: 0,
-        legend: 'Time',
-        legendOffset: 40,
-        legendPosition: 'middle',
-        tickSize: 5,
-        tickPadding: 5,
-        tickValues: tickValues,
-        format: (value) => {
-          const d = new Date(value);
-          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        },
-      },
-      axisLeft: {
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: 'Value ($)',
-        legendOffset: -50,
-        legendPosition: 'middle',
-        color: theme.palette.text.primary,
-        format: (value) => `$${value.toFixed(2)}`,
-      },
-      margin: { top: 20, right: 40, bottom: 50, left: 55 },
-      padding: 0.3,
-      animate: true,
-      xFormat: 'time:%Y-%m-%d %H:%M:%S',
-      xScale: {
-        type: 'time',
-        format: '%Y-%m-%dT%H:%M:%S.%LZ', // Adjust if necessary to match your input data format
-        useUTC: false,
-        precision: 'second',
-      },
-      yScale: {
-        type: 'linear',
-        min: 'auto',
-        max: 'auto',
-        stacked: true,
-        reverse: false,
-      },
-      pointSize: 10,
-      pointBorderWidth: 1,
-      curve: 'monotoneX',
-      useMesh: true,
-      motionConfig: 'gentle',
-
-      stiffness: 90,
-      damping: 15,
-      enableSlices: 'x',
-      // pointBorderColor: { from: 'serieColor', modifiers: [] },
-      pointBorderColor: theme.palette.primary.main,
-      // pointColor: { from: 'color', modifiers: [] },
-      markers: validMarkers,
-      layers: [
-        'grid',
-        'markers',
-        'areas',
-        'lines',
-        'slices',
-        'points',
-        'axes',
-        'legends',
-        ({ points, xScale, yScale, markers }) => (
-          <CustomTooltipLayer
-            points={points}
-            xScale={xScale}
-            yScale={yScale}
-            markers={markers}
-          />
-        ),
-      ],
-      theme: {
-        axis: {
-          domain: {
-            line: {
-              stroke: theme.palette.backgroundA.contrastTextA,
-              strokeWidth: 1,
-            },
-          },
-          ticks: {
-            line: {
-              stroke: theme.palette.backgroundA.contrastTextA,
-              strokeWidth: 1,
-            },
-            text: {
-              fill: theme.palette.backgroundA.contrastTextA,
-              fontSize: 12,
-              fontWeight: 400,
-            },
-          },
-          legend: {
-            text: {
-              fill: theme.palette.text.primary,
-              fontSize: 12,
-              fontWeight: 500,
-            },
-          },
-        },
-        grid: {
-          line: {
-            stroke: theme.palette.divider,
-            strokeWidth: 1,
-          },
-        },
-      },
-    }),
-    [
-      nivoChartData,
-      handleMouseMove,
-      handleMouseLeave,
-      markers,
-      theme,
-      tickValues,
-    ]
-  );
-
-  const NivoContainer = ({ children, height }) => (
-    <div style={{ position: 'relative' }}>
-      <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
-        <div style={{ height: height || '800px' }}>{children}</div>
-      </div>
-    </div>
-  );
-
-  // useEffect(() => {
-  //   startLoading(loadingID);
-  //   // Mock async data fetching
-  //   setTimeout(() => stopLoading(), 1000); // Remove this in real scenario
-  // }, [loadingID, startLoading, stopLoading, fetchWrapper, logger]);
-
-  if (
-    isLoading(
-      'http://localhost:3001/api/users/65b8e155b4885b451a5071c8/collections/allCollections'
-    )
-  ) {
-    return <Typography>Loading chart...</Typography>;
-  }
-
-  return (
-    <NivoContainer height={height}>
-      <ResponsiveLine {...chartProps} />
-    </NivoContainer>
   );
 };

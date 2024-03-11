@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useMode } from '../../context';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import PageLayout from '../Containers/PageLayout';
-import SearchComponent from '../../components/other/search/SearchComponent';
 import { PortfolioBoxA } from '../../pages/pageStyles/StyledComponents';
+import SearchComponent from '../../components/forms/search/SearchComponent';
 
 const StoreSearch = () => {
   const { theme } = useMode();

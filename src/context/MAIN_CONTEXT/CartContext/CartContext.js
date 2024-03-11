@@ -58,7 +58,7 @@ export const CartProvider = ({ children }) => {
   const [selectedCards, setSelectedCards] = useState([]);
   const cartId = useRef(selectedCart?.cart?._id);
   const [hasFetchedCart, setHasFetchedCart] = useState(false);
-  const { startLoading, stopLoading, isLoading } = useLoading();
+  const { isLoading } = useLoading();
   const updateSelectedCart = useCallback((cart) => {
     setSelectedCart(cart);
     setSelectedCards(cart?.cart?.slice(0, 30) || []);
@@ -207,10 +207,8 @@ export const CartProvider = ({ children }) => {
   }, [userId, fetchWrapper, setCartDataAndCookie]);
 
   const fetchUserCart = useCallback(async () => {
-    if (!userId) return;
     const loadingID = 'fetchUserCart';
-    startLoading(loadingID);
-
+    if (!userId || isLoading(loadingID)) return;
     try {
       const responseData = await fetchWrapper(
         `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart`,
@@ -224,21 +222,15 @@ export const CartProvider = ({ children }) => {
         responseData?.status === 201
       ) {
         console.log('SUCCESS: fetching user cart');
-        const cachedData = responseCache[loadingID];
-        if (cachedData) {
-          setCartDataAndCookie(cachedData); // Assuming setCartDataAndCookie updates local storage or state with cart data
-        }
-      }
-      if (responseData && responseData?.status !== 200) {
-        console.error('ERROR: fetching user cart');
-        setError(responseData?.data?.message || 'Failed to fetch user cart');
+        setCartDataAndCookie(responseData?.data);
       }
     } catch (error) {
       console.error(error);
       setError(error.message || 'Failed to fetch user cart');
       logger.logEvent('Failed to fetch user cart', error.message);
     } finally {
-      stopLoading(loadingID);
+      setHasFetchedCart(true);
+      // stopLoading(loadingID);
     }
   }, [
     userId,
@@ -246,26 +238,13 @@ export const CartProvider = ({ children }) => {
     createApiUrl,
     fetchWrapper,
     responseCache,
-    startLoading,
-    stopLoading,
     setCartDataAndCookie,
     setError,
     logger,
   ]);
-  useEffect(() => {
-    const storedResponse = responseCache['fetchUserCart'];
-    console.log('Stored response for user cart:', storedResponse);
-    if (storedResponse) {
-      // Assuming setCartDataAndCookie is a function that updates the cart's data in state or context and possibly updates cookies
-      setCartDataAndCookie(storedResponse); // Adjust according to your actual state update mechanism
-    }
-  }, [responseCache]);
-
-  useEffect(() => {
-    if (userId && typeof userId === 'string') {
-      fetchUserCart();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasFetchedCart) fetchUserCart();
+  // }, [fetchUserCart, userId, hasFetchedCart, setCartDataAndCookie]);
   const updateCart = useCallback(
     async (cartId, updatedCart, method, type) => {
       if (!userId || !cartId) return;

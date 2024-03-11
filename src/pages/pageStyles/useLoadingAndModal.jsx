@@ -2,11 +2,10 @@
 import { useModalContext, usePageContext } from '../../context';
 
 const useLoadingAndModal = () => {
-  const { loadingStatus, returnDisplay } = usePageContext();
+  const { returnDisplay } = usePageContext();
   const { isModalOpen, modalContent, closeModal } = useModalContext();
 
   return {
-    loadingStatus,
     returnDisplay,
     isModalOpen,
     modalContent,

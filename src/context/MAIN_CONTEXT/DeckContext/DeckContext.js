@@ -20,6 +20,7 @@ import useFetchWrapper from '../../hooks/useFetchWrapper.jsx';
 import useLogger from '../../hooks/useLogger.jsx';
 import useApiResponseHandler from '../../hooks/useApiResponseHandler.jsx';
 import { useLoading } from '../../hooks/useLoading.jsx';
+import { DEFAULT_DECK } from '../../constants.jsx';
 
 export const DeckContext = createContext(defaultContextValue);
 
@@ -30,8 +31,8 @@ export const DeckProvider = ({ children }) => {
   const { fetchWrapper, responseCache } = useFetchWrapper();
   const prevUserIdRef = useRef(userId);
   const [deckData, setDeckData] = useState({});
-  const [allDecks, setAllDecks] = useState([]);
-  const [selectedDeck, setSelectedDeck] = useState({});
+  const [allDecks, setAllDecks] = useState([DEFAULT_DECK]);
+  const [selectedDeck, setSelectedDeck] = useState(DEFAULT_DECK);
   const [selectedCards, setSelectedCards] = useState(selectedDeck?.cards || []);
   const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const [error, setError] = useState(null);
@@ -51,17 +52,9 @@ export const DeckProvider = ({ children }) => {
     setSelectedDeck(newDeck);
     setSelectedCards(newDeck?.cards || []);
   }, []);
-  // const userIdRef = useRef(userId);
-
-  // useEffect(() => {
-  //   userIdRef.current = userId; // Update ref when userId changes
-  // }, [userId]);
-
-  // Function to fetch and update decks
   const fetchAndUpdateDecks = useCallback(async () => {
     const loadingID = 'fetchAndUpdateDecks';
     if (!userId || isLoading(loadingID) || hasFetchedDecks) return;
-    startLoading(loadingID);
     try {
       const responseData = await fetchWrapper(
         createApiUrl('/allDecks'),
@@ -75,21 +68,13 @@ export const DeckProvider = ({ children }) => {
         responseData?.status === 201
       ) {
         console.log('SUCCESS: fetching decks');
-        const cachedData = responseCache[loadingID];
-        if (cachedData) {
-          updateStates(cachedData);
-        }
-      }
-      if (responseData && responseData?.status !== 200) {
-        console.error('ERROR: fetching decks');
-        setError(responseData?.data?.message || 'Failed to fetch decks');
+        updateStates(responseData);
       }
     } catch (error) {
       console.error(error);
       setError(error.message || 'Failed to fetch decks');
       logger.logEvent('Failed to fetch decks', error.message);
     } finally {
-      stopLoading(loadingID);
       setHasFetchedDecks(true);
     }
   }, [
@@ -108,27 +93,6 @@ export const DeckProvider = ({ children }) => {
     setSelectedDeck,
     setHasFetchedDecks,
   ]);
-
-  useEffect(() => {
-    fetchAndUpdateDecks();
-  }, []);
-  useEffect(() => {
-    const storedResponse = responseCache['fetchAndUpdateDecks'];
-    console.log('Stored response:', storedResponse);
-    if (storedResponse) {
-      setDeckData(storedResponse);
-      setAllDecks(storedResponse.data);
-      setSelectedDeck(storedResponse.data[0] || {});
-    }
-  }, [responseCache]);
-
-  /**
-   * Updates the details of a specific deck.
-   * @param {string} deckId - The ID of the deck to be updated.
-   * @param {Object} updatedInfo - The updated deck data.
-   * @returns {Promise<Object>} The response from the server.
-   * @todo Update the deck in local state.
-   */
   const updateDeckDetails = async (deckId, updatedInfo) => {
     const loadingID = 'updateDeckDetails';
     setError(null);
@@ -167,12 +131,6 @@ export const DeckProvider = ({ children }) => {
       console.error('Error updating deck details:', error);
     }
   };
-  /**
-   * Creates a new deck for a user.
-   * @param {string} userId - The ID of the user creating the collection.
-   * @param {Object} newDeckInfo - The data for the new collection.
-   * @returns {Promise<Object>} The response from the server.
-   */
   const createUserDeck = async (userId, newDeckInfo) => {
     const loadingID = 'createUserDeck';
     setError(null);
@@ -204,11 +162,6 @@ export const DeckProvider = ({ children }) => {
       console.error(`Failed to create a new deck: ${error.message}`);
     }
   };
-  /**
-   * Deletes a specific collection for a user.
-   * @param {string} collectionId - The ID of the collection to be deleted.
-   * @returns {Promise<Object>} The response from the server.
-   */
   const deleteUserDeck = async (deckId) => {
     const loadingID = 'deleteUserDeck';
     setError(null);
@@ -236,12 +189,6 @@ export const DeckProvider = ({ children }) => {
       throw error;
     }
   };
-  /**
-   * Adds new cards to a specific deck.
-   * @param {Array} cards - Array of card objects to be added.
-   * @param {Object} deck - The deck to which the cards will be added.
-   * @returns {Promise<Object>} The response from the server.
-   */
   const addCardToDeck = async (cards, deck) => {
     const loadingID = 'addCardToDeck';
     setError(null);
@@ -290,13 +237,6 @@ export const DeckProvider = ({ children }) => {
       updateSelectedDeck(data.deck); // Assuming a function to update the current deck
     }
   };
-  /**
-   * Removes cards from a specific deck.
-   * @param {Array} cards - Array of card objects in the deck.
-   * @param {Array} cardIds - Array of card object IDs to be removed.
-   * @param {Object} deck - The deck object from which cards are being removed.
-   * @returns {Promise<Object>} The response from the server.
-   */
   const removeCardFromDeck = async (cards, cardIds, deck) => {
     const loadingID = 'removeCardFromDeck';
     setError(null);

@@ -6,14 +6,16 @@ import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
 import PageLayout from '../layout/Containers/PageLayout';
+import { useLoading } from '../context/hooks/useLoading';
 
 const DeckBuilderPage = () => {
-  const { loadingStatus, returnDisplay, isModalOpen, modalContent } =
+  const { isPageLoading } = useLoading();
+  const { closeModal, returnDisplay, isModalOpen, modalContent } =
     useLoadingAndModal();
 
   return (
     <PageLayout>
-      {loadingStatus?.isPageLoading && returnDisplay()}
+      {isPageLoading && returnDisplay()}
       <HeroBanner
         title="Welcome to Deck Builder"
         subtitle="Craft, refine, and explore your deck strategies in one place."

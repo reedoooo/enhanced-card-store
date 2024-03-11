@@ -3,12 +3,21 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { white, text, info, secondary, success, green, backgroundE } = colors;
+const {
+  white,
+  text,
+  info,
+  secondary,
+  success,
+  green,
+  backgroundE,
+  backgroundG,
+} = colors;
 const { size } = typography;
 
 const contained = {
   base: {
-    backgroundColor: green.main,
+    backgroundColor: backgroundG.default,
     minHeight: pxToRem(40),
     color: text.main,
     padding: `${pxToRem(10)} ${pxToRem(24)}`,
@@ -49,14 +58,14 @@ const contained = {
   },
 
   primary: {
-    backgroundColor: green.main,
+    backgroundColor: backgroundG.default,
 
     '&:hover': {
-      backgroundColor: green.main,
+      backgroundColor: backgroundG.dark,
     },
 
     '&:focus:not(:hover)': {
-      backgroundColor: green.focus,
+      backgroundColor: backgroundG.light,
     },
   },
 

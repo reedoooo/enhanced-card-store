@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { useFormContext } from '../../context';
+import { useFormContext, useMode } from '../../context';
 import FormField from '../reusable/FormField';
 import { Button, Paper, Typography, Box } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
+import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const UpdateDeckForm = ({ selectedDeck, showSnackbar }) => {
+  const { theme } = useMode();
   const { formStates, onSubmit } = useFormContext();
   const formId = 'updateDeckForm'; // Assuming this is the formId for updating decks
 
@@ -47,7 +49,11 @@ const UpdateDeckForm = ({ selectedDeck, showSnackbar }) => {
   return (
     <Paper elevation={3} sx={{ padding: 2, margin: 2 }}>
       <Typography variant="h6">Update Deck</Typography>
-      <form onSubmit={handleSubmit(onFormSubmit)}>
+      <FormBox
+        component={'form'}
+        onSubmit={handleSubmit(onFormSubmit)}
+        theme={theme}
+      >
         <FormField
           label="Name"
           name="name"
@@ -84,7 +90,7 @@ const UpdateDeckForm = ({ selectedDeck, showSnackbar }) => {
             Delete Deck
           </Button>
         </Box>
-      </form>
+      </FormBox>
     </Paper>
   );
 };

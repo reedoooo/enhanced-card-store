@@ -16,16 +16,13 @@ import {
 import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
 import { useCollectionStore } from '../../index';
 import { defaultContextValue } from '../../constants';
+import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
 const StatisticsContext = createContext(defaultContextValue.STATISTICS_CONTEXT);
 
 export const StatisticsProvider = ({ children }) => {
-  const {
-    allCollections,
-    allXYValues,
-    selectedCollection,
-    hasFetchedCollections,
-  } = useCollectionStore();
+  const { allXYValues, hasFetchedCollections } = useCollectionStore();
+  const { selectedCollection, allCollections } = useSelectedCollection();
   const { timeRange } = useChartContext();
 
   if (!Array.isArray(allCollections)) {
@@ -39,8 +36,8 @@ export const StatisticsProvider = ({ children }) => {
   const statsByCollectionId = useMemo(
     () =>
       validCollections
-        ? allCollections.reduce((acc, collection) => {
-            acc[collection._id] = calculateStatsForCollection(
+        ? allCollections?.reduce((acc, collection) => {
+            acc[collection?._id] = calculateStatsForCollection(
               collection,
               timeRange
             );
@@ -55,7 +52,7 @@ export const StatisticsProvider = ({ children }) => {
       return 0; // Ensure a default numeric value
     }
     return allCollections?.reduce((acc, collection) => {
-      const collectionPrice = parseFloat(collection.totalPrice);
+      const collectionPrice = parseFloat(collection?.totalPrice);
       return acc + (isNaN(collectionPrice) ? 0 : collectionPrice);
     }, 0);
   }, [allCollections]);
@@ -64,9 +61,9 @@ export const StatisticsProvider = ({ children }) => {
     () =>
       validCollections
         ? allCollections
-            .flatMap((collection) => collection.cards || [])
+            .flatMap((collection) => collection?.cards || [])
             .sort((a, b) => b.price - a.price)
-            .slice(0, 7)
+            .slice(0, 30)
         : [],
     [allCollections]
   );
@@ -119,17 +116,17 @@ export const StatisticsProvider = ({ children }) => {
     return createMarkers(selectedCollection);
   }, [allCollections]); // Add dependencies as necessary, e.g., someSelectedCollectionId
 
-  const chartData = useMemo(
-    () =>
-      validCollections
-        ? allCollections.map((collection) => ({
-            id: collection.id,
-            value: collection.totalPrice,
-            label: collection.name,
-          }))
-        : [],
-    [allCollections]
-  );
+  // const chartData = useMemo(
+  //   () =>
+  //     validCollections
+  //       ? allCollections.map((collection) => ({
+  //           id: collection._id,
+  //           value: collection.totalPrice,
+  //           label: collection.name,
+  //         }))
+  //       : [],
+  //   [allCollections]
+  // );
 
   const contextValue = useMemo(
     () => ({
@@ -146,7 +143,7 @@ export const StatisticsProvider = ({ children }) => {
       // SECONDARY DATA
       totalValue,
       topFiveCards,
-      chartData,
+      // chartData,
       // SECONDARY FUNCTIONS
       calculateTotalPriceOfAllCollections,
       // calculateStatsByCollectionId,
@@ -160,7 +157,7 @@ export const StatisticsProvider = ({ children }) => {
       markers,
       totalValue,
       topFiveCards,
-      chartData,
+      // chartData,
       setSelectedStat,
       timeRange,
     ]

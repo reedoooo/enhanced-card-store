@@ -31,8 +31,8 @@ const useCounter = (inputData, options = {}) => {
   };
 
   const totalCount = isArray
-    ? data.reduce((acc, item) => acc + item.quantity, 0)
-    : data.quantity;
+    ? data.reduce((acc, item) => acc + item?.quantity, 0)
+    : data?.quantity;
 
   const increment = (itemId) => modifyCount(itemId, 1);
   const decrement = (itemId) => modifyCount(itemId, -1);
@@ -65,7 +65,7 @@ const useCounter = (inputData, options = {}) => {
     increment,
     decrement,
     setQuantity,
-    quantity: data.quantity,
+    quantity: data?.quantity,
   };
 };
 

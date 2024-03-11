@@ -16,7 +16,7 @@ import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Grid, IconButton } from '@mui/material';
-import { StyledContainerBoxPrimary } from '../../pages/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledContainerBoxPrimary } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import SelectDeckList from '../../components/grids/deckBuilderGrids/SelectDeckList';
 import AppsIcon from '@mui/icons-material/Apps';
 

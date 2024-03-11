@@ -3,7 +3,7 @@ import { useMode } from '../../context';
 import DeckDisplay from './DeckDisplay';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import PageLayout from '../Containers/PageLayout';
-import SearchComponent from '../../components/other/search/SearchComponent';
+import SearchComponent from '../../components/forms/search/SearchComponent';
 
 const DeckBuilder = () => {
   const { theme } = useMode();

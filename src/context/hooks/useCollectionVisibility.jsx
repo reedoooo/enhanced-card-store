@@ -1,37 +1,35 @@
-import { useState, useCallback } from 'react';
-import { useCollectionStore } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
+// import { useState, useCallback } from 'react';
+// import { useCollectionStore } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
+// import useCollectionManager from '../MAIN_CONTEXT/CollectionContext/useCollectionManager';
 
-const useCollectionVisibility = () => {
-  const { setSelectedCollection, allCollections } = useCollectionStore();
-  const [showCollections, setShowCollections] = useState(true);
-  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+// const useCollectionVisibility = () => {
+//   const { setSelectedCollection, allCollections } = useCollectionManager();
+//   const [showCollections, setShowCollections] = useState(true);
+//   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 
-  const handleSelectCollection = useCallback(
-    (collectionId) => {
-      const selected = allCollections.find(
-        (collection) => collection._id === collectionId
-      );
-      if (selected) {
-        setSelectedCollection(selected); // Keep this to maintain compatibility with other parts of your code
-        setSelectedCollectionId(collectionId); // Track the ID of the selected collection
-        setShowCollections(false);
-      }
-    },
-    [allCollections, setSelectedCollection]
-  );
+//   // This function is triggered when a collection is selected.
+//   const handleSelectCollection = useCallback((collection) => {
+//     console.log('SELECTED COLLECTION ID', collection._id);
+//     setSelectedCollectionId(collection._id);
+//     setSelectedCollection(collection);
+//     setShowCollections(false); // Hide collection list to show the selected collection's details.
+//   }, []);
 
-  const handleBackToCollections = useCallback(() => {
-    setShowCollections(true);
-    setSelectedCollectionId(null); // Clear the selected collection ID
-    setSelectedCollection(null); // Optionally clear the selected collection
-  }, [setSelectedCollection]);
+//   const handleBackToCollections = useCallback(() => {
+//     console.log('BACK TO COLLECTIONS', allCollections, selectedCollectionId);
+//     setShowCollections(true); // Show the collection list again.
 
-  return {
-    showCollections,
-    handleSelectCollection,
-    handleBackToCollections,
-    selectedCollectionId, // Expose the selectedCollectionId for use in other components
-  };
-};
+//     setSelectedCollectionId(null);
+//     setSelectedCollection(null);
+//   }, []);
 
-export default useCollectionVisibility;
+//   return {
+//     showCollections,
+//     handleSelectCollection,
+//     handleBackToCollections,
+//     setShowCollections,
+//     selectedCollectionId, // Expose the selectedCollectionId for use in other components
+//   };
+// };
+
+// export default useCollectionVisibility;

@@ -1,40 +1,11 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import {
-  Typography,
-  CssBaseline,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Grid,
-  Box,
-  useMediaQuery,
-  Paper,
-  Stack,
-  TextareaAutosize,
-  Skeleton,
-  Card,
-  Avatar,
-  Button,
-  Container,
-} from '@mui/material';
+import { CardHeader, Grid, Box, useMediaQuery } from '@mui/material';
 import {
   ModalContext,
   useModalContext,
 } from '../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
 import DetailsModal from '../components/dialogs/homeDetailsModal/DetailsModal';
-// import useResponsiveStyles from '../context/hooks/style-hooks/useResponsiveStyles';
-import {
-  HomePageBox,
-  FeatureCard,
-  MainContentContainer,
-  TertiaryContentContainer,
-  SecondaryContentContainer,
-  CardUnorderedList,
-  CardListItem,
-  ActionButton,
-} from './pageStyles/StyledComponents';
-import { useSpring, animated } from 'react-spring';
 import SplashPage2 from './SplashPage2';
 import pages from '../assets/data/pages.json';
 import SingleCardAnimation from '../assets/animations/SingleCardAnimation';
@@ -50,6 +21,10 @@ import PageLayout from '../layout/Containers/PageLayout';
 import HeroSection from './sections/HeroSection';
 import MainContentSection from './sections/MainContentSection';
 import FeatureCardsSection from './sections/FeatureCardsSection';
+import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import { DEFAULT_COLLECTION } from '../context/constants';
+
 const getHomePageSkeletonConfigs = (tiers) => {
   const { theme } = useMode();
   const { tertiaryContent, secondaryContent, mainContentFeatureCard } =
@@ -78,20 +53,9 @@ const getHomePageSkeletonConfigs = (tiers) => {
 };
 const HomePage = () => {
   const { theme } = useMode();
-  const breakpoints = theme.breakpoints;
-  const isSmUp = useMediaQuery(breakpoints.up('sm'));
-  const isMdUp = useMediaQuery(breakpoints.up('md'));
-  const isLgUp = useMediaQuery(breakpoints.up('lg'));
-  const { authUser, basicData } = useAuthContext();
-  const { user } = useUserContext();
-  const { allCollections, selectedCollection } = useCollectionStore();
-
-  const isDataLoaded = allCollections && allCollections.length > 0;
   const { tiers, introText } = pages;
-
-  const initialCardData = isDataLoaded ? allCollections[0].cards[0] : null;
-  const { cardData } = useCardCronJob(initialCardData);
-  const { loadingStatus } = usePageContext();
+  const { hasFetchedCollections } = useCollectionManager();
+  const { allCollections, selectedCollection } = useSelectedCollection();
   const {
     allFeatureData,
     showDetailsModal,
@@ -99,8 +63,8 @@ const HomePage = () => {
     isModalOpen,
     modalContent,
   } = useModalContext();
-  const homePageSkeletonConfigs = getHomePageSkeletonConfigs(tiers);
   const splashRef = useRef(null);
+
   useEffect(() => {
     if (splashRef.current) {
       Object.assign(splashRef.current.style, {

@@ -14,6 +14,7 @@ import {
   useAuthContext,
   useCollectionStore,
   useMode,
+  usePageContext,
   useUserContext,
 } from '../../context';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
@@ -26,18 +27,25 @@ import CardChart from '../../tests/CardChart';
 import {
   StyledContainerBox,
   StyledPaper,
-} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import placeHolder from '../../assets/images/placeholder.jpeg';
+import { DEFAULT_COLLECTION } from '../../context/constants';
+import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
 const MainContentSection = () => {
   const { theme } = useMode();
-  const { authUser, basicData } = useAuthContext();
+  const { authUser } = useAuthContext();
   const { user } = useUserContext();
-  const { allCollections, selectedCollection } = useCollectionStore();
-  const isDataLoaded = allCollections && allCollections.length > 0;
+
+  const { hasFetchedCollections } = useCollectionManager();
+  const { allCollections, selectedCollection } = useSelectedCollection();
+  // const isDataLoaded = allCollections && allCollections.length > 0;
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
-  const initialCardData = isDataLoaded ? allCollections[0].cards[0] : null;
-  const { cardData } = useCardCronJob(initialCardData);
+  const initialCardsData = hasFetchedCollections
+    ? allCollections[0]?.cards[0]
+    : DEFAULT_COLLECTION.addMultipleDefaultCards(5);
+  const { cardData } = useCardCronJob(initialCardsData);
 
   const renderStatItem = (label, value) => (
     <MDTypography variant="body1" color="primary" component="div">
@@ -46,7 +54,7 @@ const MainContentSection = () => {
   );
 
   return (
-    <section>
+    <section className="main-content-section">
       <StyledContainerBox>
         <Grid container spacing={2}>
           <Grid item xs={12} lg={7.5}>
@@ -82,7 +90,7 @@ const MainContentSection = () => {
                 <Card>
                   <CardHeader
                     title="User Account"
-                    subheader={`Welcome back, ${basicData.firstName}!`}
+                    subheader={`Welcome back, ${user?.userBasicData?.firstName}!`}
                     avatar={<MDAvatar src={placeHolder} alt={'User avatar'} />}
                   />
                   <CardContent>

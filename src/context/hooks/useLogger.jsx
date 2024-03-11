@@ -30,6 +30,11 @@ const useLogger = (componentName, options = {}) => {
     }
   };
 
+  // Function to log errors
+  const logError = (error) => {
+    console.error(`[${componentName}] Error:`, error);
+  };
+
   useEffect(() => {
     console.log(`[${componentName}] Mounted`, options);
     mountedRef.current = true;
@@ -51,7 +56,7 @@ const useLogger = (componentName, options = {}) => {
     logEvent('State Change', newState);
   };
 
-  return { logEvent, setStateAndLog };
+  return { logEvent, setStateAndLog, logError };
 };
 
 export default useLogger;

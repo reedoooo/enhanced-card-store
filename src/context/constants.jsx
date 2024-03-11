@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createNewPriceEntry } from './Helpers';
+import jsonData from './MAIN_CONTEXT/CollectionContext/nivoTestData.json';
+const { nivoTestData } = jsonData;
+import user from './user';
+
+// import { lightTheme, indigoTheme } from '../assets/themes/colors';
 // ! DEFAULT VALUES FOR CARD OBJECTS
 // Default values for common API data fields
 const defaultCommonAPIFields = {
@@ -109,36 +114,178 @@ const defaultCollectionStatistics = {
     },
   },
 };
+
+// const defaultPriceEntry = {
+//   num: 0,
+//   timestamp: new Date(),
+// };
 const defaultChartData = {
-  name: '',
-  userId: null,
-  allXYValues: [],
+  id: '24hr',
+  color: 'hsl(252, 70%, 50%)',
+  data: [{ x: new Date(), y: 0 }],
 };
-const defaultPriceEntry = {
-  num: 0,
-  timestamp: new Date(),
-};
-const defaultPriceHistory = [defaultPriceEntry];
+// const defaultPriceHistory = [defaultPriceEntry];
 // ! DEFAULT VALUES FOR COLLECTION OBJECTS
+// const defaultCollection = {
+//   userId: null,
+//   name: '',
+//   description: '',
+//   totalPrice: 0,
+//   quantity: 0,
+//   totalQuantity: 0,
+//   dailyPriceChange: 0,
+//   dailyPercentageChange: '0%',
+//   latestPrice: defaultPriceEntry,
+//   lastSavedPrice: defaultPriceEntry,
+//   dailyCollectionPriceHistory: defaultPriceHistory,
+//   collectionPriceHistory: defaultPriceHistory,
+//   chartData: {
+//     name: '',
+//     allXYValues: [{ x: new Date(), y: 0 }],
+//   },
+//   nivoChartData: defaultChartData,
+//   newNivoChartData: defaultChartData,
+//   collectionStatistics: defaultCollectionStatistics,
+//   cards: [defaultCardObject],
+// };
+// Simulating Mongoose-like schemas on the client-side
+const defaultCardImage = {
+  image_url: 'https://example.com/default-image.png',
+  image_url_small: 'https://example.com/default-image-small.png',
+};
+
+const defaultPriceEntry = (price = 0) => ({
+  num: price,
+  timestamp: new Date(),
+});
+
+const defaultCardPrice = {
+  cardmarket_price: 0,
+  tcgplayer_price: 0,
+  ebay_price: 0,
+  amazon_price: 0,
+};
+
+// Function to create a default card object
+const createDefaultCard = () => ({
+  name: '',
+  id: '',
+  type: '',
+  frameType: '',
+  desc: '',
+  atk: 0,
+  def: 0,
+  level: 0,
+  race: '',
+  attribute: '',
+  archetype: [],
+  card_sets: [],
+  card_images: [defaultCardImage],
+  card_prices: [defaultCardPrice],
+  tag: '',
+  watchList: false,
+  price: 0,
+  quantity: 1,
+  image: defaultCardImage.image_url,
+  totalPrice: 0,
+  latestPrice: defaultPriceEntry(),
+  lastSavedPrice: defaultPriceEntry(),
+  priceHistory: [defaultPriceEntry()],
+  dailyPriceHistory: [defaultPriceEntry()],
+  chart_datasets: [defaultChartData],
+  nivoChartData: defaultChartData,
+  cardVariants: [],
+  variant: null, // Assuming this would be set to the ID of a selected variant
+  rarity: '',
+  contextualQuantity: {
+    SearchHistory: 0,
+    Deck: 0,
+    Collection: 0,
+    Cart: 0,
+  },
+  contextualTotalPrice: {
+    SearchHistory: 0,
+    Deck: 0,
+    Collection: 0,
+    Cart: 0,
+  },
+  refs: {
+    decks: [],
+    collections: [],
+    carts: [],
+    // Add more contexts as needed
+  },
+});
+
+// Example usage
+const defaultCard = createDefaultCard();
+console.log(defaultCard);
+
 const defaultCollection = {
-  userId: null,
   name: '',
   description: '',
-  totalPrice: 0,
-  quantity: 0,
-  totalQuantity: 0,
   dailyPriceChange: 0,
-  dailyPercentageChange: '0%',
-  latestPrice: defaultPriceEntry,
-  lastSavedPrice: defaultPriceEntry,
-  dailyCollectionPriceHistory: defaultPriceHistory,
-  collectionPriceHistory: defaultPriceHistory,
-  chartData: defaultChartData,
+  dailyPercentageChange: '',
+  newTotalPrice: 0,
+  collectionStatistics: {
+    highPoint: 0,
+    lowPoint: 0,
+    avgPrice: 0,
+    percentageChange: 0,
+    priceChange: 0,
+    twentyFourHourAverage: {
+      startDate: new Date(),
+      endDate: new Date(),
+      lowPoint: 0,
+      highPoint: 0,
+      priceChange: 0,
+      percentageChange: 0,
+      priceIncreased: false,
+    },
+    average: 0,
+    volume: 0,
+    volatility: 0,
+    general: {
+      totalPrice: 0,
+      topCard: '',
+      topCollection: '',
+    },
+  },
+  latestPrice: {
+    price: 0,
+    date: new Date(),
+  },
+  lastSavedPrice: {
+    price: 0,
+    date: new Date(),
+  },
+  dailyCollectionPriceHistory: [],
+  collectionPriceHistory: [
+    {
+      timestamp: new Date(),
+      priceChanges: [
+        {
+          collectionName: '',
+          cardName: '',
+          oldPrice: 0,
+          newPrice: 0,
+          priceDifference: 0,
+          message: '',
+        },
+      ],
+      priceDifference: 0,
+    },
+  ],
+  priceChangeHistory: [],
+  chartData: {
+    name: '',
+    userId: '',
+    allXYValues: [],
+  },
   nivoChartData: [
     {
       id: '',
       color: '',
-      // TODO: set x as defauly value for dates
       data: [{ x: new Date(), y: 0 }],
     },
   ],
@@ -149,9 +296,26 @@ const defaultCollection = {
       data: [{ x: new Date(), y: 0 }],
     },
   ],
-  collectionStatistics: defaultCollectionStatistics,
-  cards: [defaultCardObject],
+  nivoTestData: [nivoTestData],
+  averagedChartData: new Map(),
+  muiChartData: [],
+  cards: [],
+  addDefaultCard: function () {
+    const newCard = createDefaultCard();
+    this.cards.push(newCard);
+    this.updateTotalPrice();
+  },
+  updateTotalPrice: function () {
+    this.newTotalPrice = this.cards.reduce(
+      (acc, card) => acc + card.totalPrice,
+      0
+    );
+  },
+  addMultipleDefaultCards: function (numberOfCards) {
+    Array.from({ length: numberOfCards }).forEach(() => this.addDefaultCard());
+  },
 };
+
 // ! DEFAULT VALUES FOR DECK OBJECTS
 const defaultDeck = {
   userId: null,
@@ -160,9 +324,9 @@ const defaultDeck = {
   totalPrice: 0,
   quantity: 0,
   totalQuantity: 0,
-  tags: [],
+  tags: [''],
   color: '',
-  cards: [],
+  cards: [defaultCard],
 };
 // ! DEFAULT VALUES FOR CART OBJECTS
 const defaultCart = {
@@ -192,9 +356,43 @@ export const DEFAULT_DECK = defaultDeck;
 export const DEFAULT_ALLDECKS_ARRAY = [defaultDeck];
 export const DEFAULT_CART = defaultCart;
 export const DEFAULT_USER = defaultUser;
+export const SELECTED_COLLECTION_ID = 'selectedCollectionId';
+export const DEFAULT_CARDS_COUNT = 5;
 // FUNCTIONS
 export const createNewCardObject = () => {
   return { ...DEFAULT_CARD_OBJECT };
+};
+
+// ! DEFAULT VALUES FOR CUSTOM DYNAMIC FIELD OBJECTS
+export const defaultCustomField = {
+  name: '',
+  value: '',
+};
+export const defaultCustomFields = [defaultCustomField];
+
+const themeRanges = [
+  {
+    id: 'light',
+    name: 'Light',
+    value: 'light',
+    data: {},
+  },
+  {
+    id: 'dark',
+    name: 'Dark',
+    value: 'dark',
+    data: {},
+  },
+  {
+    id: 'indigo',
+    name: 'Indigo',
+    value: 'indigo',
+    data: {},
+  },
+];
+// ! DEFAULT SYSTEM VALUES
+export const defaultSystemConstants = {
+  THEME_RANGES: themeRanges,
 };
 
 // ! DEFAULT VALUES FOR CONTEXT OBJECTS ----------------------
@@ -270,9 +468,12 @@ const defaultCardContextValues = {
 // ! DEFAULT VALUES FOR COLLECTION CONTEXT
 const defaultCollectionContextValues = {
   // MAIN STATE
-  allCollections: [DEFAULT_COLLECTION],
-  selectedCollection: DEFAULT_COLLECTION,
-  selectedCards: DEFAULT_CARDS_ARRAY,
+  collectionData: {
+    data: [DEFAULT_COLLECTION.addDefaultCard()],
+  },
+  allCollections: [DEFAULT_COLLECTION.addDefaultCard()],
+  selectedCollection: DEFAULT_COLLECTION.addDefaultCard(),
+  selectedCards: DEFAULT_COLLECTION.cards,
 
   // SECONDARY STATE (derived from main state selectedCollection)
   collectionStatistics: DEFAULT_COLLECTION_STATISTICS,
@@ -286,8 +487,9 @@ const defaultCollectionContextValues = {
   cards: DEFAULT_COLLECTION.cards || [],
 
   // STATE SETTERS
+  setCollectionData: () => {},
   setAllCollections: () => {},
-  setSelectedCollection: () => {},
+  handleSelectCollection: () => {},
   setSelectedCards: () => {},
 
   // COLLECTION ACTIONS
@@ -356,22 +558,25 @@ const defaultCartContextValues = {
 };
 
 // ! DEFAULT VALUES FOR USER CONTEXT
-const defaultUserProps = {
-  userId: null,
-  firstName: '',
-  lastName: '',
+const defaultUserProps =
+  process.env.AUTH_ENVIRONMENT === 'disabled'
+    ? user
+    : {
+        userId: null,
+        firstName: '',
+        lastName: '',
 
-  username: '',
-  password: '',
-  email: '',
+        username: '',
+        password: '',
+        email: '',
 
-  collections: [],
-  totalNumberOfCollections: 0,
-  decks: [],
-  totalNumberOfDecks: 0,
-  cart: [],
-  totalNumberOfCardsInCart: 0,
-};
+        collections: [],
+        totalNumberOfCollections: 0,
+        decks: [],
+        totalNumberOfDecks: 0,
+        cart: [],
+        totalNumberOfCardsInCart: 0,
+      };
 
 const defaultUserContextValues = {
   ...defaultUserProps,
@@ -426,12 +631,25 @@ const defaultStatisticsContextValues = {
   getTopCollection: () => {},
   calculateStatsByCollectionId: () => {},
 };
+const defaultXYValues = [{ x: new Date(), y: 0 }];
+const defaultDataPoint = {
+  label: '',
+  x: new Date(),
+  y: 0,
+};
 // default values for LINEAR CHART from nivo
+const defaultTimeRanges = [
+  {
+    id: '',
+    color: '',
+    data: defaultDataPoint,
+  },
+];
 const defaultNivoChartData = [
   {
     id: '',
     color: '',
-    data: [{ x: new Date(), y: 0 }],
+    data: defaultDataPoint,
   },
 ];
 // default values for PIE CHART from MUI
@@ -466,15 +684,45 @@ const timeRangeProps = {
     '65cecbc3bc231bd7d96598ef',
   ],
 };
-const timeRanges = [
-  { id: '24hr', name: 'Last 24 Hours', value: '24hr' },
-  { id: '7d', name: 'Last 7 Days', value: '7d' },
-  { id: '30d', name: 'Last Month', value: '30d' },
-  { id: '90d', name: 'Last 3 Months', value: '90d' },
-  { id: '180d', name: 'Last 6 Months', value: '180d' },
-  { id: '270d', name: 'Last 9 Months', value: '270d' },
-  { id: '365d', name: 'Last Year', value: '365d' },
-];
+// const timeRanges = [
+//   {
+//     id: '24hr',
+//     name: 'Last 24 Hours',
+//     value: '24hr',
+//     data: defaultNivoChartData,
+//   },
+//   { id: '7d', name: 'Last 7 Days', value: '7d', data: [defaultNivoChartData] },
+//   {
+//     id: '30d',
+//     name: 'Last 30 Days',
+//     value: '30d',
+//     data: defaultNivoChartData,
+//   },
+//   {
+//     id: '90d',
+//     name: 'Last 90 Days',
+//     value: '90d',
+//     data: defaultNivoChartData,
+//   },
+//   {
+//     id: '180d',
+//     name: 'Last 180 Days',
+//     value: '180d',
+//     data: defaultNivoChartData,
+//   },
+//   {
+//     id: '270d',
+//     name: 'Last 270 Days',
+//     value: '270d',
+//     data: defaultNivoChartData,
+//   },
+//   {
+//     id: '365d',
+//     name: 'Last 365 Days',
+//     value: '365d',
+//     data: defaultNivoChartData,
+//   },
+// ];
 const allChartData = (timeRangeProps) => {
   for (const id of timeRangeProps.ids) {
     timeRangeProps.data.push({ x: new Date(), y: 0 });
@@ -493,9 +741,19 @@ const createNewNivoChartData = () => {
 export const defaultChartConstants = {
   HEIGHT_TO_WIDTH_RATIO: 7 / 10,
   DEFAULT_THRESHOLD: 600000,
-  TIME_RANGES: timeRanges,
+  TIME_RANGES: [
+    { id: '24hr', name: 'Last 24 Hours', value: '24hr', data: [] },
+    { id: '7d', name: 'Last 7 Days', value: '7d', data: [] },
+    { id: '30d', name: 'Last 30 Days', value: '30d', data: [] },
+    { id: '90d', name: 'Last 90 Days', value: '90d', data: [] },
+    { id: '180d', name: 'Last 180 Days', value: '180d', data: [] },
+    { id: '270d', name: 'Last 270 Days', value: '270d', data: [] },
+    { id: '365d', name: 'Last 365 Days', value: '365d', data: [] },
+  ],
+  NIVO_CHART_DATA: createNewNivoChartData(),
+  // SELECTED_TIME_RANGE: timeRanges[0],
   // TIME_RANGE: timeRanges[0],
-  TIME_RANGES_KEYS: timeRanges.map((range) => range.id),
+  TIME_RANGES_KEYS: ['24hr', '7d', '30d', '90d', '180d', '270d', '365d'],
   TIME_RANGE_PROPS: timeRangeProps,
   // TICK_VALUES: ({ ticks } = getFormatAndTicks(timeRangeProps[0])),
   // X_FORMAT: ({ format } = getFormatAndTicks(timeRangeProps[0])),
@@ -548,7 +806,7 @@ const defaultChartContextValues = {
   // ...defaultChartConstants,
   // Data
   latestData: null,
-  timeRange: defaultChartConstants.TIME_RANGE,
+  selectedRange: defaultChartConstants.SELECTED_TIME_RANGE,
   timeRanges: defaultChartConstants.TIME_RANGES,
   finalizedNivoData: null,
   currentValue: null,

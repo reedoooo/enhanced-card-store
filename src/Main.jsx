@@ -9,6 +9,7 @@ import Navigation from './layout/navigation/Navigation.jsx';
 import LoadingIndicator from './components/reusable/indicators/LoadingIndicator.js';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
 import { useCardStoreHook } from './context/hooks/useCardStore.jsx';
+import { AppContainer } from './pages/pageStyles/StyledComponents.jsx';
 
 // Define all routes in a single array including the component name for laziness
 const ROUTE_CONFIG = [
@@ -39,7 +40,7 @@ const Main = () => {
   const { isLoggedIn } = useAuthContext();
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
   return (
-    <React.Fragment>
+    <>
       {!isLoggedIn ? (
         <LoginDialog open={!isLoggedIn} />
       ) : (
@@ -71,7 +72,7 @@ const Main = () => {
           </Suspense>
         </PageLayout>
       )}
-    </React.Fragment>
+    </>
   );
 };
 

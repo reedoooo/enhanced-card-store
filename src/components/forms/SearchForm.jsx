@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect } from 'react';
 import { Button, Grid } from '@mui/material';
 import { useFormContext, useMode, usePageContext } from '../../context';
-import FormField from '../reusable/FormField';
-import { StyledFormPaper } from '../../pages/pageStyles/StyledComponents';
+import {
+  StyledFormBox,
+  StyledFormPaper,
+} from '../../pages/pageStyles/StyledComponents';
+import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { LoadingButton } from '@mui/lab';
+import FormField from './reusable/FormField';
 
 const SearchForm = ({ onFocus, onBlur }) => {
   const { theme } = useMode();
@@ -18,19 +22,26 @@ const SearchForm = ({ onFocus, onBlur }) => {
     handleBlur,
     handleFocus,
     forms,
+    handleChange,
+    setFormSchema,
   } = useFormContext();
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'searchTerm') {
-      handleSearchTermChange(value); // Call the method when searchTerm changes
-    }
-    handleFieldChange(formId, name, value); // Continue to update the form state as before
-  };
 
-  const { searchTerm } = formStates.searchForm;
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
+  useEffect(() => {
+    setFormSchema(formId);
+  }, [setFormSchema]);
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (name === 'searchTerm') {
+  //     handleSearchTermChange(value); // Call the method when searchTerm changes
+  //   }
+  //   handleFieldChange(formId, name, value); // Continue to update the form state as before
+  // };
+
+  // const { searchTerm } = formStates?.searchForm;
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
       formMethods.handleSubmit((data) => {
         onSubmit(data);
       });
@@ -44,7 +55,9 @@ const SearchForm = ({ onFocus, onBlur }) => {
         background: theme.palette.backgroundB.lightest,
       }}
     >
-      <form
+      <FormBox
+        component={'form'}
+        theme={theme}
         onSubmit={formMethods.handleSubmit((data) =>
           onSubmit(data, 'searchForm')
         )}
@@ -55,7 +68,7 @@ const SearchForm = ({ onFocus, onBlur }) => {
           register={formMethods.register}
           errors={errors}
           required
-          value={searchTerm}
+          value={forms?.searchForm?.searchTerm}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -83,7 +96,7 @@ const SearchForm = ({ onFocus, onBlur }) => {
           {isSubmitting ? 'Loading...' : 'Search'}
         </LoadingButton>
         {errors?.root && <p>{errors?.root?.message}</p>}
-      </form>
+      </FormBox>
     </StyledFormPaper>
   );
 };

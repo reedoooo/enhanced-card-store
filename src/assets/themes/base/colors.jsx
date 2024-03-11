@@ -4,6 +4,9 @@ import {
   backgroundB,
   backgroundE,
   backgroundF,
+  backgroundG,
+  backgroundGSecondary,
+  chartTheme,
   rarity,
   info,
   warning,
@@ -14,6 +17,7 @@ import {
   action,
 } from './customColorPalettes';
 const colors = {
+  chartTheme: chartTheme,
   // PRIMARY COLORS
   backgroundA,
   backgroundD: {
@@ -41,6 +45,9 @@ const colors = {
   // TERTIARY COLORS
   backgroundE,
   backgroundF,
+  backgroundG,
+  backgroundGSecondary,
+
   // COLORS FOR CARD RARITY OVERLAY
   rarity,
   // CARD RARITY OVERLAYS

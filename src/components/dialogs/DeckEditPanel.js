@@ -14,50 +14,71 @@ import {
 import { useDeckStore, useFormContext, useMode } from '../../context';
 import useSnackBar from '../../context/hooks/useSnackBar';
 import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
-import FormField from '../reusable/FormField';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import FormField from '../forms/reusable/FormField';
 const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
   const { theme } = useMode();
   // const { showSnackbar } = useSnackBar(); // Assuming snackbar hook for user notifications
   const {
+    formMethods,
+    // formStates: { errors, isSubmitting, ...formStates },
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
-    isSubmitting,
-    onSubmit, // Assuming this function is correctly set up in your form context to handle deck submissions
+    setFormSchema,
+    onSubmit,
+    // Removal of onSubmit from destructuring as we will define a local handler
   } = useFormContext();
   // Local state for dynamic fields like tags
+  const [newTag, setNewTag] = useState('');
   const tags = watch('tags', selectedDeck?.tags || []);
   const color = watch('color');
 
   useEffect(() => {
-    if (selectedDeck && selectedDeck?.cards?.length >= 1) {
+    setFormSchema('updateDeckForm');
+  }, [setFormSchema]);
+
+  useEffect(() => {
+    if (selectedDeck) {
       reset({
-        name: selectedDeck?.name,
-        description: selectedDeck?.description,
-        tags: selectedDeck?.tags || [],
-        color: selectedDeck?.color || 'red',
+        name: selectedDeck.name,
+        description: selectedDeck.description,
+        tags: selectedDeck.tags || [],
+        color: selectedDeck.color || 'red',
       });
     }
   }, [selectedDeck, reset]);
 
-  // Handle adding new tags
   const handleAddNewTag = (newTag) => {
     if (newTag && !tags.includes(newTag)) {
       setValue('tags', [...tags, newTag.trim()]);
     }
   };
-
-  // Handle deleting a tag
   const handleTagDelete = (tagToDelete) => {
     setValue(
       'tags',
       tags.filter((tag) => tag !== tagToDelete)
     );
+  };
+  const handleFormSubmit = async (data) => {
+    try {
+      // Assuming `onSubmit` is a function passed via context or props that handles the actual submission
+      await onSubmit(data); // Adjust based on actual implementation
+      showSnackbar({
+        message: 'Deck updated successfully',
+        variant: 'success',
+      });
+    } catch (error) {
+      showSnackbar({
+        message: error.message || 'An error occurred while updating the deck.',
+        variant: 'error',
+      });
+    }
   };
   // const handleDeleteClick = async () => {
   //   try {
@@ -85,18 +106,10 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
       }}
     >
       <Typography variant="h6">Deck Editor</Typography>
-      <form
-        onSubmit={handleSubmit((data) => {
-          onSubmit(data);
-          // Show snackbar after form submission
-          const message = {
-            title: 'Form Submitted',
-            description:
-              'Deck updated successfully' || 'Deck added successfully',
-          };
-          const variant = 'success';
-          showSnackbar(message, variant);
-        })}
+      <FormBox
+        component={'form'}
+        theme={theme}
+        onSubmit={handleSubmit(handleFormSubmit)}
       >
         <FormField
           label="Name"
@@ -113,24 +126,29 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
           multiline
           required
         />
+
         <Box sx={{ my: 2 }}>
-          {tags?.map((tag, index) => (
-            <Chip
-              key={index}
-              label={tag}
-              onDelete={() => handleTagDelete(tag)}
-            />
-          ))}
-          <TextField
+          {tags &&
+            tags?.map((tag, index) => (
+              <Chip
+                key={index}
+                label={tag}
+                onDelete={() => handleTagDelete(tag)}
+              />
+            ))}
+          <FormField
             label="New Tag"
+            name="tags"
+            register={register}
+            errors={errors}
             size="small"
-            onBlur={(e) => handleAddNewTag(e.target.value)}
-            // Clear the input field after adding a tag
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            onBlur={handleAddNewTag}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                handleAddNewTag(e.target.value);
-                e.target.value = '';
+                handleAddNewTag();
               }
             }}
           />
@@ -184,7 +202,7 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
             Delete Deck
           </Button>
         </Box>
-      </form>
+      </FormBox>
     </Paper>
   );
 };

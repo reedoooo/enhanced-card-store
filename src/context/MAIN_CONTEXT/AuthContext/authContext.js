@@ -16,179 +16,166 @@ import useLogger from '../../hooks/useLogger';
 import { defaultContextValue } from '../../constants';
 import { Redirect, useNavigate } from 'react-router-dom';
 import { useLoading } from '../../hooks/useLoading';
+import useFetchWrapper from '../../hooks/useFetchWrapper';
+import jwt_decode from 'jwt-decode';
 
 export const AuthContext = createContext(defaultContextValue.AUTH_CONTEXT);
 
 const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 
 export default function AuthProvider({ children }) {
-  const { setIsDataLoading } = usePageContext();
-  const { startLoading, stopLoading } = useLoading(); // Utilize useLoading hook
-  const { logEvent } = useLogger('AuthContext');
-  const navigate = useNavigate(); // Create navigate instance
-  const [lastTokenCheck, setLastTokenCheck] = useState(Date.now());
-  const checkInterval = 120000; // 2 minutes in milliseconds
+  const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies([
     'accessToken',
     'refreshToken',
-    'user',
-    'authUser',
-    'userBasicData',
-    'userSecurityData',
     'isLoggedIn',
+    'authUser',
     'userId',
   ]);
+  const [user, setUser] = useState({
+    isLoggedIn: false,
+    accessToken: '',
+    userId: '',
+  });
+
+  // Helper function to decode JWT and set user state
+  const decodeAndSetUser = (accessToken) => {
+    const decoded = jwt_decode(accessToken);
+    setUser({
+      isLoggedIn: true,
+      accessToken,
+      userId: decoded.userId, // Or any other way you extract userId from token or cookies
+    });
+  };
+
+  useEffect(() => {
+    const { accessToken } = cookies;
+    if (accessToken) {
+      decodeAndSetUser(accessToken);
+    } else {
+      setUser({
+        isLoggedIn: false,
+        accessToken: '',
+        userId: '',
+      });
+    }
+  }, [cookies.accessToken]);
+
   const [responseMessage, setResponseMessage] = useState('');
-  const logoutTimerRef = useRef(null);
-  const executeAuthAction = async (actionType, url, requestData) => {
-    const loadingID = actionType;
-    startLoading(loadingID);
+  const { fetchWrapper } = useFetchWrapper();
+  const { logEvent } = useLogger('AuthContext');
+  // Helper function to set cookies
+  const setAuthCookies = (data) => {
+    const { accessToken, refreshToken, user } = data;
+    const authData = jwt_decode(accessToken);
+
+    setCookie('accessToken', accessToken, { path: '/' });
+    setCookie('refreshToken', refreshToken, { path: '/' });
+    setCookie('isLoggedIn', true, { path: '/' });
+    // setCookie('userBasicData', basicData, { path: '/' });
+    // setCookie('userSecurityData', securityData, { path: '/' });
+    setCookie('user', user, { path: '/' });
+    setCookie('authUser', authData, { path: '/' });
+    setCookie('userId', user._id, { path: '/' });
+    navigate('/home');
+  };
+
+  const clearAuthCookies = () => {
+    // List all cookie names to remove
+    ['accessToken', 'refreshToken', 'user'].forEach((cookieName) =>
+      removeCookie(cookieName, { path: '/' })
+    );
+    navigate('/login');
+  };
+
+  const executeAuthAction = async (actionType, url, requestData, loadingId) => {
     try {
-      const response = await axios.post(
+      const responseData = await fetchWrapper(
         `${REACT_APP_SERVER}/api/users/${url}`,
-        requestData
+        'POST',
+        requestData,
+        loadingId
       );
-      setResponseMessage(response.data.message);
-      // const { data } = handleApiResponse(response.data, 'executeAuthAction');
-      if (response.status === 200 || response.status === 201) {
-        const {
-          accessToken,
-          refreshToken,
-          authData,
-          basicData,
-          securityData,
-          responseData,
-          refreshData,
-        } = processResponseData(response.data, actionType);
-        setCookie('accessToken', accessToken, { path: '/' });
-        setCookie('refreshToken', refreshToken, { path: '/' });
-        setCookie('isLoggedIn', true, { path: '/' });
-        setCookie('userBasicData', basicData, { path: '/' });
-        setCookie('userSecurityData', securityData, { path: '/' });
-        setCookie('user', responseData.user, { path: '/' });
-        setCookie('authUser', authData, { path: '/' });
-        setCookie('userId', authData.userId, { path: '/' });
-        resetLogoutTimer();
-        navigate('/home'); // Add this line for redirection
-      }
+      if (!responseData?.data) throw new Error('Invalid response structure');
+      setAuthCookies(responseData.data);
     } catch (error) {
-      logEvent('Auth error:', error);
-    } finally {
-      stopLoading(loadingID);
+      console.error('Auth action error:', error);
+      setResponseMessage(
+        error.message || 'An error occurred during authentication.'
+      );
     }
   };
-  const logout = useCallback(async () => {
-    startLoading('logout');
-    try {
-      const { userId, refreshToken } = cookies;
-      await axios.post(`${REACT_APP_SERVER}/api/users/signout`, {
-        userId,
-        refreshToken,
-      });
-      Object.keys(cookies).forEach(removeCookie);
-      clearTimeout(logoutTimerRef.current);
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      stopLoading('logout');
-    }
-  }, [removeCookie, startLoading, stopLoading]);
-
-  const resetLogoutTimer = useCallback(() => {
-    clearTimeout(logoutTimerRef.current);
-    logoutTimerRef.current = setTimeout(logout, 2700000); // 45 minutes
-  }, [logout]);
+  const logout = useCallback(() => {
+    clearAuthCookies();
+  }, [removeCookie, navigate]);
 
   const login = useCallback(
     async (username, password) => {
-      logEvent('Logging in...');
-      await executeAuthAction('signin', 'signin', {
-        userSecurityData: { username, password },
-      });
+      await executeAuthAction(
+        'signin',
+        'signin',
+        {
+          userSecurityData: { username, password },
+        },
+        'login'
+      );
     },
     [executeAuthAction]
   );
 
-  const signup = async (securityData, basicData) => {
-    logEvent('Signing up...');
-    await executeAuthAction('signup', 'signup', {
-      userSecurityData: securityData,
-      userBasicData: basicData,
-    });
-  };
+  const signup = useCallback(
+    async (username, password, firstName, lastName, email) => {
+      await executeAuthAction(
+        'signup',
+        'signup',
+        {
+          userSecurityData: { firstName, lastName, username, password, email },
+        },
+        'signup'
+      );
+    },
+    [executeAuthAction]
+  );
 
-  const checkTokenValidity = useCallback(async () => {
-    logEvent('Checking token validity.');
-    startLoading('checkTokenValidity');
+  const checkTokenValidity = useCallback(() => {
+    const accessToken = cookies.accessToken;
+    if (!accessToken) {
+      logout();
+      return;
+    }
 
     try {
-      const accessToken = cookies.accessToken;
-      if (!accessToken) return false;
-
-      const response = await axios.get(
-        `${REACT_APP_SERVER}/api/users/checkToken`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-      setResponseMessage(response.data.message);
-      const isValid = response.data.message === 'Token is valid';
-
-      console.log('Token validity:', response.data);
-      if (!isValid) {
+      const { exp } = jwt_decode(accessToken);
+      const isTokenExpired = Date.now() >= exp * 1000;
+      if (isTokenExpired) {
         console.log('Token is invalid, logging out...');
         logout();
       }
-
-      setLastTokenCheck(Date.now());
-      return isValid;
     } catch (error) {
       console.error('Token validation error:', error);
-      logEvent(`Token validation failed: ${error}`);
-      logout(); // Log out if token validation fails
-    } finally {
-      stopLoading('checkTokenValidity');
+      logout();
     }
-  }, [cookies.accessToken, logout, startLoading, stopLoading]);
+  }, [cookies.accessToken, logout]);
 
+  // Token validity check could be triggered periodically or on specific events
   useEffect(() => {
-    const currentTime = Date.now();
-    if (currentTime - lastTokenCheck >= checkInterval) {
-      checkTokenValidity();
-    }
-
-    const timeToNextCheck = lastTokenCheck + checkInterval - currentTime;
-    const timeoutId = setTimeout(
-      checkTokenValidity,
-      timeToNextCheck > 0 ? timeToNextCheck : checkInterval
-    );
-
-    return () => clearTimeout(timeoutId); // Cleanup the timeout
-  }, [checkTokenValidity, lastTokenCheck]);
+    checkTokenValidity();
+  }, [checkTokenValidity]);
 
   const contextValue = useMemo(
     () => ({
-      // isLoggedIn: cookies.isLoggedIn,
-      isLoggedIn: !!cookies.accessToken,
-      accessToken: cookies.accessToken,
-      refreshToken: cookies.refreshToken,
-      responseMessage,
-      authUser: cookies.authUser,
-      user: cookies.user,
-      basicData: cookies.userBasicData,
-      securityData: cookies.userSecurityData,
-      userId: cookies.userId,
-
+      ...user,
+      isLoggedIn:
+        process.env.AUTH_ENVIRONMENT !== 'disabled'
+          ? !!cookies.accessToken
+          : true,
       login,
       signup,
       logout,
-      checkTokenValidity,
-      resetLogoutTimer,
+      responseMessage,
     }),
-    [cookies, login, logout, resetLogoutTimer]
+    [cookies.accessToken, login, signup, logout, responseMessage, user]
   );
-
-  useEffect(() => {
-    console.log('AUTH CONTEXT:', contextValue);
-  }, [contextValue.login, contextValue.logout, contextValue.isLoggedIn]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

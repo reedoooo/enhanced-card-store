@@ -7,11 +7,11 @@ import { AnimatedFeatureCard } from '../../components/cards/AnimatedFeatureCard'
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useResponsiveStyles } from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
+import pages from '../../assets/data/pages.json';
 import {
   StyledContainerBox,
   StyledPaper,
-} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import pages from '../../assets/data/pages.json';
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const FeatureCardsSection = () => {
   const { theme } = useMode();

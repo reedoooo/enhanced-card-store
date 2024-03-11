@@ -1,11 +1,62 @@
 import * as React from 'react';
-import { Transition } from 'react-transition-group';
+// const withDynamicSnackbar = (WrappedComponent) => (props) => {
+//   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+//   // const { handleSnackBar } = useSnackBar(); // Obtain enqueueSnackbar function from useSnackBar hook
+
 import { Snackbar, IconButton, Box, Grow } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Close as CloseIcon } from '@mui/icons-material';
 import styled from 'styled-components';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import { useMode } from '../../../context';
-import { useSnackbar } from 'notistack';
+
+// eslint-disable-next-line react/display-name
+const withDynamicSnackbar = (WrappedComponent) => (props) => {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const showSnackbar = (message, variant = 'success') => {
+    enqueueSnackbar(message, {
+      variant,
+      action: (key) => (
+        <IconButton size="small" onClick={() => closeSnackbar(key)}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      ),
+    });
+  };
+
+  return <WrappedComponent {...props} showSnackbar={showSnackbar} />;
+};
+
+export { withDynamicSnackbar };
+// import { Transition } from 'react-transition-group';
+// import { Snackbar, IconButton, Box, Grow } from '@mui/material';
+// import { Close as CloseIcon } from '@mui/icons-material';
+// import styled from 'styled-components';
+// import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+// import { useMode } from '../../../context';
+// import { useSnackbar } from 'notistack';
+
+// const DynamicSnackbar = ({ open, message, variant, onClose }) => {
+//   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+//   // Use enqueueSnackbar for showing messages
+//   React.useEffect(() => {
+//     if (open && message?.title) {
+//       enqueueSnackbar(message.title, {
+//         variant,
+//         action: (key) => (
+//           <IconButton size="small" onClick={() => closeSnackbar(key)}>
+//             <CloseIcon fontSize="inherit" />
+//           </IconButton>
+//         ),
+//       });
+//     }
+//   }, [open, message, variant, enqueueSnackbar, closeSnackbar]);
+
+//   // Since snackbar management is now handled by notistack, the component itself doesn't need to render anything.
+//   return null;
+// };
+
+// export default DynamicSnackbar;
 // import useSnackBar from '../../../context/hooks/useSnackBar';
 
 // const DynamicSnackbar = ({ open, message, variant, onClose, loading }) => {
@@ -73,82 +124,79 @@ import { useSnackbar } from 'notistack';
 //     </Snackbar>
 //   );
 // };
-const DynamicSnackbar = ({ open, message, variant, onClose }) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  // Use enqueueSnackbar for showing messages
-  React.useEffect(() => {
-    if (open && message?.title) {
-      enqueueSnackbar(message.title, {
-        variant,
-        action: (key) => (
-          <IconButton size="small" onClick={() => closeSnackbar(key)}>
-            <CloseIcon fontSize="inherit" />
-          </IconButton>
-        ),
-      });
-    }
-  }, [open, message, variant, enqueueSnackbar, closeSnackbar]);
-
-  // Since snackbar management is now handled by notistack, the component itself doesn't need to render anything.
-  return null;
-};
-
-export default DynamicSnackbar;
-
-DynamicSnackbar.displayName = 'DynamicSnackbar'; // Add display name
+// DynamicSnackbar.displayName = 'DynamicSnackbar'; // Add display name
 
 // eslint-disable-next-line react/display-name
-const withDynamicSnackbar = (WrappedComponent) => (props) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  // const { handleSnackBar } = useSnackBar(); // Obtain enqueueSnackbar function from useSnackBar hook
+// HOC to provide snackbar functionality to wrapped components
+// const withDynamicSnackbar = (WrappedComponent) => (props) => {
+//   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState({
-    title: '',
-    description: '',
-  });
-  const [snackbarVariant, setSnackbarVariant] = React.useState('success');
-  const [loading, setLoading] = React.useState(false);
+//   // Function to show snackbar
+//   const showSnackbar = (message, variant = 'success') => {
+//     enqueueSnackbar(message, {
+//       variant,
+//       action: (key) => (
+//         <IconButton size="small" onClick={() => closeSnackbar(key)}>
+//           <CloseIcon fontSize="small" />
+//         </IconButton>
+//       ),
+//     });
+//   };
 
-  const showSnackbar = (message, variant = 'success') => {
-    console.log('showSnackbar:', message, variant);
-    const destructuredMessage = {
-      title: message.title,
-      description: message.description,
-    };
-    setSnackbarMessage(destructuredMessage);
-    setSnackbarVariant(variant);
-    setSnackbarOpen(true);
-  };
+//   return <WrappedComponent {...props} showSnackbar={showSnackbar} />;
+// };
 
-  const hideSnackbar = () => {
-    setSnackbarOpen(false);
-  };
+// const withDynamicSnackbar = (WrappedComponent) => (props) => {
+//   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+//   // const { handleSnackBar } = useSnackBar(); // Obtain enqueueSnackbar function from useSnackBar hook
 
-  return (
-    <React.Fragment>
-      <WrappedComponent
-        {...props}
-        showSnackbar={showSnackbar}
-        setLoading={setLoading}
-      />
-      <DynamicSnackbar
-        open={snackbarOpen}
-        message={snackbarMessage}
-        variant={snackbarVariant}
-        onClose={hideSnackbar}
-        loading={loading}
-        // enqueueSnackbar={handleSnackBar(snackbarMessage, {
-        //   severity: snackbarVariant,
-        //   autoHideDuration: 6000,
-        // })}
-      />
-    </React.Fragment>
-  );
-};
+//   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+//   const [snackbarMessage, setSnackbarMessage] = React.useState({
+//     title: '',
+//     description: '',
+//   });
+//   const [snackbarVariant, setSnackbarVariant] = React.useState('success');
+//   const [loading, setLoading] = React.useState(false);
 
-export { DynamicSnackbar, withDynamicSnackbar };
+//   const showSnackbar = (message, variant = 'success') => {
+//     console.log('showSnackbar:', message, variant);
+//     const destructuredMessage = {
+//       title: message.title,
+//       description: message.description,
+//     };
+//     setSnackbarMessage(destructuredMessage);
+//     setSnackbarVariant(variant);
+//     setSnackbarOpen(true);
+//   };
+
+//   const hideSnackbar = () => {
+//     setSnackbarOpen(false);
+//   };
+
+//   return (
+//     <React.Fragment>
+//       <WrappedComponent
+//         {...props}
+//         showSnackbar={showSnackbar}
+//         setLoading={setLoading}
+//       />
+//       <DynamicSnackbar
+//         open={snackbarOpen}
+//         message={snackbarMessage}
+//         variant={snackbarVariant}
+//         onClose={hideSnackbar}
+//         loading={loading}
+//         // enqueueSnackbar={handleSnackBar(snackbarMessage, {
+//         //   severity: snackbarVariant,
+//         //   autoHideDuration: 6000,
+//         // })}
+//       />
+//     </React.Fragment>
+//   );
+// };
+
+// export { withDynamicSnackbar };
 
 // const positioningStyles = {
 //   entering: 'translateX(0)',
@@ -171,7 +219,7 @@ const grey = {
   900: '#212121',
 };
 
-const StyledSnackbar = styled(Box)(
+const StyledSnackbar = styled(Snackbar)(
   ({ theme, variant }) => `
   position: fixed;
   z-index: 5500;

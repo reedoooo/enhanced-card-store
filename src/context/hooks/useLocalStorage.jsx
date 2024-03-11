@@ -2,14 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
+    if (typeof window === 'undefined') {
+      return initialValue;
+    }
+
     try {
-      // Get from local storage by key
       const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      // If error also return initialValue
-      console.error(error);
+      console.error(`Error reading localStorage key "${key}":`, error);
       return initialValue;
     }
   });
@@ -17,39 +18,49 @@ function useLocalStorage(key, initialValue) {
   const isMounted = useRef(false);
 
   useEffect(() => {
+    // Skip the initial effect run on mount
     if (!isMounted.current) {
       isMounted.current = true;
       return;
     }
 
     try {
-      const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item));
-      }
-    } catch (error) {
-      console.log(error);
-    }
+      // React to external changes in local storage
+      const onStorageChange = (event) => {
+        if (event.key === key) {
+          setStoredValue(JSON.parse(event.newValue));
+        }
+      };
 
-    return () => {
-      isMounted.current = false;
-    };
+      window.addEventListener('storage', onStorageChange);
+      return () => window.removeEventListener('storage', onStorageChange);
+    } catch (error) {
+      console.error('Listening for local storage changes failed:', error);
+    }
   }, [key]);
 
+  // Set value to localStorage and update local state
   const setValue = (value) => {
+    if (typeof window == 'undefined') {
+      console.warn(
+        `Tried setting localStorage key "${key}" even though environment is not a client`
+      );
+      return;
+    }
+
     try {
-      // Allow value to be a function so we have the same API as useState
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
-      // Save state
-      setStoredValue(valueToStore);
-      // Save to local storage
+
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      // Optionally trigger an event for changes in local storage
-      window.dispatchEvent(new Event('local-storage'));
+      setStoredValue(valueToStore);
+
+      // Optionally, for cross-tab communication, you might want to trigger a storage event manually
+      window.dispatchEvent(
+        new Event('storage', { key, newValue: JSON.stringify(valueToStore) })
+      );
     } catch (error) {
-      // A more advanced implementation would handle the error case
-      console.error(error);
+      console.error(`Error setting localStorage key "${key}":`, error);
     }
   };
 

@@ -26,6 +26,9 @@ import { getQuantity } from '../componentHelpers';
 import { useMode } from '../../context';
 import { useAppContext } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { enqueueSnackbar } from 'notistack';
+import useSelectedContext from '../../context/hooks/useSelectedContext';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
   const { theme } = useMode();
@@ -42,33 +45,31 @@ const GenericCard = React.forwardRef((props, ref) => {
         else if (width >= 219) setCardSize('lg');
       }
     };
-
-    // Measure the card on the first render
     measureCard();
-    // Add resize event listener to re-measure when window size changes
     window.addEventListener('resize', measureCard);
-
-    // Cleanup function to remove the event listener
     return () => {
       window.removeEventListener('resize', measureCard);
     };
   }, []);
 
   const { cartData } = useCartStore();
-  const { selectedCollection, allCollections } = useCollectionStore();
+  const { selectedCollection, allCollections } = useSelectedCollection();
   const { selectedDeck, allDecks } = useDeckStore();
+  const { setContext, setIsContextSelected } = useSelectedContext();
+  const { isCardInContext } = useAppContext();
+
   // const { isCardInContext } = useAppContext();
-  const isCardInContext = useCallback(
-    (selectedCollection, selectedDeck, cartData, context, card) => {
-      const cardsList = {
-        Collection: selectedCollection?.cards,
-        Deck: selectedDeck?.cards,
-        Cart: cartData?.cart,
-      };
-      return !!cardsList[context]?.find((c) => c?.id === card?.id);
-    },
-    [context, selectedCollection, selectedDeck, cartData]
-  );
+  // const isCardInContext = useCallback(
+  //   (selectedCollection, selectedDeck, cartData, context, card) => {
+  //     const cardsList = {
+  //       Collection: selectedCollection?.cards,
+  //       Deck: selectedDeck?.cards,
+  //       Cart: cartData?.cart,
+  //     };
+  //     return !!cardsList[context]?.find((c) => c?.id === card?.id);
+  //   },
+  //   [context, selectedCollection, selectedDeck, cartData]
+  // );
   const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
     useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
@@ -86,16 +87,17 @@ const GenericCard = React.forwardRef((props, ref) => {
     },
     [setHoveredCard, setIsPopoverOpen, card]
   );
+  const handleContextSelect = useCallback(
+    (newContext) => {
+      setContext(newContext);
+      setIsContextSelected(true);
+    },
+    [setContext, setIsContextSelected]
+  );
   useEffect(() => {
     setIsPopoverOpen(hoveredCard === card);
   }, [hoveredCard, card, setIsPopoverOpen]);
-  const isInContext = isCardInContext(
-    selectedCollection,
-    selectedDeck,
-    cartData,
-    context,
-    card
-  );
+  const isInContext = isCardInContext(card);
   const name = card?.name;
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
   const price = `Price: ${
@@ -167,7 +169,6 @@ const GenericCard = React.forwardRef((props, ref) => {
         />
       </AspectRatioBox>
       {cardContent}
-      {/* </StyledCardContent> */}
       <CardActions
         sx={{
           justifyContent: 'center',
@@ -177,6 +178,27 @@ const GenericCard = React.forwardRef((props, ref) => {
         <GenericActionButtons
           card={card}
           context={context}
+          onClick={() => handleContextSelect(context)}
+          onSuccess={() =>
+            enqueueSnackbar(
+              {
+                title: 'Action successful',
+                message: `Card added to ${card?.name || ''} successfully.`,
+              },
+              'success',
+              null
+            )
+          }
+          onFailure={(error) =>
+            enqueueSnackbar(
+              {
+                title: 'Action failed',
+                message: `Failed to add card to ${card?.name || ''}.`,
+              },
+              'error',
+              error
+            )
+          }
           page={page}
           cardSize={cardSize}
         />
@@ -188,11 +210,3 @@ const GenericCard = React.forwardRef((props, ref) => {
 GenericCard.displayName = 'GenericCard';
 
 export default GenericCard;
-// const isCardInContext = useCallback(() => {
-//   const cardsList = {
-//     Collection: selectedCollection?.cards,
-//     Deck: selectedDeck?.cards,
-//     Cart: cartData?.cart,
-//   };
-//   return !!cardsList[context]?.find((c) => c?.id === card?.id);
-// }, [context, card.id, selectedCollection, selectedDeck, cartData]);

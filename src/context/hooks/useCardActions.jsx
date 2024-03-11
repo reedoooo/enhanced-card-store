@@ -28,35 +28,48 @@ export const useCardActions = (
     max: page === 'DeckBuilder' ? 3 : undefined, // Limit to 3 for Deck context
   });
 
+  /** @internal Place an object in an array */
+  const placeObjectInArray = useCallback((object) => {
+    const objectInArray = [object];
+    return objectInArray;
+  }, []);
+
   const performAction = useCallback(
     (action) => {
-      if (context === 'Collection' && !selectedCollection) {
-        // Show alert and open dialog if no collection is selected
-        handleSnackBar('Please select a collection.', 'error'); // Use handleSnackBar to show a snackbar
-        openDialog('Collection'); // Open the 'Collection' dialog
-        return;
-      }
-      if (context === 'Deck' && !selectedDeck) {
-        // Show alert and open dialog if no deck is selected
-        handleSnackBar('Please select a deck.', 'error'); // Use handleSnackBar to show a snackbar
-        openDialog('Deck'); // Open the 'Deck' dialog
-        return;
-      }
+      // if (context === 'Collection' && !selectedCollection) {
+      //   // Show alert and open dialog if no collection is selected
+      //   handleSnackBar('Please select a collection.', 'error'); // Use handleSnackBar to show a snackbar
+      //   openDialog('Collection'); // Open the 'Collection' dialog
+      //   return;
+      // }
+      // if (context === 'Deck' && !selectedDeck) {
+      //   // Show alert and open dialog if no deck is selected
+      //   handleSnackBar('Please select a deck.', 'error'); // Use handleSnackBar to show a snackbar
+      //   openDialog('Deck'); // Open the 'Deck' dialog
+      //   return;
+      // }
       // Increment or decrement based on the action
       const updateQuantity = (actionType) => {
         actionType === 'add' ? increment(card.id) : decrement(card.id);
       };
+      const array = placeObjectInArray(data);
+      console.log('DATA =>=>=> ', data);
 
       // Action functions for different contexts
       const actionFunctions = {
         Collection: {
           add: () => {
+            console.log('array === ', array);
             updateQuantity('add');
-            addOneToCollection(data, selectedCollection);
+            addOneToCollection(array, selectedCollection);
           },
           remove: () => {
             updateQuantity('remove');
-            removeOneFromCollection(data, data?.id, selectedCollection);
+            removeOneFromCollection(
+              placeObjectInArray(data),
+              placeObjectInArray(data?.id),
+              selectedCollection
+            );
           },
         },
         Deck: {
@@ -82,32 +95,36 @@ export const useCardActions = (
       };
 
       try {
-        actionFunctions[context][action]?.();
+        actionFunctions[context][action]();
         onSuccess?.();
       } catch (error) {
         onFailure?.(error);
       }
     },
     [
+      addOneToCart,
+      addOneToCollection,
+      addOneToDeck,
       context,
-      card,
+      data,
+      decrement,
+      increment,
+      onFailure,
+      openDialog,
+      page,
+      placeObjectInArray,
+      removeOneFromCart,
+      removeOneFromCollection,
+      removeOneFromDeck,
       selectedCollection,
       selectedDeck,
-      addOneToCollection,
-      removeOneFromCollection,
-      addOneToDeck,
-      removeOneFromDeck,
-      addOneToCart,
-      removeOneFromCart,
       onSuccess,
-      onFailure,
-      increment,
-      decrement,
+      handleSnackBar,
     ]
   );
 
   return {
-    count: data.quantity,
+    count: data?.quantity,
     performAction,
     closeDialog,
   };

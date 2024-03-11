@@ -1,5 +1,6 @@
 // schemas.js
 import { ZodError, z } from 'zod';
+import { defaultChartConstants } from '../../constants';
 
 const GenericStringConstraint = z.string().min(8).max(18);
 const EmailConstraint = z
@@ -37,6 +38,12 @@ const signupForm = z.object({
 const loginForm = z.object({
   username: UsernameConstraint,
   password: PasswordConstraint,
+});
+const rememberMeFormSchema = z.object({
+  rememberMe: z.boolean().default(false),
+});
+const authSwitchSchema = z.object({
+  signupMode: z.boolean().default(false),
 });
 // Update User Data Form Schema
 const updateUserDataForm = z.object({
@@ -98,17 +105,43 @@ const customerInfoForm = z.object({
   phone: z.string().min(1, { message: 'Phone is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
 });
-const TimeRangeSchema = z.object({
-  timeRange: z.object({
-    id: z.string(
-      'Invalid time range ID. Please select a valid time range from the list.'
-    ),
-    value: z.string(
-      'Invalid time range value. Please select a valid time range from the list.'
-    ),
-    name: z.string(
-      'Invalid time range name. Please select a valid time range from the list.'
-    ),
+// const TimeRangeSchema = z.object({
+//   timeRange: z.object({
+//     id: z.string(
+//       'Invalid time range ID. Please select a valid time range from the list.'
+//     ),
+//     value: z.string(
+//       'Invalid time range value. Please select a valid time range from the list.'
+//     ),
+//     name: z.string(
+//       'Invalid time range name. Please select a valid time range from the list.'
+//     ),
+//   }),
+// });
+
+// const timeRangeSchema = z.object({
+//   timeRange: z.enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d']),
+// });
+const timeRangeOptionSchema = z.object({
+  id: z.string(
+    'Invalid time range ID. Please select a valid time range from the list.'
+  ),
+  value: z.string(),
+  name: z.string(),
+  data: z.array(
+    z.object({
+      x: z.number(),
+      y: z.number(),
+    })
+  ),
+});
+
+// const timeRangeSchema = z.object({
+//   timeRange: timeRangeOptionSchema,
+// });
+const timeRangeSelectorSchema = z.object({
+  timeRange: z.string().nonempty({
+    message: 'You must select a time range.',
   }),
 });
 // Define a schema for a single filter's values
@@ -138,15 +171,11 @@ const filterValueSchema = z.enum([
   'Water',
   'Wind',
 ]);
-
-// Define a schema for a single filter object
 const filterSchema = z.object({
   label: z.string(),
   name: z.string(),
   values: z.array(filterValueSchema),
 });
-
-// Define a schema for the initialState object
 const initialStateSchema = z.object({
   name: z.string(),
   race: z.string().optional(),
@@ -154,13 +183,10 @@ const initialStateSchema = z.object({
   attribute: z.string().optional(),
   level: z.string().optional(),
 });
-
-// Define the schema for the entire data structure
 const dataSchema = z.object({
   initialState: initialStateSchema,
   filters: z.array(filterSchema),
 });
-
 // Usage example:
 const data = {
   initialState: {
@@ -226,6 +252,9 @@ const data = {
 export const formSchemas = {
   signupForm,
   loginForm,
+  rememberMeForm: rememberMeFormSchema,
+  authSwitch: authSwitchSchema,
+
   updateUserDataForm,
   addCollectionForm,
   updateCollectionForm,
@@ -233,7 +262,7 @@ export const formSchemas = {
   updateDeckForm,
   searchForm,
   customerInfoForm,
-  TimeRangeSchema,
+  timeRangeSelector: timeRangeSelectorSchema,
   searchSettingsSelector: dataSchema,
 };
 export const handleZodValidation = (formData, schema) => {
@@ -336,13 +365,9 @@ export const defaultValues = {
     email: '',
   },
   // SELECTOR FORMS
-  TimeRangeSchema: {
-    // timeRange: '24hr',
-    timeRange: {
-      id: '',
-      value: '',
-      name: '',
-    },
+  timeRangeSelector: {
+    initialState: defaultChartConstants.TIME_RANGES[0],
+    filters: defaultChartConstants.TIME_RANGES,
   },
   searchSettingsSelector: {
     initialData: {

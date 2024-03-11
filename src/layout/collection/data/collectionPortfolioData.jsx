@@ -3,6 +3,7 @@ import Icon from '@mui/material/Icon';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import React from 'react';
 import GenericActionButtons from '../../../components/buttons/actionButtons/GenericActionButtons';
+import { useSnackbar } from 'notistack';
 const Name = ({ name }) => (
   <MDTypography
     component="a"
@@ -49,6 +50,7 @@ const Quantity = ({ quantity }) => (
 );
 export default function prepareTableData(selectedCards) {
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
+  const { enqueueSnackbar } = useSnackbar();
   const columns = React.useMemo(
     () => [
       {
@@ -80,7 +82,33 @@ export default function prepareTableData(selectedCards) {
         Header: 'Action',
         accessor: 'action',
         Cell: ({ value }) => (
-          <GenericActionButtons card={value} context={'Collection'} />
+          <GenericActionButtons
+            card={value}
+            context={'Collection'}
+            onClick={() => console.log('clicked')}
+            onSuccess={() =>
+              enqueueSnackbar(
+                {
+                  title: 'Action successful',
+                  message: `Card added to ${value} successfully.`,
+                },
+                'success',
+                null
+              )
+            }
+            onFailure={(error) =>
+              enqueueSnackbar(
+                {
+                  title: 'Action failed',
+                  message: `Failed to add card to ${value}.`,
+                },
+                'error',
+                error
+              )
+            }
+            page={'Collection'}
+            cardSize={'small'}
+          />
         ),
       },
     ],
@@ -92,7 +120,7 @@ export default function prepareTableData(selectedCards) {
       selectedCards?.map((card) => ({
         ...card,
         tPrice: roundToNearestTenth(card.totalPrice),
-        action: '', // Assuming you have some action value or logic to insert here
+        action: card,
       })),
     [selectedCards]
   );

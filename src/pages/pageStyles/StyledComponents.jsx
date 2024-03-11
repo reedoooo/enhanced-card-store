@@ -37,16 +37,16 @@ import { SwiperSlide } from 'swiper/react';
 
 // ! APP CONTAINER -----------------------------
 export const AppContainer = styled(Container)(({ theme }) => ({
-  // display: 'flex',
   flexDirection: 'column',
-  // height: '100vh',
-  // left: -20,
   margin: 0,
   padding: 0,
   justifyContent: 'center',
   minHeight: '100vh', // Ensures at least the height of the viewport
   width: '100%', // Ensures it takes the full width
   minWidth: '100vw', // Ensures at least the width of the viewport
+  maxWidth: '100vw',
+  overflowX: 'hidden',
+  boxSizing: 'border-box' /* Ensures padding is included in width */,
   // overflow: 'hidden', // Prevents unwanted scrolling if not necessary
   // [theme.breakpoints.down('sm')]: {
   //   paddingTop: theme.spacing(6),
@@ -56,6 +56,7 @@ export const AppContainer = styled(Container)(({ theme }) => ({
 // ! TOP BAR STYLES -----------------------------
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   minWidth: '100vw',
+  maxWidth: '100vw',
   // minWidth: '100%',
   border: '2px solid white',
   // left: -20,
@@ -464,9 +465,7 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   height: '100%',
   width: '100%',
   minHeight: '500px',
-  // minWidth: '450px',
   position: 'relative',
-  // justifyContent: 'space-between',
   flexGrow: 1,
   padding: theme.spacing(2),
   margin: theme.spacing(2),
@@ -476,7 +475,7 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   justifyContent: 'center',
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundB.lightest,
+  background: theme.palette.backgroundB.contrastText,
 }));
 export const SquareChartContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -700,44 +699,6 @@ export const SearchSettingsBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
-}));
-
-// ! DIALOG STYLES
-export const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(4),
-    display: 'flex',
-    backgroundColor: theme.palette.backgroundB.lightest, // Choose a subtle color
-    color: theme.palette.text.primary,
-    boxShadow: theme.shadows[5],
-    '@media (max-width:600px)': {
-      margin: theme.spacing(2),
-    },
-  },
-  '& .MuiDialog-paperScrollPaper': {
-    maxHeight: '90vh', // Slightly more space
-  },
-}));
-
-export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  flexGrow: 1,
-  width: '100%',
-  gap: theme.spacing(2),
-  padding: theme.spacing(3),
-  backgroundColor: theme.palette.backgroundA.lightest,
-}));
-
-export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  flexGrow: 1,
-  width: '100%',
-  gap: theme.spacing(2),
-  padding: theme.spacing(3),
-  backgroundColor: theme.palette.backgroundA.lightest,
 }));
 
 // ! PORTFOLIO TABLE STYLES

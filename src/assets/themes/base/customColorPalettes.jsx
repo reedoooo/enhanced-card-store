@@ -23,7 +23,7 @@ const success = {
   hoverContrastText: '#111',
 };
 const info = {
-  main: '#0d5d96',
+  main: '#3781F1',
 
   // main: '#2196f3',
   dark: '#1976d2',
@@ -113,6 +113,95 @@ const backgroundF = {
   lightest: hexToRgba(backgroundE.lightest, 0.3),
 };
 
+const backgroundG = {
+  darkest: '#073b4cff', // --midnight-green--
+  darker: '#0c637fff', // --cerulean--
+  dark: '#118ab2ff', // --blue-ncs--
+  default: '#0cb0a9ff', // --light-sea-green--
+  light: '#06d6a0ff', // --emerald--
+  lighter: '#91dacbff', // --tiffany-blue--
+  lightest: '#c8ede5ff', // --mint-green--
+  contrastText: '#fff',
+};
+const backgroundGSecondary = {
+  darkest: '#7f2e2eff', // --persian-plum--
+  darker: '#a63c3cff', // --pomegranate--
+  dark: '#cc4a4aff', // --flamingo--
+  default: '#e55e5eff', // --sunset-orange--
+  light: '#f4755fff', // --bittersweet--
+  lighter: '#f89a7dff', // --rajah--
+  lightest: '#facbb0ff', // --navajo-white--
+  contrastText: '#fff',
+};
+
+const grey = {
+  darkest: '#141414',
+  darkert: '#292929',
+  dark: '#3d3d3d',
+  default: '#525252',
+  light: '#666666',
+  lighter: '#858585',
+  lightest: '#a3a3a3',
+  evenLighter: '#c2c2c2',
+  contrastText: '#e0e0e0',
+};
+
+const primary = {
+  darkest: '#040509',
+  darker: '#040509',
+  dark: '#040509',
+  default: '#f2f0f0',
+  light: '#141b2d',
+  lighter: '#1F2A40',
+  lightest: '#727681',
+  evenLighter: '#a1a4ab',
+  contrastText: '#e0e0e0',
+};
+
+const greenAccent = {
+  darkest: '#0f2922', // Assuming this is the darkest
+  darker: '#1e5245', // Next darker shade
+  dark: '#2e7c67', // Next dark shade
+  default: '#3da58a', // Default considered here as the mid-point
+  light: '#4cceac', // Light shade
+  lighter: '#70d8bd', // Lighter shade
+  lightest: '#94e2cd', // Lightest shade
+  evenLighter: '#b7ebde', // Even lighter than the lightest
+  contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
+};
+
+const redAccent = {
+  darkest: '#2c100f',
+  darker: '#58201e',
+  dark: '#832f2c',
+  default: '#af3f3b',
+  light: '#db4f4a',
+  lighter: '#e2726e',
+  lightest: '#e99592',
+  evenLighter: '#f1b9b7',
+  contrastText: '#f8dcdb',
+};
+
+const blueAccent = {
+  darkest: '#151632',
+  darker: '#2a2d64',
+  dark: '#3e4396',
+  default: '#535ac8',
+  light: '#6870fa',
+  lighter: '#868dfb',
+  lightest: '#a4a9fc',
+  evenLighter: '#c3c6fd',
+  contrastText: '#e1e2fe',
+};
+
+const chartTheme = {
+  primary,
+  grey,
+  greenAccent,
+  redAccent,
+  blueAccent,
+};
+
 const rarity = {
   common: '#C0C0C0', // Silver
   uncommon: '#B8860B', // DarkGoldenRod
@@ -131,12 +220,15 @@ const rarity = {
 };
 
 export {
+  chartTheme,
   backgroundA,
   backgroundB,
   backgroundC,
   backgroundD,
   backgroundE,
   backgroundF,
+  backgroundG,
+  backgroundGSecondary,
   rarity,
   error,
   warning,

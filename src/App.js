@@ -6,13 +6,10 @@ import {
   FormProvider,
   ModalProvider,
   PopoverProvider,
-  SocketProvider,
   UserProvider,
   useMode,
   CollectionProvider,
-  CombinedProvider,
   CardProvider,
-  CronJobProvider,
   DeckProvider,
   CartProvider,
   CardImagesProvider,
@@ -24,13 +21,14 @@ import {
   usePageContext,
   ErrorBoundary,
   ConfiguratorProvider,
+  VisibilityProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider, useSnackbar } from 'notistack';
-
 import { useNavigate } from 'react-router-dom';
 import { CssBaseline, GlobalStyles } from '@mui/material';
 import { ParallaxProvider } from 'react-scroll-parallax';
+import { useLoading } from './context/hooks/useLoading';
 
 // ==============================|| APP ||============================== //
 
@@ -39,12 +37,13 @@ const App = () => {
   const navigate = useNavigate();
   const { resetLogoutTimer, logout, authUser, userId, isLoggedIn } =
     useAuthContext();
-  const { loadingStatus, returnDisplay, setLoading, setError } =
-    usePageContext();
-  useEffect(() => {
-    if (!isLoggedIn && !loadingStatus.isPageLoading) navigate('/login');
-  }, [isLoggedIn, navigate, loadingStatus.isPageLoading]);
-  if (loadingStatus?.isPageLoading || loadingStatus?.error) {
+  const { returnDisplay } = usePageContext();
+  const { isLoading, isPageLoading, error } = useLoading();
+
+  // useEffect(() => {
+  //   if (!isLoggedIn && !isPageLoading) navigate('/login');
+  // }, [isLoggedIn, navigate, isPageLoading]);
+  if (isPageLoading || error) {
     return returnDisplay();
   }
   return (
@@ -54,41 +53,37 @@ const App = () => {
         <GlobalStyles />
         <ParallaxProvider>
           <ConfiguratorProvider>
-            <FormProvider>
-              <SocketProvider>
+            <VisibilityProvider>
+              <FormProvider>
                 <UserProvider>
                   <ModalProvider>
                     <SnackbarProvider>
                       <PopoverProvider>
                         <CollectionProvider>
-                          <CombinedProvider>
-                            <CardProvider>
-                              <CronJobProvider>
-                                <DeckProvider>
-                                  <CartProvider>
-                                    <CardImagesProvider>
-                                      <ChartProvider>
-                                        <StatisticsProvider>
-                                          <SidebarProvider>
-                                            <AppContextProvider>
-                                              <Main />
-                                            </AppContextProvider>
-                                          </SidebarProvider>
-                                        </StatisticsProvider>
-                                      </ChartProvider>
-                                    </CardImagesProvider>
-                                  </CartProvider>
-                                </DeckProvider>
-                              </CronJobProvider>
-                            </CardProvider>
-                          </CombinedProvider>
+                          <CardProvider>
+                            <DeckProvider>
+                              <CartProvider>
+                                <CardImagesProvider>
+                                  <ChartProvider>
+                                    <StatisticsProvider>
+                                      <SidebarProvider>
+                                        <AppContextProvider>
+                                          <Main />
+                                        </AppContextProvider>
+                                      </SidebarProvider>
+                                    </StatisticsProvider>
+                                  </ChartProvider>
+                                </CardImagesProvider>
+                              </CartProvider>
+                            </DeckProvider>
+                          </CardProvider>
                         </CollectionProvider>
                       </PopoverProvider>
                     </SnackbarProvider>
                   </ModalProvider>
                 </UserProvider>
-              </SocketProvider>
-            </FormProvider>
+              </FormProvider>
+            </VisibilityProvider>
           </ConfiguratorProvider>
         </ParallaxProvider>
       </ThemeProvider>

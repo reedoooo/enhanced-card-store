@@ -1,5 +1,5 @@
-import React from 'react';
-import { IconButton, Box, Grid } from '@mui/material';
+import React, { useEffect } from 'react';
+import { IconButton, Box, Grid, Grow, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -9,55 +9,136 @@ import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import { useMode } from '../../../context';
+import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import { TransitionGroup } from 'react-transition-group';
+import useSkeletonLoader from '../collectionGrids/cards-datatable/useSkeletonLoader';
+import { DEFAULT_COLLECTION } from '../../../context/constants';
+import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import SimpleCard from '../../REUSABLE_COMPONENTS/unique/SimpleCard';
+import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
+import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
+const SelectCollectionHeaderSkeleton = () => {
+  const { SkeletonLoader } = useSkeletonLoader();
 
-const HeaderItem = ({ icon: IconComponent, label, value }) => {
-  const { theme } = useMode();
+  return (
+    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
+      <Grid item xs={12} sm={6}>
+        <Card>
+          <SkeletonLoader type="title" />
+          <SkeletonLoader type="subtitle" />
+        </Card>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        sx={{ display: 'flex', justifyContent: 'flex-end' }}
+      >
+        <SkeletonLoader type="button" />
+      </Grid>
+    </Grid>
+  );
+};
+const HeaderItem = ({ icon, label, value, delay }) => {
   return (
     <Grid item xs={12} sm={6} md={3}>
-      <MDBox display="flex" alignItems="center" justifyContent="space-between">
-        <MDBox display="flex" alignItems="center">
-          <MDAvatar>
-            <IconComponent sx={{ verticalAlign: 'bottom', mr: 1 }} />
-          </MDAvatar>
-          <MDTypography variant="h6" color="white">
-            {label}:
-          </MDTypography>
+      <Grow
+        in
+        style={{ transformOrigin: '0 0 0' }}
+        {...{ timeout: 1000 + delay }}
+      >
+        <MDBox>
+          <IconStatWrapper
+            label={label}
+            isPrimary={true}
+            value={value}
+            icon={icon}
+            theme={uniqueTheme}
+          />
         </MDBox>
-        <MDTypography
-          variant="body2"
-          sx={{ color: theme.palette.info.contrastText }}
-        >
-          {value}
-        </MDTypography>
-      </MDBox>
+      </Grow>
     </Grid>
   );
 };
 
-const CollectionPortfolioHeader = ({
-  onBack,
-  collectionName,
-  selectedCollection,
-  totalQuantity,
-}) => {
+const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
   const { theme } = useMode();
-  if (!selectedCollection) {
-    return null;
+  const headerIcons = [
+    CollectionsIcon,
+    AttachMoneyIcon,
+    FormatListNumberedIcon,
+    TrendingUpIcon,
+  ];
+  useEffect(() => {
+    console.log('collection', collection);
+  }, [collection]);
+  if (
+    !collection ||
+    collection === DEFAULT_COLLECTION ||
+    allCollections.length === 0
+  ) {
+    return onBack();
   }
+  const headerItems = [
+    {
+      // icon: <CollectionsIcon />,
+      icon: 'collections',
+      label: 'Portfolio Selected',
+      value: collection?.name || 'Select a collection to view its statistics',
+      delay: 0,
+    },
+    {
+      // icon: <AttachMoneyIcon />,
+      icon: 'attach_money',
+      label: 'Total Value',
+      value:
+        collection?.totalPrice || 'Select a collection to view its statistics',
+      delay: 200,
+    },
+    {
+      // icon: <FormatListNumberedIcon />,
+      icon: 'format_list_numbered',
+      label: 'Number of Unique Cards',
+      value:
+        collection?.cards?.length ||
+        'Select a collection to view its statistics',
+      delay: 400,
+    },
+    {
+      // icon: <TrendingUpIcon />,
+      icon: 'trending_up',
+      label: "Today's Performance",
+      value:
+        collection?.statistics?.percentChange ||
+        'Select a collection to view its statistics',
+      delay: 600,
+    },
+  ];
+
   return (
-    <MDBox
+    <DashboardBox
       sx={{
-        mx: 2,
-        mt: -3,
-        py: 2,
-        px: 2,
-        backgroundColor: theme.palette.info.main,
-        borderRadius: theme.shape.borderRadius,
         display: 'flex',
-        flexDirection: 'row',
         justifyContent: 'space-between',
+        flexDirectino: 'row',
+        alignItems: 'center',
+        padding: 1,
+        width: '100%',
       }}
     >
+      {/* <MDBox
+        sx={{
+          mx: 2,
+          mt: -3,
+          py: 2,
+          px: 2,
+          backgroundColor: theme.palette.info.main,
+          borderRadius: theme.shape.borderRadius,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      > */}
       <IconButton
         onClick={onBack}
         aria-label="Back to Collections"
@@ -67,28 +148,20 @@ const CollectionPortfolioHeader = ({
         <ArrowBackIcon />
       </IconButton>
       <Grid container spacing={2}>
-        <HeaderItem
-          icon={CollectionsIcon}
-          label="Portfolio Selected"
-          value={collectionName}
-        />
-        <HeaderItem
-          icon={AttachMoneyIcon}
-          label="Total Value"
-          value={`$${selectedCollection?.totalPrice}`}
-        />
-        <HeaderItem
-          icon={FormatListNumberedIcon}
-          label="Unique Cards"
-          value={totalQuantity}
-        />
-        <HeaderItem
-          icon={TrendingUpIcon}
-          label="Today's Performance"
-          value={totalQuantity}
-        />
+        {/* <TransitionGroup> */}
+        {headerItems.map((item, index) => (
+          <HeaderItem
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            value={item.value}
+            delay={index * 500} // Delay each item's animation onset progressively
+          />
+        ))}
+        {/* </TransitionGroup> */}
       </Grid>
-    </MDBox>
+      {/* </MDBox> */}
+    </DashboardBox>
   );
 };
 export default CollectionPortfolioHeader;

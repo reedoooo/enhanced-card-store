@@ -52,7 +52,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }) {
         gap={0.5} // Adds space between text and icon if sorted
       >
         <MDTypography
-          variant="body2"
+          variant="h6"
           sx={{
             textTransform: 'uppercase',
             fontWeight: 'bold',

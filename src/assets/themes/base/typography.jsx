@@ -22,7 +22,8 @@ const { dark } = colors;
 //   fontSize3XL: pxToRem(30),
 // };
 const baseProperties = {
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  // fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  fontFamily: 'Poppins, sans-serif',
   fontWeightLighter: 100,
   fontWeightLight: 300,
   fontWeightRegular: 400,
