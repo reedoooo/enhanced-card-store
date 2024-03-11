@@ -1,109 +1,180 @@
 import React, { useEffect } from 'react';
 import {
+  Avatar,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
-  Dialog,
+  CssBaseline,
   DialogContent,
   DialogTitle,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Grid,
   IconButton,
+  Link,
+  Paper,
+  Switch,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
-import LoginForm from '../forms/LoginForm';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar'; // Adjust import paths as necessary
+import LoginForm from '../forms/LoginForm';
+import SignupForm from '../forms/SignupForm';
+import { useFormContext, useMode } from '../../context';
+import useAuthDialog from '../../context/hooks/useAuthDialog'; // Adjust import paths as necessary
+import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import {
-  useAuthContext,
-  useFormContext,
-  useMode,
-  usePageContext,
-} from '../../context';
-import {
+  DialogContentsBox,
+  DialogPaer,
+  DialogPaper,
+  FormPaper,
   StyledDialog,
   StyledDialogContent,
-  StyledDialogTitle,
-} from '../forms/styled';
-import useDialog from '../../context/hooks/useDialog';
-import useSnackBar from '../../context/hooks/useSnackBar';
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
+import { AuthModeSwitch } from '../../layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
+import AuthSwitch from '../buttons/other/AuthSwitch';
+import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
 
-function LoginDialog() {
-  const { theme } = useMode(); // Ensures theme is applied correctly
-  const { toggleColorMode, mode } = useMode();
-  const { logout, isLoggedIn } = useAuthContext();
-  const handleSnackBar = useSnackBar()[1];
-  const { isLoginDialogOpen, openLoginDialog, closeLoginDialog } =
-    useDialog(handleSnackBar);
+function LoginDialog({ showSnackbar }) {
+  const { theme, toggleColorMode, mode } = useMode();
+  const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
+  // const { currentForm, setFormSchema } = useFormContext();
+  const { formMethods, onSubmit, setFormSchema, currentSchemaKey } =
+    useFormContext();
 
-  const { returnDisplay, loadingStatus, setLoading } = usePageContext(); // Access loading display or error status
-  const { forms } = useFormContext();
-  const loginValues = forms?.loginForm;
-  const signupValues = forms?.signupForm;
-  const signupMode = signupValues?.signupMode;
-  const currentValues = signupMode ? signupValues : loginValues;
-
-  // console.log('LoginDialog', { currentValues });
-  // console.log('LoginDialog', { loadingStatus });
-  // console.log('LoginDialog', { isLoginDialogOpen });
-  // console.log('LoginDialog', { isLoggedIn });
-  // console.log('LoginDialog', { signupMode });
-  // useEffect for checking dialog status
+  // EFFECT: If the user is not logged in, open the login dialog
   useEffect(() => {
-    if (!isLoggedIn && !isLoginDialogOpen) {
-      openLoginDialog();
-      // closeLoginDialog();
+    if (!isLoggedIn) {
+      toggleLoginDialog();
     }
-    if (isLoggedIn && isLoginDialogOpen) {
-      closeLoginDialog();
-    }
-  }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
-  // console.log('LoginDialog', { theme });
-  // console.log('LoginDialog', { mode });
+  }, [isLoggedIn, toggleLoginDialog]);
+  // EFFECT: Set the current form to 'loginForm' when the component mounts
+  useEffect(() => {
+    setFormSchema('loginForm');
+  }, [setFormSchema]);
+  // HANDLE: Logout the user and close the login dialog
+  const handleLogout = () => {
+    logout();
+    toggleLoginDialog();
+  };
+  const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
 
-  // useEffect(() => {
-  //   if (isLoggedIn && isLoginDialogOpen) {
-  //     closeLoginDialog();
-  //   }
-  // }, [isLoggedIn, isLoginDialogOpen, closeLoginDialog]); // Make sure dependencies are accurate
-
+  const signupMode = currentSchemaKey === 'signupForm';
+  const formLabel = () => {
+    <MDTypography variant="h6" color="primary">
+      {currentSchemaKey === 'loginForm' ? 'Sign Up' : 'Login'}
+    </MDTypography>;
+  };
   return (
     <StyledDialog
-      open={isLoginDialogOpen}
-      onClose={closeLoginDialog}
-      maxWidth="lg"
-      fullWidth
-      theme={theme}
+      className="dialog-login"
+      open={!isLoggedIn}
+      onClose={toggleLoginDialog}
+      tbeme={theme}
+      aria-labelledby="responsive-dialog-title"
+      maxWidth="xl"
     >
-      <StyledDialogTitle theme={theme}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">
-            {signupMode ? 'Sign Up' : 'Login'}
-          </Typography>
-          <IconButton onClick={toggleColorMode} color="inherit">
-            {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Box>
-      </StyledDialogTitle>
-      <StyledDialogContent dividers theme={theme}>
-        {isLoggedIn ? (
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              logout();
-              openLoginDialog();
+      <CssBaseline />
+      <DialogPaper theme={theme}>
+        <DialogTitle
+          id="responsive-dialog-title"
+          sx={{
+            margin: '0 2rem', // Match the DialogContent's padding but use margin for the title
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: 'auto', // Let it naturally fill the space, considering the margins
+            boxSizing: 'border-box', // Include padding and borders in the element's total width and height
+            color: theme.palette.text.primary,
+          }}
+        >
+          <MDBox sx={{ visibility: 'hidden' }}>
+            <MDAvatar sx={{ m: 1 }}>
+              <LockOutlinedIcon />
+            </MDAvatar>
+          </MDBox>
+          <MDBox
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center', // Centers the login icon and title
+              border: 'none',
             }}
+          >
+            <MDAvatar
+              sx={{
+                m: 1,
+                bgcolor: theme.palette.backgroundG.light,
+              }}
+            >
+              <LockOutlinedIcon />
+            </MDAvatar>
+            <MDTypography component="h1" variant="h4">
+              {formTitle}
+            </MDTypography>
+          </MDBox>
+          {/* <MDBox
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end', // Aligns the switch to the flex end
+              border: 'none',
+            }}
+          > */}
+          <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} />
+          {/* </MDBox> */}
+        </DialogTitle>
+      </DialogPaper>
+
+      <Divider />
+      <StyledDialogContent theme={theme} elevation={20}>
+        {currentSchemaKey === 'loginForm' ? (
+          <LoginForm
+            // toggleAuthMode={toggleAuthMode}
+            signupMode={signupMode}
+            formLabel={formLabel}
+          />
+        ) : (
+          <SignupForm
+            // toggleAuthMode={toggleAuthMode}
+            signupMode={signupMode}
+            formLabel={formLabel}
+          />
+        )}
+        {/* </MDBox> */}
+        <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        />
+        {isLoggedIn && (
+          <Button
             fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleLogout}
           >
             Log Out
           </Button>
-        ) : (
-          <>
-            <LoginForm />
-          </>
         )}
+        <Box mt={5}>
+          <Typography variant="body2" color="textSecondary" align="center">
+            {'Copyright © '}
+            ReedThaHuman LLC {new Date().getFullYear()}
+          </Typography>
+        </Box>
       </StyledDialogContent>
     </StyledDialog>
   );
 }
 
-export default LoginDialog;
+export default withDynamicSnackbar(LoginDialog);

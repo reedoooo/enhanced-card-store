@@ -1,29 +1,8 @@
 import React from 'react';
-import {
-  Switch,
-  FormControlLabel,
-  Typography,
-  FormControl,
-} from '@mui/material';
+import { Switch, FormControlLabel, FormControl } from '@mui/material';
 import { useFormContext, useMode } from '../../../context'; // Adjust with actual path
-
-const SignupSwitch = () => {
+const SignupSwitch = ({ signupMode, toggleAuthMode, formLabel }) => {
   const { theme } = useMode(); // Ensures theme is applied correctly
-  const { forms, handleChange } = useFormContext(); // Access form context
-
-  // Retrieve and cast signupMode to boolean. Ensure forms.signupForm exists to avoid errors
-  const signupMode = Boolean(forms.signupForm?.signupMode);
-
-  // Function to toggle signupMode in context
-  const toggleSignupMode = () => {
-    // Pass the new value directly to handleChange function
-    handleChange(
-      'signupForm',
-      'signupMode'
-    )({
-      target: { value: !signupMode },
-    });
-  };
 
   return (
     <FormControl component="fieldset">
@@ -31,22 +10,20 @@ const SignupSwitch = () => {
         control={
           <Switch
             checked={signupMode} // Ensure proper boolean value
-            onChange={toggleSignupMode} // Toggle function
+            onChange={
+              toggleAuthMode // Toggle function
+            } // Toggle function
             sx={{
               '& .MuiSwitch-thumb': {
-                color: signupMode ? theme.palette.primary.main : '', // Change thumb color based on mode
+                color: signupMode ? theme.palette.backgroundE.dark : '', // Change thumb color based on mode
               },
               '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                backgroundColor: theme.palette.primary.main, // Change track color when checked
+                backgroundColor: theme.palette.backgroundE.dark, // Change track color when checked
               },
             }}
           />
         }
-        label={
-          <Typography variant="body1" color="textPrimary">
-            Sign up mode
-          </Typography>
-        }
+        label={formLabel}
         style={{
           margin: theme.spacing(1), // Provide some spacing
           justifyContent: 'space-between', // Align items nicely

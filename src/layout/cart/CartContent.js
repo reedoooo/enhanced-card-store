@@ -1,17 +1,14 @@
 import React from 'react';
 import { Typography, Skeleton, Box, Grid, Container } from '@mui/material';
 import CartContainer from './CartContainer';
-import CartItem from '../../components/grids/gridItems/CartItem';
-import CartTotal from '../../components/other/dataDisplay/CartTotal';
-import { useCartStore } from '../../context/CartContext/CartContext';
-import Checkout from '../../containers/cartPageContainers/Checkout';
-import useResponsiveStyles from '../../context/hooks/useResponsiveStyles';
+import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useMode } from '../../context';
+import GenericCard from '../../components/cards/GenericCard';
 
 const CartContent = () => {
   const { theme } = useMode();
-  const { getProductGridContainerStyle } = useResponsiveStyles(theme);
-  const containerStyles = getProductGridContainerStyle(theme);
+  const { getProductGridContainerStyle } = theme.responsiveStyles;
+  // const containerStyles = responsiveStyles.getProductGridContainerStyle;
   const { cartData, isLoading } = useCartStore();
 
   const renderCartItems = () => {
@@ -22,7 +19,7 @@ const CartContent = () => {
     return (
       <Container
         sx={{
-          ...containerStyles,
+          ...theme.responsiveStyles.getProductGridContainerStyle,
           marginTop: '1rem',
           marginBottom: '1rem',
         }}
@@ -30,10 +27,11 @@ const CartContent = () => {
         <Grid container spacing={3}>
           {cartData?.cart?.map((card, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <CartItem
+              <GenericCard
                 key={card.id + index}
                 index={index}
                 card={card}
+                page={'Cart'}
                 context={'Cart'}
               />
             </Grid>

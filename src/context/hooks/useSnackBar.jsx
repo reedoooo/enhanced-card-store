@@ -1,47 +1,79 @@
-// useSnackBar.js
-import { useState, useCallback, useRef } from 'react';
-
+import { IconButton } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 const useSnackBar = () => {
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'info',
-    duration: 6000, // default duration
-  });
-  const queueRef = useRef([]); // Queue to hold the messages
-
-  const showNextSnackbar = () => {
-    if (queueRef.current.length > 0) {
-      const nextSnackbar = queueRef.current.shift();
-      setSnackbar({ ...nextSnackbar, open: true });
-    }
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const defaultOptions = {
+    variant: 'info',
+    autoHideDuration: 6000,
   };
+  const isMountedRef = useRef(false);
 
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
   const handleSnackBar = useCallback(
-    (message, severity = 'info', duration = 6000) => {
-      queueRef.current.push({ message, severity, duration });
-      if (!snackbar.open) {
-        // If no snackbar is currently being displayed, show it immediately.
-        showNextSnackbar();
+    (message, options = defaultOptions) => {
+      // Enqueue a new snackbar using notistack's enqueueSnackbar function
+      // `options` can include severity as `variant` and custom `duration` as `autoHideDuration`
+      // const { title, description } = message;
+      const { variant, autoHideDuration } = options;
+      if (open && message.title) {
+        enqueueSnackbar(message, {
+          message,
+          variant,
+          action: (key) => (
+            <IconButton size="small" onClick={() => closeSnackbar(key)}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          ),
+        });
       }
     },
-    [snackbar.open]
+    [enqueueSnackbar]
   );
 
-  const handleCloseSnackbar = useCallback(
-    (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-      setSnackbar({ ...snackbar, open: false });
-      showNextSnackbar(); // Show next snackbar if it's in the queue
-    },
-    [snackbar]
-  );
+  // const [snackbar, setSnackbar] = useState({
+  //   open: false,
+  //   message: '',
+  //   severity: 'info',
+  //   duration: 6000,
+  // });
+  // const queueRef = useRef([]);
 
-  // Additional enhancements can be made to support actions, positioning, etc.
+  // const showNextSnackbar = useCallback(() => {
+  //   if (queueRef.current.length > 0 && isMountedRef.current) {
+  //     const nextSnackbar = queueRef.current.shift();
+  //     setSnackbar({ ...nextSnackbar, open: true });
+  //   }
+  // }, []);
 
-  return [snackbar, handleSnackBar, handleCloseSnackbar];
+  // const handleSnackBar = useCallback(
+  //   (message, severity = 'info', duration = 6000) => {
+  //     queueRef.current.push({ message, severity, duration });
+  //     if (!snackbar.open && isMountedRef.current) {
+  //       showNextSnackbar();
+  //     }
+  //   },
+  //   [snackbar.open, showNextSnackbar]
+  // );
+
+  const handleCloseSnackbar = useCallback(() => {
+    if (isMountedRef.current) {
+      closeSnackbar();
+      // setSnackbar((prevSnackbar) => ({
+      //   ...prevSnackbar,
+      //   open: false,
+      // }));
+      // showNextSnackbar();
+    }
+  }, [closeSnackbar]);
+
+  return { handleSnackBar, handleCloseSnackbar };
 };
 
 export default useSnackBar;

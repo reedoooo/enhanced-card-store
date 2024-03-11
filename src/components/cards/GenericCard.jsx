@@ -1,16 +1,21 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CardActions, Typography } from '@mui/material';
 import CardMediaSection from './media/CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholderImage from '../../assets/images/placeholder.jpeg';
-import { useModalContext } from '../../context/ModalContext/ModalContext';
-import { PopoverContext } from '../../context/PopoverContext/PopoverContext';
-import { useMode } from '../../context/hooks/colormode';
+import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
+import { PopoverContext } from '../../context/UTILITIES_CONTEXT/PopoverContext/PopoverContext';
 import { Box } from '@mui/system';
-import { useCartStore } from '../../context/CartContext/CartContext';
-import { useCollectionStore } from '../../context/CollectionContext/CollectionContext';
-import { useDeckStore } from '../../context/DeckContext/DeckContext';
-import { useTheme } from '@mui/styles';
+import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
+import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
+import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
+import { useTheme } from 'styled-components';
 import {
   AspectRatioBox,
   QuantityLine,
@@ -18,21 +23,57 @@ import {
   StyledCardContent,
 } from './styles/cardStyledComponents';
 import { getQuantity } from '../componentHelpers';
+import { useMode } from '../../context';
+import { useAppContext } from '../../context';
+import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { enqueueSnackbar } from 'notistack';
+import useSelectedContext from '../../context/hooks/useSelectedContext';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
-
-  // console.log('ref', ref);
   const { theme } = useMode();
-  const theme2 = useTheme();
   const cardRef = useRef(null);
+  const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
+
+  useEffect(() => {
+    const measureCard = () => {
+      const width = cardRef.current?.offsetWidth;
+      if (width) {
+        if (width < 143) setCardSize('xs');
+        else if (width >= 143 && width < 204) setCardSize('sm');
+        else if (width >= 204 && width < 219) setCardSize('md');
+        else if (width >= 219) setCardSize('lg');
+      }
+    };
+    measureCard();
+    window.addEventListener('resize', measureCard);
+    return () => {
+      window.removeEventListener('resize', measureCard);
+    };
+  }, []);
+
   const { cartData } = useCartStore();
-  const { selectedCollection, allCollections } = useCollectionStore();
+  const { selectedCollection, allCollections } = useSelectedCollection();
   const { selectedDeck, allDecks } = useDeckStore();
+  const { setContext, setIsContextSelected } = useSelectedContext();
+  const { isCardInContext } = useAppContext();
+
+  // const { isCardInContext } = useAppContext();
+  // const isCardInContext = useCallback(
+  //   (selectedCollection, selectedDeck, cartData, context, card) => {
+  //     const cardsList = {
+  //       Collection: selectedCollection?.cards,
+  //       Deck: selectedDeck?.cards,
+  //       Cart: cartData?.cart,
+  //     };
+  //     return !!cardsList[context]?.find((c) => c?.id === card?.id);
+  //   },
+  //   [context, selectedCollection, selectedDeck, cartData]
+  // );
   const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
     useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
     useContext(PopoverContext);
-
   const handleClick = useCallback(() => {
     openModalWithCard(card);
     setModalOpen(true);
@@ -46,33 +87,17 @@ const GenericCard = React.forwardRef((props, ref) => {
     },
     [setHoveredCard, setIsPopoverOpen, card]
   );
-
+  const handleContextSelect = useCallback(
+    (newContext) => {
+      setContext(newContext);
+      setIsContextSelected(true);
+    },
+    [setContext, setIsContextSelected]
+  );
   useEffect(() => {
     setIsPopoverOpen(hoveredCard === card);
   }, [hoveredCard, card, setIsPopoverOpen]);
-
-  // const isCardInContext = useCallback(() => {
-  //   switch (context) {
-  //     case 'Collection':
-  //       return !!selectedCollection?.cards?.find((c) => c?.id === card?.id);
-  //     case 'Deck':
-  //       return !!selectedDeck?.cards?.find((c) => c?.id === card?.id);
-  //     case 'Cart' || 'Store':
-  //       return !!cartData?.cart?.find((c) => c?.id === card?.id);
-  //     default:
-  //       return false;
-  //   }
-  // }, [context, card, selectedCollection, selectedDeck, cartData]);
-  const isCardInContext = useCallback(() => {
-    const cardsList = {
-      Collection: selectedCollection?.cards,
-      Deck: selectedDeck?.cards,
-      Cart: cartData?.cart,
-    };
-    return !!cardsList[context]?.find((c) => c?.id === card?.id);
-  }, [context, card.id, selectedCollection, selectedDeck, cartData]);
-
-  const isInContext = isCardInContext();
+  const isInContext = isCardInContext(card);
   const name = card?.name;
   const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
   const price = `Price: ${
@@ -81,99 +106,103 @@ const GenericCard = React.forwardRef((props, ref) => {
     card?.card_prices?.[0]?.tcgplayer_price ||
     'N/A'
   }`;
-  // Get the quantity of card across all contexts
-  // const getQuantity = useCallback(() => {
-  //   const findCardQuantity = (collectionsOrDecks) =>
-  //     collectionsOrDecks?.reduce(
-  //       (acc, item) =>
-  //         acc + (item?.cards?.find((c) => c.id === card.id)?.quantity ?? 0),
-  //       0
-  //     ) ?? 0;
-
-  //   const cartQuantity = isInContext
-  //     ? cartData?.cart?.find((c) => c.id === card.id)?.quantity ?? 0
-  //     : 0;
-  //   const collectionQuantity =
-  //     isInContext && selectedCollection
-  //       ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ??
-  //         0
-  //       : findCardQuantity(allCollections);
-  //   const deckQuantity =
-  //     isInContext && selectedDeck
-  //       ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-  //       : findCardQuantity(allDecks);
-
-  //   return Math.max(cartQuantity, collectionQuantity, deckQuantity);
-  // }, [
-  //   card,
-  //   cartData,
-  //   selectedCollection,
-  //   allCollections,
-  //   selectedDeck,
-  //   allDecks,
-  // ]);
-  // Use the getQuantity helper function
-  // const quantity = getQuantity({
-  //   card: card,
-  //   cartData: useCartStore().cartData, // assuming useCartStore returns cartData
-  //   selectedCollection: useCollectionStore().selectedCollection,
-  //   allCollections: useCollectionStore().allCollections,
-  //   selectedDeck: useDeckStore().selectedDeck,
-  //   allDecks: useDeckStore().allDecks,
-  // });
-  const cartQuantity = getQuantity({ card: card, cartData: cartData });
-  const collectionQuantity = getQuantity({
+  const { cartQuantity, collectionQuantity, deckQuantity } = getQuantity({
     card: card,
-    collectionData: selectedCollection,
+    cartData: cartData,
+    selectedCollection: selectedCollection,
+    allCollections: allCollections,
+    selectedDeck: selectedDeck,
+    allDecks: allDecks,
   });
-  const deckQuantity = getQuantity({ card: card, deckData: selectedDeck });
-
-  // Function to render the card's media section
-  const renderCardMediaSection = () => (
-    <AspectRatioBox ref={cardRef} theme={theme}>
-      <CardMediaSection
-        isRequired={true}
-        imgUrl={imgUrl}
-        card={card}
-        context={context}
-        page={page}
-        quantity={cartQuantity}
-        isHovered={hoveredCard === card}
-        handleInteraction={handleInteraction}
-        handleClick={handleClick}
-        isModalOpen={isModalOpen}
-        ref={cardRef}
-      />
-    </AspectRatioBox>
-  );
-  const renderCardContent = () => {
-    return (
-      <StyledCardContent theme={theme2}>
-        <Typography variant="body2" gutterBottom>
+  let cardContent = null;
+  if (cardSize === 'sm') {
+    cardContent = (
+      <StyledCardContent theme={theme}>
+        <MDTypography variant="body1" gutterBottom fontWeight="medium">
           {name}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        </MDTypography>
+        <MDTypography variant="body2" color="primary" gutterBottom>
           {price}
-        </Typography>
-        <QuantityLine theme={theme}>{`Cart: ${cartQuantity}`}</QuantityLine>
-        <QuantityLine
-          theme={theme}
-        >{`Collection: ${collectionQuantity}`}</QuantityLine>
-        <QuantityLine theme={theme}>{`Deck: ${deckQuantity}`}</QuantityLine>
+        </MDTypography>
       </StyledCardContent>
     );
-  };
-  const renderCardActions = () => (
-    <CardActions sx={{ justifyContent: 'center', padding: theme.spacing(0.5) }}>
-      <GenericActionButtons card={card} context={context} page={page} />
-    </CardActions>
-  );
+  } else if (cardSize !== 'xs') {
+    cardContent = (
+      <StyledCardContent theme={theme}>
+        <MDTypography variant="body1" gutterBottom fontWeight="medium">
+          {name}
+        </MDTypography>
+        <MDTypography variant="body2" color="primary" gutterBottom>
+          {price}
+        </MDTypography>
+        <MDTypography
+          variant="body1"
+          color="primary"
+        >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</MDTypography>
+        <MDTypography
+          variant="body1"
+          color="primary"
+        >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</MDTypography>
+        <MDTypography
+          variant="body1"
+          color="primary"
+        >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</MDTypography>
+      </StyledCardContent>
+    );
+  }
 
   return (
     <StyledCard ref={cardRef} theme={theme}>
-      {renderCardMediaSection()}
-      {renderCardContent()}
-      {renderCardActions()}
+      <AspectRatioBox ref={cardRef} theme={theme}>
+        <CardMediaSection
+          isRequired={true}
+          imgUrl={imgUrl}
+          card={card}
+          context={context}
+          page={page}
+          quantity={card?.quantity}
+          isHovered={hoveredCard === card}
+          handleInteraction={handleInteraction}
+          handleClick={handleClick}
+          isModalOpen={isModalOpen}
+          ref={cardRef}
+        />
+      </AspectRatioBox>
+      {cardContent}
+      <CardActions
+        sx={{
+          justifyContent: 'center',
+          display: cardSize !== 'xs' ? 'flex' : 'none',
+        }}
+      >
+        <GenericActionButtons
+          card={card}
+          context={context}
+          onClick={() => handleContextSelect(context)}
+          onSuccess={() =>
+            enqueueSnackbar(
+              {
+                title: 'Action successful',
+                message: `Card added to ${card?.name || ''} successfully.`,
+              },
+              'success',
+              null
+            )
+          }
+          onFailure={(error) =>
+            enqueueSnackbar(
+              {
+                title: 'Action failed',
+                message: `Failed to add card to ${card?.name || ''}.`,
+              },
+              'error',
+              error
+            )
+          }
+          page={page}
+          cardSize={cardSize}
+        />
+      </CardActions>
     </StyledCard>
   );
 });

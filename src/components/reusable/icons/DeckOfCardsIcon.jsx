@@ -1,6 +1,6 @@
 import React from 'react';
 import ReusableIconButton from './ReusableIconButton';
-import deckIcon from '../../../assets/deckIcon2.png';
+import deckIcon from '../../../assets/icons/deckIcon2.png';
 
 const DeckOfCardsIcon = () => {
   return (

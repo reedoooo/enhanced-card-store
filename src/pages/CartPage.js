@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
-import LoadingIndicator from '../components/reusable/indicators/LoadingIndicator';
-import ErrorIndicator from '../components/reusable/indicators/ErrorIndicator';
-import CustomerForm from '../components/forms/customerCheckoutForm/CustomerForm';
 import CartContent from '../layout/cart/CartContent';
 import { useCartStore, useMode, usePageContext } from '../context';
-import PageLayout from '../layout/PageLayout';
-import Checkout from '../containers/cartPageContainers/Checkout';
-import CartSummary from '../components/other/dataDisplay/CartSummary';
+import Checkout from '../layout/cart/cartPageContainers/Checkout';
+import PageLayout from '../layout/Containers/PageLayout';
+import { useLoading } from '../context/hooks/useLoading';
+import { CartSummary } from '../layout/cart/CartSummary';
 
 const CartPage = () => {
   const { theme } = useMode();
@@ -21,19 +19,21 @@ const CartPage = () => {
     cartCardQuantity,
     totalCost,
   } = useCartStore();
-  const { loadingStatus, returnDisplay, setLoading } = usePageContext();
+  const { returnDisplay, setLoading } = usePageContext();
+  const { startLoading, stopLoading, setError, isPageLoading } = useLoading();
   const calculateTotalPrice = getTotalCost();
 
   // useEffect hook to fetch cart data for user
   useEffect(() => {
     const fetchData = async () => {
-      setLoading('isPageLoading', true);
+      startLoading('isPageLoading');
       try {
         await fetchCartForUser(); // Assuming fetchUserCart updates cartData
       } catch (error) {
         console.error('Error fetching cart data:', error);
+        setError(error.message || 'Failed to fetch cart data');
       } finally {
-        setLoading('isPageLoading', false);
+        stopLoading('isPageLoading');
       }
     };
 
@@ -85,14 +85,14 @@ const CartPage = () => {
       sx={{
         width: '100%',
         height: '100%',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.backgroundA.lightest,
       }}
     >
       <CardContent
         sx={{
           width: '100%',
           height: '100%',
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.backgroundA.lightest,
         }}
       >
         <Grid container spacing={3}>
@@ -105,8 +105,10 @@ const CartPage = () => {
 
   return (
     <PageLayout>
-      {loadingStatus?.isPageLoading && returnDisplay()}
-      {loadingStatus?.isLoading && returnDisplay()}
+      {/* <React.Fragment> */}
+      {/* <PageLayout> */}
+      {isPageLoading && returnDisplay()}
+      {/* {loadingStatus?.isLoading && returnDisplay()} */}
       <Box
         sx={{
           overflow: 'auto',
@@ -114,11 +116,13 @@ const CartPage = () => {
           m: 'auto',
           width: '100%',
           height: '100%',
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.backgroundA.lightest,
         }}
       >
         {renderCartLayout()}
       </Box>
+      {/* </PageLayout> */}
+      {/* </React.Fragment> */}
     </PageLayout>
   );
 };

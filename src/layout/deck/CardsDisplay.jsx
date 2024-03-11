@@ -1,21 +1,22 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import CardsGrid from '../../components/grids/deckBuilderGrids/CardsGrid';
-import useDeckStyles from '../../context/hooks/useDeckStyles';
+import { useMode } from '../../context';
+import {
+  DeckCardsContainer,
+  NoCardsTypography,
+} from '../../pages/pageStyles/StyledComponents';
 
 const CardsDisplay = ({ selectedDeck, isLoading }) => {
-  const { cardsContainerStyles, noCardsTypographyStyles } = useDeckStyles();
-
+  const { theme } = useMode();
   return (
-    <Box sx={cardsContainerStyles}>
+    <DeckCardsContainer theme={theme}>
       {selectedDeck?.cards?.length > 0 ? (
         <CardsGrid isLoading={isLoading} />
       ) : (
-        <Typography sx={noCardsTypographyStyles}>
-          No cards to display
-        </Typography>
+        <NoCardsTypography theme={theme}>No cards to display</NoCardsTypography>
       )}
-    </Box>
+    </DeckCardsContainer>
   );
 };
 

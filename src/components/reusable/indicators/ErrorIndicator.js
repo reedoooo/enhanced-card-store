@@ -1,27 +1,55 @@
 import React from 'react';
+import styled from 'styled-components';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Container from '@mui/material/Container';
 import { Alert, AlertTitle } from '@mui/material';
-import { useStyles } from './styles';
+import { useMode } from '../../../context';
+
+// Styled components with theme utilization
+const StyledContainer = styled(Container)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100vh',
+  padding: theme.spacing(2),
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: theme.palette.background.paper,
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: theme.palette.text.primary,
+}));
+
+const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)(({ theme }) => ({
+  marginRight: theme.spacing(2),
+  color: theme.palette.error.main,
+}));
 
 const ErrorIndicator = ({ error }) => {
-  const classes = useStyles();
-
+  const { theme } = useMode();
   return (
-    <Container className={classes.container}>
-      <Paper elevation={3} className={classes.paper}>
-        <Typography variant="h6" className={classes.typography}>
-          <ErrorOutlineIcon className={classes.icon} />
+    <StyledContainer>
+      <StyledPaper elevation={3} theme={theme}>
+        <StyledTypography variant="h6">
+          <StyledErrorOutlineIcon />
           <Alert severity="error">
             <AlertTitle>Error</AlertTitle>
-            This is an error alert — <strong> Error: {error}</strong>
+            This is an error alert — <strong>Error: {error}</strong>
           </Alert>
-        </Typography>
-      </Paper>
-    </Container>
+        </StyledTypography>
+      </StyledPaper>
+    </StyledContainer>
   );
 };
 

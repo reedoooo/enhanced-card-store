@@ -1,75 +1,60 @@
-import React, { useContext, useEffect, useState } from 'react';
-import CollectionPortfolio from '../layout/collection/CollectionPortfolio';
-import Subheader from '../components/reusable/Subheader';
-import { useCollectionStore } from '../context/CollectionContext/CollectionContext';
-import { ModalContext } from '../context/ModalContext/ModalContext';
-import { useMode } from '../context/hooks/colormode';
-import { usePageContext } from '../context/PageContext/PageContext';
-import HeroCenter from './pageStyles/HeroCenter';
-import PageLayout from '../layout/PageLayout';
+import React, { useEffect } from 'react';
+import { Box, Grid } from '@mui/material';
+import CollectionPortfolio from '../layout/collection';
 import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
-import useCollectionPageView from '../context/hooks/useCollectionPageView';
+import { useCollectionStore, useMode } from '../context';
+import useLoadingAndModal from './pageStyles/useLoadingAndModal';
+import HeroBanner from './pageStyles/HeroBanner';
+import PageLayout from '../layout/Containers/PageLayout';
+import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import { useIsFirstRender } from '../context/hooks/useIsFirstRender';
+import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import { useLoading } from '../context/hooks/useLoading';
 
 const CollectionPage = () => {
-  const { selectedCollection, allCollections } = useCollectionStore();
-  const { closeModal, isModalOpen, modalContent } = useContext(ModalContext);
-  const { isCollectionView, showCollectionView, showCollectionContent } =
-    useCollectionPageView();
-  const { theme } = useMode();
-  const { loadingStatus, returnDisplay, setLoading, logPageData } =
-    usePageContext();
+  const { selectedCollection, allCollections, resetCollection } =
+    useSelectedCollection();
+  const { fetchCollections, hasFetchedCollections } = useCollectionManager();
+
+  const { returnDisplay, isModalOpen, modalContent, closeModal } =
+    useLoadingAndModal();
+  const { isPageLoading } = useLoading();
+  const isFirstRender = useIsFirstRender();
 
   useEffect(() => {
-    setLoading('isPageLoading', true);
-    try {
-      if (!selectedCollection || !selectedCollection?._id) return; // If no collection is selected, do nothing
-      logPageData('CollectionPage', selectedCollection); // Log collection data
-    } catch (e) {
-      // setLoading(e, true);
-      console.error('Error loading collection page:', e);
-    } finally {
-      // setIsPageLoading(false); // End the loading state
-      setLoading('isPageLoading', false);
-      // setLoading();
+    if (!hasFetchedCollections) {
+      fetchCollections();
     }
   }, []);
 
-  // Function to render the hero center
-  const renderHeroCenter = () =>
-    !isCollectionView && (
-      <HeroCenter
-        title="Your Collection's Home"
-        subtitle="Welcome to your collection! ..."
-      />
-    );
-
-  // Function to render the collection portfolio
-  const renderCollectionPortfolio = () => (
-    <CollectionPortfolio
-      allCollections={allCollections}
-      onCollectionSelect={
-        selectedCollection ? showCollectionContent : showCollectionView
-      }
-    />
-  );
-
-  // Function to render the card dialog
-  const renderCardDialog = () =>
-    isModalOpen && (
-      <GenericCardDialog
-        open={isModalOpen}
-        context={'Collection'}
-        closeModal={closeModal}
-        card={modalContent}
-      />
-    );
-
   return (
-    <PageLayout>
-      {loadingStatus?.isPageLoading && returnDisplay()}
-      {renderHeroCenter()}
-      {renderCollectionPortfolio()}
-      {renderCardDialog()}
+    <PageLayout backCol={true}>
+      <Grid
+        item
+        xs={12}
+        sx={
+          {
+            // backgroundColor: '#3D3D3D',
+          }
+        }
+      >
+        {isPageLoading && returnDisplay()}
+        {!selectedCollection && (
+          <HeroBanner
+            title="Your Collection's Home"
+            subtitle="Welcome to your collection! ..."
+          />
+        )}
+        <CollectionPortfolio allCollections={allCollections} />
+        {isModalOpen && (
+          <GenericCardDialog
+            open={isModalOpen}
+            context={'Collection'}
+            closeModal={closeModal}
+            card={modalContent}
+          />
+        )}
+      </Grid>
     </PageLayout>
   );
 };

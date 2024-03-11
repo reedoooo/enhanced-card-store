@@ -1,0 +1,52 @@
+{
+  "introText": {
+    "mainTitle": "Enhanced Cardstore",
+    "description": "The purpose of this site is to provide an enhanced user experience for competitive and novice card collectors alike. We provide an advanced collection tracker and deck builder which allows users to build decks and track the prices of the cards they need so they can make the best financial decisions when buying and selling cards."
+  },
+  "carouselImages": [
+    { "image": "/images/yugioh.jpeg", "caption": "Yu-Gi-Oh!" },
+    { "image": "/images/pokemon.jpeg", "caption": "Pokemon" },
+    {
+      "image": "/images/magic-the-gathering.jpeg",
+      "caption": "Magic: The Gathering"
+    }
+  ],
+  "tiers": [
+    {
+      "title": "Deck Builder",
+      "description": [
+        "Build and test decks digitally",
+        "Access to a wide library of cards",
+        "Deck performance analytics",
+        "Community deck sharing and rating"
+      ],
+      "buttonText": "View Details",
+      "buttonText2": "Get Started",
+      "buttonVariant": "outlined"
+    },
+    {
+      "title": "Store",
+      "subheader": "Most popular",
+      "description": [
+        "Sell and buy cards with ease",
+        "Secure transaction platform",
+        "Real-time market price tracking"
+      ],
+      "buttonText": "View Details",
+      "buttonText2": "Shop now",
+      "buttonVariant": "contained"
+    },
+    {
+      "title": "Collection Tracker",
+      "description": [
+        "Track and manage your card collection",
+        "Value estimation based on market trends",
+        "Automatic collection organization",
+        "Trade and wishlist creation tools"
+      ],
+      "buttonText": "View Details",
+      "buttonText2": "Track Collection",
+      "buttonVariant": "outlined"
+    }
+  ]
+}
