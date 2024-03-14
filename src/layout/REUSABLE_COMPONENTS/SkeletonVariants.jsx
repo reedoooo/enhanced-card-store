@@ -4,7 +4,6 @@ import { useMode } from '../../context';
 import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
 
 const HeroSectionSkeleton = () => {
-  const { theme } = useMode();
   const { SkeletonLoader } = useSkeletonLoader();
 
   return (

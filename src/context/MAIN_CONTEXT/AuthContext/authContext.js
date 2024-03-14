@@ -8,14 +8,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { usePageContext } from '../../UTILITIES_CONTEXT/PageContext/PageContext';
-import { processResponseData } from './helpers';
 import useLogger from '../../hooks/useLogger';
 import { defaultContextValue } from '../../constants';
 import { Redirect, useNavigate } from 'react-router-dom';
-import { useLoading } from '../../hooks/useLoading';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
 import jwt_decode from 'jwt-decode';
 

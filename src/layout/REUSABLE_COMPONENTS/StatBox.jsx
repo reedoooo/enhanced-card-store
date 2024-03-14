@@ -10,19 +10,23 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
   const blue = colors.blueAccent.default;
   const green = colors.greenAccent.default;
   const greenliht = colors.greenAccent.light;
-
   const grey = colors.grey.default;
 
   return (
     <MDBox
       sx={{
         width: '100%',
-        // m: '0 30px',
         p: '20px',
-        borderRadius: theme.spacing(2),
+        borderRadius: theme.spacing(4),
       }}
     >
-      <Box display="flex" justifyContent="space-between">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        sx={{
+          borderRadius: theme.spacing(4),
+        }}
+      >
         <Box>
           {icon}
           <Typography variant="h4" fontWeight="bold" sx={{ color: grey }}>

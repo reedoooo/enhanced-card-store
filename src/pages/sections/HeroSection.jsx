@@ -19,6 +19,7 @@ import {
 } from 'swiper/modules';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import HeroSectionSkeleton from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
+import { useMediaQuery } from '@mui/material';
 
 // const
 //   return cards?.map((card, index) => (
@@ -51,6 +52,15 @@ import HeroSectionSkeleton from '../../layout/REUSABLE_COMPONENTS/SkeletonVarian
 
 const HeroSection = () => {
   const { theme } = useMode();
+  const { breakpoints } = theme;
+  const isLgUp = useMediaQuery(breakpoints.up('lg'));
+  const isLgDown = useMediaQuery(breakpoints.down('lg'));
+  const isMdUp = useMediaQuery(breakpoints.up('md'));
+  const isBetweenLgMd = isLgDown && isMdUp;
+  const isMdDown = useMediaQuery(breakpoints.down('md'));
+  const isSmUp = useMediaQuery(breakpoints.up('sm'));
+  const isBetweenSmMd = isMdDown && isSmUp;
+
   // const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { topFiveCards } = useStatisticsStore();
@@ -61,12 +71,13 @@ const HeroSection = () => {
     description: `Description for Placeholder ${index + 1}`,
     image: placeHolder, // Use the placeholder image for all default cards
   }));
-
-  // Combine topFiveCards with defaultCards
   const cards = [...topFiveCards, ...defaultCards];
   const handleSlideChange = (swiper) => {
     setActiveCardIndex(swiper.realIndex);
   };
+
+  // if screen is largest then show 7 slides, else show 5 slides, else show 3 slides, else show 1 slide
+  const slidesPerView = isLgUp ? 7 : isBetweenLgMd ? 5 : isBetweenSmMd ? 3 : 1;
 
   if (!cards || !Array.isArray(cards) || !cards[activeCardIndex]) {
     return <HeroSectionSkeleton />;
@@ -115,7 +126,7 @@ const HeroSection = () => {
           grabCursor={true}
           centeredSlides={true}
           loop={true}
-          slidesPerView={7} // Ensures 7 slides are visible within the 100vw width
+          slidesPerView={slidesPerView} // Ensures 7 slides are visible within the 100vw width
           // slidesPerView={'auto'}
           // spaceBetween={-900} // Reduced space between slides
           spaceBetween={10}
@@ -167,140 +178,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-//           </SwiperSlide>
-//           {return cards?.map((card, index) => (
-//             <SwiperSlide key={card?.id || index} className="swiper-slide">
-//               {/* <Box
-//                 className="swiper-slide"
-//                 sx={{
-//                   padding: 2, // Provides padding around the image
-//                   display: 'flex',
-//                   justifyContent: 'center',
-//                   alignItems: 'center',
-//                   height: '100%',
-//                   boxSizing: 'border-box',
-//                 }}
-//               > */}
-//               <img
-//                 src={card?.image || placeHolder}
-//                 class="swiper-slide post"
-//                 alt={`slide_${index}`}
-//                 style={{
-//                   maxWidth: '100%',
-//                   maxHeight: '100%',
-//                   objectFit: 'contain',
-//                 }}
-//               />
-//               {/* </Box> */}
-//             </SwiperSlide>
-//           ))}
-//         </Swiper>
-//       </MDBox>
-//     </section>
-//   );
-// };
-
-// export default HeroSection;
-// import React, { useState } from 'react';
-// import { Box, Typography } from '@mui/material';
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import 'swiper/css';
-// import 'swiper/css/effect-coverflow';
-// import 'swiper/css/pagination';
-// import 'swiper/css/navigation';
-// // import { EffectCoverflow, Pagination, Navigation } from 'swiper';
-// import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
-
-// import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-// import placeHolder from '../../assets/images/placeholder.jpeg';
-// import { useStatisticsStore } from '../../context';
-
-// const HeroSection = () => {
-//   const [activeCardIndex, setActiveCardIndex] = useState(0);
-//   const { topFiveCards } = useStatisticsStore();
-
-//   if (!topFiveCards || !Array.isArray(topFiveCards)) {
-//     return null;
-//   }
-
-//   // Handle the slide change event
-//   const handleSlideChange = (swiper) => {
-//     setActiveCardIndex(swiper.realIndex);
-//   };
-
-//   const createSlider = (cards) => {
-//     return (
-//       <Swiper
-//         effect="coverflow"
-//         grabCursor={true}
-//         centeredSlides={true}
-//         loop={true}
-//         slidesPerView={3}
-//         spaceBetween={30}
-//         coverflowEffect={{
-//           rotate: 0,
-//           stretch: 50,
-//           depth: 100,
-//           modifier: 1,
-//           slideShadows: false,
-//         }}
-//         pagination={{
-//           clickable: true,
-//           el: '.swiper-pagination', // Ensure pagination is correctly targeted
-//         }}
-//         navigation={true}
-//         modules={[EffectCoverflow, Pagination, Navigation]}
-//         className="swiper_container"
-//         onSlideChange={handleSlideChange} // Update active index on slide change
-//       >
-//         {cards.map((card, index) => (
-//           <SwiperSlide key={card?.id || index}>
-//             <Box
-//               sx={{
-//                 padding: 2,
-//                 display: 'flex',
-//                 justifyContent: 'center',
-//                 alignItems: 'center',
-//                 height: '100%',
-//                 boxSizing: 'border-box',
-//               }}
-//             >
-//               <img
-//                 src={card?.image || placeHolder}
-//                 alt={`slide_${index}`}
-//                 style={{
-//                   maxWidth: '100%',
-//                   maxHeight: '100%',
-//                   objectFit: 'contain',
-//                 }}
-//               />
-//             </Box>
-//           </SwiperSlide>
-//         ))}
-//       </Swiper>
-//     );
-//   };
-
-//   return (
-//     <MDBox
-//       sx={{
-//         position: 'relative',
-//         overflow: 'hidden',
-//         color: '#fafafc',
-//         minHeight: '75vh',
-//         display: 'flex',
-//         flexDirection: 'column',
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//       }}
-//     >
-//       <Typography variant="h1" className="heading" gutterBottom>
-//         {topFiveCards[activeCardIndex]?.name}
-//       </Typography>
-//       {createSlider(topFiveCards)}
-//       <Typography>{topFiveCards[activeCardIndex]?.description}</Typography>
-//     </MDBox>
-//   );
-// };
-
-// export default HeroSection;

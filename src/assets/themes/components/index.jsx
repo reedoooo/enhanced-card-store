@@ -20,83 +20,74 @@ const cssbaseline = {
   `,
 };
 
-// const container = {
+// const listItemButton = {
 //   styleOverrides: {
 //     root: {
-//       margin: 0,
-//       padding: 0,
+//       color: '#4cceac',
+//       paddingTop: '10px',
+//       paddingBottom: '10px',
+//       '&.Mui-selected': {
+//         color: '#3da58a',
+//         backgroundColor: '#4cceac',
+//         '&:hover': {
+//           backgroundColor: '#3da58a',
+//         },
+//         '& .MuiListItemIcon-root': {
+//           color: '#3da58a',
+//         },
+//       },
+//       '&:hover': {
+//         backgroundColor: '#3da58a',
+//         color: '#3da58a',
+//         '& .MuiListItemIcon-root': {
+//           color: '#3da58a',
+//         },
+//       },
 //     },
 //   },
 // };
 
-const listItemButton = {
-  styleOverrides: {
-    root: {
-      color: '#4cceac',
-      paddingTop: '10px',
-      paddingBottom: '10px',
-      '&.Mui-selected': {
-        color: '#3da58a',
-        backgroundColor: '#4cceac',
-        '&:hover': {
-          backgroundColor: '#3da58a',
-        },
-        '& .MuiListItemIcon-root': {
-          color: '#3da58a',
-        },
-      },
-      '&:hover': {
-        backgroundColor: '#3da58a',
-        color: '#3da58a',
-        '& .MuiListItemIcon-root': {
-          color: '#3da58a',
-        },
-      },
-    },
-  },
-};
+// const outlinedInput = {
+//   styleOverrides: {
+//     root: {
+//       background: '#ffffff',
+//       borderRadius: '4px',
+//       '& .MuiOutlinedInput-notchedOutline': {
+//         borderColor: '#333',
+//       },
+//       '&:hover $notchedOutline': {
+//         borderColor: '#4cceac',
+//       },
+//       '&.MuiInputBase-multiline': {
+//         padding: '1px',
+//       },
+//     },
 
-const outlinedInput = {
-  styleOverrides: {
-    root: {
-      background: '#ffffff',
-      borderRadius: '4px',
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#333',
-      },
-      '&:hover $notchedOutline': {
-        borderColor: '#4cceac',
-      },
-      '&.MuiInputBase-multiline': {
-        padding: '1px',
-      },
-    },
-
-    input: {
-      fontWeight: 500,
-      background: '#ffffff',
-      padding: '15.5px 14px',
-      borderRadius: '4px',
-      '&.MuiInputBase-inputSizeSmall': {
-        padding: '10px 14px',
-        '&.MuiInputBase-inputAdornedStart': {
-          paddingLeft: 0,
-        },
-      },
-    },
-    inputAdornedStart: {
-      paddingLeft: '4px',
-    },
-    notchedOutline: {
-      borderRadius: '4px',
-    },
-  },
-};
+//     input: {
+//       fontWeight: 500,
+//       background: '#ffffff',
+//       padding: '15.5px 14px',
+//       borderRadius: '4px',
+//       '&.MuiInputBase-inputSizeSmall': {
+//         padding: '10px 14px',
+//         '&.MuiInputBase-inputAdornedStart': {
+//           paddingLeft: 0,
+//         },
+//       },
+//     },
+//     inputAdornedStart: {
+//       paddingLeft: '4px',
+//     },
+//     notchedOutline: {
+//       borderRadius: '4px',
+//     },
+//   },
+// };
 
 export const components = {
   MuiCssBaseline: cssbaseline,
   MuiButton: button,
-  MuiListItemButton: listItemButton,
+  // MuiListItemButton: listItemButton,
   MuiContainer: container,
   MuiDivider: divider,
 
@@ -104,7 +95,7 @@ export const components = {
   MuiTableCell: tableCell,
   MuiTableHead: tableHead,
 
-  MuiOutlinedInput: outlinedInput,
+  // MuiOutlinedInput: outlinedInput,
   MuiInput: input,
   MuiInputLabel: inputLabel,
 

@@ -20,6 +20,7 @@ export { useFormContext } from './UTILITIES_CONTEXT/FormContext/FormContext';
 export { useMode } from './UTILITIES_CONTEXT/ColorModeContext/useMode';
 export { useConfiguratorContext } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';
 export { useVisibilityContext } from './UTILITIES_CONTEXT/VisibilityContext';
+// export { useSnackbarContext } from './UTILITIES_CONTEXT/SnackbarContext/SnackbarContext';
 
 // Contexts
 export { default as ErrorBoundary } from './ErrorBoundary';
@@ -45,3 +46,4 @@ export { PageProvider } from './UTILITIES_CONTEXT/PageContext/PageContext';
 export { CardImagesProvider } from './MISC_CONTEXT/CardImagesContext/CardImagesContext';
 export { ConfiguratorProvider } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';
 export { VisibilityProvider } from './UTILITIES_CONTEXT/VisibilityContext';
+// export { SnackbarContextProvider } from './UTILITIES_CONTEXT/SnackbarContext/SnackbarContext';

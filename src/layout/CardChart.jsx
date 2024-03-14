@@ -1,46 +1,28 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Avatar,
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Container,
-  Grid,
   IconButton,
   List,
   ListItem,
   Paper,
   Typography,
   useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CardLinearChart from './CardLinearChart';
-import {
-  ErrorBoundary,
-  useCollectionStore,
-  useMode,
-  usePageContext,
-} from '../context';
+import { ErrorBoundary, useMode, usePageContext } from '../context';
 import useCardCronJob from './useCardCronJob';
-import initialCardData from './initialCardData';
+import initialCardData from '../data/initialCardData';
 import { format } from 'date-fns';
 import LoadingCardAnimation from '../assets/animations/LoadingCardAnimation';
 import styled from 'styled-components';
-import MDButton from '../layout/REUSABLE_COMPONENTS/MDBUTTON';
+import MDButton from './REUSABLE_COMPONENTS/MDBUTTON';
 import { useLoading } from '../context/hooks/useLoading';
 
-// Adjust the padding, margin, and other styles as needed
 const ChartArea = styled(Box)(({ theme }) => ({
   width: '100%',
   height: '100%',
@@ -51,11 +33,10 @@ const ChartArea = styled(Box)(({ theme }) => ({
   border: '1px solid #000',
   borderRadius: '5px',
 }));
-// A square, responsive container for the chart
 const SquareChartContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
-  width: '100%', // 100% of the parent width
-  paddingTop: '100%', // Maintain aspect ratio (1:1)
+  width: '100%',
+  paddingTop: '100%',
   overflow: 'hidden',
   '& > *': {
     position: 'absolute',
@@ -81,7 +62,6 @@ const CardChart = ({ cardData = initialCardData }) => {
   });
   const { returnDisplay } = usePageContext();
   const { isLoading } = useLoading();
-  const safeCardData = cardData || { dailyPriceHistory: [] };
   useEffect(() => {
     if (cardData?.imageUrl) {
       console.log('Setting image url', cardData?.imageUrl);
@@ -89,14 +69,6 @@ const CardChart = ({ cardData = initialCardData }) => {
     }
   }, [cardData?.imageUrl]);
 
-  // const chartData = useMemo(
-  //   () =>
-  //     dailyPriceHistory?.map((priceEntry) => ({
-  //       x: priceEntry?.timestamp,
-  //       y: priceEntry?.num,
-  //     })),
-  //   [dailyPriceHistory] // dependency array
-  // );
   const nivoReadyData = useMemo(
     () => [
       {
@@ -116,43 +88,30 @@ const CardChart = ({ cardData = initialCardData }) => {
       console.log('Fetching collections');
     }
   }, [isLoading('fetchCollections')]);
-  // Add responsive chart dimension handling
   useEffect(() => {
-    // Example of setting dynamic chart dimensions (could be more complex based on container size)
     const updateDimensions = () => {
-      const width = window.innerWidth < 500 ? window.innerWidth : 500; // or some other logic
-      const height = 300; // Fixed height or based on aspect ratio
+      const width = window.innerWidth < 500 ? window.innerWidth : 500;
+      const height = 300;
       setChartDimensions({ width, height });
     };
 
     window.addEventListener('resize', updateDimensions);
-    updateDimensions(); // Initial call
+    updateDimensions();
 
     return () => {
-      window.removeEventListener('resize', updateDimensions); // Cleanup listener
+      window.removeEventListener('resize', updateDimensions);
     };
-  }, []); // Empty array ensures this effect runs only once after initial render
-  // Simplified for demonstration
-  // const renderLoadingAnimation = () => {
-  //   return <LoadingCardAnimation selected={true} />;
-  // };
+  }, []);
   const renderHeaderWithAnimation = () => {
     return (
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center', // Align items vertically
+          alignItems: 'center',
         }}
       >
         <CardHeader
-          // avatar={
-          //   <Avatar
-          //     alt="imageUrl"
-          //     src={imageUrl || cardData?.imageUrl || ''}
-          //     sx={{ width: 24, height: 24 }}
-          //   />
-          // }
           action={
             <IconButton aria-label="settings">
               <MoreVertIcon />
@@ -165,7 +124,6 @@ const CardChart = ({ cardData = initialCardData }) => {
             margin: theme.spacing(1),
           }}
         />
-        {/* Conditionally render animation based on size or other conditions */}
         {isLgUp && renderLoadingAnimation()}
       </Box>
     );
@@ -176,7 +134,6 @@ const CardChart = ({ cardData = initialCardData }) => {
         variant="outlined"
         sx={{
           background: theme.palette.backgroundA.lightest,
-          // width: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -250,9 +207,6 @@ const CardChart = ({ cardData = initialCardData }) => {
               (text, index) => (
                 <MDButton
                   key={index}
-                  // variant={
-                  //   text === 'Reset Card Data' ? 'outlined' : 'contained'
-                  // }
                   onClick={() => {
                     if (text === 'Start Updates') startUpdates();
                     else if (text === 'Pause Updates') pauseUpdates();
@@ -284,7 +238,6 @@ const CardChart = ({ cardData = initialCardData }) => {
               )
             )}
           </CardActions>
-          {/* </Box> */}
           <CardContent sx={{ padding: 0, '&:last-child': { pb: 0 } }}>
             <Paper
               sx={{
@@ -300,7 +253,7 @@ const CardChart = ({ cardData = initialCardData }) => {
               <List
                 dense
                 sx={{
-                  maxHeight: { xs: '120px', sm: '150px', md: '200px' }, // Responsive max height
+                  maxHeight: { xs: '120px', sm: '150px', md: '200px' },
                   overflowY: 'auto',
                 }}
               >

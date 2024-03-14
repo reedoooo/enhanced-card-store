@@ -21,9 +21,9 @@ import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
 import MDButton from '../../layout/REUSABLE_COMPONENTS/MDBUTTON';
-import useCardCronJob from '../../tests/useCardCronJob';
 import SingleCardAnimation from '../../assets/animations/SingleCardAnimation';
-import CardChart from '../../tests/CardChart';
+import CardChart from '../../layout/CardChart';
+import useCardCronJob from '../../layout/useCardCronJob';
 import {
   StyledContainerBox,
   StyledPaper,
@@ -37,10 +37,8 @@ const MainContentSection = () => {
   const { theme } = useMode();
   const { authUser } = useAuthContext();
   const { user } = useUserContext();
-
   const { hasFetchedCollections } = useCollectionManager();
   const { allCollections, selectedCollection } = useSelectedCollection();
-  // const isDataLoaded = allCollections && allCollections.length > 0;
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const initialCardsData = hasFetchedCollections
     ? allCollections[0]?.cards[0]
@@ -63,7 +61,6 @@ const MainContentSection = () => {
                 {isMdUp && (
                   <Grid item md={6}>
                     <MDBox
-                      // center
                       sx={{
                         display: 'flex',
                         justifyContent: 'center',

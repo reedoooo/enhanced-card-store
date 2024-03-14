@@ -42,7 +42,7 @@ import { AuthModeSwitch } from '../../layout/REUSABLE_STYLED_COMPONENTS/Specific
 import AuthSwitch from '../buttons/other/AuthSwitch';
 import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
 
-function LoginDialog({ showSnackbar }) {
+function LoginDialog() {
   const { theme, toggleColorMode, mode } = useMode();
   const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
   // const { currentForm, setFormSchema } = useFormContext();
@@ -122,36 +122,17 @@ function LoginDialog({ showSnackbar }) {
               {formTitle}
             </MDTypography>
           </MDBox>
-          {/* <MDBox
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end', // Aligns the switch to the flex end
-              border: 'none',
-            }}
-          > */}
           <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} />
-          {/* </MDBox> */}
         </DialogTitle>
       </DialogPaper>
 
       <Divider />
       <StyledDialogContent theme={theme} elevation={20}>
         {currentSchemaKey === 'loginForm' ? (
-          <LoginForm
-            // toggleAuthMode={toggleAuthMode}
-            signupMode={signupMode}
-            formLabel={formLabel}
-          />
+          <LoginForm signupMode={signupMode} formLabel={formLabel} />
         ) : (
-          <SignupForm
-            // toggleAuthMode={toggleAuthMode}
-            signupMode={signupMode}
-            formLabel={formLabel}
-          />
+          <SignupForm signupMode={signupMode} formLabel={formLabel} />
         )}
-        {/* </MDBox> */}
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"
@@ -177,4 +158,4 @@ function LoginDialog({ showSnackbar }) {
   );
 }
 
-export default withDynamicSnackbar(LoginDialog);
+export default LoginDialog;

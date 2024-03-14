@@ -10,10 +10,6 @@ import {
 import FormField from './reusable/FormField';
 import { LoadingButton } from '@mui/lab';
 import { useFormContext, useMode } from '../../context';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
-import { CopyrightOutlined } from '@mui/icons-material';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import AuthSwitch from '../buttons/other/AuthSwitch';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
@@ -21,7 +17,9 @@ import {
   FormBox,
   FormFieldBox,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
+import ReusableLoadingButton from '../buttons/other/ReusableLoadingButton';
+// import useSubmitHandler from './hooks/useSubmitHandler';
+// import useCustomSnackbar from '../../context/hooks/useCustomSnackbar';
 const baseButtonStyles = {
   bgcolor: '#6a59ff', // background-color
   borderColor: '#6a59ff',
@@ -49,7 +47,9 @@ const baseButtonStyles = {
     outlineOffset: 2,
   },
 };
-const LoginForm = ({ showSnackbar, signupMode, toggleAuthMode, formLabel }) => {
+const LoginForm = () => {
+  // const showSnackbar = useCustomSnackbar();
+
   const { formMethods, onSubmit, setFormSchema } = useFormContext();
   const { theme } = useMode();
   const {
@@ -75,21 +75,28 @@ const LoginForm = ({ showSnackbar, signupMode, toggleAuthMode, formLabel }) => {
       icon: <LockIcon />,
     },
   ];
-
+  // const onFormSubmit = useSubmitHandler(
+  //   onSubmit(data, 'loginForm'), // Assuming this is the function that performs the submission logic
+  //   'Success', // Title for the success message
+  //   "You've successfully logged in.", // Success description
+  //   'Login failed. Please try again.' // Error description
+  // );
   const onFormSubmit = (data) => {
-    onSubmit(data, 'loginForm')
-      .then(() => {
-        showSnackbar(
-          { title: 'Success', description: "You've successfully logged in." },
-          'success'
-        );
-      })
-      .catch((error) => {
-        showSnackbar(
-          { title: 'Error', description: 'Login failed. Please try again.' },
-          'error'
-        );
-      });
+    // showSnackbar('Loading...', 'Logging in...', { variant: 'info' });
+    onSubmit(data, 'loginForm');
+    // .then(() => {
+    //   showSnackbar('Success!', "You've successfully logged in.", {
+    //     variant: 'success',
+    //     persist: true,
+    //   });
+    // })
+    // .catch((error) => {
+    //   showSnackbar(
+    //     'Error',
+    //     'Login failed. Please try again.' + `: ${error}`,
+    //     { variant: 'error', persist: true }
+    //   );
+    // });
   };
   return (
     <FormBox
@@ -119,15 +126,7 @@ const LoginForm = ({ showSnackbar, signupMode, toggleAuthMode, formLabel }) => {
           )}
         </FormFieldBox>
       ))}
-      {/* <SimpleButton
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        style={baseButtonStyles}
-        disabled={isSubmitting}
-        fullWidth
-      ></SimpleButton> */}
-      <LoadingButton
+      {/* <LoadingButton
         type="submit"
         variant="contained"
         loading={isSubmitting}
@@ -144,9 +143,21 @@ const LoginForm = ({ showSnackbar, signupMode, toggleAuthMode, formLabel }) => {
         }}
       >
         Login
-      </LoadingButton>
+      </LoadingButton> */}
+      <ReusableLoadingButton
+        type="submit"
+        loading={isSubmitting}
+        label="Login"
+        startIcon={<LoginIcon />}
+        fullWidth
+        sx={{
+          mt: 2, // margin-top: Adjust if necessary
+          background: theme.palette.backgroundG.light,
+          '&:hover': { background: theme.palette.backgroundG.default },
+        }}
+      />
     </FormBox>
   );
 };
 
-export default withDynamicSnackbar(LoginForm);
+export default LoginForm;

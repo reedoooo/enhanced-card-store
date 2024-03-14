@@ -464,7 +464,7 @@ export const CardListItem = styled(ListItem)(({ theme }) => ({
 export const ChartArea = styled(Container)(({ theme }) => ({
   height: '100%',
   width: '100%',
-  minHeight: '500px',
+  // minHeight: '500px',
   position: 'relative',
   flexGrow: 1,
   padding: theme.spacing(2),

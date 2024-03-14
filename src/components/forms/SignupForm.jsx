@@ -45,7 +45,7 @@ const baseButtonStyles = {
   },
 };
 const SignupForm = ({
-  showSnackbar,
+  // showSnackbar,
   signupMode,
   toggleAuthMode,
   formLabel,
@@ -72,19 +72,19 @@ const SignupForm = ({
 
   // Updated onFormSubmit to directly use onSubmit from context
   const onFormSubmit = (data) => {
-    onSubmit(data, 'signupForm')
-      .then(() => {
-        showSnackbar(
-          { title: 'Success', description: "You've successfully signed up." },
-          'success'
-        );
-      })
-      .catch((error) => {
-        showSnackbar(
-          { title: 'Error', description: 'Signup failed. Please try again.' },
-          'error'
-        );
-      });
+    onSubmit(data, 'signupForm');
+    // .then(() => {
+    //   showSnackbar(
+    //     { title: 'Success', description: "You've successfully signed up." },
+    //     'success'
+    //   );
+    // })
+    // .catch((error) => {
+    //   showSnackbar(
+    //     { title: 'Error', description: 'Signup failed. Please try again.' },
+    //     'error'
+    //   );
+    // });
   };
   // useEffect(() => {
   //   setIsFormDataLoading(isSubmitting);

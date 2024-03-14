@@ -14,21 +14,13 @@ import ThemeSelector from '../../../../components/forms/selectors/ThemeSelector'
  * @param {Object} props.timeRange Selected time range for statistics.
  * @param {Object} props.stats Collection statistics.
  */
-export const UpdaterAndStatisticsRow = ({
-  isSmall,
-  socket,
-  timeRange,
-  stats,
-}) => (
+export const UpdaterAndStatisticsRow = ({ isSmall }) => (
   <Grid
     container
     spacing={2}
     sx={{
-      // marginTop: 2,
-      // marginBottom: 2,
       width: '100%', // Ensure the container takes full width
       flexDirection: isSmall ? 'column' : 'row',
-      // m: '0 auto',
     }}
   >
     {/* Update Status Box */}

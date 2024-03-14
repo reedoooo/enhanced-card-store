@@ -36,37 +36,17 @@ const useCardCronJob = (initialCardData) => {
     });
   }, []);
 
-  // const updateCardData = useCallback(() => {
-  //   setCardData((currentCard) => {
-  //     console.log('Updating card data:', cardData);
-  //     console.log('Current card data:', currentCard);
-  //     const newPriceHistory = {
-  //       num: (Math.random() * 10).toFixed(2), // or however you calculate new price
-  //       timestamp: new Date().toISOString(),
-  //     };
-
-  //     return {
-  //       ...currentCard,
-  //       quantity: currentCard.quantity + 1, // Increment quantity or however you update
-  //       dailyPriceHistory: [...currentCard.dailyPriceHistory, newPriceHistory],
-  //     };
-  //   });
-  // }, []);
-
-  // Simulate a cron job with useEffect and setInterval
   useEffect(() => {
     const intervalId = setInterval(() => {
-      updatePriceHistory(); // Update price history every interval
-    }, 120000); // Update every 5 seconds for example, adjust as needed
-
-    // Cleanup function to clear interval when component unmounts or updates
+      updatePriceHistory();
+    }, 120000);
     return () => clearInterval(intervalId);
   }, [updatePriceHistory]);
 
   const startUpdates = useCallback(() => {
     console.log('Starting updates');
     if (!intervalId) {
-      const id = setInterval(updatePriceHistory, 120000); // Update every 2 minutes, adjust as needed
+      const id = setInterval(updatePriceHistory, 120000);
       setIntervalId(id);
     }
   }, [updatePriceHistory, intervalId]);
@@ -84,13 +64,6 @@ const useCardCronJob = (initialCardData) => {
     setCardData(initialCardData);
     pauseUpdates();
   }, [initialCardData, pauseUpdates]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     // Cleanup interval on component unmount
-  //     if (intervalId) clearInterval(intervalId);
-  //   };
-  // }, [intervalId]);
 
   return {
     cardData,

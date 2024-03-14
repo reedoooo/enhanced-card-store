@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Grid, Button, Box } from '@mui/material';
+import { Grid, Button, Box, useMediaQuery } from '@mui/material';
 import {
   useAuthContext,
   useFormContext,
@@ -52,12 +52,12 @@ const FlexContainer = styled(Box)`
   padding: ${({ theme }) => theme.spacing(1, 2)};
 `;
 
-const HeaderContainer = styled.div`
+const HeaderContainer = styled(Box)`
   flex: 1;
-  max-width: 25%;
+  max-width: 50%;
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled(Box)`
   flex: 1;
   display: flex;
   justify-content: flex-end;
@@ -68,7 +68,6 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
   const { theme } = useMode();
   const { setCurrentForm } = useFormContext();
   const { user } = useUserContext();
-
   if (!user) {
     return <SelectCollectionHeaderSkeleton />;
   }

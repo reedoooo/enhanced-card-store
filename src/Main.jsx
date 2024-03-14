@@ -8,10 +8,7 @@ import PageLayout from './layout/Containers/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
 import LoadingIndicator from './components/reusable/indicators/LoadingIndicator.js';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
-import { useCardStoreHook } from './context/hooks/useCardStore.jsx';
-import { AppContainer } from './pages/pageStyles/StyledComponents.jsx';
 
-// Define all routes in a single array including the component name for laziness
 const ROUTE_CONFIG = [
   { path: '/', componentName: 'HomePage', isPrivate: false },
   { path: '/home', componentName: 'HomePage', isPrivate: false },
@@ -29,7 +26,6 @@ const ROUTE_CONFIG = [
   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
 
-// Dynamically import page components based on route configuration
 const LazyRoute = ({ componentName, ...rest }) => {
   const Component = lazy(() => import(`./pages/${componentName}`));
   return <Component {...rest} />;

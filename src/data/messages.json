@@ -1,0 +1,29 @@
+{
+  "specific": {},
+  "general": {
+    "loading": {
+      "primary": "Loading...",
+      "sub": "Please wait while we fetch your data."
+    },
+    "success": {
+      "dataFetch": {
+        "primary": "Success!",
+        "sub": "The data was fetched successfully."
+      },
+      "formSubmit": {
+        "primary": "Submitted!",
+        "sub": "Your information has been successfully submitted."
+      }
+    },
+    "error": {
+      "networkError": {
+        "primary": "Network Error",
+        "sub": "Please check your internet connection and try again."
+      },
+      "formError": {
+        "primary": "Submission Error",
+        "sub": "There was an issue submitting your form. Please try again."
+      }
+    }
+  }
+}

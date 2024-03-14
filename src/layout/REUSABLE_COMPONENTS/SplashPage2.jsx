@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import placeholder from '../assets/images/placeholder.jpeg';
+import placeholder from '../../assets/images/placeholder.jpeg';
 import { Box } from '@mui/material';
 
 const SplashPage2 = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -18,8 +17,6 @@ const SplashPage2 = () => {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-
-    // Append renderer to the container ref
     if (containerRef.current) {
       containerRef.current.appendChild(renderer.domElement);
     }
@@ -92,26 +89,20 @@ const SplashPage2 = () => {
       renderer.render(scene, camera);
     };
 
-    // Handle window resize
     window.addEventListener('resize', onWindowResize, false);
     function onWindowResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      // Recalculate number of cards per row
       cardsPerRow = calculateCardsPerRow();
-      // Update the rows with new card count
       updateRowsWithNewCardCount();
     }
 
-    // Update rows with new card count when window is resized
     function updateRowsWithNewCardCount() {
       cardRows.forEach((row) => {
-        // Remove existing cards
         while (row.children.length) {
           row.remove(row.children[0]);
         }
-        // Add new cards based on updated count
         for (let j = 0; j < cardsPerRow; j++) {
           const card = new THREE.Mesh(geometry, material);
           card.position.x = (j - cardsPerRow / 2) * cardSpacing;
@@ -121,15 +112,13 @@ const SplashPage2 = () => {
     }
 
     animate();
-
-    // Cleanup
     return () => {
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
       window.removeEventListener('resize', onWindowResize, false);
     };
-  }, []); // Empty dependency array ensures this effect runs once when the component mounts
+  }, []);
 
   return (
     <Box

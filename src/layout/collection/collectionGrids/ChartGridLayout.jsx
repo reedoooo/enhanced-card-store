@@ -1,32 +1,81 @@
-import React from 'react';
-import { Grid, Card, useMediaQuery, Icon } from '@mui/material';
+import React, { Suspense, useEffect, useMemo } from 'react';
+import { Grid, Card, useMediaQuery, Icon, Container } from '@mui/material';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import CollectionPortfolioChartContainer from './cards-chart/CollectionPortfolioChartContainer';
 import DataTable from './cards-datatable';
-import { useMode } from '../../../context';
+import { useMode, useStatisticsStore } from '../../../context';
 import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
 import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
 import { UpdaterAndStatisticsRow } from './cards-chart/UpdaterAndStatisticsRow';
 import SimpleCard from '../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { ChartArea } from '../../../pages/pageStyles/StyledComponents';
+import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useTimeRange from '../../../components/forms/selectors/useTimeRange';
+import useSkeletonLoader from './cards-datatable/useSkeletonLoader';
+import ChartErrorBoundary from './cards-chart/ChartErrorBoundary';
+import { ChartConfiguration } from './cards-chart/ChartConfigs';
+const renderCardContainer = (content) => {
+  return (
+    <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
+      <SimpleCard theme={uniqueTheme} content={content} hasTitle={false}>
+        {content}
+      </SimpleCard>
+    </MDBox>
+  );
+};
 
 const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const isLg = useMediaQuery(theme.breakpoints.up('lg'));
   const tableSize = isXs ? 'less' : isLg ? 'large' : 'small';
-  console.log({ selectedCards, tableSize, columns, data }); // Debug log
-  // A function to render MDBox Card container for reusability
-  const renderCardContainer = (content) => (
-    <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
-      <SimpleCard theme={uniqueTheme} content={content} hasTitle={false}>
-        {/* <Card sx={{ height: '100%', borderRadius: '10px' }}> */}
-        {/* <MDBox pt={3} sx={{ borderRadius: '10px' }}> */}
-        {content}
-        {/* </MDBox> */}
-      </SimpleCard>
-    </MDBox>
-  );
+  const env = process.env.CHART_ENVIRONMENT;
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const { selectedCollection } = useSelectedCollection();
+  const chartDataVariants = {
+    averaged: selectedCollection.averagedChartData,
+    raw: selectedCollection.nivoChartData,
+    new: selectedCollection.newNivoChartData,
+    test: selectedCollection.nivoTestData,
+  };
+  const selectedData = chartDataVariants.averaged;
+  const { selectedTimeRange } = useTimeRange();
+  const { stats, markers } = useStatisticsStore();
+  const { SkeletonLoader } = useSkeletonLoader();
+  const selectedChartData = useMemo(() => {
+    const averagedData = selectedCollection.averagedChartData;
+
+    if (!averagedData || !averagedData[selectedTimeRange]) {
+      console.error(
+        'No averaged chart data available for the selected time range.'
+      );
+      return null;
+    }
+    const chartData = averagedData[selectedTimeRange];
+    return chartData || null;
+  }, [selectedCollection.averagedChartData, selectedTimeRange]);
+  // if (!selectedChartData) {
+  //   return (
+  //     <Container sx={{ flexGrow: 1 }}>
+  //       <BoxHeader
+  //         title="Collection Card Chart"
+  //         subtitle="List of all cards in the collection"
+  //         icon={<Icon>table_chart</Icon>}
+  //         sideText={new Date().toLocaleString()}
+  //       />
+  //       <SkeletonLoader type="chart" height={isSmall ? 150 : 500} />
+  //       <SkeletonLoader type="text" count={2} />
+  //       <SkeletonLoader type="listItem" count={5} />
+  //     </Container>
+  //   );
+  // }
+  useEffect(() => {
+    console.log('DEBUG LOG, ', {
+      selectedChartData,
+      markers,
+      selectedTimeRange,
+    });
+  }, []);
 
   return (
     <MDBox mt={4.5} sx={{ width: '100%' }}>
@@ -53,10 +102,28 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
             />
           </SimpleCard>
           {renderCardContainer(
-            <CollectionPortfolioChartContainer
-              selectedCards={selectedCards}
-              removeCard={removeCard}
-            />
+            <Suspense fallback={<SkeletonLoader type="chart" height={500} />}>
+              <ChartArea
+                theme={theme}
+                sx={{
+                  minHeight: '500px',
+                }}
+              >
+                {/* <LinearChart
+                  nivoData={selectedChartData}
+                  height={500}
+                  timeRange={selectedTimeRange}
+                  specialPoints={markers}
+                /> */}
+                <ChartConfiguration
+                  nivoChartData={[selectedChartData]}
+                  markers={markers}
+                  height={500}
+                  range={selectedTimeRange}
+                  loadingID={selectedTimeRange}
+                />
+              </ChartArea>
+            </Suspense>
           )}
           <SimpleCard
             theme={uniqueTheme}

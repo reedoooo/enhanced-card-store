@@ -179,39 +179,19 @@ const CollectionPortfolio = () => {
   // }, [toggleShowCollections]);
   useEffect(() => {
     console.log('VIEW STATE CHANGED', viewState);
-    console.log('ALL COLLECTION', allCollections);
-    console.log('SELECTED COLLECTION', selectedCollection);
-    console.log('SELECTED COLLECTION ID', selectedCollectionId);
-    console.log('IS COLLECTION VISIBLE', isCollectionVisible);
+    // console.log('ALL COLLECTION', allCollections);
+    // console.log('SELECTED COLLECTION', selectedCollection);
+    // console.log('SELECTED COLLECTION ID', selectedCollectionId);
+    // console.log('IS COLLECTION VISIBLE', isCollectionVisible);
   }, [
     viewState,
-    allCollections,
-    isCollectionVisible,
-    selectedCollection,
-    selectedCollectionId,
+    // allCollections,
+    // isCollectionVisible,
+    // selectedCollection,
+    // selectedCollectionId,
   ]);
   const { columns, data } = collectionPortfolioData(selectedCollection?.cards);
 
-  // if (!hasFetchedCollections) {
-  //   return (
-  //     <MDBox py={2} px={1} theme={theme}>
-  //       <PortfolioBoxA theme={theme}>
-  //         <DashboardLayout>
-  //           {/* Directly use the SkeletonLoader with 'grid' type and customize gridProps as needed */}
-  //           <SkeletonLoader
-  //             type="grid"
-  //             count={3}
-  //             gridProps={{ container: true, spacing: 2 }}
-  //             // Customize each item's grid breakpoints as needed
-  //             propsForEachItem={{
-  //               xs: 12,
-  //             }}
-  //           />
-  //         </DashboardLayout>
-  //       </PortfolioBoxA>
-  //     </MDBox>
-  //   );
-  // }
   return (
     <MDBox
       py={2}

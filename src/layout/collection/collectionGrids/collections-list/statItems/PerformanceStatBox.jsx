@@ -37,26 +37,25 @@
 // };
 
 // export default TotalPriceStatBox;
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import StatBox from '../../../../REUSABLE_COMPONENTS/StatBox';
 import useCollectionStats from '../../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionStats';
 import { useMode } from '../../../../../context';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import styled from 'styled-components';
+import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
+import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
 
-const TotalPriceStatBox = () => {
+const PerformanceStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
-  const StyledOuterBox = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    backgroundColor: theme.palette.chartTheme.primary.dark,
-    borderRadius: theme.shape.borderRadius,
-  }));
+  // const primary = colors.primary.default;
+  // const blue = colors.blueAccent.default;
+  const green = colors.greenAccent.default;
+  const greenliht = colors.greenAccent.light;
+
+  const grey = colors.grey.default;
   return (
     <Box
       sx={{
@@ -84,4 +83,4 @@ const TotalPriceStatBox = () => {
   );
 };
 
-export default TotalPriceStatBox;
+export default PerformanceStatBox;

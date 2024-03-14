@@ -20,10 +20,8 @@ import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledC
 import FormField from '../forms/reusable/FormField';
 const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
   const { theme } = useMode();
-  // const { showSnackbar } = useSnackBar(); // Assuming snackbar hook for user notifications
   const {
     formMethods,
-    // formStates: { errors, isSubmitting, ...formStates },
     register,
     handleSubmit,
     setValue,
@@ -32,9 +30,7 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
     reset,
     setFormSchema,
     onSubmit,
-    // Removal of onSubmit from destructuring as we will define a local handler
   } = useFormContext();
-  // Local state for dynamic fields like tags
   const [newTag, setNewTag] = useState('');
   const tags = watch('tags', selectedDeck?.tags || []);
   const color = watch('color');
@@ -67,8 +63,7 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
   };
   const handleFormSubmit = async (data) => {
     try {
-      // Assuming `onSubmit` is a function passed via context or props that handles the actual submission
-      await onSubmit(data); // Adjust based on actual implementation
+      await onSubmit(data);
       showSnackbar({
         message: 'Deck updated successfully',
         variant: 'success',
@@ -80,22 +75,6 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
       });
     }
   };
-  // const handleDeleteClick = async () => {
-  //   try {
-  //     // await deleteDeck(selectedDeck._id);
-  //     showSnackbar({
-  //       message: 'Deck deleted successfully',
-  //       variant: 'warning',
-  //     });
-  //     reset(); // Optionally reset form state
-  //   } catch (error) {
-  //     showSnackbar({
-  //       message: error.message || 'Failed to delete deck',
-  //       variant: 'error',
-  //     });
-  //   }
-  // };
-
   return (
     <Paper
       elevation={3}
@@ -157,9 +136,9 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
           <InputLabel>Color</InputLabel>
           <Select
             {...register('color')}
-            value={color || ''} // Ensure color is not undefined
+            value={color || ''}
             label="Color"
-            defaultValue="" // Providing a default value
+            defaultValue=""
           >
             <MenuItem value="red">Red</MenuItem>
             <MenuItem value="blue">Blue</MenuItem>
@@ -207,168 +186,4 @@ const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
   );
 };
 
-export default withDynamicSnackbar(DeckEditPanel); // Wrap DeckEditPanel with withDynamicSnackbar HOC
-
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Paper,
-//   Typography,
-//   Button,
-//   TextField,
-//   Chip,
-//   Stack,
-//   FormControl,
-//   InputLabel,
-//   Select,
-//   MenuItem,
-//   Box,
-//   Switch,
-// } from '@mui/material';
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import {
-//   useDeckStore,
-//   useMode,
-//   usePageContext,
-//   useFormContext,
-// } from '../../context';
-// import {
-//   StyledFormControl,
-//   SwitchControl,
-//   StyledButton,
-//   StyledTextField,
-//   StyledSelect,
-// } from '../../pages/pageStyles/StyledComponents';
-// import FormField from '../reusable/FormField';
-
-// const DeckEditPanel = ({ selectedDeck, handleToggleEdit, isEditing }) => {
-//   const { returnDisplay, loadingStatus, setIsFormDataLoading } =
-//     usePageContext();
-//   const {
-//     setFormType,
-//     register,
-//     handleSubmit,
-//     errors,
-//     currentFormType,
-//     isSubmitting,
-//     // formState: { errors, isSubmitting },
-//     onSubmit,
-//   } = useFormContext();
-
-//   useEffect(() => {
-//     // Assuming setFormType is a function that can set the form context
-//     setFormType('addDeckForm');
-//   }, [isNew, setFormType]);
-//   const isAddDeckForm = currentFormType === 'addDeckForm';
-
-//   const { theme } = useMode();
-//   const tags = selectedDeck?.tags || [];
-
-//   return (
-//     <Paper
-//       elevation={3}
-//       sx={{
-//         padding: 3,
-//         margin: 2,
-//         backgroundColor: theme.palette.backgroundA.lightest,
-//       }}
-//     >
-//       <form
-//         onSubmit={handleSubmit((data) => {
-//           onSubmit(data);
-//           // Show snackbar after form submission
-//           const message = {
-//             title: 'Form Submitted',
-//             description: isAddDeckForm
-//               ? 'Deck added successfully'
-//               : 'Deck updated successfully',
-//           };
-//           const variant = 'success';
-//           showSnackbar(message, variant);
-//         })}
-//       >
-//         <FormField
-//           label="Name"
-//           name="name"
-//           register={register}
-//           errors={errors}
-//         />
-//         <FormField
-//           label="Description"
-//           name="description"
-//           register={register}
-//           errors={errors}
-//         />
-//         {/* <form onSubmit={handleTagSubmit}> */}
-//         <StyledFormControl
-//           onSubmit={handleTagSubmit}
-//           fullWidth
-//           variant="filled"
-//           theme={theme}
-//         >
-//           <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
-//             {tags.map((tag, index) => (
-//               <Chip
-//                 key={index}
-//                 label={tag}
-//                 onDelete={() => handleTagDelete(tag)}
-//               />
-//             ))}
-//             <TextField
-//               label="New Tag"
-//               value={newTag}
-//               onChange={(e) => setNewTag(e.target.value)}
-//               size="small"
-//               sx={{ flex: 1 }}
-//             />
-//           </Stack>
-//         </StyledFormControl>
-//         <FormControl fullWidth sx={{ marginBottom: 2 }}>
-//           <InputLabel id="deck-color-selector-label">Color</InputLabel>
-//           <Select
-//             labelId="deck-color-selector-label"
-//             value={color}
-//             label="Color"
-//             onChange={(e) => setColor(e.target.value)}
-//           >
-//             <MenuItem value="red">Red</MenuItem>
-//             <MenuItem value="blue">Blue</MenuItem>
-//             <MenuItem value="green">Green</MenuItem>
-//             <MenuItem value="yellow">Yellow</MenuItem>
-//           </Select>
-//         </FormControl>
-//         <Box
-//           sx={{
-//             display: 'flex',
-//             justifyContent: 'space-between',
-//             gap: 1,
-//             flexWrap: 'wrap',
-//           }}
-//         >
-//           <Button
-//             variant="contained"
-//             // color="primary"
-//             // onClick={handleSave}
-//             startIcon={<SaveIcon />}
-//             sx={{
-//               flexGrow: 1,
-//               margin: '4px',
-//               backgroundColor: theme.palette.backgroundA.dark,
-//             }}
-//           >
-//             Save Changes
-//           </Button>
-//           <Button
-//             variant="contained"
-//             color="error"
-//             startIcon={<DeleteIcon />}
-//             // onClick={handleDelete}
-//             sx={{ flexGrow: 1, margin: '4px' }}
-//           >
-//             Delete Deck
-//           </Button>
-//         </Box>
-//       </form>
-//     </Paper>
-//   );
-// };
-// export default DeckEditPanel;
+export default withDynamicSnackbar(DeckEditPanel);

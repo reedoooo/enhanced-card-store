@@ -22,6 +22,7 @@ import {
   ErrorBoundary,
   ConfiguratorProvider,
   VisibilityProvider,
+  SnackbarContextProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider, useSnackbar } from 'notistack';
@@ -40,9 +41,6 @@ const App = () => {
   const { returnDisplay } = usePageContext();
   const { isLoading, isPageLoading, error } = useLoading();
 
-  // useEffect(() => {
-  //   if (!isLoggedIn && !isPageLoading) navigate('/login');
-  // }, [isLoggedIn, navigate, isPageLoading]);
   if (isPageLoading || error) {
     return returnDisplay();
   }
@@ -57,29 +55,27 @@ const App = () => {
               <FormProvider>
                 <UserProvider>
                   <ModalProvider>
-                    <SnackbarProvider>
-                      <PopoverProvider>
-                        <CollectionProvider>
-                          <CardProvider>
-                            <DeckProvider>
-                              <CartProvider>
-                                <CardImagesProvider>
-                                  <ChartProvider>
-                                    <StatisticsProvider>
-                                      <SidebarProvider>
-                                        <AppContextProvider>
-                                          <Main />
-                                        </AppContextProvider>
-                                      </SidebarProvider>
-                                    </StatisticsProvider>
-                                  </ChartProvider>
-                                </CardImagesProvider>
-                              </CartProvider>
-                            </DeckProvider>
-                          </CardProvider>
-                        </CollectionProvider>
-                      </PopoverProvider>
-                    </SnackbarProvider>
+                    <PopoverProvider>
+                      <CollectionProvider>
+                        <CardProvider>
+                          <DeckProvider>
+                            <CartProvider>
+                              <CardImagesProvider>
+                                <ChartProvider>
+                                  <StatisticsProvider>
+                                    <SidebarProvider>
+                                      <AppContextProvider>
+                                        <Main />
+                                      </AppContextProvider>
+                                    </SidebarProvider>
+                                  </StatisticsProvider>
+                                </ChartProvider>
+                              </CardImagesProvider>
+                            </CartProvider>
+                          </DeckProvider>
+                        </CardProvider>
+                      </CollectionProvider>
+                    </PopoverProvider>
                   </ModalProvider>
                 </UserProvider>
               </FormProvider>

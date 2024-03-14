@@ -9,16 +9,15 @@ import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledC
 import { LoadingButton } from '@mui/lab';
 import FormField from './reusable/FormField';
 
-const SearchForm = ({ onFocus, onBlur }) => {
+const SearchForm = () => {
   const { theme } = useMode();
-  const formId = 'searchForm'; // Define the form ID for schema selection
+  const formId = 'searchForm';
   const {
     formMethods,
     formStates: { errors, isSubmitting, ...formStates },
     onSubmit,
     handleFieldChange,
     handleSearchTermChange,
-    // handleChange,
     handleBlur,
     handleFocus,
     forms,
@@ -30,15 +29,6 @@ const SearchForm = ({ onFocus, onBlur }) => {
     setFormSchema(formId);
   }, [setFormSchema]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (name === 'searchTerm') {
-  //     handleSearchTermChange(value); // Call the method when searchTerm changes
-  //   }
-  //   handleFieldChange(formId, name, value); // Continue to update the form state as before
-  // };
-
-  // const { searchTerm } = formStates?.searchForm;
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();

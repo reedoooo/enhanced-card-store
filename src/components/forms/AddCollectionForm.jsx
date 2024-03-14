@@ -14,6 +14,7 @@ import {
   FormBox,
   FormFieldBox,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import ReusableLoadingButton from '../buttons/other/ReusableLoadingButton';
 
 const AddCollectionForm = ({ showSnackbar }) => {
   const formId = 'addCollectionForm';
@@ -29,12 +30,25 @@ const AddCollectionForm = ({ showSnackbar }) => {
   });
 
   const fields = [
-    { name: 'name', label: 'Name', type: 'text' },
-    { name: 'description', label: 'Description', type: 'text' },
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      multiline: false,
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      required: true,
+      multiline: true,
+      rows: 4,
+    },
   ];
+
   const onFormSubmit = async (data) => {
     try {
-      // Simulate form submission
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulated delay
       onSubmit(data, formId);
       showSnackbar(
@@ -60,42 +74,34 @@ const AddCollectionForm = ({ showSnackbar }) => {
       component={'form'}
       theme={theme}
       onSubmit={handleSubmit(onFormSubmit)}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        margin: 2,
-        padding: 2,
-      }}
     >
-      <FormFieldBox theme={theme}>
-        <FormField
-          name="name"
-          label="Collection Name"
-          register={register}
-          errors={errors}
-          required
-        />
-      </FormFieldBox>
-      <FormFieldBox theme={theme}>
-        <FormField
-          name="description"
-          label="Collection Description"
-          register={register}
-          errors={errors}
-          required
-          multiline
-          rows={4}
-        />
-      </FormFieldBox>
-      <LoadingButton
-        type="submit"
-        variant="contained"
+      {fields.map((field, index) => (
+        <FormFieldBox key={index} theme={theme}>
+          <FormField
+            name={field.name}
+            label={field.label}
+            type={field.type}
+            register={register}
+            errors={errors}
+            required={field.required}
+            multiline={field.multiline}
+            rows={field.rows}
+          />
+        </FormFieldBox>
+      ))}
+      <ReusableLoadingButton
         loading={isSubmitting}
+        label="Create Collection"
         fullWidth
-      >
-        Create Collection
-      </LoadingButton>
+        sx={{
+          mt: 2, // Adjust spacing as needed
+          background: theme.palette.backgroundG.light,
+          borderColor: theme.palette.backgroundG.light,
+          borderWidth: 2,
+          '&:hover': { background: theme.palette.backgroundG.default },
+          '&:focus': { background: theme.palette.backgroundG.default },
+        }}
+      />
     </FormBox>
   );
 };

@@ -7,10 +7,9 @@ import React, {
 } from 'react';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
 import ErrorIndicator from '../../../components/reusable/indicators/ErrorIndicator';
-import SplashPage2 from '../../../pages/SplashPage2';
-import useSnackBar from '../../hooks/useSnackBar';
+import SplashPage2 from '../../../layout/REUSABLE_COMPONENTS/SplashPage2';
+// import useSnackBar from '../../hooks/useSnackBar';
 import { defaultContextValue } from '../../constants';
-import { DynamicSnackbar } from '../../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
 import { useLoading } from '../../hooks/useLoading';
 
 const PageContext = createContext(defaultContextValue.PAGE_CONTEXT);
@@ -25,13 +24,13 @@ export const PageProvider = ({ children }) => {
     error,
     clearLoading,
   } = useLoading();
-  const { snackbar, handleSnackBar, handleCloseSnackbar } = useSnackBar();
+  // const { snackbar, handleSnackBar, handleCloseSnackbar } = useSnackBar();
 
-  const handleLoadingCompletion = () => {
-    if (!isAnyLoading()) {
-      handleSnackBar('Loading completed', 'success');
-    }
-  };
+  // const handleLoadingCompletion = () => {
+  //   if (!isAnyLoading()) {
+  //     handleSnackBar('Loading completed', 'success');
+  //   }
+  // };
   const returnDisplay = () => {
     if (error) {
       return <ErrorIndicator error={error} />;

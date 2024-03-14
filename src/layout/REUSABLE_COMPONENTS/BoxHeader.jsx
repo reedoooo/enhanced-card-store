@@ -4,17 +4,33 @@ import FlexBetween from './FlexBetween';
 import PropTypes from 'prop-types';
 import { useMode } from '../../context';
 
-const BoxHeader = ({ icon, title, subtitle, sideText }) => {
+const BoxHeader = ({
+  icon,
+  title,
+  subtitle,
+  sideText,
+  sx,
+  useSX,
+  titleVariant,
+  colorVariant,
+  paddingVariant,
+}) => {
   const { theme } = useMode();
   return (
     <FlexBetween
       color={theme.palette.backgroundB.default}
-      margin="1.5rem 1rem 0 1rem"
+      margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
+      paddingTop={useSX ? paddingVariant : 0}
+      sx={useSX ? sx : {}}
     >
       <FlexBetween>
         {icon}
         <Box width="100%">
-          <Typography variant="h4" mb="-0.1rem">
+          <Typography
+            variant={useSX ? titleVariant : 'h4'}
+            mb="-0.1rem"
+            color={useSX ? colorVariant : theme.palette.backgroundE.dark}
+          >
             {title}
           </Typography>
           <Typography variant="h6">{subtitle}</Typography>
@@ -24,6 +40,7 @@ const BoxHeader = ({ icon, title, subtitle, sideText }) => {
         variant="h5"
         fontWeight="700"
         color={theme.palette.backgroundE.dark}
+        sx={useSX ? sx : {}}
       >
         {sideText}
       </Typography>
