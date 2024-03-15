@@ -31,79 +31,23 @@ import SelectCollectionHeader from './collectionGrids/collections-list/SelectCol
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
 import StatBoard from './collectionGrids/collections-list/StatBoard';
 
-// function SelectCollectionView({ onNewDialog, onCloseDialog, dialogState }) {
-//   const { theme } = useMode();
-//   const { allCollections, selectedCollection } = useSelectedCollection();
-//   const { currentForm } = useFormContext();
-//   return (
-//     <DashboardLayout>
-//       <MDBox theme={theme}>
-//         <Card
-//           sx={{
-//             backgroundColor: theme.palette.backgroundE.darker,
-//             flexGrow: 1,
-//             width: '100%',
-//           }}
-//         >
-//           <SelectCollectionHeader openNewDialog={onNewDialog} />
-//         </Card>
-
-//         <MDBox mt={4.5}>
-//           <Card
-//             sx={{
-//               backgroundColor: theme.palette.backgroundE.darker,
-//               flexGrow: 1,
-//               width: '100%',
-//               p: theme.spacing(2),
-//             }}
-//           >
-//             <SelectCollectionList openDialog={onNewDialog} />
-//           </Card>
-//         </MDBox>
-//         {dialogState.isDialogOpen && (
-//           <CollectionDialog
-//             open={dialogState.isDialogOpen}
-//             onClose={onCloseDialog}
-//             collectionData={selectedCollection}
-//             collectionMode={'add'}
-//             isNew={currentForm === 'addCollectionForm'}
-//           />
-//         )}
-//         {dialogState.isSelectionErrorDialogOpen && (
-//           <SelectionErrorDialog
-//             open={dialogState.isSelectionErrorDialogOpen}
-//             onClose={onCloseDialog}
-//             selectedValue={selectedCollection?.name}
-//           />
-//         )}
-//       </MDBox>
-//     </DashboardLayout>
-//   );
-// }
-
 const CollectionPortfolio = () => {
   const { theme } = useMode();
   const { fetchCollections, hasFetchedCollections } = useCollectionManager();
   const {
     handleBackToCollections,
-    // showCollections,
     selectedCollection,
     selectedCollectionId,
     allCollections,
     customError,
     toggleShowCollections,
   } = useSelectedCollection();
-  // Initially fetch collections if needed
   useEffect(() => {
     fetchCollections();
   }, []);
   const { currentForm } = useFormContext();
-  const {
-    isCollectionVisible,
-    toggleCollectionVisibility,
-    // dialogStates,
-    // toggleDialog,
-  } = useVisibilityContext();
+  const { isCollectionVisible, toggleCollectionVisibility } =
+    useVisibilityContext();
 
   const { dialogState, openDialog, closeDialog } = useDialogState({
     isAddCollectionDialogOpen: false,
@@ -130,26 +74,6 @@ const CollectionPortfolio = () => {
   const handleCloseSelectionErrorDialog = useCallback(() => {
     closeDialog('isSelectionErrorDialogOpen');
   }, [closeDialog]);
-  // const handleDialogToggle = () =>
-  //   setDialogState((prevState) => ({
-  //     ...prevState,
-  //     isDialogOpen: !prevState.isDialogOpen,
-  //   }));
-  // const handleCloseDialog = () =>
-  //   setDialogState((prevState) => ({
-  //     ...prevState,
-  //     isDialogOpen: false,
-  //   }));
-  // const handleErrorDialog = () =>
-  //   setDialogState((prevState) => ({
-  //     ...prevState,
-  //     isSelectionErrorDialogOpen: true,
-  //   }));
-  // const handleCloseErrorDialog = () =>
-  //   setDialogState((prevState) => ({
-  //     ...prevState,
-  //     isSelectionErrorDialogOpen: false,
-  //   }));
   useEffect(() => {
     if (customError === 'Selection Error') {
       handleSelectionErrorDialogToggle();
@@ -157,15 +81,6 @@ const CollectionPortfolio = () => {
       handleCloseSelectionErrorDialog();
     }
   }, [customError]);
-  // const handleSelectedCollectionView = useCallback(() => {
-  //   console.log('SWITCHING TO SELECTED COLLECTION VIEW', selectedCollectionId);
-  //   setViewState((prevState) => ({
-  //     ...prevState,
-  //     showListOfAllCollections: !prevState.showListOfAllCollections,
-  //     showSelectedCollection: !prevState.showSelectedCollection,
-  //     currentCollection: selectedCollectionId,
-  //   }));
-  // }, [selectedCollectionId]);
   const handleDialogToggle = useCallback(
     (dialogName) => {
       dialogState[dialogName]
@@ -174,22 +89,9 @@ const CollectionPortfolio = () => {
     },
     [dialogState, openDialog, closeDialog]
   );
-  // const handleViewChange = useCallback(() => {
-  //   toggleShowCollections();
-  // }, [toggleShowCollections]);
   useEffect(() => {
     console.log('VIEW STATE CHANGED', viewState);
-    // console.log('ALL COLLECTION', allCollections);
-    // console.log('SELECTED COLLECTION', selectedCollection);
-    // console.log('SELECTED COLLECTION ID', selectedCollectionId);
-    // console.log('IS COLLECTION VISIBLE', isCollectionVisible);
-  }, [
-    viewState,
-    // allCollections,
-    // isCollectionVisible,
-    // selectedCollection,
-    // selectedCollectionId,
-  ]);
+  }, [viewState]);
   const { columns, data } = collectionPortfolioData(selectedCollection?.cards);
 
   return (

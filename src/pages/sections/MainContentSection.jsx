@@ -32,10 +32,12 @@ import placeHolder from '../../assets/images/placeholder.jpeg';
 import { DEFAULT_COLLECTION } from '../../context/constants';
 import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
+import uniqueTheme from '../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const MainContentSection = () => {
   const { theme } = useMode();
-  const { authUser } = useAuthContext();
+  const { isLoggedIn } = useAuthContext();
   const { user } = useUserContext();
   const { hasFetchedCollections } = useCollectionManager();
   const { allCollections, selectedCollection } = useSelectedCollection();
@@ -83,7 +85,7 @@ const MainContentSection = () => {
           </Grid>
           <Grid item xs={12} lg={4.5}>
             <StyledPaper>
-              {authUser && (
+              {isLoggedIn && (
                 <Card>
                   <CardHeader
                     title="User Account"
@@ -114,7 +116,22 @@ const MainContentSection = () => {
                     </Stack>
                   </CardContent>
                   <CardActions>
-                    <MDButton
+                    <SimpleButton
+                      // variant="contained"
+                      color="primary"
+                      customSize="lg"
+                      customColor={theme.palette.chartTheme.greenAccent.light}
+                      customTextColor={theme.palette.chartTheme.primary.lighter}
+                      // isDisabled={false}
+                      // isDefault={false}
+                      theme={uniqueTheme}
+                      onClick={() => {
+                        console.log('clicked');
+                      }}
+                    >
+                      Manage Collections
+                    </SimpleButton>
+                    {/* <MDButton
                       variant="contained"
                       background={theme.palette.backgroundE.light}
                       color="primary"
@@ -139,7 +156,7 @@ const MainContentSection = () => {
                       }}
                     >
                       Manage Collections
-                    </MDButton>
+                    </MDButton> */}
                     <MDButton variant="outlined" color="primary" size="medium">
                       View Purchase History
                     </MDButton>

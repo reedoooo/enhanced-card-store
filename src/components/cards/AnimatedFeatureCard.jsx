@@ -9,6 +9,8 @@ import {
 } from '../../pages/pageStyles/StyledComponents';
 import { useMode } from '../../context';
 import MDButton from '../../layout/REUSABLE_COMPONENTS/MDBUTTON';
+import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
+import uniqueTheme from '../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const AnimatedBox = animated(Box);
 
@@ -72,7 +74,29 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             flexGrow: 1,
           }}
         >
-          <MDButton
+          <SimpleButton
+            // variant="contained"
+            color="primary"
+            customSize="md"
+            customColor={theme.palette.chartTheme.greenAccent.light}
+            customTextColor={theme.palette.chartTheme.primary.lighter}
+            // isDisabled={false}
+            // isDefault={false}
+            theme={uniqueTheme}
+            onClick={() => {
+              console.log('clicked');
+            }}
+            sx={{
+              flexGrow: 1,
+              justifySelf: 'bottom',
+              bottom: 0,
+              width: '100%',
+              mt: 'auto',
+            }}
+          >
+            Manage Collections
+          </SimpleButton>
+          {/* <MDButton
             fullWidth
             variant="contained"
             color="primary"
@@ -95,7 +119,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             }}
           >
             {tier.buttonText}
-          </MDButton>
+          </MDButton> */}
         </CardActions>
       </FeatureCard>
     </AnimatedBox>

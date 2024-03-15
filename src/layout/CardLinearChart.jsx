@@ -13,7 +13,7 @@ const ChartContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     width: '150%', // Adjust width for mobile screens
     height: '300px', // Adjust height for mobile screens
-    transform: 'translateX(10%)', // Shift the chart to the right by 50%
+    // transform: 'translateX(10%)', // Shift the chart to the right by 50%
   },
 }));
 

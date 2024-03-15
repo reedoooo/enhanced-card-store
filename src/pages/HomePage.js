@@ -51,7 +51,7 @@ const HomePage = () => {
 
   return (
     <PageLayout backCol={true}>
-      {renderSplashPage()}
+      {/* {renderSplashPage()} */}
       <Grid container spacing={3}>
         {/* INTRO SECTION */}
         <Grid item xs={12}>

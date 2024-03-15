@@ -147,7 +147,7 @@ button {
   /* padding: 60px; */
 }
 
-.hero-section-container {
+/* .hero-section-container {
   background: rgba(189, 181, 181, 0.1);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(20px);
@@ -155,8 +155,31 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 25px;
   /* padding: 30px 0px; */
-  width: '100vw';
+/* width: '100vw'; */
+/* width: min(1200px, 100%); */
+/* } */
+.hero-section-container {
+  background: rgba(189, 181, 181, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  /* padding: 30px 0px; */
+  /* width: '100vw'; */
   /* width: min(1200px, 100%); */
+}
+.hero-section-container-left {
+  position: absolute;
+  top: 20px; /* Adjust as needed */
+  left: 20px; /* Adjust as needed */
+  width: 200px; /* Adjust as needed */
+  height: 100px; /* Adjust as needed */
+  /* background-color: rgba(255, 255, 255, 0.8); Semi-transparent white */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2; /* Ensure it's above the swiper slides */
 }
 
 /* .hero-section h1 {
@@ -216,6 +239,14 @@ button {
   width: 100vw; /* Adjust based on your design needs */
   overflow: hidden; /* Prevent overflow */
 }
+
+/* .swiper-wrapper {
+  display: flex; /* Ensure the slides are in a row */
+  /* transition: transform 0.3s; /* Smooth transition */
+  /* align-items: center;
+  justify-content: center;
+}  */
+
 .swiper-scrollbar {
   --swipeer-scrollbar-bottom: 0;
   --swipeer-scrollbar-drag-bg-color: #dda3b6;
@@ -333,7 +364,7 @@ button {
 }
 
 .swiper-slide-active {
-  transform: scale(2); /* Make the active slide larger */
+  transform: scale(8); /* Make the active slide larger */
   transition: transform 0.3s; /* Smooth transition */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a shadow */
 }

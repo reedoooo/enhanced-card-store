@@ -8,21 +8,52 @@ const SimpleButton = ({
   isAccent,
   isDefault,
   isDisabled,
+  customColor,
+  customTextColor,
+  customSize,
   ...rest
 }) => {
+  const calculateStyles = (size) => {
+    switch (size) {
+      case 'sm':
+        return {
+          width: '75px',
+          // p: '1rem',
+          p: '0.5rem 0.75rem',
+          // m: '0.5rem',
+          fontSize: '0.875rem',
+        };
+      case 'md':
+        return {
+          width: '100px',
+          padding: '0.75rem 1rem',
+          fontSize: '1rem',
+        };
+      default:
+        return {
+          width: '140px',
+          padding: '1rem 1.25rem',
+          fontSize: '1.125rem',
+        };
+    }
+  };
   const baseStyle = {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    minWidth: '140px',
-    padding: `1.035rem ${theme.lenMd1}`,
+    minWidth: calculateStyles(customSize).width,
+    padding: calculateStyles(customSize).padding,
+    // minWidth: customSize === 'md' ? 100 : customSize === 'sm' ? 75 : 140,
+    // padding: `1.035rem ${theme.lenMd1}`,
     borderRadius: theme.borderRadius,
+    fontSize: calculateStyles(customSize).fontSize,
+
     transitionProperty: 'color, background, box-shadow',
     transitionDuration: '0.35s',
-    background: theme.colorDefaultBackground,
-    color: theme.colorDefaultText,
+    background: !customColor ? theme.colorDefaultBackground : customColor,
+    color: !customTextColor ? theme.colorDefaultText : customTextColor,
     boxShadow: isDefault
       ? `0 0 0 4px ${rgba(theme.colorDefaultBackground || 'white', 0.74)}`
       : 'none',
@@ -51,7 +82,9 @@ const SimpleButton = ({
     width: '100%',
     height: '100%',
     borderRadius: theme.borderRadius,
-    background: 'rgba(0, 0, 0, 0.075)',
+    background: customColor
+      ? rgba(customColor, 0.15) // Lighter shade of customColor if provided
+      : 'rgba(0, 0, 0, 0.075)',
     opacity: 0,
     pointerEvents: 'none',
     transition: 'opacity 0.35s',
