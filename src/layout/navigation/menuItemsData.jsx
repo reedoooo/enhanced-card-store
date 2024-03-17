@@ -6,7 +6,7 @@ import {
   Assessment as CollectionIcon,
   Person as ProfileIcon,
 } from '@mui/icons-material';
-import DeckBuilderIcon from '../../components/reusable/icons/DeckBuilderIcon';
+import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 import { Badge } from '@mui/material';
 import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 export const getMenuItemsData = (isLoggedIn, cartCardQuantity, iconColor) => {

@@ -32,6 +32,9 @@ export const ChartConfiguration = ({
         ticks = 'every hour';
         break;
       case '7d':
+        format = '%b %d';
+        ticks = 'every day';
+        break;
       case '30d':
         format = '%b %d';
         ticks = 'every day';

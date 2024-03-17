@@ -13,51 +13,34 @@ import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import { DialogContent, Slide } from '@mui/material';
+import useSnackbarManager from '../../context/hooks/useSnackbarManager';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function SelectionErrorDialog(props) {
-  const { onClose, selectedValue, open, showSnackbar } = props;
-  const {
-    handleBackToCollections,
-    showCollections,
-    allCollections,
-    handleSelectCollection,
-  } = useSelectedCollection();
+  const { onClose, selectedValue, open } = props;
+  const { handleBackToCollections, allCollections, handleSelectCollection } =
+    useSelectedCollection();
+  const { showSuccess, showError, showInfo } = useSnackbarManager(); // Using custom snackbar hook
+
   const handleClose = () => {
     onClose(selectedValue);
   };
 
-  // const handleListItemClick = (value) => {
-  //   if (typeof value?._id === 'string') {
-  //     showSnackbar('Not implemented yet', 'successs');
-  //   } else {
-  //     showSnackbar(`${value} selected as backup account`, 'success');
-  //   }
-  //   onClose(value);
-  // };
   const handleListItemClick = React.useCallback(
     (collection) => {
       if (collection._id) {
-        showSnackbar('Not implemented yet', 'info'); // Assuming 'successs' was a typo, corrected to 'info' for a non-implemented feature
+        showInfo('Not implemented yet'); // Show an informational snackbar
       } else {
-        showSnackbar(`${collection} selected as backup account`, 'success');
+        showSuccess(`${collection} selected as backup account`); // Show a success snackbar
       }
       onClose(collection);
     },
-    [onClose, showSnackbar]
-  );
-  const handleAction = React.useCallback(
-    (message, severity, error) => {
-      showSnackbar(message, severity);
-      if (error) console.error('Action failed:', error);
-    },
-    [showSnackbar]
+    [onClose, showInfo, showSuccess]
   );
 
   return (
@@ -87,40 +70,6 @@ function SelectionErrorDialog(props) {
               </ListItemButton>
             </ListItem>
           ))}
-          <ListItem disableGutters>
-            <ListItemButton
-              autoFocus
-              // onClick={() => handleListItemClick(collection)}
-              // onClick={() => handleContextSelect(mappedContext)}
-              onSuccess={() =>
-                handleAction(
-                  {
-                    title: 'Action successful',
-                    message: `Card added to ${selectedValue} successfully.`,
-                  },
-                  'success',
-                  null
-                )
-              }
-              onFailure={(error) =>
-                handleAction(
-                  {
-                    title: 'Action failed',
-                    message: `Failed to add card to ${selectedValue}.`,
-                  },
-                  'error',
-                  error
-                )
-              }
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <AddIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primaryTypograph />
-            </ListItemButton>
-          </ListItem>
         </List>
       </DialogContent>
     </Dialog>
@@ -130,7 +79,7 @@ function SelectionErrorDialog(props) {
 SelectionErrorDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
+  selectedValue: PropTypes.string,
 };
 
-export default withDynamicSnackbar(SelectionErrorDialog);
+export default SelectionErrorDialog;

@@ -1,175 +1,208 @@
-/* eslint-disable react/display-name */
-import React, { memo, useCallback, useRef, useState } from 'react';
-import { Card, CardActionArea, Grid, Tooltip } from '@mui/material';
+import React, { memo, useCallback, useRef } from 'react';
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Grid,
+  Tooltip,
+} from '@mui/material';
+import PropTypes from 'prop-types';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import PropTypes from 'prop-types';
-import {
-  useAuthContext,
-  useMode,
-  useVisibilityContext,
-} from '../../../../context';
-import LongMenu from '../../../../layout/navigation/LongMenu';
-import useCollectionVisibility from '../../../../context/hooks/useCollectionVisibility';
+import useCollectionManager from '../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import {
-  StyledCollectionListCard,
-  StyledCollectionListCardContent,
-} from '../../../../pages/pageStyles/StyledComponents';
-import useCollectionManager from '../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import LongMenu from '../../../../layout/navigation/LongMenu';
+import useDialogState from '../../../../context/hooks/useDialogState';
 import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
 import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useDialogState from '../../../../context/hooks/useDialogState';
-import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { useMode, useVisibilityContext } from '../../../../context';
 
-const CollectionInfoItem = ({ label, value, sx }) => (
-  <Grid item xs={12} sm={6} md={3} sx={sx}>
-    <Card>
-      <MDTypography variant="h6" component="div">
-        {label}: <strong>{value}</strong>
+const CollectionInfoItem = ({ label, value, theme }) => (
+  <Grid item xs={12} sm={6} md={3}>
+    <CardContent
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '100%',
+      }}
+    >
+      <MDTypography
+        variant="h5"
+        sx={{
+          fontSize: '2.2rem', // Triple the label size
+          fontWeight: 900, // Increase boldness
+          textAlign: 'center',
+          color: theme.palette.primary.main,
+        }}
+      >
+        {label}:
       </MDTypography>
-    </Card>
-    {/* <MDTypography variant="body1" component="div">
-      {label}: <strong>{value}</strong>
-    </MDTypography> */}
+      <MDTypography
+        variant="body1"
+        component="p" // Switching from strong to p for better style control
+        sx={{
+          fontSize: '1.2rem', // Double the value size
+          textAlign: 'center',
+          // fontFamily: "'Roboto Slab', serif", // Keeping a fancy yet readable font
+          color: theme.palette.grey[300], // Light grey color for a subtler look
+        }}
+      >
+        {value}
+      </MDTypography>
+    </CardContent>
   </Grid>
 );
 
 const CollectionListItem = memo(({ collection }) => {
   const { theme } = useMode();
-  const roundToNearestTenth = (number) => Math.ceil(number / 10) * 10;
-  const ref = useRef(null);
   const { deleteCollection } = useCollectionManager();
-  const {
-    handleBackToCollections,
-    showCollections,
-    selectedCollection,
-    handleSelectCollection,
-    toggleShowCollections,
-  } = useSelectedCollection();
-  const {
-    isCollectionVisible,
-    toggleCollectionVisibility,
-    // dialogStates,
-    // toggleDialog,
-  } = useVisibilityContext();
-
+  const { handleSelectCollection } = useSelectedCollection();
+  const { toggleCollectionVisibility } = useVisibilityContext();
   const { dialogState, openDialog, closeDialog } = useDialogState({
     isEditCollectionDialogOpen: false,
   });
-  const handleOpenDialog = useCallback((collection) => {
+
+  const handleOpenDialog = useCallback(() => {
     openDialog('editCollectionDialog', collection);
-    console.log(collection);
-  }, []);
+  }, [collection, openDialog]);
+
   const handleCloseDialog = useCallback(() => {
     closeDialog('editCollectionDialog');
-  }, []);
+  }, [closeDialog]);
 
   const handleDelete = async () => {
-    await deleteCollection(collection?._id);
-    // setShowOptions(false); // Close the options menu after deletion
+    await deleteCollection(collection._id);
   };
+
   const renderToolTip = () => (
     <Tooltip title="Options">
       <div>
-        <MDBox
-          display="flex"
-          flexDirection="column"
-          p={1}
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <LongMenu
-            onEdit={() => handleOpenDialog(collection)}
-            onDelete={handleDelete} // Pass the async delete function
-            onSelect={() => handleSelectCollection(collection)}
-            onHide={() => toggleShowCollections(false)}
-            onStats={() => console.log('Stats:', collection)}
-            onView={() => console.log('View:', collection)}
-            // onClose={() => setShowOptions(false)}
-            collectionId={collection?._id}
-            ref={ref}
-          />
-        </MDBox>
+        <LongMenu
+          onEdit={handleOpenDialog}
+          onDelete={handleDelete}
+          onSelect={() => handleSelectCollection(collection)}
+          collectionId={collection._id}
+        />
       </div>
     </Tooltip>
   );
-  const renderPercentageChange = useCallback(() => {
+
+  const renderPercentageChange = () => {
     const percentageChange =
-      collection?.collectionStatistics?.percentageChange || 0;
+      collection.collectionStatistics?.percentageChange || 0;
     return (
       <MDTypography
         variant="body2"
         color={percentageChange > 0 ? 'success' : 'error'}
-        sx={{ display: 'flex', alignItems: 'center' }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.5rem', // Triple the label size
+        }}
       >
         {percentageChange > 0 ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
         {percentageChange}%
       </MDTypography>
     );
-  }, [collection]);
+  };
+
   const handleSelection = useCallback(() => {
     handleSelectCollection(collection);
     toggleCollectionVisibility();
-  }, [collection]);
+  }, [collection, handleSelectCollection, toggleCollectionVisibility]);
 
   return (
-    <StyledCollectionListCard variant="outlined" theme={theme}>
-      <MDBox sx={{ p: 1, display: 'flex', flexDirection: 'row' }}>
-        <CardActionArea onClick={handleSelection} sx={{ width: '100%' }}>
-          <StyledCollectionListCardContent>
-            <Grid container spacing={2} alignItems="center">
-              <CollectionInfoItem label="Name" value={collection?.name} />
-              <CollectionInfoItem
-                label="Value"
-                value={`$${roundToNearestTenth(collection?.totalPrice)}`}
-              />
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={3}
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              >
-                {renderPercentageChange()}
-              </Grid>
-              <CollectionInfoItem
-                label="Cards"
-                value={collection?.totalQuantity}
-              />
+    <Card>
+      <MDBox
+        // sx={{
+        //   display: 'flex',
+        //   flexDirection: 'row',
+        //   justifyContent: 'center',
+        //   height: '100%', // Ensure full height
+        // }}
+        sx={{
+          backgroundColor: '#2d2d34',
+          display: 'flex',
+          borderRadius: '1rem',
+          boxShadow: '0.15rem 0.2rem 0.15rem 0.1rem rgba(0, 0, 0, .8)',
+          flexGrow: 1,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          height: '100%', // Ensure full height
+        }}
+      >
+        <CardActionArea
+          onClick={handleSelection}
+          // sx={{
+          //   backgroundColor: '#2d2d34',
+          //   borderRadius: '1rem',
+          //   boxShadow: '0.15rem 0.2rem 0.15rem 0.1rem rgba(0, 0, 0, .8)',
+          //   flexGrow: 1,
+          // }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            height: '100%', // Ensure full height
+            flexGrow: 1,
+          }}
+        >
+          <Grid container alignItems="center" justify="center" spacing={2}>
+            <CollectionInfoItem
+              label="Name"
+              value={collection.name}
+              theme={theme}
+            />
+            <CollectionInfoItem
+              label="Value"
+              value={`$${collection.totalPrice}`}
+              theme={theme}
+            />
+            <CollectionInfoItem
+              label="Cards"
+              value={collection.totalQuantity}
+              theme={theme}
+            />
+            <Grid item xs={12} sm={6} md={3}>
+              {renderPercentageChange()}
             </Grid>
-          </StyledCollectionListCardContent>
+          </Grid>
         </CardActionArea>
-        {renderToolTip()}
+        <CardContent
+          sx={{
+            borderRadius: '50%',
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: theme.palette.success.main,
+            mt: theme.spacing(1),
+            mr: theme.spacing(1),
+          }}
+        >
+          {renderToolTip()}
+        </CardContent>
       </MDBox>
       {dialogState.isEditCollectionDialogOpen && (
         <CollectionDialog
           open={dialogState.isEditCollectionDialogOpen}
-          onClose={() => handleCloseDialog()}
-          isNew={false}
-          collectionMode="edit"
-          collectionData={{
-            name: collection?.name,
-            description: collection?.description,
-          }}
+          onClose={handleCloseDialog}
+          collectionData={collection}
         />
       )}
-    </StyledCollectionListCard>
+    </Card>
   );
 });
 
+CollectionListItem.displayName = 'CollectionListItem';
+
 CollectionListItem.propTypes = {
   collection: PropTypes.object.isRequired,
-  isSelected: PropTypes.bool,
-};
-
-CollectionListItem.defaultProps = {
-  isSelected: false,
 };
 
 export default CollectionListItem;

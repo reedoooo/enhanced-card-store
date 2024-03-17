@@ -1,6 +1,7 @@
 // DeckSearch.js
 import React, { useEffect, useState } from 'react';
 import {
+  Card,
   Collapse,
   Container,
   Grid,
@@ -19,6 +20,8 @@ import { useCardStore, useMode } from '../../../context';
 import useLocalStorage from '../../../context/hooks/useLocalStorage';
 import { useCardStoreHook } from '../../../context/hooks/useCardStore';
 import { useConfiguratorContext } from '../../../context';
+import SimpleCard from '../../../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
+import uniqueTheme from '../../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const itemsPerPage = 12;
@@ -44,7 +47,7 @@ const SearchComponent = (pageContext) => {
   return (
     <Grid container spacing={2} direction="column">
       <Grid item xs={12}>
-        <Paper
+        {/* <Paper
           elevation={3}
           sx={{
             padding: theme.spacing(2),
@@ -58,7 +61,8 @@ const SearchComponent = (pageContext) => {
               boxShadow: 6,
             },
           }}
-        >
+        > */}
+        <SimpleCard theme={uniqueTheme} hasTitle={false} isFormHeader={true}>
           <MDBox
             sx={{
               display: 'flex',
@@ -100,16 +104,27 @@ const SearchComponent = (pageContext) => {
               onBlur={() => setSearchBarFocused(false)}
             />
           </Container>
-        </Paper>
+        </SimpleCard>
+        {/* </Paper> */}
       </Grid>
       <Grid item xs={12}>
-        <SearchResults
-          isLoading={loadingSearchResults}
-          searchData={searchData}
-          uniqueCards={searchData}
-          pageContext={pageContext}
-          itemsPerPage={itemsPerPage}
-        />
+        <Card
+          className="hero-section-container"
+          sx={{
+            width: '100%',
+            backgroundColor: 'transparent', // Make the Card background transparent
+            p: theme.spacing(2),
+            m: theme.spacing(2),
+          }}
+        >
+          <SearchResults
+            isLoading={loadingSearchResults}
+            searchData={searchData}
+            uniqueCards={searchData}
+            pageContext={pageContext}
+            itemsPerPage={itemsPerPage}
+          />
+        </Card>
       </Grid>
     </Grid>
   );

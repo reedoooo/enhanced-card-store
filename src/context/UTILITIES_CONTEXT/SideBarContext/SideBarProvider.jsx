@@ -5,7 +5,7 @@ import CollectionsIcon from '@mui/icons-material/Collections';
 import StoreIcon from '@mui/icons-material/Store';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import PersonIcon from '@mui/icons-material/Person';
-import DeckBuilderIcon from '../../../components/reusable/icons/DeckBuilderIcon';
+import DeckBuilderIcon from '../../../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {

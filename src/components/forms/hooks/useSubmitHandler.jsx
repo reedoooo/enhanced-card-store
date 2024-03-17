@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import useCustomSnackbar from '../../../context/hooks/useCustomSnackbar';
+import useSnackbarManager from '../../../context/hooks/useSnackbarManager';
 
 function useSubmitHandler(
   onSubmit,
@@ -7,29 +7,32 @@ function useSubmitHandler(
   successDescription,
   errorDescription
 ) {
-  const showSnackbar = useCustomSnackbar();
+  const { showSuccess, showError } = useSnackbarManager();
 
   return useCallback(
     (data, formType) => {
       onSubmit(data, formType)
         .then(() => {
-          showSnackbar(
-            successTitle,
-            successDescription.replace('{timeRange}', data?.timeRange),
-            { variant: 'success' }
+          // Using showSuccess for positive feedback
+          showSuccess(
+            `${successTitle}: ${successDescription.replace('{timeRange}', data?.timeRange)}`
           );
         })
         .catch((error) => {
-          showSnackbar(
-            'Error',
-            errorDescription.replace('{timeRange}', data?.timeRange) +
-              `: ${error}`,
-            { variant: 'error' }
+          // Using showError for negative feedback
+          showError(
+            `${errorDescription.replace('{timeRange}', data?.timeRange)}: ${error}`
           );
         });
     },
-    // `showSnackbar` is now a dependency of useCallback
-    [onSubmit, showSnackbar, successTitle, successDescription, errorDescription]
+    [
+      onSubmit,
+      showSuccess,
+      showError,
+      successTitle,
+      successDescription,
+      errorDescription,
+    ]
   );
 }
 

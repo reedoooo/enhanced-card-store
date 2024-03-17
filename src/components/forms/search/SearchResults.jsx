@@ -3,7 +3,7 @@ import { Box, Grid } from '@mui/material';
 import useGridItems from '../../../context/hooks/useGridItems';
 import usePagination from '../../../context/hooks/usePagination';
 import PaginationComponent from '../../../layout/collection/collectionGrids/cards-datatable/PaginationComponent';
-import LoadingIndicator from '../../reusable/indicators/LoadingIndicator';
+import LoadingIndicator from '../../../layout/LoadingIndicator';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 
 const SearchResults = ({

@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/system';
 import { Card, CardContent, Typography, Box } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from '../context';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
+import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 
 const StatisticCard = styled(Card)(({ theme }) => ({
   height: '100%',

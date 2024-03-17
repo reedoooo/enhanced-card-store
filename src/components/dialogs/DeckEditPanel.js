@@ -1,189 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Typography,
-  Button,
-  TextField,
-  Chip,
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import { useDeckStore, useFormContext, useMode } from '../../context';
-import useSnackBar from '../../context/hooks/useSnackBar';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
+import React, { useEffect, useState } from 'react';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { FormBox } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import FormField from '../forms/reusable/FormField';
-const DeckEditPanel = ({ selectedDeck, showSnackbar }) => {
-  const { theme } = useMode();
-  const {
-    formMethods,
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors, isSubmitting },
-    reset,
-    setFormSchema,
-    onSubmit,
-  } = useFormContext();
-  const [newTag, setNewTag] = useState('');
-  const tags = watch('tags', selectedDeck?.tags || []);
-  const color = watch('color');
+import { useFormContext } from '../../context';
+import { z } from 'zod';
+import RCZodForm from '../forms/reusable/RCZodForm';
+
+const deckSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().min(1, 'Description is required'),
+  tags: z.array(z.string()),
+  color: z.enum(['red', 'blue', 'green', 'yellow']),
+});
+
+const DeckEditPanel = ({ selectedDeck }) => {
+  const { formMethods, setFormSchema } = useFormContext();
+  const [tags, setTags] = useState(selectedDeck?.tags || []);
 
   useEffect(() => {
     setFormSchema('updateDeckForm');
-  }, [setFormSchema]);
-
-  useEffect(() => {
     if (selectedDeck) {
-      reset({
-        name: selectedDeck.name,
-        description: selectedDeck.description,
-        tags: selectedDeck.tags || [],
-        color: selectedDeck.color || 'red',
+      formMethods.reset({
+        ...selectedDeck,
+        tags: selectedDeck.tags.join(', '),
       });
     }
-  }, [selectedDeck, reset]);
+  }, [selectedDeck, setFormSchema, formMethods]);
 
-  const handleAddNewTag = (newTag) => {
-    if (newTag && !tags.includes(newTag)) {
-      setValue('tags', [...tags, newTag.trim()]);
+  const handleAddTag = (tag) => {
+    if (tag && !tags.includes(tag)) {
+      setTags([...tags, tag]);
+      formMethods.setValue('tags', [...tags, tag].join(', '));
     }
   };
-  const handleTagDelete = (tagToDelete) => {
-    setValue(
-      'tags',
-      tags.filter((tag) => tag !== tagToDelete)
-    );
+
+  const handleDeleteTag = (tagToDelete) => {
+    const updatedTags = tags.filter((tag) => tag !== tagToDelete);
+    setTags(updatedTags);
+    formMethods.setValue('tags', updatedTags.join(', '));
   };
-  const handleFormSubmit = async (data) => {
-    try {
-      await onSubmit(data);
-      showSnackbar({
-        message: 'Deck updated successfully',
-        variant: 'success',
-      });
-    } catch (error) {
-      showSnackbar({
-        message: error.message || 'An error occurred while updating the deck.',
-        variant: 'error',
-      });
-    }
-  };
+
+  const fields = [
+    { name: 'name', label: 'Name', type: 'text' },
+    { name: 'description', label: 'Description', type: 'text' },
+    {
+      name: 'tags',
+      label: 'Tags',
+      type: 'chips',
+      chipData: tags,
+      onAddChip: handleAddTag,
+      onDeleteChip: handleDeleteTag,
+    },
+    {
+      name: 'color',
+      label: 'Color',
+      type: 'select',
+      options: [
+        { value: 'red', label: 'Red' },
+        { value: 'blue', label: 'Blue' },
+        { value: 'green', label: 'Green' },
+        { value: 'yellow', label: 'Yellow' },
+      ],
+    },
+  ];
+
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: theme.spacing(3),
-        margin: theme.spacing(2),
-        backgroundColor: theme.palette.background.light,
-      }}
-    >
-      <Typography variant="h6">Deck Editor</Typography>
-      <FormBox
-        component={'form'}
-        theme={theme}
-        onSubmit={handleSubmit(handleFormSubmit)}
-      >
-        <FormField
-          label="Name"
-          name="name"
-          register={register}
-          errors={errors}
-          required
-        />
-        <FormField
-          label="Description"
-          name="description"
-          register={register}
-          errors={errors}
-          multiline
-          required
-        />
-
-        <Box sx={{ my: 2 }}>
-          {tags &&
-            tags?.map((tag, index) => (
-              <Chip
-                key={index}
-                label={tag}
-                onDelete={() => handleTagDelete(tag)}
-              />
-            ))}
-          <FormField
-            label="New Tag"
-            name="tags"
-            register={register}
-            errors={errors}
-            size="small"
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            onBlur={handleAddNewTag}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddNewTag();
-              }
-            }}
-          />
-        </Box>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Color</InputLabel>
-          <Select
-            {...register('color')}
-            value={color || ''}
-            label="Color"
-            defaultValue=""
-          >
-            <MenuItem value="red">Red</MenuItem>
-            <MenuItem value="blue">Blue</MenuItem>
-            <MenuItem value="green">Green</MenuItem>
-            <MenuItem value="yellow">Yellow</MenuItem>
-          </Select>
-        </FormControl>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: 1,
-            mt: 2,
-          }}
-        >
-          <Button
-            startIcon={<SaveIcon />}
-            type="submit"
-            variant="contained"
-            sx={{ flexGrow: 1 }}
-          >
-            Save Changes
-          </Button>
-          <Button
-            startIcon={<DeleteIcon />}
-            variant="contained"
-            color="error"
-            onClick={
-              selectedDeck
-                ? () =>
-                    onSubmit({
-                      ...watch(),
-                      _id: selectedDeck._id,
-                      delete: true,
-                    })
-                : undefined
-            }
-            sx={{ flexGrow: 1 }}
-          >
-            Delete Deck
-          </Button>
-        </Box>
-      </FormBox>
-    </Paper>
+    <RCZodForm
+      schema={deckSchema}
+      schemaName="updateDeckForm"
+      fields={fields}
+      buttonLabel="Save Changes"
+      defaultValues={selectedDeck}
+      onSubmit={() => formMethods.submitForm()}
+      startIcon={<SaveIcon />}
+      additionalButtons={[
+        {
+          label: 'Delete Deck',
+          startIcon: <DeleteIcon />,
+          onClick: () => {
+            formMethods.setValue('_id', selectedDeck._id);
+            formMethods.setValue('delete', true);
+            formMethods.submitForm();
+          },
+          color: 'error',
+          variant: 'contained',
+        },
+      ]}
+      formMethods={formMethods}
+      formName="updateDeckForm"
+    />
   );
 };
 
-export default withDynamicSnackbar(DeckEditPanel);
+export default DeckEditPanel;

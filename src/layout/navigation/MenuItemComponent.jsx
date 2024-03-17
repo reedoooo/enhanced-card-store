@@ -20,25 +20,6 @@ import {
 } from '../../pages/pageStyles/StyledComponents';
 import { useSpring, animated } from 'react-spring';
 import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-const CardStyle = styled(Card)(({ theme }) => ({
-  background: 'transparent',
-  // marginBottom: '22px',
-  height: '100%',
-  width: '100%',
-  overflow: 'hidden',
-  position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    // height: '100%',
-    // width: '157px',
-    // height: '157px',
-    // background: theme.palette.primary[200],
-    borderRadius: '50%',
-    // top: '-105px',
-    // right: '-96px',
-  },
-}));
 const MenuItemComponent = ({ item, onClick, visibleItems, index }) => {
   const { theme } = useMode();
   const navigate = useNavigate();

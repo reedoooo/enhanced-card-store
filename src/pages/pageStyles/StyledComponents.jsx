@@ -567,7 +567,7 @@ export const AspectRatioBoxSkeleton = styled(Box)(({ theme }) => ({
 export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
   // margin: theme.spacing(1),
   width: '100%',
-  // height: '100%',
+  height: '100%',
   flexGrow: 1,
   transition: 'transform 0.3s ease-in-out',
   boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',

@@ -8,10 +8,9 @@ import SelectComponent from '../reusable/Select';
 import useTimeRange from './useTimeRange';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
-const TimeRangeSelector = ({ showSnackbar }) => {
+const TimeRangeSelector = () => {
   const { theme } = useMode();
-  const { timeRangeOptions, onFormSubmit, control, errors } =
-    useTimeRange(showSnackbar);
+  const { timeRangeOptions, onFormSubmit, control, errors } = useTimeRange();
 
   return (
     <StyledChartBox

@@ -11,17 +11,17 @@ import {
   ListItemButton,
   Collapse,
 } from '@mui/material';
-import MenuItemComponent from './MenuItemComponent';
-import { useMode, useSidebarContext } from '../../context';
+import MenuItemComponent from '../layout/navigation/MenuItemComponent';
+import { useMode, useSidebarContext } from '../context';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import {
   DrawerHeader,
   StyledBox,
   StyledSwipeableDrawer,
-} from '../../pages/pageStyles/StyledComponents';
+} from '../pages/pageStyles/StyledComponents';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import MenuCard from './MenuCard';
+import MenuCard from '../layout/navigation/MenuCard';
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 

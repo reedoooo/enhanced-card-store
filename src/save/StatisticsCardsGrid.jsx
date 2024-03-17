@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
-import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import ComplexStatisticsCard from '../sub-components/ComplexStatisticsCard';
-import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
+import ComplexStatisticsCard from './ComplexStatisticsCard';
+import LoadingIndicator from '../layout/LoadingIndicator';
+import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
 const cardData = [
   {

@@ -27,7 +27,6 @@ const tagConstraint = z.array(z.string());
 const colorConstraint = z.enum(['red', 'blue', 'green', 'yellow'], {
   message: 'Invalid color',
 });
-
 const signupForm = z.object({
   firstName: GenericStringConstraint,
   lastName: GenericStringConstraint,
@@ -89,6 +88,9 @@ const searchForm = z.object({
     level: z.string().optional(),
   }),
 });
+const collectionSearchForm = z.object({
+  searchTerm: z.string().min(1, { message: 'Search term is required' }),
+});
 // Customer Info Fields Schema
 const customerInfoForm = z.object({
   firstName: nameConstraint,
@@ -121,23 +123,6 @@ const customerInfoForm = z.object({
 
 // const timeRangeSchema = z.object({
 //   timeRange: z.enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d']),
-// });
-const timeRangeOptionSchema = z.object({
-  id: z.string(
-    'Invalid time range ID. Please select a valid time range from the list.'
-  ),
-  value: z.string(),
-  name: z.string(),
-  data: z.array(
-    z.object({
-      x: z.number(),
-      y: z.number(),
-    })
-  ),
-});
-
-// const timeRangeSchema = z.object({
-//   timeRange: timeRangeOptionSchema,
 // });
 const timeRangeSelectorSchema = z.object({
   timeRange: z.string().nonempty({
@@ -254,7 +239,7 @@ export const formSchemas = {
   loginForm,
   rememberMeForm: rememberMeFormSchema,
   authSwitch: authSwitchSchema,
-
+  collectionSearchForm,
   updateUserDataForm,
   addCollectionForm,
   updateCollectionForm,
@@ -348,6 +333,9 @@ export const defaultValues = {
       attribute: '',
       level: '',
     },
+  },
+  collectionSearchForm: {
+    searchTerm: '',
   },
   customerInfoForm: {
     firstName: '',

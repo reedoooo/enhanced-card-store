@@ -23,6 +23,24 @@ html {
   scroll-behavior: smooth;
 }
 
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
 /* @media (min-width: 1440px) {
   html {
     zoom: 1.5;
@@ -242,8 +260,8 @@ button {
 
 /* .swiper-wrapper {
   display: flex; /* Ensure the slides are in a row */
-  /* transition: transform 0.3s; /* Smooth transition */
-  /* align-items: center;
+/* transition: transform 0.3s; /* Smooth transition */
+/* align-items: center;
   justify-content: center;
 }  */
 

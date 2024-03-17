@@ -6,4 +6,4 @@ export { default as CollectionPage } from './CollectionPage';
 export { default as CartPage } from './CartPage';
 export { default as SplashPage } from '../assets/animations/SplashPage';
 export { default as StorePage } from './StorePage';
-export { default as LoginPage } from './LoginPage';
+export { default as LoginPage } from '../save/LoginPage';

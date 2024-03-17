@@ -17,13 +17,30 @@ function useTimeRange(showSnackbar) {
       };
     });
   }, [averagedChartData]);
+
+  const handleTimeRangeSubmit = async (data) => {
+    // Here you can integrate the logic to handle the submission data,
+    // for instance, to update the chart based on the selected time range.
+    console.log('Time Range Selected:', data.timeRange);
+  };
+  const successTitle = 'Success';
+  const successDescription = 'Now viewing chart data for {timeRange}';
+  const errorDescription = 'Failed to view chart data for {timeRange}';
+
+  // Using the custom submit handler hook.
   const onFormSubmit = useSubmitHandler(
-    onSubmit,
-    showSnackbar,
-    'Success',
-    'Now viewing chart data for {timeRange}',
-    'Failed to view chart data for {timeRange}'
+    handleTimeRangeSubmit,
+    successTitle,
+    successDescription,
+    errorDescription
   );
+  // const onFormSubmit = useSubmitHandler(
+  //   onSubmit,
+  //   showSnackbar,
+  //   'Success',
+  //   'Now viewing chart data for {timeRange}',
+  //   'Failed to view chart data for {timeRange}'
+  // );
   // const onFormSubmit = useCallback(
   //   (data) => {
   //     onSubmit(data, 'timeRangeSelector')

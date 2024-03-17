@@ -6,7 +6,7 @@ const VisibilityContext = createContext();
 export const useVisibilityContext = () => useContext(VisibilityContext);
 
 export const VisibilityProvider = ({ children }) => {
-  const [isCollectionVisible, setCollectionVisibility] = useState(true);
+  const [isCollectionVisible, setCollectionVisibility] = useState(false);
   const [dialogStates, setDialogStates] = useState({
     isAddCollectionDialogOpen: false,
     isSelectionErrorDialogOpen: false,

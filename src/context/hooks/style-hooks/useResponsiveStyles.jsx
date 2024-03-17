@@ -1,7 +1,7 @@
 import { useMediaQuery } from '@mui/material';
-import DeckOfCardsIcon from '../../../components/reusable/icons/DeckOfCardsIcon';
-import MoneyIcon from '../../../components/reusable/icons/MoneyIcon';
-import ChartsIcon from '../../../components/reusable/icons/ChartsIcon';
+import DeckOfCardsIcon from '../../../layout/REUSABLE_COMPONENTS/icons/DeckOfCardsIcon';
+import MoneyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/MoneyIcon';
+import ChartsIcon from '../../../layout/REUSABLE_COMPONENTS/icons/ChartsIcon';
 
 const useResponsiveStyles = (theme) => {
   const isXSmall = useMediaQuery(theme.breakpoints.down('xs'));

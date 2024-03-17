@@ -13,25 +13,13 @@ import {
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import Icon from '@mui/material/Icon';
 import DataTableBodyCell from './DataTableBodyCell';
-import useScreenWidth from '../../../../context/hooks/useScreenWidth';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Grid,
-  Paper,
-  TableBody,
-  TextField,
-} from '@mui/material';
+import { Box, Button, Checkbox, Grid, Paper, TableBody } from '@mui/material';
 import PaginationComponent from './PaginationComponent';
 import OptionsComponent from './OptionsComponent';
-import { DataTableHeadComponent } from './DataTableHeadComponent';
-import BoxHeader from '../../../REUSABLE_COMPONENTS/BoxHeader';
 import GenericActionButtons from '../../../../components/buttons/actionButtons/GenericActionButtons';
-import { enqueueSnackbar } from 'notistack';
 import { useMode } from '../../../../context';
+import DataTableHeadCell from './DataTableHeadCell';
 const setSortedValue = (column, isSorted) => {
   let sortedValue;
 
@@ -82,13 +70,16 @@ function DataTable({
   const data = useMemo(() => table.data, [table.data]);
   const columns = useMemo(() => {
     let baseColumns = [
-      // Only include the selection column if showSelection is true
       showSelection && {
         id: 'selection',
         Header: ({ getToggleAllRowsSelectedProps }) => (
           <Checkbox {...getToggleAllRowsSelectedProps()} />
         ),
         Cell: ({ row }) => <Checkbox {...row.getToggleRowSelectedProps()} />,
+        // Apply a fixed width to the checkbox column
+        width: 30, // Adjust the width as needed
+        minWidth: 30, // Ensure it doesn't get smaller than the set width
+        maxWidth: 30, // Ensure it doesn't get larger than the set width
       },
       { Header: 'Name', accessor: 'name' },
       // { Header: 'Price', accessor: 'price' },
@@ -101,26 +92,8 @@ function DataTable({
             card={value}
             context={'Collection'}
             onClick={() => console.log('clicked')}
-            onSuccess={() =>
-              enqueueSnackbar(
-                {
-                  title: 'Action successful',
-                  message: `Card added to ${value} successfully.`,
-                },
-                'success',
-                null
-              )
-            }
-            onFailure={(error) =>
-              enqueueSnackbar(
-                {
-                  title: 'Action failed',
-                  message: `Failed to add card to ${value}.`,
-                },
-                'error',
-                error
-              )
-            }
+            onSuccess={() => console.log('success')}
+            onFailure={(error) => console.log(error)}
             page={'Collection'}
             cardSize={'small'}
           />
@@ -242,7 +215,7 @@ function DataTable({
         />
         {/* Table */}
         <Table {...getTableProps()} sx={{}}>
-          <DataTableHeadComponent
+          <DataTableHeadCell
             onSelectAllClick={handleSelectAllClick}
             order="asc"
             orderBy="name"
@@ -265,6 +238,7 @@ function DataTable({
                     '&:last-child td, &:last-child th': { border: 0 },
                     // Apply styling here to reduce padding
                     '& td': { padding: '8px' }, // Example: reduce padding
+                    display: 'table-row', // Explicitly setting the display to table-row
                   }}
                 >
                   {row.cells.map((cell, idx) => (

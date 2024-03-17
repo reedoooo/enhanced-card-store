@@ -55,7 +55,10 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           subheader={tier.subheader}
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
-          sx={{ backgroundColor: theme.palette.backgroundA.dark }}
+          sx={{
+            backgroundColor: theme.palette.backgroundA.dark,
+            height: '20%',
+          }}
         />
         <CardContent>
           <CardUnorderedList>
@@ -83,9 +86,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             // isDisabled={false}
             // isDefault={false}
             theme={uniqueTheme}
-            onClick={() => {
-              console.log('clicked');
-            }}
+            onClick={() => onOpenModal(tier.title)}
             sx={{
               flexGrow: 1,
               justifySelf: 'bottom',

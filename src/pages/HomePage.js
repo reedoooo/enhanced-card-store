@@ -58,9 +58,9 @@ const HomePage = () => {
           <HeroSection />
         </Grid>
         {/* MAIN CONTENT SECTION */}
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <MainContentSection />
-        </Grid>
+        </Grid> */}
         {/* FEATURE CARDS SECTION */}
         <Grid item xs={12}>
           <FeatureCardsSection />

@@ -9,20 +9,10 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
   FormControlLabel,
-  Grid,
-  IconButton,
-  Link,
-  Paper,
-  Switch,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar'; // Adjust import paths as necessary
 import LoginForm from '../forms/LoginForm';
 import SignupForm from '../forms/SignupForm';
 import { useFormContext, useMode } from '../../context';
@@ -30,18 +20,14 @@ import useAuthDialog from '../../context/hooks/useAuthDialog'; // Adjust import 
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import {
-  DialogContentsBox,
-  DialogPaer,
   DialogPaper,
-  FormPaper,
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
-import { AuthModeSwitch } from '../../layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
-import AuthSwitch from '../buttons/other/AuthSwitch';
-import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
-
+import RCSwitch from '../forms/reusable/RCSwitch';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 function LoginDialog() {
   const { theme, toggleColorMode, mode } = useMode();
   const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
@@ -63,6 +49,11 @@ function LoginDialog() {
   const handleLogout = () => {
     logout();
     toggleLoginDialog();
+  };
+  const handleToggle = () => {
+    setFormSchema(
+      currentSchemaKey === 'loginForm' ? 'signupForm' : 'loginForm'
+    );
   };
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
 
@@ -122,7 +113,16 @@ function LoginDialog() {
               {formTitle}
             </MDTypography>
           </MDBox>
-          <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} />
+          {/* <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} /> */}
+          <RCSwitch
+            signupMode={signupMode}
+            checked={currentSchemaKey === 'signupForm'}
+            onChange={handleToggle}
+            labelLeft="Login"
+            labelRight="Sign Up"
+            iconLeft={<LoginIcon />}
+            iconRight={<PersonAddIcon />}
+          />
         </DialogTitle>
       </DialogPaper>
 

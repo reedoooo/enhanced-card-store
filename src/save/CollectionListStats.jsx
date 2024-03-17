@@ -1,9 +1,9 @@
 import { Grid, Skeleton } from '@mui/material';
-import TotalValueOfCollectionsDisplay from '../sub-components/TotalValueOfCollectionsDisplay';
-import TopFiveExpensiveCards from '../sub-components/TopFiveExpensiveCards';
-import { useStatisticsStore } from '../../../context';
-import SimpleCard from '../../REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import TotalValueOfCollectionsDisplay from './TotalValueOfCollectionsDisplay';
+import TopFiveExpensiveCards from './TopFiveExpensiveCards';
+import { useStatisticsStore } from '../context';
+import SimpleCard from '../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
+import uniqueTheme from '../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const CollectionListStats = () => {
   const { topFiveCards, totalValue, chartData } = useStatisticsStore();

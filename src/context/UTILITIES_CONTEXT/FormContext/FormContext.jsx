@@ -112,13 +112,20 @@ export const FormProvider = ({ children }) => {
       ),
     loginForm: (formData) => login(formData.username, formData.password),
     updateUserDataForm: (formData) => console.log(formData),
+    addCollectionForm: (formData, additionalData) =>
+      createNewCollection(formData, additionalData),
     updateCollectionForm: (formData, additionalData) =>
       updateAndSyncCollection(additionalData, formData),
     createCollectionForm: (formData, additionalData) =>
       createNewCollection(additionalData, formData),
-    updateDeckForm: (formData, additionalData) => updateDeckDetails(formData),
-    addDeckForm: (formData, additionalData) => console.log(formData),
-    searchForm: (formData, additionalData) => setSearchSettings(formData),
+    updateDeckForm: (formData, additionalData) =>
+      updateDeckDetails(formData, additionalData),
+    addDeckForm: (formData, additionalData) =>
+      console.log(formData, additionalData),
+    searchForm: (formData, additionalData) =>
+      setSearchSettings(formData, additionalData),
+    ollectionSearchForm: (formData, additionalData) =>
+      console.log(formData, additionalData),
     timeRangeSelector: (formData, additionalData) =>
       handleTimeRangeChange(formData),
     searchSettingsSelector: (formData, additionalData) =>
@@ -129,7 +136,6 @@ export const FormProvider = ({ children }) => {
     },
     authSwitch: (formData) => {
       console.log('Auth Switch Form Data:', formData);
-
       toggleAuthMode();
     },
   };
@@ -159,20 +165,6 @@ export const FormProvider = ({ children }) => {
   useEffect(() => {
     setFormSchema(currentSchemaKey);
   }, [currentSchemaKey, setFormSchema]);
-  // const setFormSchema = useCallback(
-  //   (formId) => {
-  //     const schema = formSchemas[formId];
-  //     const defaultValues = getDefaultValuesFromSchema(schema);
-  //     methods.reset({ ...defaultValues }); // Reset form with new default values
-  //     methods.clearErrors(); // Clear any existing errors
-  //     methods.setValue('formId', formId); // Optionally set formId as a form value
-  //   },
-  //   [methods]
-  // );
-  // useEffect(() => {
-  //   setFormSchema(initialFormKey); // Initialize form with the first schema
-  // }, [setFormSchema, initialFormKey]);
-
   const onChange = (formData, currentSchemaKey) => {
     console.log('Form data changed:', formData, currentSchemaKey);
     const validation = handleZodValidation(
@@ -262,7 +254,7 @@ export const FormProvider = ({ children }) => {
       isFormDataLoading: isFormDataLoading,
       currentSchemaKey,
       currentForm: currentSchemaKey,
-
+      getValues: methods.getValues,
       handleTimeRangeChange,
       handleSearchTermChange,
       handleFieldChange,

@@ -2,7 +2,7 @@ import Icon from '@mui/material/Icon';
 // Images
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import React from 'react';
-import StoreItem from '../../../components/grids/gridItems/StoreItem';
+import StoreItem from '../components/grids/gridItems/StoreItem';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
 
 export default function prepareTableData(selectedCards) {

@@ -1,116 +1,55 @@
 import React, { useEffect } from 'react';
-import { Box } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
 import { useFormContext, useMode } from '../../context';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  formSchemas,
-  getDefaultValuesFromSchema,
-} from '../../context/UTILITIES_CONTEXT/FormContext/schemas';
-import FormField from './reusable/FormField';
-import {
-  FormBox,
-  FormFieldBox,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import useSnackbarManager from '../../context/hooks/useSnackbarManager';
+import RCZodForm from './reusable/RCZodForm';
 
-const UpdateCollectionForm = ({ showSnackbar, collectionData }) => {
-  const formId = 'updateCollectionForm';
-  const { onSubmit } = useFormContext();
+const updateCollectionFields = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'text',
+    required: true,
+    multiline: true,
+    rows: 4,
+  },
+];
+
+const UpdateCollectionForm = ({ collectionData }) => {
+  const { setFormSchema, onSubmit } = useFormContext();
   const { theme } = useMode();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(formSchemas.updateCollectionForm),
-    defaultValues:
-      collectionData ||
-      getDefaultValuesFromSchema(formSchemas.updateCollectionForm),
-  });
+  const { showSuccess, showError } = useSnackbarManager();
 
-  // Automatically reset form fields to the passed collection data
-  React.useEffect(() => {
-    reset(collectionData);
-  }, [collectionData, reset]);
+  useEffect(() => {
+    if (collectionData) {
+      setFormSchema('updateCollectionForm', collectionData);
+    }
+  }, [collectionData, setFormSchema]);
 
-  const fields = [
-    { name: 'name', label: 'Name', type: 'text' },
-    { name: 'description', label: 'Description', type: 'text' },
-  ];
-
-  const onFormSubmit = async (data) => {
+  const handleFormSubmit = async (data) => {
     try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulated delay
-
-      onSubmit(data, formId, collectionData._id); // Adjust to call the actual update function
-
-      // On success:
-      showSnackbar(
-        {
-          title: 'Success',
-          description: "You've successfully updated the collection.",
-        },
-        'success'
-      );
+      await onSubmit(data, 'updateCollectionForm', collectionData?._id);
+      showSuccess("You've successfully updated the collection.");
     } catch (error) {
-      // On error:
-      showSnackbar(
-        {
-          title: 'Error',
-          description: 'Failed to update collection. Please try again.',
-        },
-        'error'
-      );
+      showError('Failed to update collection. Please try again.');
     }
   };
 
   return (
-    <FormBox
-      component="form"
-      onSubmit={handleSubmit(onFormSubmit)}
+    <RCZodForm
+      schemaName="updateCollectionForm"
+      fields={updateCollectionFields}
+      onSubmit={handleFormSubmit}
+      buttonLabel="Update Collection"
       theme={theme}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        margin: 2,
-        padding: 2,
-      }}
-    >
-      <FormFieldBox theme={theme}>
-        <FormField
-          name="name"
-          label="Collection Name"
-          register={register}
-          errors={errors}
-          required
-        />
-      </FormFieldBox>
-      <FormFieldBox theme={theme}>
-        <FormField
-          name="description"
-          label="Collection Description"
-          register={register}
-          errors={errors}
-          required
-          multiline
-          rows={4}
-        />
-      </FormFieldBox>
-      <LoadingButton
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        fullWidth
-      >
-        Update Collection
-      </LoadingButton>
-    </FormBox>
+      initialValues={collectionData}
+    />
   );
 };
 
-export default withDynamicSnackbar(UpdateCollectionForm);
+export default UpdateCollectionForm;

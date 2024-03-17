@@ -1,110 +1,200 @@
-// prop-types is a library for typechecking of props
+// import PropTypes from 'prop-types';
+// import Icon from '@mui/material/Icon';
+// import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
+// import { useMode } from '../../../../context';
+// import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+
+// function DataTableHeadCell({ width, children, sorted, align, ...rest }) {
+//   const { theme } = useMode();
+//   return (
+//     <MDBox
+//       component="th"
+//       sx={{
+//         borderBottom: `2px solid ${theme.palette.divider}`,
+//         border: `1px solid ${theme.palette.divider}`,
+//         fontWeight: theme.typography.fontWeightMedium,
+//         letterSpacing: '0.0075em',
+//         lineHeight: 1.5,
+//         position: 'sticky',
+//         top: 0,
+//         zIndex: 2,
+//         width: '100%',
+//         alignItems: 'center',
+//         boxShadow:
+//           '0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)',
+//         cursor: sorted ? 'pointer' : 'default',
+//       }}
+//     >
+//       <MDBox
+//         sx={{
+//           display: 'flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           flexGrow: 1,
+//           width: '100%',
+//         }}
+//       >
+//         <MDBox
+//           sx={{
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             flexGrow: 1,
+//           }}
+//         >
+//           <MDTypography
+//             variant="h6"
+//             color="text"
+//             fontWeight="medium"
+//             textTransform="uppercase"
+//             sx={{
+//               fontWeight: 'bold',
+//             }}
+//           >
+//             {children}
+//           </MDTypography>
+//           {sorted && (
+//             <MDBox
+//               sx={{
+//                 display: 'flex',
+//                 flexDirection: 'row', // Adjust this to row for inline icon display
+//                 alignItems: 'center',
+//                 justifyContent: 'flex-end',
+//                 height: '100%',
+//                 p: 1,
+//                 border: 'none',
+//               }}
+//             >
+//               <Icon
+//                 color={sorted === 'asce' ? 'action' : 'disabled'}
+//                 fontSize="large"
+//               >
+//                 arrow_drop_up
+//               </Icon>
+//               <Icon color={sorted === 'desc' ? 'action' : 'disabled'}>
+//                 arrow_drop_down
+//               </Icon>
+//             </MDBox>
+//           )}
+//         </MDBox>
+//       </MDBox>
+//     </MDBox>
+//   );
+// }
+
+// DataTableHeadCell.defaultProps = {
+//   width: 'auto',
+//   sorted: 'none',
+//   align: 'left',
+// };
+
+// DataTableHeadCell.propTypes = {
+//   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+//   children: PropTypes.node.isRequired,
+//   sorted: PropTypes.oneOf([false, 'none', 'asce', 'desc']),
+//   align: PropTypes.oneOf(['left', 'right', 'center']),
+// };
+
+// export default DataTableHeadCell;
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
-
-// @mui material components
-import Icon from '@mui/material/Icon';
-
-// Material Dashboard 2 React components
-
-// Material Dashboard 2 React contexts
+import { TableRow, Checkbox, Icon } from '@mui/material';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
-import { useMode } from '../../../../context';
 import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { useMode } from '../../../../context';
 
-function DataTableHeadCell({ width, children, sorted, align, ...rest }) {
+const DataTableHeadCell = ({ headerGroups, isSorted, setSortedValue }) => {
   const { theme } = useMode();
-  return (
-    <MDBox
-      component="th"
-      sx={{
-        py: { xs: 0.5, sm: 1.5 }, // Example of responsive padding
-        fontSize: { xs: '0.75rem', sm: '1rem' }, // Example of responsive font size
-        px: { xs: 1, sm: 2 }, // Responsive padding
-        // width: width || 'auto',
-        // fontSize: theme.typography.body1.fontSize,
-        borderBottom: `2px solid ${theme.palette.divider}`,
-        border: `1px solid ${theme.palette.divider}`,
-        textAlign: align,
-        background: theme.palette.backgroundE.light, // Ensures contrast with the table body
-        fontWeight: theme.typography.fontWeightMedium,
-        letterSpacing: '0.0075em',
-        lineHeight: 1.5,
-        position: 'sticky',
-        top: 0,
-        zIndex: 2, // Keeps header above other elements
-        alignItems: 'center',
-        boxShadow:
-          '0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)', // Subtle shadow for depth
-        cursor: sorted ? 'pointer' : 'default',
-        '&:hover': {
-          opacity: sorted ? 1 : 0.8,
-        },
-        // [theme.breakpoints.down('sm')]: {
-        //   py: 1,
-        //   px: 2,
-        // },
-      }}
-    >
+
+  const renderCellContent = (column, idx) => {
+    const sorted = setSortedValue(column, isSorted);
+    return (
       <MDBox
-        display="flex"
-        justifyContent={align === 'right' ? 'flex-end' : 'flex-start'}
-        alignItems="center"
-        gap={0.5} // Adds space between text and icon if sorted
+        component="th"
+        key={idx}
+        sx={{
+          borderBottom: `2px solid ${theme.palette.divider}`,
+          border: `1px solid ${theme.palette.divider}`,
+          fontWeight: theme.typography.fontWeightMedium,
+          letterSpacing: '0.0075em',
+          lineHeight: 1.5,
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
+          width: column.id === 'selection' ? '50px' : 'auto',
+          alignItems: 'center',
+          boxShadow:
+            '0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)',
+          cursor: sorted ? 'pointer' : 'default',
+        }}
       >
-        <MDTypography
-          variant="h6"
+        <MDBox
           sx={{
-            textTransform: 'uppercase',
-            fontWeight: 'bold',
-            marginRight: sorted ? theme.spacing(1) : 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexGrow: 1,
           }}
         >
-          {children}
-        </MDTypography>{' '}
-        {sorted && (
-          <MDBox
+          <MDTypography
+            variant="h6"
+            color="text"
+            fontWeight="medium"
+            textTransform="uppercase"
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              fontWeight: 'bold',
             }}
           >
+            {column.render('Header')}
+          </MDTypography>
+          {sorted && (
             <MDBox
-              position="absolute"
-              top={-6}
-              color={sorted === 'asce' ? 'text' : 'secondary'}
-              opacity={sorted === 'asce' ? 1 : 0.5}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                height: '100%',
+                pr: 1, // Right padding to ensure some space before the edge
+              }}
             >
-              <Icon>arrow_drop_up</Icon>
+              <Icon color={sorted === 'asce' ? 'action' : 'disabled'}>
+                arrow_drop_up
+              </Icon>
+              <Icon color={sorted === 'desc' ? 'action' : 'disabled'}>
+                arrow_drop_down
+              </Icon>
             </MDBox>
-            <MDBox
-              position="absolute"
-              top={0}
-              color={sorted === 'desc' ? 'text' : 'secondary'}
-              opacity={sorted === 'desc' ? 1 : 0.5}
-            >
-              <Icon>arrow_drop_down</Icon>
-            </MDBox>
-          </MDBox>
-        )}
+          )}
+        </MDBox>
       </MDBox>
-    </MDBox>
-  );
-}
+    );
+  };
 
-// Setting default values for the props of DataTableHeadCell
-DataTableHeadCell.defaultProps = {
-  width: 'auto',
-  sorted: 'none',
-  align: 'left',
+  return useMemo(
+    () => (
+      <>
+        {headerGroups.map((headerGroup, key) => (
+          <TableRow key={key} {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(renderCellContent)}
+          </TableRow>
+        ))}
+      </>
+    ),
+    [
+      headerGroups,
+      isSorted,
+      setSortedValue,
+      theme.palette.divider,
+      theme.typography.fontWeightMedium,
+    ]
+  );
 };
 
-// Typechecking props for the DataTableHeadCell
 DataTableHeadCell.propTypes = {
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  children: PropTypes.node.isRequired,
-  sorted: PropTypes.oneOf([false, 'none', 'asce', 'desc']),
-  align: PropTypes.oneOf(['left', 'right', 'center']),
+  headerGroups: PropTypes.array.isRequired,
+  isSorted: PropTypes.bool.isRequired,
+  setSortedValue: PropTypes.func.isRequired,
 };
 
 export default DataTableHeadCell;

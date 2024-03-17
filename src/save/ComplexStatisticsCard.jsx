@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
 import Icon from '@mui/material/Icon';
-import MDBox from '../../REUSABLE_COMPONENTS/MDBOX/index';
-import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { useMode } from '../../../context';
+import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX/index';
+import MDTypography from '../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { useMode } from '../context';
 
 function ComplexStatisticsCard({ color, title, count, percentage, icon, sx }) {
   const { theme } = useMode();

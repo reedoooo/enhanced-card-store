@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Pagination } from '@mui/material';
-import { useMode } from '../../context';
+import { useMode } from '../context';
 
 const CustomPagination = ({
   totalCount,

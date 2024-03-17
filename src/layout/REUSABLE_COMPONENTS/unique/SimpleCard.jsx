@@ -42,11 +42,27 @@ const getAccentStyle = (theme, isAccent) => ({
   color: isAccent ? theme.colorAccentText : undefined,
 });
 
+const getTableOrChartStyle = (theme, isTableOrChart) => ({
+  background: isTableOrChart ? theme.colorCardBackground : undefined,
+  color: isTableOrChart ? theme.colorPrimary : undefined,
+});
+
+const getFormHeaderStyle = (theme, isFormHeader) => ({
+  background: isFormHeader ? theme.colorCardBackground : undefined,
+  color: isFormHeader ? theme.colorPrimary : undefined,
+  maxWidth: 'md',
+  padding: theme.lenMd3, // Updated to use theme's spacing method if available
+  borderRadius: '24px',
+  boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
+  margin: 'auto',
+  width: '80%',
+});
+
 const CardContent = ({ theme, children }) => (
   <div style={{ padding: `0 ${theme.lenMd1} ${theme.lenMd2}` }}>{children}</div>
 );
 
-const CardTitle = ({ theme, children }) => (
+const CardTitle = ({ theme, children, isTableOrChart }) => (
   <div
     style={{
       display: 'flex',
@@ -54,12 +70,17 @@ const CardTitle = ({ theme, children }) => (
       justifyContent: 'center',
       height: theme.lenXl2,
       padding: `0 ${theme.lenMd1}`,
+      // color: theme.colorLabel,
       color: theme.colorLabel,
       fontSize: theme.lenMd2,
       // overflow: 'hidden',
     }}
   >
-    <MDTypography variant="h6" color="primary" component="div">
+    <MDTypography
+      variant="h6"
+      color={isTableOrChart ? theme.colorPrimary : theme.colorLabel}
+      component="div"
+    >
       {children}
     </MDTypography>
   </div>
@@ -70,10 +91,12 @@ const SimpleCard = ({
   hasTitle,
   isPrimary,
   isAccent,
+  isTableOrChart,
   noBottomMargin,
   children,
   cardTitle,
   data,
+  isFormHeader,
   ...rest
 }) => {
   const cardStyle = {
@@ -84,6 +107,8 @@ const SimpleCard = ({
     borderRadius: theme.borderRadius,
     background: theme.colorCardBackground,
     color: theme.colorText,
+    ...(isFormHeader && getFormHeaderStyle(theme, true)),
+    ...(isTableOrChart && getTableOrChartStyle(theme, true)),
     ...(isPrimary && getPrimaryStyle(theme, true)),
     ...(isAccent && getAccentStyle(theme, true)),
   };
@@ -92,7 +117,9 @@ const SimpleCard = ({
     <div style={cardStyle} {...rest}>
       {cardTitle && (
         <>
-          <CardTitle theme={theme}>{cardTitle}</CardTitle>
+          <CardTitle theme={theme} isTableOrChart={isTableOrChart}>
+            {cardTitle}
+          </CardTitle>
           <CardContent theme={theme}>{children}</CardContent>
         </>
       )}

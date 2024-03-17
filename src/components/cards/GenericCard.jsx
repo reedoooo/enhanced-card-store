@@ -30,7 +30,7 @@ import { enqueueSnackbar } from 'notistack';
 import useSelectedContext from '../../context/hooks/useSelectedContext';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 const GenericCard = React.forwardRef((props, ref) => {
-  const { card, context, page } = props;
+  const { card, context, page, isSwiperStyles } = props;
   const { theme } = useMode();
   const cardRef = useRef(null);
   const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
@@ -57,19 +57,6 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { selectedDeck, allDecks } = useDeckStore();
   const { setContext, setIsContextSelected } = useSelectedContext();
   const { isCardInContext } = useAppContext();
-
-  // const { isCardInContext } = useAppContext();
-  // const isCardInContext = useCallback(
-  //   (selectedCollection, selectedDeck, cartData, context, card) => {
-  //     const cardsList = {
-  //       Collection: selectedCollection?.cards,
-  //       Deck: selectedDeck?.cards,
-  //       Cart: cartData?.cart,
-  //     };
-  //     return !!cardsList[context]?.find((c) => c?.id === card?.id);
-  //   },
-  //   [context, selectedCollection, selectedDeck, cartData]
-  // );
   const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
     useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
@@ -115,42 +102,36 @@ const GenericCard = React.forwardRef((props, ref) => {
     allDecks: allDecks,
   });
   let cardContent = null;
-  if (cardSize === 'sm') {
-    cardContent = (
-      <StyledCardContent theme={theme}>
-        <MDTypography variant="body1" gutterBottom fontWeight="medium">
-          {name}
-        </MDTypography>
-        <MDTypography variant="body2" color="primary" gutterBottom>
-          {price}
-        </MDTypography>
-      </StyledCardContent>
-    );
-  } else if (cardSize !== 'xs') {
-    cardContent = (
-      <StyledCardContent theme={theme}>
-        <MDTypography variant="body1" gutterBottom fontWeight="medium">
-          {name}
-        </MDTypography>
-        <MDTypography variant="body2" color="primary" gutterBottom>
-          {price}
-        </MDTypography>
-        <MDTypography
-          variant="body1"
-          color="primary"
-        >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</MDTypography>
-        <MDTypography
-          variant="body1"
-          color="primary"
-        >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</MDTypography>
-        <MDTypography
-          variant="body1"
-          color="primary"
-        >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</MDTypography>
-      </StyledCardContent>
-    );
+  if (!isSwiperStyles) {
+    if (cardSize !== 'xs') {
+      cardContent = (
+        <StyledCardContent theme={theme}>
+          <MDTypography variant="body1" gutterBottom fontWeight="medium">
+            {name}
+          </MDTypography>
+          <MDTypography variant="body2" color="primary" gutterBottom>
+            {price}
+          </MDTypography>
+          {cardSize !== 'sm' && (
+            <>
+              <MDTypography
+                variant="body1"
+                color="primary"
+              >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</MDTypography>
+              <MDTypography
+                variant="body1"
+                color="primary"
+              >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</MDTypography>
+              <MDTypography
+                variant="body1"
+                color="primary"
+              >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</MDTypography>
+            </>
+          )}
+        </StyledCardContent>
+      );
+    }
   }
-
   return (
     <StyledCard ref={cardRef} theme={theme}>
       <AspectRatioBox ref={cardRef} theme={theme}>

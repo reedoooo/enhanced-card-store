@@ -4,6 +4,7 @@ import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import PageLayout from '../Containers/PageLayout';
 import { PortfolioBoxA } from '../../pages/pageStyles/StyledComponents';
 import SearchComponent from '../../components/forms/search/SearchComponent';
+import { Card } from '@mui/material';
 
 const StoreSearch = () => {
   const { theme } = useMode();

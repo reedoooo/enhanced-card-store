@@ -15,8 +15,45 @@ import {
 } from 'swiper/modules';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import HeroSectionSkeleton from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
-import { Box, Card, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Card,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import DashboardBox from '../../layout/REUSABLE_COMPONENTS/DashboardBox';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
+// Replace headerItems with realistic card store data
+const storeInfoItems = [
+  { icon: <AttachMoneyIcon />, label: 'Total Sales', value: '$152,300' },
+  { icon: <AttachMoneyIcon />, label: 'Average Order', value: '$350' },
+  { icon: <AttachMoneyIcon />, label: 'Total Products', value: '1250' },
+];
+const StoreInfoItem = ({ icon, label, value, delay }) => {
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={6}
+      md={4}
+      style={{
+        transitionDelay: `${delay}ms`,
+        display: 'flex',
+        alignItems: 'center',
+        zIndex: 20,
+      }}
+    >
+      <Box sx={{ marginRight: 2, display: 'inline-flex' }}>{icon}</Box>
+      <Box>
+        <Typography variant="subtitle2">{label}</Typography>
+        <Typography variant="h6">{value}</Typography>
+      </Box>
+    </Grid>
+  );
+};
 const HeroSection = () => {
   const { theme } = useMode();
   const { breakpoints } = theme;
@@ -47,26 +84,17 @@ const HeroSection = () => {
       }}
     >
       <MDBox
-        // className="hero-section-container"
         sx={{
-          // width: { xs: '100%', sm: '70%', md: '60%' },
           width: isMobileView ? '100%' : '60%',
           height: isMobileView ? '30%' : '100%',
-
-          // height: isMobileView ? '50%' : '80%',
-          // mt: isMobileView ? 0 : '1rem',
-
-          // height: '80%',
-          // mt: '1rem',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           position: isMobileView ? 'relative' : 'absolute',
           left: 0,
           p: isMobileView ? theme.spacing(0) : theme.spacing(8),
-          zIndex: 2, // Higher z-index to be on top
-          // py: theme.spacing(64),
-          // mb: theme.spacing(32),
+          zIndex: 5, // Make sure this z-index is higher than Swiper's but in the same context
+          border: 'none',
         }}
       >
         <Card
@@ -78,7 +106,6 @@ const HeroSection = () => {
           }}
         >
           <Box
-            className="hero-section-container"
             sx={{
               display: 'flex',
               justifyContent: 'center',
@@ -86,55 +113,74 @@ const HeroSection = () => {
               height: '100%',
             }}
           >
-            {/* Content inside the card */}
+            <DashboardBox
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexDirectino: 'row',
+                alignItems: 'center',
+                padding: 1,
+                width: '100%',
+              }}
+            >
+              <IconButton
+                onClick={console.log(cards[activeCardIndex].id)}
+                aria-label="Back to Collections"
+                color="inherit"
+                sx={{
+                  marginRight: '6px',
+                  background: 'white',
+                }}
+              >
+                <AttachMoneyIcon
+                  color={theme.palette.chartTheme.greenAccent.default}
+                />
+              </IconButton>
+              <Grid container spacing={2}>
+                {storeInfoItems.map((item, index) => (
+                  <StoreInfoItem
+                    key={item.label}
+                    icon={item.icon}
+                    label={item.label}
+                    value={item.value}
+                    delay={index * 300} // Adjust delay as needed
+                  />
+                ))}
+              </Grid>
+            </DashboardBox>
           </Box>
         </Card>
       </MDBox>
 
       <MDBox
         sx={{
-          // width: '100%', // Ensures the swiper takes the full width but the focused slide will be positioned accordingly
-          // display: 'flex',
-          // justifyContent: 'center',
-          // alignItems: 'center',
-          // // my: '1rem',
           width: '100%',
           display: 'flex',
-          justifyContent: 'center',
+          justifyContent: isMobileView ? 'center' : 'flex-start',
           alignItems: 'center',
           position: 'relative',
-          // top: isMobileView ? '0' : '50%',
-          // transform: isMobileView ? 'none' : 'translateY(-50%)',
         }}
       >
         <Swiper
-          // effect={isMobileView ? 'slide' : 'coverflow'}
           effect="coverflow"
           resizeObserver={true}
           grabCursor={true}
           centeredSlides={true}
           loop={true}
-          slidesPerView={isMobileView ? 3 : 9}
-          // slidesPerView={isMobileView ? 3 : 9}
-          // spaceBetween={10}
+          slidesPerView={isMobileView ? 'auto' : 9}
           spaceBetween={10}
-          // spaceBetween={isMobileView ? -30 : 10}
           coverflowEffect={{
-            // rotate: isMobileView ? 0 : 20,
             stretch: 0,
-            // depth: 125,
             modifier: 1,
-            // // slideShadows: false,
-
             rotate: 0,
-            // stretch: isMobileView ? 50 : 0, // Adjust stretch for mobile view to align slides side by side
             depth: 200, // Increase depth for a more pronounced effect
-            // modifier: isMobileView ? 1 : 1, // Adjust modifier if needed for fine-tuning
             slideShadows: false,
           }}
           pagination={{
             clickable: true,
             el: '.swiper-pagination',
+            renderBullet: (index, className) =>
+              `<span class="${className}">${cards[index].name}</span>`, // Rendering titles as bullets
           }}
           scrollbar={{
             el: '.swiper-scrollbar',
@@ -146,17 +192,16 @@ const HeroSection = () => {
             clickable: true,
           }}
           autoplay={{
-            // Enable autoplay with a delay for slow rotation
             delay: 2500, // Delay in milliseconds (2.5 seconds)
             disableOnInteraction: false, // Continues autoplay when interacted with
           }}
           style={{
+            // minWidth: '150vw',
             minWidth: '150vw',
             width: '100%',
-            // marginLeft: '60vw',
-            // position: 'absolute', // Position absolute to control its exact location
+            alignItems: isMobileView ? 'center' : 'flex-start',
             position: isMobileView ? 'relative' : 'absolute',
-            marginLeft: isMobileView ? '0' : '60vw',
+            ml: isMobileView ? '0' : '60vw',
           }}
           modules={[EffectCoverflow, Pagination, Navigation, Autoplay]} // Include Autoplay module
           className="swiper_container"
@@ -170,50 +215,38 @@ const HeroSection = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
                 width: '100%',
                 height: '100%',
                 transform:
-                  index === activeCardIndex ? 'scale(1.5)' : 'scale(1)',
+                  index === activeCardIndex ? 'scale(1.7)' : 'scale(1)',
                 transition: 'transform 0.9s',
-                // position: 'relative',
+                position: 'relative', // Ensure the slide content is positioned relatively
               }}
             >
               <MDTypography
                 className="hero-section-card-title"
                 variant="h4"
-                color="light"
                 sx={{
-                  position: 'absolute',
-                  // mt: '10px',
-                  // top: -5, // Position the title at the top of the slide
-                  zIndex: 10,
-                  // top: '50%', // Center vertically
-                  transform: 'translateY(-230%)',
+                  color: 'black',
+                  width: '100%', // Ensure the label spans the whole width
+                  textAlign: 'center', // Center align the text
+                  zIndex: 10, // Ensure it's above the image
+                  marginBottom: 0, // Remove bottom margin to place directly above the image
                 }}
               >
-                {topFiveCards[activeCardIndex]?.name || ''}
-              </MDTypography>
-              <MDTypography
-                className="hero-section-card-subtitle"
-                variant="h6"
-                color="light"
-                sx={{
-                  position: 'absolute',
-                  bottom: 0, // Position the subtitle at the bottom of the slide
-                  zIndex: 10,
-                }}
-              >
-                {topFiveCards[activeCardIndex]?.description || ''}
+                {card.name}
               </MDTypography>
               <img
                 src={card?.image || placeHolder}
                 alt={`slide_${index}`}
                 style={{
                   maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                  transition: 'transform 0.9s', // Smooth transition for the image scaling
+                  maxHeight: '100%', // Adjust based on your need to ensure it doesn't overflow
+                  objectFit: 'contain', // Ensure the image fits within the container
+                  width: 'auto', // Maintain aspect ratio
+                  borderRadius: 0, // Remove border-radius
+                  height: 'auto', // Maintain aspect ratio
+                  transition: 'transform 0.9s', // Smooth transition for scaling
                 }}
               />
             </SwiperSlide>

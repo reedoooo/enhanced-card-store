@@ -20,7 +20,6 @@ import {
   ListItem,
   Backdrop,
 } from '@mui/material';
-import useSnackbar from '../../../context/hooks/useSnackBar';
 import useSelectedContext from '../../../context/hooks/useSelectedContext';
 import { useModalContext, useMode } from '../../../context';
 import CardMediaSection from '../../cards/media/CardMediaSection';
@@ -61,7 +60,6 @@ const GenericCardDialog = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const { closeModal } = useModalContext();
   const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
-  // const { handleSnackBar, handleCloseSnackbar } = useSnackbar();
   const [hasLoggedCard, setHasLoggedCard] = useState(false);
   const { setContext, setIsContextSelected } = useSelectedContext();
   const handleAction = useCallback(

@@ -46,8 +46,6 @@ const LongMenu = React.forwardRef(
           open={open}
           onClose={handleClose}
           sx={{
-            // maxHeight: ITEM_HEIGHT * 4.5,
-            // width: 250,
             '& .MuiMenu-paper': {
               maxHeight: ITEM_HEIGHT * 4.5,
               width: 250,

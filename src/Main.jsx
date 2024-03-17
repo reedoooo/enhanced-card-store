@@ -1,13 +1,14 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
-import PrivateRoute from './components/reusable/PrivateRoute';
+import PrivateRoute from './layout/PrivateRoute.jsx';
 import LoginDialog from './components/dialogs/LoginDialog';
 import { useAuthContext, useConfiguratorContext, useMode } from './context';
 import PageLayout from './layout/Containers/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
-import LoadingIndicator from './components/reusable/indicators/LoadingIndicator.js';
+import LoadingIndicator from './layout/LoadingIndicator.js';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 const ROUTE_CONFIG = [
   { path: '/', componentName: 'HomePage', isPrivate: false },
@@ -47,25 +48,31 @@ const Main = () => {
         >
           <Navigation isLoggedIn={isLoggedIn} isMobileView={isMobileView} />
           {isConfiguratorOpen && <Configurator />}
-          <Suspense fallback={<LoadingIndicator />}>
-            <Routes>
-              {ROUTE_CONFIG.map(({ path, componentName, isPrivate }, index) => (
-                <Route
-                  key={index}
-                  path={path}
-                  element={
-                    isPrivate ? (
-                      <PrivateRoute>
-                        <LazyRoute componentName={componentName} />
-                      </PrivateRoute>
-                    ) : (
-                      <LazyRoute componentName={componentName} />
+          <TransitionGroup component={null}>
+            <CSSTransition key={location.key} classNames="fade" timeout={300}>
+              <Suspense fallback={<LoadingIndicator />}>
+                <Routes>
+                  {ROUTE_CONFIG.map(
+                    ({ path, componentName, isPrivate }, index) => (
+                      <Route
+                        key={index}
+                        path={path}
+                        element={
+                          isPrivate ? (
+                            <PrivateRoute>
+                              <LazyRoute componentName={componentName} />
+                            </PrivateRoute>
+                          ) : (
+                            <LazyRoute componentName={componentName} />
+                          )
+                        }
+                      />
                     )
-                  }
-                />
-              ))}
-            </Routes>
-          </Suspense>
+                  )}
+                </Routes>
+              </Suspense>
+            </CSSTransition>
+          </TransitionGroup>
         </PageLayout>
       )}
     </>

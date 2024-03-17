@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Container from '@mui/material/Container';
 import { Alert, AlertTitle } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from '../context';
 
 // Styled components with theme utilization
 const StyledContainer = styled(Container)(({ theme }) => ({

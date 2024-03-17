@@ -174,6 +174,9 @@ const colors = {
     error: {
       main: '#EF5350',
       state: '#E53935',
+      dark: '#C62828',
+      darker: '#D32F2F',
+      evenDarker: '#DC143C',
     },
 
     light: {

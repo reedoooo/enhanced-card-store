@@ -98,7 +98,7 @@ const MenuCard = () => {
                 sx={{
                   ...theme.typography.commonAvatar,
                   ...theme.typography.largeAvatar,
-                  color: theme.palette.primary.main,
+                  color: theme.palette.primary.dark,
                   border: 'none',
                   borderColor: theme.palette.primary.main,
                   background: '#fff',

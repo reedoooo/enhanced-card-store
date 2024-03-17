@@ -8,16 +8,16 @@ import {
   Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useMode, useSidebarContext } from '../../context';
-import LogoSection from './LogoSection';
-import MenuItemComponent from './MenuItemComponent';
+import { useMode, useSidebarContext } from '../context';
+import LogoSection from '../layout/navigation/LogoSection';
+import MenuItemComponent from '../layout/navigation/MenuItemComponent';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import {
   StyledAppBar,
   StyledMenuItem,
   StyledToolbar,
-} from '../../pages/pageStyles/StyledComponents';
+} from '../pages/pageStyles/StyledComponents';
 const TopBar = ({ isMobileView, isLoggedIn, handleDrawer }) => {
   const { theme } = useMode();
   const navigate = useNavigate();

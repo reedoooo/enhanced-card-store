@@ -1,5 +1,13 @@
 import React, { Suspense, useEffect, useMemo } from 'react';
-import { Grid, Card, useMediaQuery, Icon, Container } from '@mui/material';
+import {
+  Grid,
+  Card,
+  useMediaQuery,
+  Icon,
+  Container,
+  Grow,
+  Box,
+} from '@mui/material';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import DataTable from './cards-datatable';
 import { useMode, useStatisticsStore } from '../../../context';
@@ -14,6 +22,8 @@ import useTimeRange from '../../../components/forms/selectors/useTimeRange';
 import useSkeletonLoader from './cards-datatable/useSkeletonLoader';
 import ChartErrorBoundary from './cards-chart/ChartErrorBoundary';
 import { ChartConfiguration } from './cards-chart/ChartConfigs';
+import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
+import { TopCardsDisplayRow } from '../sub-components/TopCardsDisplayRow';
 const renderCardContainer = (content) => {
   return (
     <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
@@ -42,15 +52,50 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
   const { selectedTimeRange } = useTimeRange();
   const { stats, markers } = useStatisticsStore();
   const { SkeletonLoader } = useSkeletonLoader();
-  const selectedChartData = useMemo(() => {
-    const averagedData = selectedCollection.averagedChartData;
+  const averagedData = selectedCollection.averagedChartData;
 
-    if (!averagedData || !averagedData[selectedTimeRange]) {
-      console.error(
-        'No averaged chart data available for the selected time range.'
-      );
-      return null;
-    }
+  if (!averagedData || !averagedData[selectedTimeRange]) {
+    return (
+      <Container sx={{ flexGrow: 1 }}>
+        <BoxHeader
+          title="Collection Card Chart"
+          subtitle="No data available"
+          icon={<SkeletonLoader type="icon" />}
+          sideText="Loading..."
+        />
+        <MDBox mt={4.5} sx={{ width: '100%' }}>
+          <Grid container spacing={1} sx={{ flexGrow: 1 }}>
+            <DashboardBox
+              item
+              xs={12}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <SkeletonLoader type="chart" height={400} />
+              <SkeletonLoader type="text" height={50} width="80%" />
+              <SkeletonLoader type="text" height={20} width="60%" />
+            </DashboardBox>
+            <DashboardBox
+              item
+              xs={12}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <SkeletonLoader type="table" />
+            </DashboardBox>
+          </Grid>
+        </MDBox>
+      </Container>
+    );
+  }
+
+  const selectedChartData = useMemo(() => {
+    // const averagedData = selectedCollection.averagedChartData;
+
+    // if (!averagedData || !averagedData[selectedTimeRange]) {
+    //   console.error(
+    //     'No averaged chart data available for the selected time range.'
+    //   );
+    //   return null;
+    // }
     const chartData = averagedData[selectedTimeRange];
     return chartData || null;
   }, [selectedCollection.averagedChartData, selectedTimeRange]);
@@ -77,6 +122,30 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
     });
   }, []);
 
+  const IconWrapper = ({ children }) => (
+    <Box
+      sx={{
+        borderRadius: '50%',
+        width: 40,
+        height: 40,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.palette.success.main,
+        marginRight: theme.spacing(1),
+      }}
+    >
+      {children}
+    </Box>
+  );
+  const updatedAt = selectedCollection?.updatedAt;
+  const formattedTime = updatedAt
+    ? new Date(updatedAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Loading...';
+
   return (
     <MDBox mt={4.5} sx={{ width: '100%' }}>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
@@ -89,15 +158,19 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
         >
           <SimpleCard
             theme={uniqueTheme}
-            hasTitle={true}
-            isPrimary={true}
-            cardTitle="Collection Card List"
+            hasTitle={false}
+            isTableOrChart={true}
+            // cardTitle="Collection Card List"
             data={''}
           >
             <BoxHeader
               title="Collection Card Chart"
               subtitle="List of all cards in the collection"
-              icon={<Icon>table_chart</Icon>}
+              icon={
+                <IconWrapper>
+                  <Icon>show_chart</Icon>
+                </IconWrapper>
+              }
               sideText="+4%"
             />
           </SimpleCard>
@@ -134,6 +207,15 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
           >
             <UpdaterAndStatisticsRow isSmall={isXs} />
           </SimpleCard>
+          <SimpleCard
+            theme={uniqueTheme}
+            hasTitle={false}
+            isPrimary={true}
+            // cardTitle=""
+            data={''}
+          >
+            <TopCardsDisplayRow />
+          </SimpleCard>
         </DashboardBox>
         <DashboardBox
           component={Grid}
@@ -144,16 +226,20 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
         >
           <SimpleCard
             theme={uniqueTheme}
-            hasTitle={true}
-            isPrimary={true}
-            cardTitle="Collection Card List"
-            data={''}
+            hasTitle={false}
+            data=""
+            isTableOrChart={true}
           >
             <BoxHeader
               title="Collection Card List"
               subtitle="List of all cards in the collection"
-              icon={<Icon>table_chart</Icon>}
-              sideText="+4%"
+              icon={
+                <IconWrapper>
+                  <Icon>list</Icon>
+                </IconWrapper>
+              }
+              // sideText="Updated recently"
+              sideText={`Last Updated: ${formattedTime}`}
             />
           </SimpleCard>
           {renderCardContainer(

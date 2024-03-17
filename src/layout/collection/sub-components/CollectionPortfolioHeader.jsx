@@ -72,12 +72,13 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
   useEffect(() => {
     console.log('collection', collection);
   }, [collection]);
+
   if (
     !collection ||
-    collection === DEFAULT_COLLECTION ||
-    allCollections.length === 0
+    collection === DEFAULT_COLLECTION
+    // allCollections.length === 0
   ) {
-    return onBack();
+    return <SelectCollectionHeaderSkeleton />;
   }
   const headerItems = [
     {
@@ -126,26 +127,16 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
         width: '100%',
       }}
     >
-      {/* <MDBox
-        sx={{
-          mx: 2,
-          mt: -3,
-          py: 2,
-          px: 2,
-          backgroundColor: theme.palette.info.main,
-          borderRadius: theme.shape.borderRadius,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-      > */}
       <IconButton
         onClick={onBack}
         aria-label="Back to Collections"
         color="inherit"
-        sx={{ marginRight: '4px' }}
+        sx={{
+          marginRight: '6px',
+          background: 'white',
+        }}
       >
-        <ArrowBackIcon />
+        <ArrowBackIcon color={theme.colorPrimary} />
       </IconButton>
       <Grid container spacing={2}>
         {/* <TransitionGroup> */}

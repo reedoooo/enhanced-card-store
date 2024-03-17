@@ -14,6 +14,7 @@ import { defaultContextValue } from '../../constants';
 import { Redirect, useNavigate } from 'react-router-dom';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
 import jwt_decode from 'jwt-decode';
+import { CircularProgress, Snackbar } from '@mui/material';
 
 export const AuthContext = createContext(defaultContextValue.AUTH_CONTEXT);
 
@@ -28,6 +29,7 @@ export default function AuthProvider({ children }) {
     'authUser',
     'userId',
   ]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [user, setUser] = useState({
     isLoggedIn: false,
     accessToken: '',
@@ -59,7 +61,7 @@ export default function AuthProvider({ children }) {
 
   const [responseMessage, setResponseMessage] = useState('');
   const { fetchWrapper } = useFetchWrapper();
-  const { logEvent } = useLogger('AuthContext');
+  // const { logEvent } = useLogger('AuthContext');
   // Helper function to set cookies
   const setAuthCookies = (data) => {
     const { accessToken, refreshToken, user } = data;
@@ -101,10 +103,18 @@ export default function AuthProvider({ children }) {
       );
     }
   };
+  // const logout = useCallback(() => {
+  //   clearAuthCookies();
+  // }, [removeCookie, navigate]);
   const logout = useCallback(() => {
-    clearAuthCookies();
-  }, [removeCookie, navigate]);
-
+    ['accessToken', 'refreshToken', 'user'].forEach((cookieName) =>
+      removeCookie(cookieName, { path: '/' })
+    );
+    setOpenSnackbar(true); // Open the snackbar with loading icon
+    setTimeout(() => {
+      navigate('/login'); // Redirect to login after the timeout
+    }, 3000); // Set timeout duration (e.g., 3000 ms = 3 seconds)
+  }, [navigate, removeCookie]);
   const login = useCallback(
     async (username, password) => {
       await executeAuthAction(
@@ -136,7 +146,12 @@ export default function AuthProvider({ children }) {
   const checkTokenValidity = useCallback(() => {
     const accessToken = cookies.accessToken;
     if (!accessToken) {
-      logout();
+      console.info('No access token found, user not logged in.');
+      setOpenSnackbar(true); // Notify the user they are being redirected to login
+      setTimeout(() => {
+        setOpenSnackbar(false); // Close the notification
+        navigate('/login'); // Redirect to login after showing the notification
+      }, 3000); // Adjust the timeout duration as needed
       return;
     }
 
@@ -144,7 +159,6 @@ export default function AuthProvider({ children }) {
       const { exp } = jwt_decode(accessToken);
       const isTokenExpired = Date.now() >= exp * 1000;
       if (isTokenExpired) {
-        console.log('Token is invalid, logging out...');
         logout();
       }
     } catch (error) {
@@ -157,6 +171,13 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     checkTokenValidity();
   }, [checkTokenValidity]);
+  const renderSnackbar = (
+    <Snackbar
+      open={openSnackbar}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      message={<CircularProgress color="inherit" />}
+    />
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -174,7 +195,9 @@ export default function AuthProvider({ children }) {
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>
+      {children} {renderSnackbar}
+    </AuthContext.Provider>
   );
 }
 

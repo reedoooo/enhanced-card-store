@@ -24,15 +24,15 @@ export const UpdaterAndStatisticsRow = ({ isSmall }) => (
     }}
   >
     {/* Update Status Box */}
-    <Grid item xs={12} sm={6} md={4} sx={{ width: '100%' }}>
+    <Grid item xs={12} sm={4} md={4} sx={{ width: '100%' }}>
       <ThemeSelector />
     </Grid>
     {/* Time Range Selector */}
-    <Grid item xs={12} sm={6} md={4} sx={{ width: '100%' }}>
+    <Grid item xs={12} sm={4} md={4} sx={{ width: '100%' }}>
       <TimeRangeSelector />
     </Grid>
     {/* Collection Statistics Selector */}
-    <Grid item xs={12} sm={12} md={4} sx={{ width: '100%' }}>
+    <Grid item xs={12} sm={4} md={4} sx={{ width: '100%' }}>
       <CollectionStatisticsSelector />
     </Grid>
   </Grid>
