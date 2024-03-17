@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
 
-import { AnimatedFeatureCard } from '../../components/cards/AnimatedFeatureCard';
+import { AnimatedFeatureCard } from '../../layout/AnimatedFeatureCard';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useResponsiveStyles } from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';

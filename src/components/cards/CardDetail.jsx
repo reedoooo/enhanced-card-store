@@ -30,10 +30,6 @@ const CardDetail = ({
         sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}
       >
         {icon && <CardIconWrapper>{icon}</CardIconWrapper>}
-        {/* {icon && (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>{icon}</Box>
-        )} */}
-
         <MDTypography variant="h5" sx={{ mr: 1 }}>
           {title}:
         </MDTypography>
@@ -56,25 +52,6 @@ const CardDetail = ({
               variant="outlined"
             />
           ))}
-        {/* <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {Array.isArray(values) && values.length > 0
-            ? values.map((rarityValue, index) => (
-                <Chip
-                  key={index}
-                  label={rarityValue || ''}
-                  onClick={() => onRarityClick(rarityValue?.toString())}
-                  sx={{
-                    borderColor: getChipColor(rarityValue?.toString()),
-                    borderWidth: '2px',
-                    fontWeight: 700,
-                    color: getChipColor(rarityValue?.toString()),
-                    margin: '5px',
-                  }}
-                  variant="outlined"
-                />
-              ))
-            : null}
-        </Box> */}
       </Box>
     </CardDetailContainer>
   );

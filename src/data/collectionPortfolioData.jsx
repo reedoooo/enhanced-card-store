@@ -106,41 +106,5 @@ export default function prepareTableData(selectedCards) {
     [selectedCards]
   );
 
-  // You don't need to return PaginationComponent, page, and rowsPerPage anymore
-  // since react-table handles pagination internally. You just need to provide data and columns.
   return { columns, data };
 }
-
-// export default function data(selectedCards) {
-//   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-//   const {
-//     data,
-//     PaginationComponent, // Assume this is your custom pagination component
-//     page,
-//     rowsPerPage,
-//   } = usePagination(selectedCards, 10, selectedCards?.length || 0);
-
-//   const rows = data?.map((card, index) => ({
-//     // Assuming each card has a unique 'id' for key, or use index as fallback
-//     key: card.id || `row-${index}`,
-//     name: <Name name={card.name} />,
-//     price: <Price price={card.price} />,
-//     tPrice: <TPrice tPrice={roundToNearestTenth(card.totalPrice)} />,
-//     quantity: <Quantity quantity={card.quantity} />,
-//     action: <Action />,
-//   }));
-
-//   return {
-//     columns: [
-//       { Header: 'name', accessor: 'name', width: '30%', align: 'left' },
-//       { Header: 'price', accessor: 'price', align: 'left' },
-//       { Header: 'total price', accessor: 'tPrice', align: 'center' },
-//       { Header: 'quantity', accessor: 'quantity', align: 'center' },
-//       { Header: 'action', accessor: 'action', align: 'center' },
-//     ],
-//     rows,
-//     PaginationComponent,
-//     page,
-//     rowsPerPage,
-//   };
-// }

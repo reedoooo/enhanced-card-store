@@ -1,35 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Typography,
-  FormControlLabel,
-  Switch,
-  Box,
-} from '@mui/material';
-import DeckEditPanel from '../../components/dialogs/DeckEditPanel';
+import { Paper, Typography, Box } from '@mui/material';
+import DeckEditPanel from './DeckEditPanel';
 import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
-import { SwitchControl } from '../../pages/pageStyles/StyledComponents';
 import { useFormContext, useMode } from '../../context';
-import DeckSwitch from '../../components/buttons/other/DeckSwitch';
+import RCSwitch from '../../components/forms/reusable/RCSwitch';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const DeckEditor = () => {
   const { selectedDeck, setSelectedDeck } = useDeckStore();
   const { theme } = useMode();
-  const {
-    formStates, // Assuming this provides access to the current form state including errors
-    formMethods, // Assuming this provides access to register, handleSubmit, etc.
-    onSubmit,
-    currentForm,
-    toggleForm,
-
-    // handleChange,
-    // handleBlur,
-    // handleFocus,
-    // formMethods, // Assuming formMethods provides access to register, handleSubmit, etc.
-  } = useFormContext();
-
-  // const { currentForm: currentFormType } = formStates;
+  const { currentForm, toggleForm, currentSchemaKey } = useFormContext();
 
   const handleToggleEdit = () => {
     if (currentForm === 'updateDeckForm') {
@@ -54,10 +34,6 @@ const DeckEditor = () => {
           <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
             {selectedDeck ? 'Edit Deck' : 'Create New Deck'}
           </Typography>
-          {/* <FormControlLabel
-            control={<Switch checked={isEditing} onChange={handleToggleEdit} />}
-            label={isEditing ? 'Editing' : 'Adding'}
-          /> */}
           <Box
             sx={{
               display: 'flex',
@@ -68,9 +44,13 @@ const DeckEditor = () => {
               gap: 2,
             }}
           >
-            <DeckSwitch
-              editMode={currentForm === 'updateDeckForm'}
-              onToggle={handleToggleEdit}
+            <RCSwitch
+              checked={currentSchemaKey === 'updateDeckForm'}
+              onChange={handleToggleEdit}
+              labelLeft="Add"
+              labelRight="Update"
+              iconLeft={<AddCircleOutlineIcon />}
+              iconRight={<AddCircleOutlineIcon />}
             />
           </Box>
         </Box>

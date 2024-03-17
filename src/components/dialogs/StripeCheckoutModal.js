@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Fade, Box, Typography, Backdrop } from '@mui/material';
 import { Elements } from '@stripe/react-stripe-js';
-import StripeForm from '../../forms/customerCheckoutForm/StripeForm';
+import StripeForm from '../forms/customerCheckoutForm/StripeForm';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);

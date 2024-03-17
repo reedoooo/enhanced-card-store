@@ -15,10 +15,8 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 import useSelectedContext from '../../hooks/useSelectedContext';
 import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
-// Create the combined context
 export const AppContext = createContext(defaultContextValue.APP_CONTEXT);
 
-// Create a provider component that combines the contexts
 export const AppContextProvider = ({ children }) => {
   const Deck = useContext(DeckContext);
   const Cart = useContext(CartContext);
@@ -37,8 +35,6 @@ export const AppContextProvider = ({ children }) => {
   const { allIds } = useSelectedCollection();
   const { selectedDeck, allDecks } = Deck;
   const { cartData } = Cart;
-
-  // Function to compile metadata including totalPrice for collections
   const compileCollectionMetaData = useCallback(() => {
     const metaData = {
       metaData: {
@@ -47,6 +43,9 @@ export const AppContextProvider = ({ children }) => {
           0
         ),
         numCollections: allIds?.length || 0,
+        topFiveCards: cardsWithQuantities
+          ?.sort((a, b) => b.price - a.price)
+          .slice(0, 5),
       },
     };
 
@@ -88,14 +87,12 @@ export const AppContextProvider = ({ children }) => {
       if (acc[card.id]) {
         acc[card.id].quantity += card?.quantity;
       } else {
-        // Otherwise, add the card with its current quantity
         acc[card.id] = { ...card, quantity: card.quantity };
       }
       return acc;
     }, {});
 
     const quantities = Object.values(cardQuantities);
-    // console.log('cardsWithQuantities:', quantities);
     setCardsWithQuantities(quantities);
     setAllCardsWithQuantities(combinedCards);
 
@@ -105,8 +102,6 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     compileCardsWithQuantities();
   }, []); // Dependency array based on when you want to recalculate
-
-  // Combine the context values into one object
   const appContextValues = useMemo(
     () => ({
       Deck,

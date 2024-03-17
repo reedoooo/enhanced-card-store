@@ -1,18 +1,17 @@
 import React from 'react';
 import { Box, CardContent, Skeleton } from '@mui/material';
-import { useMode } from '../../../context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
-} from '../../../pages/pageStyles/StyledComponents';
-const SkeletonStoreItem = () => {
+} from '../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../context';
+
+const SkeletonCard = () => {
   const { theme } = useMode();
+
   return (
-    <Box sx={{ marginBottom: '1rem', flexGrow: '1', width: '100%' }}>
-      <StyledSkeletonCard
-        theme={theme}
-        sx={{ marginBottom: '1rem', flexGrow: '1', width: '100%' }}
-      >
+    <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
+      <StyledSkeletonCard theme={theme}>
         <AspectRatioBoxSkeleton theme={theme}>
           <Skeleton
             variant="rectangular"
@@ -32,4 +31,4 @@ const SkeletonStoreItem = () => {
   );
 };
 
-export default SkeletonStoreItem;
+export default SkeletonCard;

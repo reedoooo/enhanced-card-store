@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useMode, useUserContext } from '../../context';
-
-import DeckListToggle from './DeckListToggle';
 import DeckEditor from './DeckEditor';
-import CardsDisplay from './CardsDisplay';
+// import CardsDisplay from './CardsDisplay';
 import {
   DeckCardsContainer,
   DeckDisplayBox,
@@ -17,8 +15,9 @@ import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Grid, IconButton } from '@mui/material';
 import { StyledContainerBoxPrimary } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import SelectDeckList from '../../components/grids/deckBuilderGrids/SelectDeckList';
+import SelectDeckList from './SelectDeckList';
 import AppsIcon from '@mui/icons-material/Apps';
+import useGridItems from '../../context/hooks/useGridItems';
 
 const DeckDisplay = () => {
   const { theme } = useMode();
@@ -53,6 +52,14 @@ const DeckDisplay = () => {
   //   // Assuming setFormType is a function that can set the form context
   //   setFormType('addDeckForm');
   // }, []);
+
+  const cardDisplay = useGridItems({
+    itemsPerPage: 8, // Define as per your requirement
+    cards: selectedDeck?.cards || [],
+    pageContext: 'DeckDisplay', // Context to pass to GenericCard
+    isLoading: isLoading, // Pass the actual loading state
+  });
+
   return (
     <StyledContainerBoxPrimary theme={theme}>
       {/* <DeckDisplayPaper theme={theme}> */}
@@ -145,17 +152,12 @@ const DeckDisplay = () => {
         </Grid>
         {selectedDeck && (
           <Grid item xs={12}>
-            <DeckEditor
-            // selectedDeck={selectedDeck}
-            // setSelectedDeck={setSelectedDeck}
-            // isEditing={isEditing}
-            // handleToggleEdit={handleToggleEdit}
-            />
+            <DeckEditor />
           </Grid>
         )}
 
         <Grid item xs={12}>
-          <CardsDisplay selectedDeck={selectedDeck} isLoading={isLoading} />
+          {selectedDeck && cardDisplay}
         </Grid>
       </Grid>
       {/* </DeckDisplayPaper> */}

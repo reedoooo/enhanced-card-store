@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Grid, Grow } from '@mui/material';
-import SkeletonDeckItem from '../../components/grids/gridItems/SkeletonDeckItem';
 import { useCardStoreHook } from './useCardStore';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import GenericCard from '../../components/cards/GenericCard';
+import SkeletonCard from '../../layout/REUSABLE_COMPONENTS/SkeletonCard';
 
 const useGridItems = ({ itemsPerPage, cards, pageContext, isLoading }) => {
   const { loadingSearchResults } = useCardStoreHook();
@@ -45,7 +45,7 @@ const useGridItems = ({ itemsPerPage, cards, pageContext, isLoading }) => {
           >
             {/* Conditionally render Skeleton or Card based on loading state */}
             {isLoading || loadingSearchResults ? (
-              <SkeletonDeckItem />
+              <SkeletonCard />
             ) : (
               <GenericCard
                 card={card}

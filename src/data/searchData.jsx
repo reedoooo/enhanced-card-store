@@ -1,9 +1,40 @@
 import Icon from '@mui/material/Icon';
 // Images
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
-import React from 'react';
-import StoreItem from '../components/grids/gridItems/StoreItem';
+import React, { memo } from 'react';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import GenericCard from '../components/cards/GenericCard';
+import { Container } from '@mui/system';
+import { Box } from '@mui/material';
+const SearchItem = memo(({ card, context, page, index }) => {
+  return (
+    <Box
+      sx={{
+        marginBottom: '1rem',
+        flexGrow: '1',
+        maxHeight: '85%',
+        minHeight: '85%',
+      }}
+    >
+      <Container
+        sx={{
+          '&.MuiContainer-root': {
+            padding: '0 !important',
+            margin: '0',
+            width: '100%',
+            height: '100%',
+            flexGrow: '1',
+            display: 'flex',
+          },
+        }}
+      >
+        <GenericCard card={card} page={page} index={index} context={context} />
+      </Container>
+    </Box>
+  );
+});
+
+SearchItem.displayName = 'SearchItem';
 
 export default function prepareTableData(selectedCards) {
   if (!selectedCards) return <LoadingIndicator />;
@@ -18,14 +49,12 @@ export default function prepareTableData(selectedCards) {
         accessor: 'card',
         id: 'card',
         Cell: ({ card, pageContext, index }) => (
-          <StoreItem card={card} context={pageContext} index={index} />
+          <SearchItem card={card} context={pageContext} index={index} />
         ),
       },
     ],
     []
   );
-
-  // Map selectedCards to rows for react-table
   const data = React.useMemo(
     () =>
       selectedCards.map((card) => ({
@@ -35,8 +64,5 @@ export default function prepareTableData(selectedCards) {
       })),
     [selectedCards]
   );
-
-  // You don't need to return PaginationComponent, page, and rowsPerPage anymore
-  // since react-table handles pagination internally. You just need to provide data and columns.
   return { columns, data };
 }

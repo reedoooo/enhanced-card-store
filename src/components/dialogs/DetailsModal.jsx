@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import { useModalContext } from '../../../context';
+import { useModalContext } from '../../context';
 
 const DetailsModal = () => {
   const { featureData, detailsModalShow, closeDetailsModal } =

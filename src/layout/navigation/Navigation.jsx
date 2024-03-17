@@ -55,28 +55,6 @@ const Navigation = ({ isLoggedIn }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   const [isMounted, setIsMounted] = useState(false);
-  // useEffect(() => {
-  //   setIsMounted(true); // Set to true when component mounts
-
-  //   // Fetch data as before
-  //   const fetchData = async () => {
-  //     const cartCardQuantity = totalQuantity;
-  //     const items = await getMenuItemsData(
-  //       isLoggedIn,
-  //       cartCardQuantity,
-  //       iconColor
-  //     ); // Simulated fetch call
-
-  //     if (isMounted) {
-  //       // Check if component is still mounted before setting state
-  //       setMenuItems(items.map((item) => ({ ...item, isVisible: true }))); // Assuming visibility logic is simplified
-  //     }
-  //   };
-  //   fetchData();
-
-  //   return () => setIsMounted(false); // Set to false when component unmounts
-  // }, [isLoggedIn, totalQuantity, iconColor, isMounted]); // Include isMounted in dependency array if it's used within the effect
-
   const [springs, api] = useSprings(menuItems.length, (index) => ({
     from: { opacity: 0, transform: 'translateY(-20px)' },
     to: { opacity: 1, transform: 'translateY(0)' },
@@ -87,35 +65,33 @@ const Navigation = ({ isLoggedIn }) => {
     springs.map((style, index) => (
       <animated.div style={style} key={menuItems[index].name}>
         <ListItem
+          // component="div"
+          // disablePadding
           onClick={() => navigate(menuItems[index].to)}
           sx={{
-            width: 'clamp(250px, 50%, 300px)', // Responsive width using clamp
+            width: 'clamp(130px, 50%, 175px)', // Responsive width using clamp
+            maxHeight: 64,
+            mx: theme.spacing(4),
             '&:hover': {
               backgroundColor: theme.palette.backgroundF.light,
               color: 'white',
             },
-            '& .MuiListItemAvatar-root': {
-              justifyContent: 'flex-end',
-            },
-            '& .MuiListItemText-root': {
-              mr: 1,
-            },
           }}
         >
-          <ListItemAvatar>
-            <Avatar
-              variant="rounded"
-              sx={{
-                marginRight: '12px',
-                ...theme.typography.commonAvatar,
-                ...theme.typography.largeAvatar,
-                background: 'transparent',
-                color: iconColor,
-              }}
-            >
-              {menuItems[index].icon}
-            </Avatar>
-          </ListItemAvatar>
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            // onClick={handleOpenNavMenu}
+            color="inherit"
+            sx={{
+              height: '100%',
+              minHeight: 64,
+            }}
+          >
+            {menuItems[index].icon}{' '}
+          </IconButton>
           <ListItemText
             primary={
               <MDTypography
@@ -140,7 +116,7 @@ const Navigation = ({ isLoggedIn }) => {
         <Toolbar
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
+            // justifyContent: 'space-around',
             alignItems: 'center',
           }}
         >

@@ -6,11 +6,11 @@ import {
   CardListItem,
   CardUnorderedList,
   FeatureCard,
-} from '../../pages/pageStyles/StyledComponents';
-import { useMode } from '../../context';
-import MDButton from '../../layout/REUSABLE_COMPONENTS/MDBUTTON';
-import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
-import uniqueTheme from '../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
+} from '../pages/pageStyles/StyledComponents';
+import { useMode } from '../context';
+import MDButton from './REUSABLE_COMPONENTS/MDBUTTON';
+import SimpleButton from './REUSABLE_COMPONENTS/unique/SimpleButton';
+import uniqueTheme from './REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const AnimatedBox = animated(Box);
 
@@ -78,13 +78,10 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           }}
         >
           <SimpleButton
-            // variant="contained"
             color="primary"
             customSize="md"
             customColor={theme.palette.chartTheme.greenAccent.light}
             customTextColor={theme.palette.chartTheme.primary.lighter}
-            // isDisabled={false}
-            // isDefault={false}
             theme={uniqueTheme}
             onClick={() => onOpenModal(tier.title)}
             sx={{
@@ -97,30 +94,6 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           >
             Manage Collections
           </SimpleButton>
-          {/* <MDButton
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="medium"
-            onClick={() => onOpenModal(tier.title)}
-            sx={{
-              color: theme.palette.backgroundA.contrastText,
-              background: theme.palette.backgroundF.darker,
-              borderColor: theme.palette.backgroundB.darkest,
-              borderWidth: 2,
-              mt: 'auto',
-              flexGrow: 1,
-              justifySelf: 'bottom',
-              bottom: 0,
-              width: '100%',
-              '&:hover': {
-                color: theme.palette.backgroundA.contrastTextC,
-                background: theme.palette.backgroundF.default,
-              },
-            }}
-          >
-            {tier.buttonText}
-          </MDButton> */}
         </CardActions>
       </FeatureCard>
     </AnimatedBox>

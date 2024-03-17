@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import AddButton from '../../../zcleanup/AddButton';
-import RemoveButton from '../../../zcleanup/RemoveButton';
 import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import useSelectedContext from '../../../context/hooks/useSelectedContext';
 import { getContextIcon } from '../../../layout/REUSABLE_COMPONENTS/icons/index';
-
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
 import useCollectionManager from '../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
@@ -16,7 +12,6 @@ import { useSnackbar } from 'notistack';
 import GlassyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/GlassyIcon';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 
-// Utility function for mapping cardSize to buttonSize
 const buttonSizeMap = {
   xs: 'extraSmall',
   sm: 'small',
@@ -85,10 +80,6 @@ const GenericActionButtons = ({
       } else if (action === 'remove' && removeActions[currentContext]) {
         removeActions[currentContext](cardData);
       }
-
-      // Hook into success or failure callbacks as necessary
-      // onSuccess();
-      // onFailure();
     },
     [card, context, addActions, removeActions]
   );
@@ -110,9 +101,6 @@ const ActionButtons = ({
   page,
   handleCardAction,
 }) => {
-  // console.log(
-  //   `ActionButtons: buttonSize: ${buttonSize}, card: ${card?.name}, context: ${context}`
-  // );
   const labelValue =
     typeof context === 'string' ? context : context?.pageContext;
   const stackDirection = buttonSize === 'extraSmall' ? 'column' : 'row';

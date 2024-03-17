@@ -19,6 +19,9 @@ import placeHolder from '../../../assets/images/placeholder.jpeg';
 import GenericCard from '../../../components/cards/GenericCard';
 import { StyledSwiperSlide } from '../../../pages/pageStyles/StyledComponents';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
+import { AspectRatioBox } from '../../../components/cards/styles/cardStyledComponents';
+import { FormBox } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import CardDetail from '../../../components/cards/CardDetail';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
@@ -50,7 +53,7 @@ export const TopCardsDisplayRow = () => {
         centeredSlides={true}
         loop={true}
         slidesPerView={1}
-        autoplay={{ delay: 2500 }}
+        autoplay={{ delay: 5000 }}
         pagination={{ clickable: true }}
         navigation={true}
         onSlideChange={handleSlideChange}
@@ -69,16 +72,103 @@ export const TopCardsDisplayRow = () => {
         }}
       >
         {topFiveCards?.map((card, index) => (
-          <StyledSwiperSlide key={index}>
-            <MDBox>
-              <GenericCard
-                card={card}
-                context={'Collection'}
-                page={'Collection'}
-                isSwiperStyles={true}
-              />
+          <SwiperSlide
+            key={index}
+            // className="swiper-slide"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              width: '100%',
+              // height: '100%',
+              // transform: index === activeCardIndex ? 'scale(1.7)' : 'scale(1)',
+              transition: 'transform 0.9s',
+              // position: 'relative', // Ensure the slide content is positioned relatively
+            }}
+          >
+            <MDBox
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                // justifyContent: 'center',
+                // alignItems: 'center',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <Card
+                sx={{
+                  minWidth: '25%',
+                  height: '100%',
+                  p: theme.spacing(2),
+                  m: theme.spacing(1),
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  alt={`Image for ${card.name || 'the card'}`}
+                  image={card.image}
+                  loading="lazy"
+                  style={{
+                    borderRadius: 0,
+                    // transform: 'scale(1)',
+                    width: 'auto',
+                    // height: 'auto',
+                  }}
+                  z
+                />
+              </Card>
+              <Card
+                sx={{
+                  minWidth: '50%',
+                  maxWidth: '70%',
+                  height: '100%',
+                  minHeight: '100%',
+                  p: theme.spacing(2),
+                  m: theme.spacing(1),
+                  my: 'auto',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {/* <CardContent
+                  sx={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    mx: 'auto',
+                    px: 'auto',
+                  }}
+                > */}
+                <FormBox
+                  theme={theme}
+                  sx={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CardDetail
+                    className={'card-detail'}
+                    // icon={<FaRegCopy />}
+                    title="Description"
+                    value={card?.desc}
+                  />
+                  <CardDetail
+                    className={'card-detail'}
+                    // icon={<FaRegCopy />}
+                    title="Description"
+                    value={card?.desc}
+                  />
+                  <CardDetail
+                    className={'card-detail'}
+                    // icon={<FaRegCopy />}
+                    title="Description"
+                    value={card?.desc}
+                  />
+                </FormBox>
+                {/* </CardContent> */}
+              </Card>
             </MDBox>
-          </StyledSwiperSlide>
+          </SwiperSlide>
         ))}
       </Swiper>
     </Grid>

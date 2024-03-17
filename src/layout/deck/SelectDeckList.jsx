@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, Chip, Typography } from '@mui/material';
-import DeckBuilderIcon from '../../../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
-import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useMode } from '../../../context';
+import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
+import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
+import { useMode } from '../../context';
 
 const SelectDeckList = ({ handleSelectDeck }) => {
   const { allDecks } = useDeckStore();

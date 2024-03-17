@@ -103,6 +103,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   });
   let cardContent = null;
   if (!isSwiperStyles) {
+    console.log(isSwiperStyles);
     if (cardSize !== 'xs') {
       cardContent = (
         <StyledCardContent theme={theme}>

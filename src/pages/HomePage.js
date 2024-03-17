@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { CardHeader, Grid, Box, useMediaQuery } from '@mui/material';
 import { useModalContext } from '../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
-import DetailsModal from '../components/dialogs/homeDetailsModal/DetailsModal';
+import GenericCardDialog from '../components/dialogs/GenericCardDialog';
+import DetailsModal from '../components/dialogs/DetailsModal';
 import SplashPage2 from '../layout/REUSABLE_COMPONENTS/SplashPage2';
 import PageLayout from '../layout/Containers/PageLayout';
 import HeroSection from './sections/HeroSection';

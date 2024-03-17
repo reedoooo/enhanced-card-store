@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 import CollectionPortfolio from '../layout/collection';
-import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
+import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import { useCollectionStore, useMode } from '../context';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';

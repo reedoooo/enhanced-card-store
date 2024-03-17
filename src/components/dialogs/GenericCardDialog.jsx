@@ -20,16 +20,16 @@ import {
   ListItem,
   Backdrop,
 } from '@mui/material';
-import useSelectedContext from '../../../context/hooks/useSelectedContext';
-import { useModalContext, useMode } from '../../../context';
-import CardMediaSection from '../../cards/media/CardMediaSection';
-import GenericActionButtons from '../../buttons/actionButtons/GenericActionButtons';
+import useSelectedContext from '../../context/hooks/useSelectedContext';
+import { useModalContext, useMode } from '../../context';
+import CardMediaSection from '../cards/media/CardMediaSection';
+import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import CloseIcon from '@mui/icons-material/Close';
-import CardDetail from '../../cards/CardDetail';
-import { useOverlay } from '../../../context/hooks/useOverlay';
-import CardDetailsContainer from '../../cards/CardDetailsContainer';
+import CardDetail from '../cards/CardDetail';
+import { useOverlay } from '../../context/hooks/useOverlay';
+import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { enqueueSnackbar } from 'notistack';
-import { DialogPaper } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { DialogPaper } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const GenericCardDialog = (props) => {
   const { theme } = useMode();

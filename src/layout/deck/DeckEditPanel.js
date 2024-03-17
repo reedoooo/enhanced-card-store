@@ -3,7 +3,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormContext } from '../../context';
 import { z } from 'zod';
-import RCZodForm from '../forms/reusable/RCZodForm';
+import RCZodForm from '../../components/forms/reusable/RCZodForm';
 
 const deckSchema = z.object({
   name: z.string().min(1, 'Name is required'),

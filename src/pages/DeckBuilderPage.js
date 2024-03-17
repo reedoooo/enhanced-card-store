@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
+import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import DeckBuilder from '../layout/deck';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
