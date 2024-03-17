@@ -107,7 +107,7 @@ export const TopCardsDisplayRow = () => {
                 <CardMedia
                   component="img"
                   alt={`Image for ${card.name || 'the card'}`}
-                  image={card.image}
+                  image={card?.image || placeHolder} // || placeHolder
                   loading="lazy"
                   style={{
                     borderRadius: 0,

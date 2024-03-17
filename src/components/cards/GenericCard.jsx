@@ -86,7 +86,8 @@ const GenericCard = React.forwardRef((props, ref) => {
   }, [hoveredCard, card, setIsPopoverOpen]);
   const isInContext = isCardInContext(card);
   const name = card?.name;
-  const imgUrl = card?.card_images?.[0]?.image_url || placeholderImage;
+  const imgUrl =
+    card?.card_images?.[0]?.image_url || 'https://placehold.co/600x400.png';
   const price = `Price: ${
     card?.latestPrice?.num ||
     card?.price ||

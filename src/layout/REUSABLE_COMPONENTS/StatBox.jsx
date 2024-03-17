@@ -18,12 +18,14 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
         width: '100%',
         p: '20px',
         borderRadius: theme.spacing(4),
+        maxHeight: '135px',
       }}
     >
       <Box
         display="flex"
         justifyContent="space-between"
         sx={{
+          maxHeight: '135px',
           borderRadius: theme.spacing(4),
         }}
       >
@@ -33,9 +35,9 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
             {title}
           </Typography>
         </Box>
-        <Box>
+        {/* <Box>
           <ProgressCircle progress={progress} />
-        </Box>
+        </Box> */}
       </Box>
       <Box display="flex" justifyContent="space-between" mt="2px">
         <Typography variant="h5" sx={{ color: green }}>

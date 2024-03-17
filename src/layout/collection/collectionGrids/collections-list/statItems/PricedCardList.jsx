@@ -1,6 +1,6 @@
 import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
 import BoxHeader from '../../../../REUSABLE_COMPONENTS/BoxHeader';
-import { Box } from '@mui/material';
+import { Box, Card, CardContent } from '@mui/material';
 import { useAppContext, useMode } from '../../../../../context';
 import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../../../data/topCards';
@@ -27,24 +27,35 @@ const PricedCardList = () => {
     <MDBox sx={{ width: '100%' }}>
       <Box
         sx={{
-          bgcolor: primary,
+          background: primary,
           borderRadius: theme.spacing(4),
           minHeight: '270px',
           // minHeight: '100%',
         }}
       >
-        {/* <MDBox> */}
-        <BoxHeader
-          title="Top 5 Priced Cards"
-          colorVariant={greenAccent}
-          useSX={true}
-          titleVariant="h5"
-          paddingVariant={theme.spacing(2)}
-          sx={{
-            color: greenAccent,
-          }}
-        />
-        {/* </MDBox> */}
+        <MDBox>
+          <Card
+            sx={{
+              // borderRadius: theme.spacing(4),
+              p: theme.spacing(2),
+              background: theme.palette.chartTheme.grey.darkest,
+              border: theme.palette.chartTheme.greenAccent.dark,
+            }}
+          >
+            <BoxHeader
+              title="Top 5 Priced Cards"
+              subtitle={false}
+              sideText={`$${topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
+              colorVariant={greenAccent}
+              useSX={true}
+              titleVariant="h5"
+              paddingVariant={theme.spacing(2)}
+              sx={{
+                color: greenAccent,
+              }}
+            />
+          </Card>
+        </MDBox>
         <Box
           sx={{
             '& .MuiDataGrid-root': { color: grey, border: 'none' },

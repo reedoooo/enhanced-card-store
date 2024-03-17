@@ -9,6 +9,8 @@ import { useEffect, useMemo } from 'react';
 import NivoContainer from './NivoContainer';
 import PropTypes from 'prop-types';
 import ChartErrorBoundary from './ChartErrorBoundary';
+import RCToolTip from '../../../REUSABLE_COMPONENTS/RCTOOLTIP/RCToolTip';
+import { BasicTooltip } from '@nivo/tooltip';
 
 export const ChartConfiguration = ({
   markers,
@@ -23,6 +25,19 @@ export const ChartConfiguration = ({
   const validMarkers = useMemo(
     () => markers.filter((marker) => marker.value !== undefined),
     [markers]
+  );
+  const TooltipLayer = ({ points }) => (
+    <>
+      {points.map((point) => (
+        <BasicTooltip
+          key={point.id}
+          id={point.id}
+          value={point.data.yFormatted}
+          color={'#000000'}
+          enableChip
+        />
+      ))}
+    </>
   );
   const { tickValues, xFormat } = useMemo(() => {
     let format, ticks;
@@ -112,9 +127,8 @@ export const ChartConfiguration = ({
         stacked: true,
         reverse: false,
       },
-      curve: 'monotoneX',
-      useMesh: true,
-      motionConfig: 'gentle',
+      curve: 'catmullRom', // This curve type can create smoother, more wavy lines
+      motionConfig: 'wobbly', // A more dynamic motion configuration      useMesh: true,
       stiffness: 90,
       damping: 15,
       enableSlices: 'x',
@@ -128,15 +142,27 @@ export const ChartConfiguration = ({
         'points',
         'axes',
         'legends',
-        ({ points, xScale, yScale, markers: validMarkers }) => (
-          <CustomTooltipLayer
-            points={points}
-            xScale={xScale}
-            yScale={yScale}
-            markers={validMarkers}
-          />
-        ),
+        TooltipLayer,
       ],
+
+      // layers: [
+      //   'grid',
+      //   'markers',
+      //   'areas',
+      //   'lines',
+      //   'slices',
+      //   'points',
+      //   'axes',
+      //   'legends',
+      //   ({ points, xScale, yScale, markers: validMarkers }) => (
+      //     <CustomTooltipLayer
+      //       points={points}
+      //       xScale={xScale}
+      //       yScale={yScale}
+      //       markers={validMarkers}
+      //     />
+      //   ),
+      // ],
       theme: {
         axis: {
           domain: {

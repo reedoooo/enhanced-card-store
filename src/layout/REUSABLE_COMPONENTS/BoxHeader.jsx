@@ -33,7 +33,7 @@ const BoxHeader = ({
           >
             {title}
           </Typography>
-          <Typography variant="h6">{subtitle}</Typography>
+          {subtitle && <Typography variant="h6">{subtitle}</Typography>}
         </Box>
       </FlexBetween>
       <Typography

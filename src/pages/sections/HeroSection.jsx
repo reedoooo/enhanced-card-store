@@ -79,7 +79,7 @@ const HeroSection = () => {
       style={{
         display: 'flex',
         position: 'relative',
-        minHeight: isMobileView ? '50vh' : '70vh',
+        minHeight: isMobileView ? '50vh' : 'calc(100vh - 64px)',
         flexDirection: isMobileView ? 'column' : 'row',
       }}
     >
@@ -101,7 +101,7 @@ const HeroSection = () => {
           className="hero-section-container"
           sx={{
             width: '100%',
-            minHeight: isMobileView ? '30vh' : '50vh',
+            minHeight: isMobileView ? '30vh' : '80vh',
             backgroundColor: 'transparent', // Make the Card background transparent
           }}
         >
@@ -154,6 +154,8 @@ const HeroSection = () => {
 
       <MDBox
         sx={{
+          // width: isMobileView ? '100%' : '60%',
+          // height: isMobileView ? '30%' : '100%',
           width: '100%',
           display: 'flex',
           justifyContent: isMobileView ? 'center' : 'flex-start',
@@ -218,7 +220,7 @@ const HeroSection = () => {
                 width: '100%',
                 height: '100%',
                 transform:
-                  index === activeCardIndex ? 'scale(1.7)' : 'scale(1)',
+                  index === activeCardIndex ? 'scale(2.2)' : 'scale(1)',
                 transition: 'transform 0.9s',
                 position: 'relative', // Ensure the slide content is positioned relatively
               }}

@@ -1,94 +1,71 @@
-// import { Box, Typography } from '@mui/material';
-// import { useMode } from '../../../../../context';
-// import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
-// import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
-
-// const ValuDistributionCircle = () => {
-//   const { theme } = useMode();
-//   const colors = theme.palette.chartTheme;
-//   const primary = colors.primary.dark;
-//   const greenAccent = colors.greenAccent.default;
-
-//   return (
-//     <Box
-//       sx={{
-//         bgcolor: primary,
-//         display: 'flex',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         // height: '100%',
-//         boxSizing: 'border-box',
-//         borderRadius: theme.spacing(4),
-//       }}
-//     >
-//       <MDBox
-//         sx={{
-//           width: '100%',
-//           // m: '0 30px',
-//           p: '20px',
-//           borderRadius: theme.spacing(4),
-//         }}
-//       >
-//         <Typography variant="h5" fontWeight="600">
-//           Campaign
-//         </Typography>
-//         <Box
-//           display="flex"
-//           flexDirection="column"
-//           alignItems="center"
-//           mt="25px"
-//         >
-//           <ProgressCircle size="125" />
-//           <Typography variant="h5" color={greenAccent} sx={{ mt: '15px' }}>
-//             $48,352 revenue generated
-//           </Typography>
-//           <Typography>Includes extra misc expenditures and costs</Typography>
-//         </Box>
-//       </MDBox>
-//     </Box>
-//   );
-// };
-
-// export default ValuDistributionCircle;
+/* eslint-disable max-len */
+import React from 'react';
 import { Box, Typography } from '@mui/material';
-import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
 import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../../../../context';
+import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
 
-const ValuDistributionCircle = () => {
+const ValuDistributionCircle = ({ collections }) => {
   const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
-  const primary = colors.primary.dark;
-  const greenAccent = colors.greenAccent.light;
+  const collectionMetaData = collections.reduce(
+    (meta, collection) => {
+      meta.totalValue += collection.totalPrice;
+      meta.tooltips.push(
+        `${collection.name}: $${collection.totalPrice.toFixed(2)}`
+      );
+      return meta;
+    },
+    { totalValue: 0, tooltips: [] }
+  );
+
+  let cumulativePercent = 0;
+  const gradientStops = collections
+    .map((collection) => {
+      const valuePercent =
+        (collection.totalPrice / collectionMetaData.totalValue) * 100;
+      const stop = `${theme.palette.chartTheme.blueAccent.default} ${cumulativePercent}%, ${theme.palette.chartTheme.blueAccent.default} ${cumulativePercent + valuePercent}%`;
+      cumulativePercent += valuePercent;
+      return stop;
+    })
+    .join(', ');
+
+  const tooltipContent = collectionMetaData.tooltips.join('\n');
+
   return (
     <MDBox sx={{ width: '100%', height: '100%', flexGrow: 1 }}>
       <Box
         sx={{
-          bgcolor: primary,
+          bgcolor: theme.palette.chartTheme.primary.dark,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          flexDirection: 'column',
           borderRadius: theme.shape.borderRadius,
           minHeight: '270px',
         }}
       >
-        {/* <MDBox sx={{ p: '20px', width: '100%' }}> */}
-        <Typography variant="h5" fontWeight="600">
-          Campaign
+        <Typography variant="h5" fontWeight="600" sx={{ mb: 2 }}>
+          Collection Value Distribution
         </Typography>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          // mt="25px"
+        <ProgressCircle
+          progress={1} // Full circle
+          size={120}
+          collections={collections}
+          tooltipContent={tooltipContent}
+          background={`conic-gradient(${gradientStops}), 
+                       radial-gradient(circle, transparent 55%, ${theme.palette.chartTheme.primary.default} 55%) center/100% no-repeat, 
+                       ${theme.palette.chartTheme.greenAccent.default}`}
+        />
+        <Typography
+          variant="h5"
+          color={theme.palette.chartTheme.greenAccent.light}
+          sx={{ mt: 2 }}
         >
-          <ProgressCircle size="125" />
-          <Typography variant="h5" color={greenAccent} sx={{ mt: '15px' }}>
-            $48,352 revenue generated
-          </Typography>
-          <Typography>Includes extra misc expenditures and costs</Typography>
-        </Box>
-        {/* </MDBox> */}
+          Total Value: ${collectionMetaData.totalValue.toFixed(2)}
+        </Typography>
+        <Typography variant="caption">
+          Includes extra misc expenditures and costs
+        </Typography>
       </Box>
     </MDBox>
   );

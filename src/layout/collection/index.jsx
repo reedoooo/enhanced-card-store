@@ -28,6 +28,7 @@ import StatBoard from './collectionGrids/collections-list/StatBoard';
 
 const CollectionPortfolio = () => {
   const { theme } = useMode();
+  const { Transitions } = theme;
   const { fetchCollections, hasFetchedCollections } = useCollectionManager();
   const {
     handleBackToCollections,
@@ -99,85 +100,100 @@ const CollectionPortfolio = () => {
       }}
     >
       <PortfolioBoxA theme={theme}>
-        {!isCollectionVisible ? (
-          <DashboardLayout>
-            <MDBox theme={theme}>
-              <DashboardBox
-                sx={{
-                  p: theme.spacing(2),
-                }}
-              >
-                <SelectCollectionHeader
-                  openNewDialog={handleAddCollectionDialogToggle}
-                />
-              </DashboardBox>
-              <DashboardBox
-                sx={{
-                  px: theme.spacing(2),
-                }}
-              >
-                <StatBoard />
-              </DashboardBox>
-              <DashboardBox
-                sx={{
-                  px: theme.spacing(2),
-                }}
-              >
-                <SelectCollectionList
-                  openDialog={handleAddCollectionDialogToggle}
-                />
-              </DashboardBox>
-
-              {dialogState.isAddCollectionDialogOpen && (
-                <CollectionDialog
-                  open={dialogState.isAddCollectionDialogOpen}
-                  onClose={handleCloseAddCollectionDialog}
-                  collectionData={{
-                    name: selectedCollection?.name,
-                    description: selectedCollection?.description,
+        <Transitions
+          type="fade"
+          in={!isCollectionVisible}
+          mountOnEnter
+          unmountOnExit
+        >
+          {!isCollectionVisible && (
+            <DashboardLayout>
+              <MDBox theme={theme}>
+                <DashboardBox
+                  sx={{
+                    p: theme.spacing(2),
                   }}
-                  collectionMode={'add'}
-                  isNew={currentForm === 'addCollectionForm'}
-                  // handleBackToCollections={handleBackToCollections}
-                  // removeOneFromCollection={removeOneFromCollection}
-                  // totalQuantity={totalQuantity}
-                  // selectedCollectionId={selectedCollectionId}
-                />
-              )}
-              {dialogState.isSelectionErrorDialogOpen && (
-                <SelectionErrorDialog
-                  open={dialogState.isSelectionErrorDialogOpen}
-                  onClose={handleCloseSelectionErrorDialog}
-                  selectedValue={selectedCollection?.name}
-                  handleBackToCollections={handleBackToCollections}
-                />
-              )}
-            </MDBox>
-          </DashboardLayout>
-        ) : (
-          // Selected collection view
-          <DashboardLayout>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <CollectionPortfolioHeader
-                  onBack={toggleCollectionVisibility}
-                  collection={selectedCollection}
-                  allCollections={allCollections}
-                />
+                >
+                  <SelectCollectionHeader
+                    openNewDialog={handleAddCollectionDialogToggle}
+                  />
+                </DashboardBox>
+                <DashboardBox
+                  sx={{
+                    px: theme.spacing(2),
+                  }}
+                >
+                  <StatBoard />
+                </DashboardBox>
+                <DashboardBox
+                  sx={{
+                    px: theme.spacing(2),
+                    py: theme.spacing(2),
+                  }}
+                >
+                  <SelectCollectionList
+                    openDialog={handleAddCollectionDialogToggle}
+                  />
+                </DashboardBox>
+
+                {dialogState.isAddCollectionDialogOpen && (
+                  <CollectionDialog
+                    open={dialogState.isAddCollectionDialogOpen}
+                    onClose={handleCloseAddCollectionDialog}
+                    collectionData={{
+                      name: selectedCollection?.name,
+                      description: selectedCollection?.description,
+                    }}
+                    collectionMode={'add'}
+                    isNew={currentForm === 'addCollectionForm'}
+                    // handleBackToCollections={handleBackToCollections}
+                    // removeOneFromCollection={removeOneFromCollection}
+                    // totalQuantity={totalQuantity}
+                    // selectedCollectionId={selectedCollectionId}
+                  />
+                )}
+                {dialogState.isSelectionErrorDialogOpen && (
+                  <SelectionErrorDialog
+                    open={dialogState.isSelectionErrorDialogOpen}
+                    onClose={handleCloseSelectionErrorDialog}
+                    selectedValue={selectedCollection?.name}
+                    handleBackToCollections={handleBackToCollections}
+                  />
+                )}
+              </MDBox>
+            </DashboardLayout>
+          )}
+        </Transitions>
+        <Transitions
+          type="fade"
+          in={isCollectionVisible}
+          mountOnEnter
+          unmountOnExit
+        >
+          {isCollectionVisible && (
+            <DashboardLayout>
+              <Grid container spacing={1}>
+                <Grid item xs={12}>
+                  <CollectionPortfolioHeader
+                    onBack={toggleCollectionVisibility}
+                    collection={selectedCollection}
+                    allCollections={allCollections}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  {/* <StatisticsCardGrid selectedCollection={selectedCollection} /> */}
+                </Grid>
+                <Grid item xs={12}>
+                  <ChartGridLayout
+                    selectedCards={selectedCollection?.cards}
+                    columns={columns}
+                    data={data}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                {/* <StatisticsCardGrid selectedCollection={selectedCollection} /> */}
-              </Grid>
-              <Grid item xs={12}>
-                <ChartGridLayout
-                  selectedCards={selectedCollection?.cards}
-                  columns={columns}
-                  data={data}
-                />
-              </Grid>
-            </Grid>
-          </DashboardLayout>
-        )}
+            </DashboardLayout>
+          )}
+        </Transitions>
       </PortfolioBoxA>
     </MDBox>
   );

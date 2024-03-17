@@ -36,17 +36,17 @@ export const AppContextProvider = ({ children }) => {
   const { selectedDeck, allDecks } = Deck;
   const { cartData } = Cart;
   const compileCollectionMetaData = useCallback(() => {
+    if (!allCollections || allCollections.length === 0) return;
+
     const metaData = {
-      metaData: {
-        totalPrice: allCollections?.reduce(
-          (total, collection) => total + collection.totalPrice,
-          0
-        ),
-        numCollections: allIds?.length || 0,
-        topFiveCards: cardsWithQuantities
-          ?.sort((a, b) => b.price - a.price)
-          .slice(0, 5),
-      },
+      totalValue: allCollections?.reduce(
+        (total, collection) => total + collection?.totalPrice,
+        0
+      ),
+      numCollections: allIds?.length || 0,
+      topFiveCards: cardsWithQuantities
+        ?.sort((a, b) => b.price - a.price)
+        .slice(0, 5),
     };
 
     setCollectionMetaData(metaData);
