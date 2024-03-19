@@ -132,7 +132,6 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: theme.palette.success.main,
-        marginRight: theme.spacing(1),
       }}
     >
       {children}

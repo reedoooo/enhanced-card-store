@@ -122,11 +122,18 @@ export const ChartConfiguration = ({
       },
       yScale: {
         type: 'linear',
-        min: 'auto',
-        max: 'auto',
-        stacked: true,
+        min: '0', // Explicitly setting minimum to 0, adjust as needed
+        max: 'auto', // Consider setting an explicit max if appropriate
+        stacked: false, // Changed to false unless stacking is needed
         reverse: false,
       },
+      // yScale: {
+      //   type: 'linear',
+      //   min: 'auto',
+      //   max: 'auto',
+      //   stacked: true,
+      //   reverse: false,
+      // },
       curve: 'catmullRom', // This curve type can create smoother, more wavy lines
       motionConfig: 'wobbly', // A more dynamic motion configuration      useMesh: true,
       stiffness: 90,
@@ -172,7 +179,10 @@ export const ChartConfiguration = ({
           },
           legend: {
             text: {
-              fill: theme.palette.chartTheme.grey.lightest,
+              fill: theme.palette.chartTheme.greenAccent.darkest,
+              fontSize: 12,
+              outlineWidth: 0.1,
+              outlineColor: theme.palette.chartTheme.grey.darkest,
             },
           },
           ticks: {
@@ -192,7 +202,8 @@ export const ChartConfiguration = ({
         },
         tooltip: {
           container: {
-            color: theme.palette.chartTheme.primary.default,
+            color: theme.palette.chartTheme.grey.darkest,
+            borderColor: theme.palette.chartTheme.redAccent.darkest,
           },
         },
       },

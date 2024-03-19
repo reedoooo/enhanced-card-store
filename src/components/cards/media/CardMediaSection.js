@@ -7,7 +7,7 @@ import {
   MediaContainer,
   Media,
   MediaPopover,
-  Overlay,
+  // Overlay,
 } from '../../../context/hooks/style-hooks/usePortfolioStyles';
 import { useOverlay } from '../../../context/hooks/useOverlay';
 import placeHolder from '../../../assets/images/placeholder.jpeg';
@@ -63,7 +63,7 @@ const CardMediaSection = forwardRef(
         <Media
           component="img"
           alt={`Image for ${imgUrl || 'the card'}`}
-          image={imgUrl || 'https//placehold.co/600x400.png'}
+          image={imgUrl}
           loading="lazy"
         />
 

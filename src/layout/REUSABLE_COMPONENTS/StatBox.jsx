@@ -1,9 +1,9 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
 import ProgressCircle from './ProgressCircle';
 import { useMode } from '../../context';
 import MDBox from './MDBOX';
 
-const StatBox = ({ title, subtitle, icon, progress, increase }) => {
+const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
   const primary = colors.primary.default;
@@ -11,7 +11,21 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
   const green = colors.greenAccent.default;
   const greenliht = colors.greenAccent.light;
   const grey = colors.grey.default;
-
+  const IconWrapper = ({ children }) => (
+    <Box
+      sx={{
+        borderRadius: '50%',
+        width: 40,
+        height: 40,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: greenliht,
+      }}
+    >
+      {children}
+    </Box>
+  );
   return (
     <MDBox
       sx={{
@@ -29,12 +43,36 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
           borderRadius: theme.spacing(4),
         }}
       >
-        <Box>
-          {icon}
+        {/* <Box> */}
+        {/* <Card> */}
+        <MDBox
+          sx={{
+            borderRadius: 'none',
+          }}
+        >
+          <CardContent
+            sx={{
+              borderRadius: '50%',
+              width: 40,
+              height: 40,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: theme.palette.success.main,
+              mt: theme.spacing(1),
+              mr: theme.spacing(1),
+            }}
+          >
+            {icon}
+          </CardContent>
+
           <Typography variant="h4" fontWeight="bold" sx={{ color: grey }}>
             {title}
           </Typography>
-        </Box>
+          {/* </CardContent> */}
+        </MDBox>
+        {/* </Card> */}
+        {/* </Box> */}
         {/* <Box>
           <ProgressCircle progress={progress} />
         </Box> */}

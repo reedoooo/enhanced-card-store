@@ -1,28 +1,39 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  AppBar,
   Toolbar,
   IconButton,
-  Box,
-  Drawer,
   List,
   Hidden,
-  Card,
-  CardContent,
   ListItem,
-  ListItemIcon,
-  Avatar,
-  ListItemAvatar,
   ListItemText,
+  AppBar,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useCartStore, useMode, useSidebarContext } from '../../context';
-import { StyledAppBar } from '../../pages/pageStyles/StyledComponents';
+import {
+  useAuthContext,
+  useCartStore,
+  useMode,
+  useSidebarContext,
+} from '../../context';
 import { Navigate, useNavigate } from 'react-router-dom';
 import getMenuItemsData from './menuItemsData';
 import { useSpring, animated, useSprings } from 'react-spring';
 import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import RCLogoSection from '../REUSABLE_COMPONENTS/RCLOGOSECTION/RCLogoSection';
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  DialogTitle,
+  Divider,
+  Drawer,
+  ModalClose,
+  Radio,
+  Sheet,
+  Typography,
+} from '@mui/joy';
+import { useCookies } from 'react-cookie';
 const Navigation = ({ isLoggedIn }) => {
   const { theme } = useMode();
   const navigate = useNavigate();
@@ -33,6 +44,9 @@ const Navigation = ({ isLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false); // Manage open state locally
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   const iconColor = isMobileView ? theme.palette.primary.main : 'white';
+  const [cookies] = useCookies('authUser');
+  const username = cookies?.authUser?.username;
+  // const { authUser } = useAuthContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +55,7 @@ const Navigation = ({ isLoggedIn }) => {
         totalQuantity,
         iconColor
       );
-      setMenuItems(items.map((item) => ({ ...item, isVisible: true })));
+      setMenuItems(items?.map((item) => ({ ...item, isVisible: true })));
     };
 
     fetchData();
@@ -69,49 +83,62 @@ const Navigation = ({ isLoggedIn }) => {
           // disablePadding
           onClick={() => navigate(menuItems[index].to)}
           sx={{
-            width: 'clamp(130px, 50%, 175px)', // Responsive width using clamp
+            // width: 'clamp(130px, 50%, 175px)', // Responsive width using clamp
             maxHeight: 64,
-            mx: theme.spacing(4),
+            maxWidth: '100%',
+            // mx: theme.spacing(4),
             '&:hover': {
               backgroundColor: theme.palette.backgroundF.light,
               color: 'white',
             },
           }}
         >
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            // onClick={handleOpenNavMenu}
-            color="inherit"
+          <Card
             sx={{
+              py: type === 'top' ? theme.spacing(4) : theme.spacing(2),
+              flexGrow: 1,
               height: '100%',
-              minHeight: 64,
+              width: '100%',
+              minWidth: 100,
+              boxShadow: 'none',
+              '&:hover': { bgcolor: 'background.level1' },
             }}
           >
-            {menuItems[index].icon}{' '}
-          </IconButton>
-          <ListItemText
-            primary={
-              <MDTypography
-                variant="subtitle1"
-                sx={{
-                  color: type === 'top' ? 'white' : theme.palette.primary.main,
-                }}
-              >
-                {menuItems[index].name}
-              </MDTypography>
-            }
-          />
+            <CardContent
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexGrow: 1,
+              }}
+            >
+              {menuItems[index].icon}
+              <Typography level="title-md"> {menuItems[index].name}</Typography>
+            </CardContent>
+          </Card>
         </ListItem>
       </animated.div>
     ));
   return (
     <>
-      <StyledAppBar
-        position="sticky"
-        sx={{ zIndex: theme.zIndex.drawer + 1, maxHeight: 64 }}
+      <AppBar
+        position="static"
+        color="default"
+        elevation={0}
+        // position="sticky"
+        sx={{
+          zIndex: theme.zIndex.drawer + 1,
+          maxHeight: 64,
+          minWidth: '100vw',
+          maxWidth: '100vw',
+          // minWidth: '100%',
+          border: '2px solid white',
+          // left: -20,
+          // borderRadius: '30px',
+          background: '#141414',
+        }}
       >
         <Toolbar
           sx={{
@@ -120,33 +147,75 @@ const Navigation = ({ isLoggedIn }) => {
             alignItems: 'center',
           }}
         >
-          {isMobileView ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-              <IconButton
-                onClick={toggleSidebar}
-                size="large"
-                edge="start"
-                aria-label="menu"
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <IconButton
+              variant="outlined"
+              color="white"
+              onClick={toggleSidebar}
+              size="large"
+              edge="start"
+              aria-label="menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <RCLogoSection />
+          </Box>
+          {renderMenuItems('top')}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Card>
+              <CardContent
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexGrow: 1,
+                }}
               >
-                <MenuIcon />
-              </IconButton>
-              <RCLogoSection />
-            </Box>
-          ) : (
-            renderMenuItems('top')
-          )}
+                <Avatar variant="soft" />
+                <Typography level="title-md">{username}</Typography>
+              </CardContent>
+            </Card>
+          </Box>
         </Toolbar>
-      </StyledAppBar>
-      <Hidden smDown implementation="css">
-        <Drawer
-          variant="temporary"
-          open={isOpen}
-          onClose={toggleSidebar}
-          ModalProps={{ keepMounted: true }}
+      </AppBar>
+      {/* <Hidden smDown implementation="css"> */}
+      <Drawer
+        size="xs"
+        variant="plain"
+        open={isOpen}
+        onClose={toggleSidebar}
+        ModalProps={{ keepMounted: true }}
+        slotProps={{
+          content: {
+            sx: {
+              bgcolor: 'transparent',
+              p: { md: 3, sm: 0 },
+              boxShadow: 'none',
+            },
+          },
+        }}
+      >
+        <Sheet
+          sx={{
+            borderRadius: 'md',
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            gap: 2,
+            height: '100%',
+            overflow: 'auto',
+          }}
         >
+          <DialogTitle>Filters</DialogTitle>
+          <ModalClose />
+          <Divider sx={{ mt: 'auto' }} />
           <List>{renderMenuItems('side')}</List>
-        </Drawer>
-      </Hidden>
+        </Sheet>
+      </Drawer>
+      {/* </Hidden> */}
     </>
   );
 };

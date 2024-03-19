@@ -15,7 +15,7 @@ export const getMenuItemsData = (isLoggedIn, cartCardQuantity, iconColor) => {
     const baseMenuItems = [
       { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
       {
-        name: 'Deck Builder',
+        name: 'Deck',
         // icon: <DeckOfCardsIcon />,
         icon: <DeckBuilderIcon color={iconColor} />,
         to: '/deckbuilder',
@@ -68,6 +68,12 @@ export const getMenuItemsData = (isLoggedIn, cartCardQuantity, iconColor) => {
         to: '/profile',
         requiresLogin: isLoggedIn,
       },
+      // {
+      //   name: 'Login',
+      //   icon: <ProfileIcon />,
+      //   to: '/login',
+      //   requiresLogin: false,
+      // },
     ];
 
     if (isLoggedIn) {

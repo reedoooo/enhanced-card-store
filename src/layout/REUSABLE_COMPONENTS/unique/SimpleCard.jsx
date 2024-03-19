@@ -1,37 +1,15 @@
 import React from 'react';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import styled from 'styled-components';
-// const CardContainer = styled.div`
-//   padding: ${({ theme, hasTitle }) => (hasTitle ? 0 : theme.lenMd3)};
-//   margin-bottom: ${({ theme, noBottomMargin }) =>
-//     noBottomMargin ? 0 : theme.lenMd1};
-//   border-radius: ${({ theme }) => theme.borderRadius};
-//   background: ${({ theme, isPrimary, isAccent }) =>
-//     isPrimary
-//       ? theme.colorPrimary
-//       : isAccent
-//         ? theme.colorAccent
-//         : theme.colorCardBackground};
-//   color: ${({ theme, isPrimary, isAccent }) =>
-//     isPrimary
-//       ? theme.colorPrimaryText
-//       : isAccent
-//         ? theme.colorAccentText
-//         : theme.colorText};
-// `;
-// const Content = styled.div`
-//   padding: ${({ theme }) => `0 ${theme.lenMd3} ${theme.lenMd3}`};
-// `;
+import { CardContent, IconButton, Typography } from '@mui/joy';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import { useMode } from '../../../context';
+import { Icon } from '@mui/material';
+import MDBox from '../MDBOX';
+import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
+import CollectionsIcon from '@mui/icons-material/Collections';
 
-// const Title = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   height: ${({ theme }) => theme.lenXl2};
-//   padding: ${({ theme }) => `0 ${theme.lenMd1}`};
-//   color: ${({ theme }) => theme.colorLabel};
-//   font-size: ${({ theme }) => theme.lenMd2};
-// `;
 const getPrimaryStyle = (theme, isPrimary) => ({
   background: isPrimary ? theme.colorPrimary : undefined,
   color: isPrimary ? theme.colorPrimaryText : undefined,
@@ -58,9 +36,23 @@ const getFormHeaderStyle = (theme, isFormHeader) => ({
   width: '80%',
 });
 
-const CardContent = ({ theme, children }) => (
-  <div style={{ padding: `0 ${theme.lenMd1} ${theme.lenMd2}` }}>{children}</div>
-);
+const getHeroDisplayStyles = (theme, isHeroDisplay) => ({
+  background: isHeroDisplay ? theme.colorCardBackground : undefined,
+  color: isHeroDisplay ? theme.colorPrimary : undefined,
+  root: {
+    minWidth: 275,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    backgroundImage:
+      'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)',
+    backdropFilter: 'blur(40)px',
+    boxShadow: '10px 10px 10px rgba(30,30,30,.1)',
+    borderRadius: 10,
+  },
+});
+
+// const CardContent = ({ theme, children }) => (
+//   <div style={{ padding: `0 ${theme.lenMd1} ${theme.lenMd2}` }}>{children}</div>
+// );
 
 const CardTitle = ({ theme, children, isTableOrChart }) => (
   <div
@@ -85,6 +77,25 @@ const CardTitle = ({ theme, children, isTableOrChart }) => (
     </MDTypography>
   </div>
 );
+const iconStyles = {
+  // Adjust icon size to be larger based on the parent size
+  fontSize: '8rem', // Example size, adjust as needed
+  color: '#000000', // Example color, adjust as needed
+  maxWidth: '100%',
+  maxHeight: '100%',
+};
+const String2Icon = (icon) => {
+  switch (icon) {
+    case 'AddIcon':
+      return <AddIcon style={iconStyles} />;
+    case 'SaveIcon':
+      return <SaveIcon style={iconStyles} />;
+    case 'CollectionsIcon':
+      return <CollectionsIcon style={iconStyles} />;
+    default:
+      return null;
+  }
+};
 
 const SimpleCard = ({
   theme,
@@ -97,8 +108,12 @@ const SimpleCard = ({
   cardTitle,
   data,
   isFormHeader,
+  isHeroDisplay,
+  heroText,
+  heroIcon,
   ...rest
 }) => {
+  const { theme: themeSettings } = useMode();
   const cardStyle = {
     // display: 'flex',
     width: '100%',
@@ -107,6 +122,8 @@ const SimpleCard = ({
     borderRadius: theme.borderRadius,
     background: theme.colorCardBackground,
     color: theme.colorText,
+    ...(isHeroDisplay && getHeroDisplayStyles(theme, true)),
+
     ...(isFormHeader && getFormHeaderStyle(theme, true)),
     ...(isTableOrChart && getTableOrChartStyle(theme, true)),
     ...(isPrimary && getPrimaryStyle(theme, true)),
@@ -120,10 +137,92 @@ const SimpleCard = ({
           <CardTitle theme={theme} isTableOrChart={isTableOrChart}>
             {cardTitle}
           </CardTitle>
-          <CardContent theme={theme}>{children}</CardContent>
+          <div style={{ padding: `0 ${theme.lenMd1} ${theme.lenMd2}` }}>
+            {children}
+          </div>
         </>
       )}
       {!cardTitle && children}
+      {isHeroDisplay && (
+        <CardContent
+          sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexGrow: 1,
+          }}
+        >
+          <MDBox>
+            <IconButton
+              disabled={false}
+              variant="outlined"
+              style={{
+                mr: themeSettings.spacing(4),
+                // Increase the icon size to better fill its container
+                fontSize: 'inherit',
+                height: '100%',
+                // width: '100%',
+              }}
+            >
+              <Icon
+                style={{
+                  // Adjust icon size to be larger based on the parent size
+                  fontSize: '8rem', // Example size, adjust as needed
+                  color: theme.colorPrimary,
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              >
+                {String2Icon(heroIcon)}
+              </Icon>
+            </IconButton>
+          </MDBox>
+          <MDBox
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexGrow: 1,
+            }}
+          >
+            <IconButton
+              disabled={false}
+              variant="outlined"
+              style={{
+                mr: themeSettings.spacing(4),
+                // Increase the icon size to better fill its container
+                fontSize: 'inherit',
+                height: '100%',
+                // width: '100%',
+              }}
+            >
+              <CheckCircleOutlineOutlinedIcon
+                style={{
+                  // Adjust icon size to be larger based on the parent size
+                  fontSize: '4rem', // Example size, adjust as needed
+                  color: theme.colorPrimary,
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              />
+            </IconButton>
+            <Typography
+              level="title-lg"
+              sx={{
+                ml: themeSettings.spacing(4),
+
+                fontSize: themeSettings.typography.d3, // Scaling text size by 8
+              }}
+            >
+              {heroText}
+            </Typography>
+          </MDBox>
+        </CardContent>
+      )}
     </div>
   );
 };

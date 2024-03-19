@@ -47,6 +47,7 @@ export const AppContextProvider = ({ children }) => {
       topFiveCards: cardsWithQuantities
         ?.sort((a, b) => b.price - a.price)
         .slice(0, 5),
+      numCardsCollected: allCardsWithQuantities?.length || 0,
     };
 
     setCollectionMetaData(metaData);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMode, useStatisticsStore } from '../../context';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from '../../assets/images/placeholder.jpeg';
@@ -14,17 +14,26 @@ import {
   Autoplay,
 } from 'swiper/modules';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import HeroSectionSkeleton from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
+import { HeroSectionSkeleton } from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
 import {
   Box,
   Card,
+  Container,
   Grid,
+  Icon,
   IconButton,
   Typography,
+  Zoom,
   useMediaQuery,
 } from '@mui/material';
 import DashboardBox from '../../layout/REUSABLE_COMPONENTS/DashboardBox';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import SimpleCard from '../../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
+import uniqueTheme from '../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
+import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
+import CollectionsIcon from '@mui/icons-material/Collections';
+import pages from '../../data/pages.json';
 
 // Replace headerItems with realistic card store data
 const storeInfoItems = [
@@ -57,9 +66,13 @@ const StoreInfoItem = ({ icon, label, value, delay }) => {
 const HeroSection = () => {
   const { theme } = useMode();
   const { breakpoints } = theme;
+  const { introText } = pages;
   const isMobileView = useMediaQuery(breakpoints.down('sm'));
   const isFullView = useMediaQuery(breakpoints.up('lg'));
   const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [shouldShow, setShouldShow] = useState(false);
+  useEffect(() => setShouldShow(true), []);
+
   const { topFiveCards } = useStatisticsStore();
   const defaultCards = new Array(45).fill({}).map((_, index) => ({
     id: `default-${index}`,
@@ -69,6 +82,36 @@ const HeroSection = () => {
   }));
   const cards = [...topFiveCards, ...defaultCards];
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
+  const heroCardData = [
+    {
+      id: 'herodata-1-store-add',
+      name: 'Add Cards From Store',
+      description: 'Add cards to your collection from the store.',
+      heroText: 'ADD',
+      icon: <AddIcon />,
+      heroIcon: 'AddIcon',
+      image: placeHolder,
+    },
+    {
+      id: 'herodata-2-deck-build',
+      name: 'Build Decks In Deck Builder',
+      description: 'Build decks using the deck builder.',
+      heroText: 'BUILD',
+      icon: <SaveIcon />,
+      heroIcon: 'SaveIcon',
+      image: placeHolder,
+    },
+    {
+      id: 'herodata-3-collection-view',
+      name: 'Track Collection Value in Portfolio',
+      description:
+        'View and analyze your portfolio performance using the Portfolios advanced statistics settings.',
+      heroText: 'TRACK',
+      icon: <CollectionsIcon />,
+      heroIcon: 'CollectionsIcon',
+      image: placeHolder,
+    },
+  ];
 
   if (!cards || !Array.isArray(cards) || !cards[activeCardIndex]) {
     return <HeroSectionSkeleton />;
@@ -105,15 +148,16 @@ const HeroSection = () => {
             backgroundColor: 'transparent', // Make the Card background transparent
           }}
         >
-          <Box
+          <MDBox
             sx={{
               display: 'flex',
-              justifyContent: 'center',
+              flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               height: '100%',
             }}
           >
-            <DashboardBox
+            <MDBox
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -121,34 +165,66 @@ const HeroSection = () => {
                 alignItems: 'center',
                 padding: 1,
                 width: '100%',
+                // borderRadius: 'none',
               }}
             >
-              <IconButton
-                onClick={console.log(cards[activeCardIndex].id)}
-                aria-label="Back to Collections"
-                color="inherit"
-                sx={{
-                  marginRight: '6px',
-                  background: 'white',
-                }}
-              >
-                <AttachMoneyIcon
-                  color={theme.palette.chartTheme.greenAccent.default}
-                />
-              </IconButton>
-              <Grid container spacing={2}>
-                {storeInfoItems.map((item, index) => (
-                  <StoreInfoItem
-                    key={item.label}
-                    icon={item.icon}
-                    label={item.label}
-                    value={item.value}
-                    delay={index * 300} // Adjust delay as needed
+              <Zoom in={shouldShow}>
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    maxWidth: '80%',
+                    margin: 'auto',
+                  }}
+                >
+                  <Typography
+                    component="h1"
+                    variant={isMobileView ? 'h4' : 'h2'}
+                    sx={{
+                      fontWeight: 'bold',
+                      color: theme.palette.primary.main,
+                      marginBottom: 2,
+                    }}
+                  >
+                    A New Era of Trading Card Games
+                  </Typography>
+                  <Typography
+                    variant={isMobileView ? 'subtitle1' : 'h5'}
+                    sx={{
+                      margin: 'auto',
+                      maxWidth: '90%',
+                    }}
+                  >
+                    Discover a revolutionary way to collect, play, and compete
+                    in your favorite trading card games. Embrace a world where
+                    strategy and creativity transcend boundaries.
+                  </Typography>
+                </Box>
+              </Zoom>
+            </MDBox>
+
+            <MDBox
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexDirectino: 'row',
+                alignItems: 'center',
+                padding: 1,
+                width: '100%',
+                // borderRadius: 'none',
+              }}
+            >
+              {heroCardData?.map((card, index) => (
+                <MDBox key={card.id} sx={{ width: '100%', border: 'none' }}>
+                  <SimpleCard
+                    isHeroDisplay={true}
+                    heroText={card.heroText}
+                    heroIcon={card.heroIcon}
+                    theme={uniqueTheme}
                   />
-                ))}
-              </Grid>
-            </DashboardBox>
-          </Box>
+                </MDBox>
+              ))}
+            </MDBox>
+          </MDBox>
         </Card>
       </MDBox>
 

@@ -1,13 +1,10 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
-
 import { AnimatedFeatureCard } from '../../layout/AnimatedFeatureCard';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import { useResponsiveStyles } from '../../context/hooks/style-hooks/useResponsiveStyles';
 import { useMode } from '../../context';
-import pages from '../../assets/data/pages.json';
+import pages from '../../data/pages.json';
 import {
   StyledContainerBox,
   StyledPaper,

@@ -12,6 +12,7 @@ import PricedCardList from './statItems/PricedCardList';
 import PerformanceStatBox from './statItems/PerformanceStatBox';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
 import styled from 'styled-components';
+import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
 
 const SkeletonPieChart = ({ theme }) => (
   <MDBox
@@ -44,7 +45,7 @@ const StatBoxes = () => {
   const { theme } = useMode();
   return (
     <MDBox sx={{ width: '100%', minHeight: '100%' }}>
-      <PerformanceStatBox />
+      <TotalCardsCollectedStatBox />
       <TotalPriceStatBox />
     </MDBox>
   );

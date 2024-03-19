@@ -31,7 +31,15 @@ const CardDetailsContainer = ({ card, className }) => {
   const { theme } = useMode();
 
   return (
-    <Grid container spacing={2}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        background: theme.palette.chartTheme.greenAccent.light,
+        justifyContent: 'center',
+        borderRadius: theme.shape.borderRadius,
+      }}
+    >
       {[
         { icon: FaLevelUpAlt, title: 'Level', value: card?.level },
         { icon: FaVenusMars, title: 'Type', value: card?.type },

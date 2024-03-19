@@ -1,6 +1,11 @@
 import LoginIcon from '@mui/icons-material/Login';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import FindInPageRoundedIcon from '@mui/icons-material/FindInPageRounded';
 // TODO: ADD EMAIL ICON
 // TODO: ADD First ICON
 // TODO: ADD Last ICON
@@ -8,9 +13,19 @@ import LockIcon from '@mui/icons-material/Lock';
 // TODO: ADD Description ICON
 
 const auth = [
-  { name: 'firstName', label: 'First Name', type: 'text', icon: <></> },
-  { name: 'lastName', label: 'Last Name', type: 'text', icon: <></> },
-  { name: 'email', label: 'Email', type: 'email', icon: <></> },
+  {
+    name: 'firstName',
+    label: 'First Name',
+    type: 'text',
+    icon: <VerifiedUserRoundedIcon />,
+  },
+  {
+    name: 'lastName',
+    label: 'Last Name',
+    type: 'text',
+    icon: <VerifiedUserRoundedIcon />,
+  },
+  { name: 'email', label: 'Email', type: 'email', icon: <EmailRoundedIcon /> },
   {
     name: 'username',
     label: 'Username',
@@ -29,7 +44,7 @@ const collection = [
     name: 'name',
     label: 'Name',
     type: 'text',
-    icon: <></>,
+    icon: <FindInPageRoundedIcon />,
     required: true,
     multiline: false,
   },
@@ -37,7 +52,7 @@ const collection = [
     name: 'description',
     label: 'Description',
     type: 'text',
-    icon: <></>,
+    icon: <DescriptionRoundedIcon />,
     required: true,
     multiline: true,
     rows: 4,

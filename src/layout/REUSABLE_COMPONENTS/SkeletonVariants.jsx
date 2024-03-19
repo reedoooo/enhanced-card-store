@@ -1,9 +1,45 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import { useMode } from '../../context';
+import {
+  Box,
+  Card,
+  CardHeader,
+  CardContent,
+  makeStyles,
+  Skeleton,
+} from '@mui/material';
 import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
 
+function LoadingCardSkeleton() {
+  return (
+    <Card
+      className={'cardroot'}
+      sx={{
+        root: {
+          maxWidth: 345,
+          backgroundColor: 'rgba(255,255,255,0.2)',
+          backdropFilter: 'blur(40px)',
+          backgroundImage:
+            'linear-gradient(to right bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.6))',
+          boxShadow: '10px 10px 10px rgba(30,30,30,.1)',
+          borderRadius: 10,
+        },
+      }}
+    >
+      <CardHeader
+        title={<Skeleton width="80%" height={24} />}
+        subheader={<Skeleton width="60%" height={20} />}
+        avatar={<Skeleton variant="circular" width={40} height={40} />}
+      />
+      <CardContent>
+        <Skeleton variant="text" width="90%" />
+        <Skeleton variant="text" width="80%" />
+      </CardContent>
+    </Card>
+  );
+}
+
 const HeroSectionSkeleton = () => {
+  // Assuming useSkeletonLoader provides a loader component that accepts type, count, and styleProps
   const { SkeletonLoader } = useSkeletonLoader();
 
   return (
@@ -28,7 +64,7 @@ const HeroSectionSkeleton = () => {
           '-webkit-backdrop-filter': 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.3)',
           borderRadius: '25px',
-          padding: '30px 0px',
+          padding: '30px',
           width: 'min(1200px, 100%)',
           display: 'flex',
           flexDirection: 'column',
@@ -36,21 +72,16 @@ const HeroSectionSkeleton = () => {
           justifyContent: 'center',
         }}
       >
-        {/* Title Skeleton */}
         <SkeletonLoader
           type="title"
           count={1}
-          styleProps={{ width: '60%', marginBottom: '20px' }}
+          styleProps={{ width: '60%', height: 40, marginBottom: '20px' }}
         />
-
-        {/* Subtitle Skeleton */}
         <SkeletonLoader
           type="subtitle"
           count={1}
-          styleProps={{ width: '40%', marginBottom: '40px' }}
+          styleProps={{ width: '40%', height: 28, marginBottom: '40px' }}
         />
-
-        {/* Image Slider Skeleton */}
         <SkeletonLoader
           type="card"
           count={1}
@@ -61,4 +92,4 @@ const HeroSectionSkeleton = () => {
   );
 };
 
-export default HeroSectionSkeleton;
+export { LoadingCardSkeleton, HeroSectionSkeleton };

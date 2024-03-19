@@ -61,8 +61,9 @@ export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   border: '2px solid white',
   // left: -20,
   // borderRadius: '30px',
-  background:
-    'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
+  background: '#141414',
+  // background:
+  //   'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
 }));
 export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // display: 'flex',
@@ -71,7 +72,7 @@ export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // alignItems: 'center',
   // width: '100%',
   // Do not explicitly set the height here to allow Toolbar's default styling to take effect
-  backgroundColor: theme.palette.backgroundA.darker,
+  // backgroundColor: theme.palette.backgroundA.darker,
   // borderRadius: '30px',
   flexGrow: 1,
 

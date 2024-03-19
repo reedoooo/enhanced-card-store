@@ -29,7 +29,10 @@ import CardDetail from '../cards/CardDetail';
 import { useOverlay } from '../../context/hooks/useOverlay';
 import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { enqueueSnackbar } from 'notistack';
-import { DialogPaper } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import {
+  DialogPaper,
+  StyledDialog,
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const GenericCardDialog = (props) => {
   const { theme } = useMode();
@@ -87,7 +90,7 @@ const GenericCardDialog = (props) => {
     [setContext, setIsContextSelected]
   );
   return (
-    <Dialog
+    <StyledDialog
       open={open}
       TransitionComponent={transition ? Slide : Fade}
       keepMounted
@@ -125,6 +128,7 @@ const GenericCardDialog = (props) => {
         <DialogContent
           sx={{
             padding: 0,
+            // overflowY: 'visible', // Ensures content dictates the expansion
           }}
         >
           <Container maxWidth="lg">
@@ -221,7 +225,7 @@ const GenericCardDialog = (props) => {
           </Container>
         </DialogContent>
       </DialogPaper>
-    </Dialog>
+    </StyledDialog>
   );
 };
 
