@@ -31,6 +31,9 @@ import useSelectedContext from '../../context/hooks/useSelectedContext';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
+  const effectiveContext =
+    typeof context === 'object' ? context.pageContext : context;
+
   const { theme } = useMode();
   const cardRef = useRef(null);
   const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
@@ -102,7 +105,6 @@ const GenericCard = React.forwardRef((props, ref) => {
     allDecks: allDecks,
   });
   let cardContent = null;
-
   if (cardSize !== 'xs') {
     cardContent = (
       <StyledCardContent theme={theme}>
@@ -139,7 +141,7 @@ const GenericCard = React.forwardRef((props, ref) => {
           isRequired={true}
           imgUrl={imgUrl}
           card={card}
-          context={context}
+          context={effectiveContext}
           page={page}
           quantity={card?.quantity}
           isHovered={hoveredCard === card}
@@ -158,8 +160,8 @@ const GenericCard = React.forwardRef((props, ref) => {
       >
         <GenericActionButtons
           card={card}
-          context={context}
-          onClick={() => handleContextSelect(context)}
+          context={effectiveContext}
+          onClick={() => handleContextSelect(effectiveContext)}
           onSuccess={() =>
             enqueueSnackbar(
               {

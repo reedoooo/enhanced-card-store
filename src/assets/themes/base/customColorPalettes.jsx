@@ -1,8 +1,10 @@
 import hexToRgba from '../functions/hexToRgba';
 const error = {
+  light: '#e57373',
   main: '#f44336',
   focus: '#f44336',
   dark: '#d32f2f',
+  darkest: '#7f2e2eff', // --persian-plum--
   contrastText: '#fff',
   hoverContrastText: '#111',
 };

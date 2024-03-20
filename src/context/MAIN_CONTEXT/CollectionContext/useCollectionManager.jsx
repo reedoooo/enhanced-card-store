@@ -17,7 +17,6 @@ const useCollectionManager = () => {
     showCollections,
     selectedCollectionId,
     customError: selectedCollectionError,
-
     updateCollectionsData,
     handleSelectCollection,
     resetCollection,
@@ -110,14 +109,14 @@ const useCollectionManager = () => {
     performAction(createApiUrl('create'), 'POST', data, 'createNewCollection');
   const deleteCollection = (collectionId) =>
     performAction(
-      createApiUrl(`delete/${collectionId}`),
+      createApiUrl(`${collectionId}/delete`),
       'DELETE',
       {},
       'deleteCollection'
     );
   const updateCollection = (collectionId, updatedData) =>
     performAction(
-      createApiUrl(`update/${collectionId}`),
+      createApiUrl(`${collectionId}/update`),
       'PUT',
       updatedData,
       'updateCollection'

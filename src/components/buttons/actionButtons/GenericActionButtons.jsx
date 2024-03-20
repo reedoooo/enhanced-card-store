@@ -11,6 +11,7 @@ import ActionButton from './ActionButton';
 import { useSnackbar } from 'notistack';
 import GlassyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/GlassyIcon';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import useDeckManager from '../../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -31,15 +32,7 @@ const GenericActionButtons = ({
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const { addOneToCollection, removeOneFromCollection } =
     useCollectionManager();
-  const { selectedCollection, allCollections, handleSelectCollection } =
-    useSelectedCollection();
-  const {
-    addOneToDeck,
-    removeOneFromDeck,
-    selectedDeck,
-    allDecks,
-    setSelectedDeck,
-  } = useDeckStore();
+  const { addOneToDeck, removeOneFromDeck } = useDeckManager();
   const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'

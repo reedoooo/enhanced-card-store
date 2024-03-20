@@ -18,12 +18,13 @@ const ReusableLoadingButton = ({
   const getButtonStyles = (variant) => {
     if (variant === 'warning') {
       return {
-        background: theme.palette.error.state,
-        borderColor: theme.palette.error.dark,
-        borderWidth: 2,
+        background: theme.palette.error.main,
+        borderColor: theme.palette.error.darkest,
+        borderWidth: 5,
+
         '&:hover': {
           fontWeight: 'bold',
-          bgcolor: theme.palette.error.main,
+          background: theme.palette.error.light,
           borderColor: theme.palette.error.dark,
         },
         '&:focus': {

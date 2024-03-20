@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
-import CollectionForm from '../forms/CollectionForm'; // Adjusted import
+import DeckForm from '../forms/DeckForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -13,7 +13,7 @@ import {
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
 
-const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
+const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();
   const actionType = isNew ? 'add' : 'update';
 
@@ -55,7 +55,7 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
               <LockOutlinedIcon />
             </MDAvatar>
             <MDTypography component="h1" variant="h4">
-              {isNew ? 'Add a Collection' : 'Update a Collection'}
+              {isNew ? 'Add a Deck' : 'Update a Deck'}
             </MDTypography>
           </MDBox>
         </DialogTitle>
@@ -63,8 +63,8 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
       <Divider />
 
       <StyledDialogContent theme={theme} elevation={20}>
-        <CollectionForm
-          collectionData={!isNew ? collectionData : undefined}
+        <DeckForm
+          deckData={!isNew ? deckData : undefined}
           actionType={actionType}
         />
       </StyledDialogContent>
@@ -72,14 +72,14 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
   );
 };
 
-CollectionDialog.propTypes = {
+DeckDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
-  collectionData: PropTypes.shape({
+  deckData: PropTypes.shape({
     name: PropTypes.string,
     description: PropTypes.string,
   }),
 };
 
-export default CollectionDialog;
+export default DeckDialog;

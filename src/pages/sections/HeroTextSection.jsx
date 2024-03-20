@@ -5,8 +5,6 @@ import { useMode } from '../../context';
 const HeroTextSection = ({ shouldShow }) => {
   const { theme } = useMode();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  console.log(shouldShow);
-
   return (
     <MDBox
       sx={{
@@ -19,7 +17,9 @@ const HeroTextSection = ({ shouldShow }) => {
         width: isMobileView ? '100%' : '100%',
         height: isMobileView ? 'calc(100vh - 64px)' : '30%',
         position: isMobileView ? 'absolute' : 'relative',
+        mt: isMobileView ? null : '25%',
         // borderRadius: 'none',
+        // my: isMobileView ? null : '30%',
       }}
     >
       <Zoom in={shouldShow}>
@@ -27,28 +27,27 @@ const HeroTextSection = ({ shouldShow }) => {
           sx={{
             textAlign: 'center',
             background: 'transparent',
-
             maxWidth: '100%',
-            height: isMobileView ? '20vh' : null,
+            height: isMobileView ? '20vh' : '100%',
             alignItems: isMobileView ? 'center' : 'center',
-            mt: isMobileView ? '0.5rem' : 'auto',
+            // mt: isMobileView ? '0.5rem' : 'auto',
             mx: 'auto',
           }}
         >
           <Typography
             component="h1"
-            variant={isMobileView ? 'h4' : 'h2'}
+            variant={isMobileView ? 'h3' : 'h2'}
             sx={{
               fontWeight: 'bold',
               color: theme.palette.primary.main,
               // marginBottom: 2,
-              mt: isMobileView ? '10%' : 'auto',
+              mt: isMobileView ? '5%' : '10%',
             }}
           >
             A New Era of Trading Card Games
           </Typography>
           <Typography
-            variant={isMobileView ? 'subtitle1' : 'h5'}
+            variant={isMobileView ? 'h6' : 'h5'}
             sx={{
               mx: 'auto',
               maxWidth: '90%',

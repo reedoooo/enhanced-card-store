@@ -44,7 +44,7 @@ const PricedCardList = () => {
           >
             <BoxHeader
               title="Top 5 Priced Cards"
-              subtitle={false}
+              subtitle="none"
               sideText={`$${topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
               colorVariant={greenAccent}
               useSX={true}

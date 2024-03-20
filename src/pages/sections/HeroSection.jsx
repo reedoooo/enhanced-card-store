@@ -119,8 +119,8 @@ const HeroSection = () => {
             minHeight: isMobileView ? '30vh' : '80vh',
             backgroundColor: isMobileView ? 'none' : 'transparent',
             alignItems: isMobileView ? 'space-between' : 'center',
-
             flexDirection: 'column',
+            // mt: isMobileView ? null : '50%',
             // position: isMobileView ? 'relative' : 'absolute',
           }}
         >

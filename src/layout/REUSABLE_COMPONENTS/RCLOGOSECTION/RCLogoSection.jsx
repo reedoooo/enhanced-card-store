@@ -44,7 +44,10 @@ const RCLogoSection = () => {
           border: '2px solid black', // Adjust thickness and color as needed
         }}
       >
-        <DeckBuilderIcon style={{ fontSize: '1.5rem', color: 'black' }} />
+        <DeckBuilderIcon
+          style={{ fontSize: '1.5rem', color: 'black' }}
+          iconColor="black"
+        />
       </Avatar>
       <Typography
         variant="h6"

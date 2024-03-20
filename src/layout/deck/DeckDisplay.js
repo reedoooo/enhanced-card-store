@@ -1,13 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useMode, useUserContext } from '../../context';
-import DeckEditor from './DeckEditor';
-// import CardsDisplay from './CardsDisplay';
 import {
   DeckCardsContainer,
-  DeckDisplayBox,
-  DeckDisplayPaper,
-  DeckDisplayTitleTypography,
   DeckStyledButton,
 } from '../../pages/pageStyles/StyledComponents';
 import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -17,52 +11,12 @@ import { Grid, IconButton } from '@mui/material';
 import { StyledContainerBoxPrimary } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import SelectDeckList from './SelectDeckList';
 import AppsIcon from '@mui/icons-material/Apps';
-import useGridItems from '../../context/hooks/useGridItems';
 
 const DeckDisplay = () => {
   const { theme } = useMode();
-  const { setSelectedDeck, selectedDeck, allDecks, setSelectedCards } =
-    useDeckStore();
   const [showAllDecks, setShowAllDecks] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const handleSelectDeck = (deckId) => {
-    const foundDeck = allDecks?.find((deck) => deck?._id === deckId);
-    if (foundDeck) {
-      setSelectedDeck(foundDeck);
-      setSelectedCards(foundDeck?.cards?.slice(0, 30) || []);
-    }
-  };
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-
-    const timeoutId = setTimeout(() => {
-      if (isMounted) {
-        handleSelectDeck(selectedDeck?._id);
-        setIsLoading(false);
-      }
-    }, 1000);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-    };
-  }, [selectedDeck]);
-  // useEffect(() => {
-  //   // Assuming setFormType is a function that can set the form context
-  //   setFormType('addDeckForm');
-  // }, []);
-
-  const cardDisplay = useGridItems({
-    itemsPerPage: 8, // Define as per your requirement
-    cards: selectedDeck?.cards || [],
-    pageContext: 'DeckDisplay', // Context to pass to GenericCard
-    isLoading: isLoading, // Pass the actual loading state
-  });
-
   return (
     <StyledContainerBoxPrimary theme={theme}>
-      {/* <DeckDisplayPaper theme={theme}> */}
       <Grid
         container
         spacing={2}
@@ -140,27 +94,18 @@ const DeckDisplay = () => {
               <Grid item xs={12}>
                 {showAllDecks && (
                   <DeckCardsContainer theme={theme}>
-                    <SelectDeckList
-                      handleSelectDeck={handleSelectDeck}
-                      allDecks={allDecks}
-                    />
+                    <SelectDeckList />
                   </DeckCardsContainer>
                 )}
               </Grid>
             </Grid>
           </MDBox>
         </Grid>
-        {selectedDeck && (
-          <Grid item xs={12}>
-            <DeckEditor />
-          </Grid>
-        )}
 
         <Grid item xs={12}>
-          {selectedDeck && cardDisplay}
+          {/* {selectedDeck && cardDisplay} */}
         </Grid>
       </Grid>
-      {/* </DeckDisplayPaper> */}
     </StyledContainerBoxPrimary>
   );
 };

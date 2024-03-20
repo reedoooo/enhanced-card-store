@@ -20,6 +20,7 @@ const SearchResults = ({
     isLoading,
     pageContext,
     itemsPerPage,
+    type: 'search',
   });
 
   if (isLoading) return <LoadingIndicator />;

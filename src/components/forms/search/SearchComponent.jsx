@@ -47,21 +47,6 @@ const SearchComponent = (pageContext) => {
   return (
     <Grid container spacing={2} direction="column">
       <Grid item xs={12}>
-        {/* <Paper
-          elevation={3}
-          sx={{
-            padding: theme.spacing(2),
-            borderRadius: 2,
-            background: theme.palette.backgroundE.light,
-            boxShadow: 3,
-            margin: 'auto',
-            width: '100%',
-            maxWidth: 'md',
-            '&:hover': {
-              boxShadow: 6,
-            },
-          }}
-        > */}
         <SimpleCard theme={uniqueTheme} hasTitle={false} isFormHeader={true}>
           <MDBox
             sx={{
@@ -105,7 +90,6 @@ const SearchComponent = (pageContext) => {
             />
           </Container>
         </SimpleCard>
-        {/* </Paper> */}
       </Grid>
       <Grid item xs={12}>
         <Card

@@ -97,7 +97,7 @@ const Navigation = ({ isLoggedIn }) => {
 
   const renderMenuItems = (type) => {
     return springs.map((style, index) => (
-      <animated.div style={style} key={menuItems[index + 1]?.name}>
+      <animated.div style={style} key={`${menuItems[index]?.name}`}>
         <ListItem
           sx={{
             maxHeight: 64,

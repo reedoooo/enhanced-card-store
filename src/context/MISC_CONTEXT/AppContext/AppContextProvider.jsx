@@ -71,7 +71,7 @@ export const AppContextProvider = ({ children }) => {
   const compileCardsWithQuantities = () => {
     if (!selectedCollection && !selectedDeck && !cartData) return [];
     const deckCards = allDecks?.reduce((acc, deck) => {
-      if (deck.cards) {
+      if (deck?.cards) {
         acc = [...acc, ...deck.cards];
       }
       return acc;

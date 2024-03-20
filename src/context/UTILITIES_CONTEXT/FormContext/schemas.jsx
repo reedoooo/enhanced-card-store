@@ -24,9 +24,13 @@ const descriptionConstraint = z
   .string()
   .min(1, { message: 'Description is required' });
 const tagConstraint = z.array(z.string());
-const colorConstraint = z.enum(['red', 'blue', 'green', 'yellow'], {
-  message: 'Invalid color',
-});
+
+const colorConstraint = z.enum(
+  ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink'],
+  {
+    message: 'Invalid color',
+  }
+);
 const signupForm = z.object({
   firstName: GenericStringConstraint,
   lastName: GenericStringConstraint,
@@ -44,7 +48,6 @@ const rememberMeFormSchema = z.object({
 const authSwitchSchema = z.object({
   signupMode: z.boolean().default(false),
 });
-// Update User Data Form Schema
 const updateUserDataForm = z.object({
   firstName: nameConstraint,
   lastName: nameConstraint,
@@ -60,23 +63,21 @@ const updateUserDataForm = z.object({
   status: z.string().min(1, { message: 'Status is required' }),
   signupMode: z.boolean(),
 });
-// Collection Form Schemas
 const addCollectionForm = z.object({
   name: nameConstraint,
   description: descriptionConstraint,
 });
-
 const updateCollectionForm = addCollectionForm;
-// Deck Form Schemas
 const addDeckForm = z.object({
+  name: nameConstraint,
+  description: descriptionConstraint,
+});
+const updateDeckForm = z.object({
   name: nameConstraint,
   description: descriptionConstraint,
   tags: tagConstraint,
   color: colorConstraint,
 });
-
-const updateDeckForm = addDeckForm;
-// Search Form Schema
 const searchForm = z.object({
   searchTerm: z.string().min(1, { message: 'Search term is required' }),
   searchParams: z.object({
@@ -91,7 +92,6 @@ const searchForm = z.object({
 const collectionSearchForm = z.object({
   searchTerm: z.string().min(1, { message: 'Search term is required' }),
 });
-// Customer Info Fields Schema
 const customerInfoForm = z.object({
   firstName: nameConstraint,
   lastName: nameConstraint,
@@ -107,29 +107,11 @@ const customerInfoForm = z.object({
   phone: z.string().min(1, { message: 'Phone is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
 });
-// const TimeRangeSchema = z.object({
-//   timeRange: z.object({
-//     id: z.string(
-//       'Invalid time range ID. Please select a valid time range from the list.'
-//     ),
-//     value: z.string(
-//       'Invalid time range value. Please select a valid time range from the list.'
-//     ),
-//     name: z.string(
-//       'Invalid time range name. Please select a valid time range from the list.'
-//     ),
-//   }),
-// });
-
-// const timeRangeSchema = z.object({
-//   timeRange: z.enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d']),
-// });
 const timeRangeSelectorSchema = z.object({
   timeRange: z.string().nonempty({
     message: 'You must select a time range.',
   }),
 });
-// Define a schema for a single filter's values
 const filterValueSchema = z.enum([
   'Unset',
   '1',
@@ -172,7 +154,6 @@ const dataSchema = z.object({
   initialState: initialStateSchema,
   filters: z.array(filterSchema),
 });
-// Usage example:
 const data = {
   initialState: {
     name: '',
@@ -228,12 +209,6 @@ const data = {
   ],
 };
 
-// const parsedData = dataSchema.safeParse(data);
-// if (parsedData.success) {
-//   console.log('Validation successful', parsedData.data);
-// } else {
-//   console.error('Validation failed', parsedData.error);
-// }
 export const formSchemas = {
   signupForm,
   loginForm,
@@ -312,16 +287,15 @@ export const defaultValues = {
   addDeckForm: {
     name: '',
     description: '',
-    tags: [],
-    // eslint-disable-next-line quotes
-    color: `red`,
+    // tags: [],
+    // // eslint-disable-next-line quotes
+    // color: `red`,
   },
   updateDeckForm: {
     name: '',
     description: '',
-    tags: [],
-    // eslint-disable-next-line quotes
-    color: `red`,
+    tags: ['default'],
+    color: 'red',
   },
   searchForm: {
     searchTerm: '',

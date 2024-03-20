@@ -17,13 +17,6 @@ export const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
  */
 export const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
 
-const lastRequestTime = {
-  POST: 0,
-  PUT: 0,
-  DELETE: 0,
-  GET: 0,
-  PATCH: 0,
-};
 /**
  * Filters a collection of data points based on a time threshold.
  *
@@ -85,20 +78,17 @@ export const roundToNearestTenth = (value) => {
   return Math.round(value * 10) / 10;
 };
 
-// Function to calculate total price of a collection
 export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
   return Object.values(collection).reduce((total, price) => total + price, 0);
 };
 
-// Function to get the quantity of cards in a collection by its ID
 export const getCardQuantity = (collectionId, allCollections) => {
   // Assuming allCollections is an array of collection objects
   const collection = allCollections.find((coll) => coll._id === collectionId);
   return collection ? collection.cards.length : 0;
 };
 
-// Custom Hook to get the userId from cookies
 export const useUserId = () => {
   const [cookies] = useCookies(['authUser']);
   const [userId, setUserId] = useState(null);

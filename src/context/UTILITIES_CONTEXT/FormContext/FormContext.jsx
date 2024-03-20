@@ -24,6 +24,7 @@ import useCollectionManager from '../../MAIN_CONTEXT/CollectionContext/useCollec
 import { useDeckStore } from '../../MAIN_CONTEXT/DeckContext/DeckContext';
 import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
 import { useLoading } from '../../hooks/useLoading';
+import useDeckManager from '../../MAIN_CONTEXT/DeckContext/useDeckManager';
 const initializeFormState = (schema) =>
   Object.keys(schema).reduce((acc, key) => ({ ...acc, [key]: false }), {});
 
@@ -33,9 +34,9 @@ export const FormProvider = ({ children }) => {
   const { signup, login, isLoggedIn, userId } = useAuthContext();
   const { handleRequest, setSearchSettings, searchSettings } =
     useCardStoreHook();
-  const { createNewCollection, updateAndSyncCollection, selectedCollection } =
+  const { createNewCollection, updateCollection, selectedCollection } =
     useCollectionManager();
-  const { updateDeckDetails, deleteUserDeck, createUserDeck } = useDeckStore();
+  const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
   const { setTimeRange } = useChartContext();
 
   // ** * * * * * * * * * * * * * * * * * * * |/\ /\ /\| ** * * * * * * * * * * * * * * * * * * *
@@ -115,21 +116,23 @@ export const FormProvider = ({ children }) => {
     addCollectionForm: (formData, additionalData) =>
       createNewCollection(formData, additionalData),
     updateCollectionForm: (formData, additionalData) =>
-      updateAndSyncCollection(additionalData, formData),
+      updateCollection(additionalData, formData),
     createCollectionForm: (formData, additionalData) =>
       createNewCollection(additionalData, formData),
     updateDeckForm: (formData, additionalData) =>
       updateDeckDetails(formData, additionalData),
     addDeckForm: (formData, additionalData) =>
-      console.log(formData, additionalData),
+      createNewDeck(formData, additionalData),
+    deleteDeckForm: (formData, additionalData) =>
+      deleteDeck(formData, additionalData),
     searchForm: (formData, additionalData) =>
       setSearchSettings(formData, additionalData),
-    ollectionSearchForm: (formData, additionalData) =>
+    collectionSearchForm: (formData, additionalData) =>
       console.log(formData, additionalData),
     timeRangeSelector: (formData, additionalData) =>
-      handleTimeRangeChange(formData),
+      handleTimeRangeChange(formData, additionalData),
     searchSettingsSelector: (formData, additionalData) =>
-      setSearchSettings(formData),
+      setSearchSettings(formData, additionalData),
     rememberMeForm: (formData) => {
       // Implement remember me form submission logic here
       console.log('Remember Me Form Data:', formData);
@@ -140,12 +143,16 @@ export const FormProvider = ({ children }) => {
     },
   };
   const onSubmit = useCallback(
-    async (formData) => {
+    async (formData, additionalData) => {
       startLoading(currentSchemaKey);
 
       const formHandler = formHandlers[currentSchemaKey];
       try {
-        console.log(`Submitting form: ${currentSchemaKey}`, formData);
+        console.log(
+          `Submitting form: ${currentSchemaKey}`,
+          `formdata ${formData}`,
+          `additionalData ${additionalData}`
+        );
         await formHandler(formData);
       } catch (error) {
         console.error(`Error submitting ${currentSchemaKey}:`, error);
@@ -202,27 +209,23 @@ export const FormProvider = ({ children }) => {
       console.error('handleChange called without a valid event target');
       return;
     }
-
     const { name, value, type, checked } = e.target;
-
-    // Ensure that the event target has a 'name' property
     if (typeof name === 'undefined') {
       console.error(
         'handleChange called on an element without a "name" attribute'
       );
       return;
     }
-    console.log('e.target:', e.target);
     const fieldValue = type === 'checkbox' ? checked : value;
     values.current[name] = fieldValue;
     console.log('Form field changed:', name, fieldValue);
-    console.log('Search form field changed:', name, fieldValue);
+    console.log('Currrent values:', name, values.current[name]);
     if (name === 'searchTerm' && typeof fieldValue === 'string') {
       console.log('Form data is valid:', fieldValue);
       handleRequest(fieldValue); // Use handleRequest for the search form
     }
 
-    handleFieldChange(e.target.formId, name, fieldValue);
+    // handleFieldChange(e.target.formId, name, fieldValue);
   }, []);
   const handleFocus = useCallback((e) => {
     const { name } = e.target;
@@ -242,6 +245,23 @@ export const FormProvider = ({ children }) => {
   useEffect(() => {
     methods.reset(getDefaultValuesFromSchema(formSchemas[currentSchemaKey]));
   }, [currentSchemaKey, methods]);
+
+  const setInitialValues = useCallback(
+    (newInitialValues) => {
+      if (newInitialValues) {
+        console.log('Setting initial values:', newInitialValues);
+        methods.reset(newInitialValues);
+      }
+    },
+    [methods]
+  );
+
+  // Ensure initial values are set when they change
+  // useEffect(() => {
+  //   if (initialValues ) {
+  //     setInitialValues(initialValues);
+  //   }
+  // }, [initialValues, setInitialValues]);
 
   const contextValue = useMemo(
     () => ({
@@ -263,6 +283,7 @@ export const FormProvider = ({ children }) => {
       handleBlur,
       setFormSchema,
       setCurrentForm: setFormSchema,
+      setInitialValues,
       onSubmit: methods.handleSubmit(onSubmit),
       onChange,
       // onChange: methods.handleChange(onChange),
@@ -291,6 +312,8 @@ export const FormProvider = ({ children }) => {
       onSubmit,
       onChange,
       handleSetAllForms,
+      setInitialValues,
+      currentSchemaKey,
     ]
   );
 

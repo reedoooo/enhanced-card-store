@@ -25,7 +25,7 @@ const collectionFields = [
 const CollectionForm = ({ collectionData, actionType }) => {
   const { setFormSchema, onSubmit } = useFormContext();
   const { theme } = useMode();
-  const { showSuccess, showError } = useSnackbarManager();
+  // const { showSuccess, showError } = useSnackbarManager();
 
   // Determine the schema name and button label based on the action type
   const schemaName =
@@ -40,19 +40,19 @@ const CollectionForm = ({ collectionData, actionType }) => {
     }
   }, [collectionData, setFormSchema, schemaName, actionType]);
 
-  const handleFormSubmit = async (data) => {
-    const method = actionType === 'add' ? 'Add' : 'Update';
-    try {
-      await onSubmit(data, schemaName, collectionData?._id);
-      showSuccess(
-        `You've successfully ${method.toLowerCase()}ed the collection.`
-      );
-    } catch (error) {
-      showError(
-        `Failed to ${method.toLowerCase()} collection. Please try again.`
-      );
-    }
-  };
+  // const handleFormSubmit = async (data) => {
+  //   const method = actionType === 'add' ? 'Add' : 'Update';
+  //   try {
+  //     await onSubmit(data, schemaName, collectionData?._id);
+  //     showSuccess(
+  //       `You've successfully ${method.toLowerCase()}ed the collection.`
+  //     );
+  //   } catch (error) {
+  //     showError(
+  //       `Failed to ${method.toLowerCase()} collection. Please try again.`
+  //     );
+  //   }
+  // };
 
   return (
     <RCZodForm
@@ -60,7 +60,7 @@ const CollectionForm = ({ collectionData, actionType }) => {
       buttonLabel={buttonLabel}
       startIcon={startIcon}
       fields={collectionFields}
-      onSubmit={handleFormSubmit}
+      // onSubmit={handleFormSubmit}
       theme={theme}
       initialValues={actionType === 'update' ? collectionData : {}}
     />

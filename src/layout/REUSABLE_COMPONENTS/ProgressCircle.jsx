@@ -4,10 +4,37 @@ import { Box, useTheme } from '@mui/material';
 import PropTypes from 'prop-types';
 import RCToolTip from './RCTOOLTIP/RCToolTip';
 import { useMode } from '../../context';
+import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
+
+const ProgressCircleSkeleton = ({ size = 120 }) => {
+  const theme = useTheme();
+  const { theme: modeTheme } = useMode();
+  const { SkeletonLoader } = useSkeletonLoader();
+
+  return (
+    <Box
+      sx={{
+        borderRadius: '50%',
+        bgcolor: theme.palette.action.disabledBackground,
+        width: size,
+        height: size,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <SkeletonLoader type="pieChart" />
+    </Box>
+  );
+};
 
 // ProgressCircle now expects an array of collections instead of a single progress value.
 const ProgressCircle = ({ collections, size = 120 }) => {
   const { theme } = useMode();
+
+  if (!collections || collections.length === 1) {
+    return <ProgressCircleSkeleton size={size} />;
+  }
 
   // Calculate the total value of all collections.
   const totalValue = collections?.reduce(
@@ -19,7 +46,7 @@ const ProgressCircle = ({ collections, size = 120 }) => {
   let cumulativePercentage = 0;
   const background = collections
     ?.reduce((gradient, collection) => {
-      const collectionPercentage = (collection.totalPrice / totalValue) * 100;
+      const collectionPercentage = (collection?.totalPrice / totalValue) * 100;
       const nextCumulativePercentage =
         cumulativePercentage + collectionPercentage;
       const color = theme.palette.chartTheme.blueAccent.default; // Color for each segment

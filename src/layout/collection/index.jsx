@@ -38,9 +38,9 @@ const CollectionPortfolio = () => {
     customError,
     toggleShowCollections,
   } = useSelectedCollection();
-  useEffect(() => {
-    fetchCollections();
-  }, []);
+  // useEffect(() => {
+  //   fetchCollections();
+  // }, []);
   const { currentForm } = useFormContext();
   const { isCollectionVisible, toggleCollectionVisibility } =
     useVisibilityContext();

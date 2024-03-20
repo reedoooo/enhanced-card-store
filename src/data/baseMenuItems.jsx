@@ -22,7 +22,7 @@ export const baseMenuItems = ({ cartCardQuantity }) => [
   { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
   {
     name: 'Deck',
-    icon: <DeckBuilderIcon color="black" />,
+    icon: <DeckBuilderIcon iconColor="black" />,
     to: '/deckbuilder',
     requiresLogin: false,
   },

@@ -6,20 +6,8 @@ import { useFormContext, useMode } from '../../context';
 import RCSwitch from '../../components/forms/reusable/RCSwitch';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-const DeckEditor = () => {
-  const { selectedDeck, setSelectedDeck } = useDeckStore();
+const DeckEditor = ({ deck, onClose }) => {
   const { theme } = useMode();
-  const { currentForm, toggleForm, currentSchemaKey } = useFormContext();
-
-  const handleToggleEdit = () => {
-    if (currentForm === 'updateDeckForm') {
-      toggleForm('addDeckForm');
-      setSelectedDeck(null);
-    }
-    if (currentForm === 'addDeckForm') {
-      toggleForm('updateDeckForm');
-    }
-  };
 
   return (
     <Box sx={{ margin: theme.spacing(3) }}>
@@ -32,7 +20,7 @@ const DeckEditor = () => {
           }}
         >
           <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
-            {selectedDeck ? 'Edit Deck' : 'Create New Deck'}
+            {deck ? 'Edit Deck' : 'Create New Deck'}
           </Typography>
           <Box
             sx={{
@@ -43,18 +31,9 @@ const DeckEditor = () => {
               alignItems: 'center',
               gap: 2,
             }}
-          >
-            <RCSwitch
-              checked={currentSchemaKey === 'updateDeckForm'}
-              onChange={handleToggleEdit}
-              labelLeft="Add"
-              labelRight="Update"
-              iconLeft={<AddCircleOutlineIcon />}
-              iconRight={<AddCircleOutlineIcon />}
-            />
-          </Box>
+          ></Box>
         </Box>
-        <DeckEditPanel selectedDeck={selectedDeck} />
+        <DeckEditPanel deck={deck} />
       </Paper>
     </Box>
   );

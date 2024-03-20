@@ -2,7 +2,7 @@
 import { createNewPriceEntry } from './Helpers';
 import jsonData from './MAIN_CONTEXT/CollectionContext/nivoTestData.json';
 const { nivoTestData } = jsonData;
-import user from './user';
+import user from '../data/user';
 
 // import { lightTheme, indigoTheme } from '../assets/themes/colors';
 // ! DEFAULT VALUES FOR CARD OBJECTS
@@ -327,6 +327,20 @@ const defaultDeck = {
   tags: [''],
   color: '',
   cards: [defaultCard],
+  addDefaultCard: function () {
+    const newCard = createDefaultCard();
+    this.cards.push(newCard);
+    this.updateTotalPrice();
+  },
+  updateTotalPrice: function () {
+    this.newTotalPrice = this.cards.reduce(
+      (acc, card) => acc + card.totalPrice,
+      0
+    );
+  },
+  addMultipleDefaultCards: function (numberOfCards) {
+    Array.from({ length: numberOfCards }).forEach(() => this.addDefaultCard());
+  },
 };
 // ! DEFAULT VALUES FOR CART OBJECTS
 const defaultCart = {
@@ -357,6 +371,7 @@ export const DEFAULT_ALLDECKS_ARRAY = [defaultDeck];
 export const DEFAULT_CART = defaultCart;
 export const DEFAULT_USER = defaultUser;
 export const SELECTED_COLLECTION_ID = 'selectedCollectionId';
+export const SELECTED_DECK_ID = 'selectedDeckId';
 export const DEFAULT_CARDS_COUNT = 5;
 // FUNCTIONS
 export const createNewCardObject = () => {

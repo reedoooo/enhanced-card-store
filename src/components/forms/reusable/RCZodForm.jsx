@@ -22,6 +22,8 @@ const RCZodForm = ({
   startIcon,
   schemaName,
   additionalButtons,
+  initialValues,
+  additionalData,
 }) => {
   const { theme } = useMode();
   const {
@@ -29,24 +31,36 @@ const RCZodForm = ({
     onSubmit,
     handleChange,
     setFormSchema,
+    currentForm,
     formState: { errors, isSubmitting },
     // getValues,
     handleSearchTermChange,
   } = useFormContext();
 
+  // useEffect(() => {
+  //   setFormSchema(schemaName);
+  // }, [setFormSchema, schemaName]);
+  // useEffect(() => {
+  //   setFormSchema(schemaName);
+  //   if (initialValues) {
+  //     console.log('initialValues:', initialValues);
+  //     formMethods.reset(initialValues);
+  //   }
+  // }, [setFormSchema, schemaName, formMethods, initialValues]);
   useEffect(() => {
     setFormSchema(schemaName);
-  }, [setFormSchema, schemaName]);
-
+    // When currentForm or schemaName changes, reset form with new initialValues or empty values
+    formMethods.reset(initialValues || {});
+  }, [setFormSchema, schemaName, formMethods, initialValues, currentForm]);
   const onFormSubmit = (data) => {
-    onSubmit(data, schemaName);
+    onSubmit(data, additionalData);
   };
 
   const renderField = (field) => {
     const isSearchForm =
       schemaName === 'searchForm' && field.name === 'searchTerm';
 
-    const onChange = isSearchForm ? handleSearchTermChange : undefined;
+    const onChange = isSearchForm ? handleChange : undefined;
 
     if (field.type === 'select') {
       return (
@@ -56,7 +70,24 @@ const RCZodForm = ({
             <Select
               {...formMethods.register(field.name)}
               label={field.label}
-              defaultValue=""
+              value={formMethods.getValues(field.name) || ''} // Manage value explicitly
+              // defaultValues={initialValues ? initialValues[field.name] : ''}
+              // value={initialValues ? initialValues[field.name] : ''}
+              // onChange={onChange}
+              // options={field.options}
+              // defaultValue={initialValues ? initialValues[field.name] : ''}
+              sx={{
+                width: '100%',
+                marginBottom: 2,
+                backgroundColor: theme.palette.background.paper,
+                color: theme.palette.text.primary,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.chartTheme.redAccent.default,
+                },
+                '& .MuiSvgIcon-root': {
+                  color: theme.palette.text.primary,
+                },
+              }}
             >
               {field?.options?.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -85,14 +116,24 @@ const RCZodForm = ({
       return (
         <FormFieldBox key={field.name} theme={theme}>
           <FormField
-            label={field.label}
+            label={
+              initialValues && initialValues[field.name] ? '' : field.label
+            }
             name={field.name}
+            // value={initialValues ? initialValues[field.name] : ''}
             type={field.type || 'text'}
             register={formMethods.register}
             errors={errors}
             error={errors[field.name]?.message}
+            value={
+              initialValues
+                ? initialValues[field.name]
+                : formMethods.getValues(field.name)
+            }
             required={field.required || false}
-            onChange={handleChange}
+            initialValue={initialValues ? initialValues[field.name] : ''}
+            // onChange={handleChange}
+            onChange={onChange}
             // defaultValue={getValues(field.name)}
             // onChange={(e) => formMethods.handleChange(e.target.value)}
             InputProps={
@@ -140,10 +181,10 @@ const RCZodForm = ({
             loading={isSubmitting}
             label={button.label}
             startIcon={button.startIcon}
-            color={button.color}
+            // color={button.color}
             variant="warning"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, background: theme.palette.error.main }}
           />
         ))}
     </FormBox>

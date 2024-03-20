@@ -6,10 +6,19 @@ import {
   CardContent,
   makeStyles,
   Skeleton,
+  Grid,
+  Collapse,
+  CardActionArea,
 } from '@mui/material';
 import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
+import MDBox from './MDBOX';
+import { useMode } from '../../context';
+import {
+  AspectRatioBoxSkeleton,
+  StyledSkeletonCard,
+} from '../../pages/pageStyles/StyledComponents';
 
-function LoadingCardSkeleton() {
+const LoadingCardSkeleton = () => {
   return (
     <Card
       className={'cardroot'}
@@ -36,10 +45,32 @@ function LoadingCardSkeleton() {
       </CardContent>
     </Card>
   );
-}
+};
+
+const PageHeaderSkeleton = () => {
+  const { SkeletonLoader } = useSkeletonLoader();
+
+  return (
+    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
+      <Grid item xs={12} sm={6}>
+        <Card>
+          <SkeletonLoader type="title" />
+          <SkeletonLoader type="subtitle" />
+        </Card>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        sx={{ display: 'flex', justifyContent: 'flex-end' }}
+      >
+        <SkeletonLoader type="button" />
+      </Grid>
+    </Grid>
+  );
+};
 
 const HeroSectionSkeleton = () => {
-  // Assuming useSkeletonLoader provides a loader component that accepts type, count, and styleProps
   const { SkeletonLoader } = useSkeletonLoader();
 
   return (
@@ -92,4 +123,81 @@ const HeroSectionSkeleton = () => {
   );
 };
 
-export { LoadingCardSkeleton, HeroSectionSkeleton };
+const SkeletonCard = () => {
+  const { theme } = useMode();
+
+  return (
+    <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
+      <StyledSkeletonCard theme={theme}>
+        <AspectRatioBoxSkeleton theme={theme}>
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height="100%"
+            animation="wave"
+          />
+        </AspectRatioBoxSkeleton>
+        <CardContent>
+          <Skeleton variant="text" animation="wave" height={20} />
+          <Skeleton variant="text" animation="wave" height={20} width="80%" />
+          <Skeleton variant="text" animation="wave" height={20} width="60%" />
+        </CardContent>
+        <Skeleton variant="rectangular" animation="wave" height={48} />
+      </StyledSkeletonCard>
+    </Box>
+  );
+};
+
+const CollectionListItemSkeleton = ({ count, index }) => (
+  <Collapse key={`skeleton-${index}-${count}`} in={true}>
+    <Box sx={{ p: 1, display: 'flex', flexDirection: 'row' }}>
+      <Card sx={{ width: '100%' }}>
+        <CardActionArea sx={{ width: '100%' }} disabled={true}>
+          <Grid container spacing={2} sx={{ p: 2 }}>
+            <Skeleton variant="circular" width={40} height={40} />
+            <Skeleton variant="text" sx={{ flexGrow: 1, mx: 2 }} />
+            <Skeleton variant="text" width="60%" />
+          </Grid>
+        </CardActionArea>
+      </Card>
+    </Box>
+  </Collapse>
+);
+
+const DeckListItemSkeleton = ({ count, index }) => (
+  <Collapse key={`skeleton-${index}-${count}`} in={true}>
+    <Box sx={{ p: 1, display: 'flex', flexDirection: 'row' }}>
+      <Card sx={{ width: '100%' }}>
+        <CardActionArea sx={{ width: '100%' }} disabled={true}>
+          <Grid container spacing={2} sx={{ p: 2 }}>
+            <Skeleton variant="circular" width={40} height={40} />
+            <Skeleton variant="text" sx={{ flexGrow: 1, mx: 2 }} />
+            <Skeleton variant="text" width="60%" />
+          </Grid>
+        </CardActionArea>
+      </Card>
+    </Box>
+  </Collapse>
+);
+
+const DynamicSkeletonList = ({ itemType, count, gridItemProps, context }) => (
+  <MDBox>
+    {Array(count)
+      .fill(0)
+      .map((_, index) => (
+        <Grid item {...gridItemProps} key={index}>
+          <SkeletonCard context={context} />
+        </Grid>
+      ))}
+  </MDBox>
+);
+
+export {
+  LoadingCardSkeleton,
+  HeroSectionSkeleton,
+  PageHeaderSkeleton,
+  DynamicSkeletonList,
+  SkeletonCard,
+  CollectionListItemSkeleton,
+  DeckListItemSkeleton,
+};

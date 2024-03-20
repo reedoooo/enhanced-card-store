@@ -7,11 +7,11 @@ import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
 
 const ValuDistributionCircle = ({ collections }) => {
   const { theme } = useMode();
-  const collectionMetaData = collections.reduce(
+  const collectionMetaData = collections?.reduce(
     (meta, collection) => {
-      meta.totalValue += collection.totalPrice;
+      meta.totalValue += collection?.totalPrice;
       meta.tooltips.push(
-        `${collection.name}: $${collection.totalPrice.toFixed(2)}`
+        `${collection?.name}: $${collection?.totalPrice.toFixed(2)}`
       );
       return meta;
     },
@@ -22,7 +22,7 @@ const ValuDistributionCircle = ({ collections }) => {
   const gradientStops = collections
     .map((collection) => {
       const valuePercent =
-        (collection.totalPrice / collectionMetaData.totalValue) * 100;
+        (collection?.totalPrice / collectionMetaData?.totalValue) * 100;
       const stop = `${theme.palette.chartTheme.blueAccent.default} ${cumulativePercent}%, ${theme.palette.chartTheme.blueAccent.default} ${cumulativePercent + valuePercent}%`;
       cumulativePercent += valuePercent;
       return stop;
