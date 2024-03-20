@@ -10,12 +10,19 @@ import {
 } from '@mui/icons-material';
 import DeckBuilderIcon from '../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 import { Badge } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-export const baseMenuItems = (cartCardQuantity, iconColor) => [
+export const baseMenuItems = ({ cartCardQuantity }) => [
+  // {
+  //   name: 'Menu',
+  //   icon: <MenuIcon />,
+  //   to: '/',
+  //   requiresLogin: false,
+  // },
   { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
   {
-    name: 'Deck Builder',
-    icon: <DeckBuilderIcon color={iconColor} />,
+    name: 'Deck',
+    icon: <DeckBuilderIcon color="black" />,
     to: '/deckbuilder',
     requiresLogin: false,
   },

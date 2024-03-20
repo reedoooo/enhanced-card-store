@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { CardContent, IconButton, Typography } from '@mui/joy';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { useMode } from '../../../context';
-import { Icon } from '@mui/material';
+import { Icon, useMediaQuery } from '@mui/material';
 import MDBox from '../MDBOX';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -114,6 +114,7 @@ const SimpleCard = ({
   ...rest
 }) => {
   const { theme: themeSettings } = useMode();
+  const isMobileView = useMediaQuery(themeSettings.breakpoints.down('sm'));
   const cardStyle = {
     // display: 'flex',
     width: '100%',
@@ -147,6 +148,7 @@ const SimpleCard = ({
         <CardContent
           sx={{
             height: '100%',
+            width: '100%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -163,6 +165,7 @@ const SimpleCard = ({
                 // Increase the icon size to better fill its container
                 fontSize: 'inherit',
                 height: '100%',
+                width: '100%',
                 // width: '100%',
               }}
             >
@@ -187,6 +190,7 @@ const SimpleCard = ({
               justifyContent: 'center',
               alignItems: 'center',
               flexGrow: 1,
+              border: 'none',
             }}
           >
             <IconButton
@@ -203,7 +207,8 @@ const SimpleCard = ({
               <CheckCircleOutlineOutlinedIcon
                 style={{
                   // Adjust icon size to be larger based on the parent size
-                  fontSize: '4rem', // Example size, adjust as needed
+                  // fontSize: '4rem', // Example size, adjust as needed
+                  fontSize: isMobileView ? '3rem' : '4rem', // Scaling text size by 8
                   color: theme.colorPrimary,
                   maxWidth: '100%',
                   maxHeight: '100%',
@@ -215,7 +220,9 @@ const SimpleCard = ({
               sx={{
                 ml: themeSettings.spacing(4),
 
-                fontSize: themeSettings.typography.d3, // Scaling text size by 8
+                fontSize: isMobileView
+                  ? themeSettings.typography.d6
+                  : themeSettings.typography.d3, // Scaling text size by 8
               }}
             >
               {heroText}

@@ -26,7 +26,7 @@ const RCLogoSection = () => {
         height: '50px',
         padding: '8px',
         marginRight: '8px',
-        color: 'rgba(0, 0, 0, 0.54)',
+        color: 'white',
         '&:hover': {
           backgroundColor: 'rgba(0, 0, 0, 0.1)',
         },
@@ -35,16 +35,16 @@ const RCLogoSection = () => {
       {/* Encapsulate DeckBuilderIcon within an Avatar */}
       <Avatar
         sx={{
-          marginRight: '10px',
+          marginRight: '5px',
           width: 23,
           height: 23,
-          backgroundColor: 'transparent',
+          // backgroundColor: 'transparent',
+          color: 'white',
+          background: 'white',
           border: '2px solid black', // Adjust thickness and color as needed
         }}
       >
-        <DeckBuilderIcon
-          style={{ fontSize: '1.5rem', color: 'currentColor' }}
-        />
+        <DeckBuilderIcon style={{ fontSize: '1.5rem', color: 'black' }} />
       </Avatar>
       <Typography
         variant="h6"
@@ -53,7 +53,7 @@ const RCLogoSection = () => {
           fontFamily: 'Roboto, sans-serif',
           fontWeight: 700,
           fontSize: { xs: '1rem', sm: '1.2rem', md: '1.4rem' },
-          color: 'inherit',
+          color: 'white',
         }}
       >
         DeckMaster

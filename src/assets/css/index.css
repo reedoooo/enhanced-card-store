@@ -290,14 +290,14 @@ button {
 
 @media (max-width: 500px) {
   .swiper_container {
-    height: 47rem;
+    /* height: 47rem; */
   }
   .swiper-slide {
     width: 28rem !important;
-    height: 36rem !important;
+    /* height: 36rem !important; */
   }
   .swiper-slide img {
-    width: 28rem !important;
+    /* width: 28rem !important; */
     height: 36rem !important;
   }
 }
@@ -308,13 +308,13 @@ button {
   }
   .swiper-slide {
     width: 30rem;
-    height: 36rem;
+    /* height: 36rem; */
     /* height: auto; */
     /* Adjust the height as needed */
   }
   .swiper-slide img {
     width: 30rem;
-    height: 36rem;
+    /* height: 36rem; */
   }
 }
 
