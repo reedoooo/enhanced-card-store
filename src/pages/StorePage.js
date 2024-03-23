@@ -5,7 +5,7 @@ import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import StoreSearch from '../layout/store/StoreSearch';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
-import PageLayout from '../layout/Containers/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 const StorePage = () => {
   const { loadingStatus, returnDisplay, isModalOpen, modalContent } =
     useLoadingAndModal();

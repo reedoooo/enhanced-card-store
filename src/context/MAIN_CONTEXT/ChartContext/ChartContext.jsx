@@ -11,26 +11,16 @@ export const ChartProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
-      // timeRange: selectedCollection.averagedChartData[],
-      // timeRanges: TIME_RANGES,
-      // tickValues: tickValues,
-      // xFormat: xFormat,
-
       nivoChartData: selectedCollection?.nivoChartData,
       newNivoChartData: selectedCollection?.newNivoChartData,
       muiChartData: selectedCollection?.muiChartData,
       nivoTestData: selectedCollection?.nivoTestData,
-      // setTimeRange,
     }),
     [
-      // timeRange,
-      // tickValues,
-      // xFormat,
       selectedCollection?.nivoChartData,
       selectedCollection?.newNivoChartData,
       selectedCollection?.muiChartData,
       selectedCollection?.nivoTestData,
-      // setTimeRange,
     ]
   );
   return (

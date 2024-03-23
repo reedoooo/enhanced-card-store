@@ -5,74 +5,62 @@ import {
   DEFAULT_CARDS_COUNT,
 } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import jsonData from './nivoTestData.json';
+import jsonData from '../../../data/nivoTestData.json';
 import _set from 'lodash/set';
 
 function useSelectedCollection() {
   const { nivoTestData } = jsonData;
-
   const [collections, setCollections] = useLocalStorage('collections', {
     allIds: [],
     byId: {
-      [SELECTED_COLLECTION_ID]:
-        DEFAULT_COLLECTION.addMultipleDefaultCards(DEFAULT_CARDS_COUNT),
+      [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
     },
     selectedId: SELECTED_COLLECTION_ID,
     showCollections: true,
     nivoTestData: nivoTestData,
   });
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [collectionsVisible, setCollectionsVisible] = useState(true);
   const [customError, setCustomError] = useState(null);
   const prevSelectedCollectionIdRef = useRef(null);
 
   useEffect(() => {
     prevSelectedCollectionIdRef.current = selectedCollectionId;
   }, [selectedCollectionId]);
-  const isCollectionShown = useMemo(
-    () => collections.selectedId !== null,
-    [collections.selectedId]
-  );
   const getSelectedCollection = useMemo(
     () => collections.byId[collections.selectedId] || DEFAULT_COLLECTION,
     [collections.byId, collections.selectedId]
   );
   const handleSelectCollection = useCallback(
     (collection) => {
-      console.log('SELECTED COLLECTION ID', collection._id);
-      const prevSelectedCollectionId = prevSelectedCollectionIdRef.current;
-      console.log('Previous selected collection ID:', prevSelectedCollectionId);
-      setSelectedCollectionId(collection?._id);
+      console.log('SELECTED COLLECTION ID', collection?._id);
+      // setSelectedCollectionId(collection?._id);
       setCustomError(null);
-      setCollectionsVisible(false); // Hide collection list to show the selected collection's details.
-      const collectionId = collection._id;
-      if (!collections.byId[collectionId]) {
+
+      if (!collections.byId[collection?._id]) {
         setCustomError('Invalid collection selected');
         return;
       }
       setCollections((prev) => ({
         ...prev,
-        selectedId: collectionId,
-        showCollections: false,
+        selectedId: collection?._id,
+        showCollections: !prev.showCollections,
+        // showCollections: true,
       }));
+      // if (prevSelectedCollectionIdRef.current !== collection?._id) {
+      //   toggleShowCollections();
+      // }
       setCustomError(null);
     },
     [collections.byId, setCollections, setSelectedCollectionId]
   );
-  const toggleShowCollections = useCallback(() => {
-    setCollections((prev) => ({
-      ...prev,
-      showCollections: !prev.showCollections,
-    }));
-  }, [setCollections]);
-  const handleBackToCollections = useCallback(() => {
-    setCollections((prev) => ({
-      ...prev,
-      selectedId: null,
-      showCollections: true,
-    }));
-    setCustomError(null);
-  }, [setCollections]);
+  // const handleBackToCollections = useCallback(() => {
+  //   setCollections((prev) => ({
+  //     ...prev,
+  //     selectedId: null,
+  //     showCollections: true,
+  //   }));
+  //   setCustomError(null);
+  // }, [setCollections]);
   const updateCollectionField = useCallback(
     (collectionId, fieldPath, value) => {
       setCollections((prev) =>
@@ -129,8 +117,6 @@ function useSelectedCollection() {
   );
 
   const prevCollectionsRef = useRef();
-
-  // useEffect to log changes
   useEffect(() => {
     if (prevCollectionsRef.current) {
       console.log('Collections data updated:', collections);
@@ -142,16 +128,15 @@ function useSelectedCollection() {
     selectedCollectionId: collections.selectedId,
     selectedCollection: getSelectedCollection,
     allCollections: Object.values(collections.byId),
-    showCollections: collectionsVisible,
+    showCollections: !!collections.showCollections,
     nivoTestData: nivoTestData,
     handleSelectCollection,
-    handleBackToCollections,
+    handleBackToCollections: resetCollection,
     updateCollectionField,
     resetCollection,
     updateCollectionsData,
     customError,
-    isCollectionShown,
-    toggleShowCollections,
+    // toggleShowCollections,
     addNewCollection,
     removeCollection,
     setCustomError,

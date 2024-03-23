@@ -15,7 +15,7 @@ import team1 from '../../assets/images/bg1.jpg';
 import team2 from '../../assets/images/bg1.jpg';
 import team3 from '../../assets/images/bg1.jpg';
 import team4 from '../../assets/images/bg1.jpg';
-import DashboardLayout from '../Containers/DashBoardLayout';
+import DashboardLayout from '../REUSABLE_COMPONENTS/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import Header from './sub-components/Header';
 import PlatformSettings from './sub-components/Settings';

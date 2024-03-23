@@ -71,12 +71,12 @@ export const StatisticsProvider = ({ children }) => {
     if (!selectedCollection || !selectedCollection.collectionStatistics)
       return [];
 
-    const { highPoint, lowPoint, avgPrice } =
+    const { highPoint, lowPoint, avgPrice, percentageChange } =
       selectedCollection.collectionStatistics;
     return [
       {
         axis: 'y',
-        value: highPoint,
+        value: percentageChange,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
         legend: `${selectedCollection.name} High`,
         legendOrientation: 'vertical',

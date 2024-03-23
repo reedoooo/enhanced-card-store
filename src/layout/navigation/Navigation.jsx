@@ -10,16 +10,9 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-  useAuthContext,
-  useCartStore,
-  useMode,
-  useSidebarContext,
-} from '../../context';
-import { Navigate, useNavigate } from 'react-router-dom';
-// import getMenuItemsData from './menuItemsData';
+import { useCartStore, useMode } from '../../context';
+import { useNavigate } from 'react-router-dom';
 import { useSpring, animated, useSprings } from 'react-spring';
-import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import RCLogoSection from '../REUSABLE_COMPONENTS/RCLOGOSECTION/RCLogoSection';
 import {
   Avatar,
@@ -76,6 +69,8 @@ const Navigation = ({ isLoggedIn }) => {
           width: '100%',
           maxWidth: clickAction === 'navigate' ? '100%' : '5rem',
           boxShadow: 'none',
+          border: '3px solid',
+          borderColor: theme.palette.chartTheme.greenAccent.light,
           '&:hover': { bgcolor: 'background.level1' },
         }}
         onClick={handleClick}

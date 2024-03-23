@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { CardActions, Typography } from '@mui/material';
-import CardMediaSection from './media/CardMediaSection';
+import CardMediaSection from './CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholder from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';

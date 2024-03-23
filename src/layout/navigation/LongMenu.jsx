@@ -15,7 +15,10 @@ const ITEM_HEIGHT = 48;
 
 // Wrap your component with React.forwardRef to forward the ref
 const LongMenu = React.forwardRef(
-  ({ onEdit, onDelete, onStats, onView, onSelect, collectionId }, ref) => {
+  (
+    { onEdit, onDelete, onStats, onView, onSelect, collectionId, collection },
+    ref
+  ) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -76,7 +79,7 @@ const LongMenu = React.forwardRef(
             {
               text: 'Select Collection',
               icon: <SelectAllIcon />,
-              action: () => onSelect(collectionId),
+              action: () => onSelect(collection),
             },
             {
               text: 'Collection Stats',

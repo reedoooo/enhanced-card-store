@@ -101,7 +101,6 @@ export const FormProvider = ({ children }) => {
       prevForm === 'loginForm' ? 'signupForm' : 'loginForm'
     );
   };
-
   const formHandlers = {
     signupForm: (formData) =>
       signup(
@@ -274,6 +273,7 @@ export const FormProvider = ({ children }) => {
       isFormDataLoading: isFormDataLoading,
       currentSchemaKey,
       currentForm: currentSchemaKey,
+      forms,
       getValues: methods.getValues,
       handleTimeRangeChange,
       handleSearchTermChange,

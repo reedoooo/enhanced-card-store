@@ -13,6 +13,7 @@ import PerformanceStatBox from './statItems/PerformanceStatBox';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
 import styled from 'styled-components';
 import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
+import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
 
 const SkeletonPieChart = ({ theme }) => (
   <MDBox
@@ -44,7 +45,7 @@ const SkeletonPieChart = ({ theme }) => (
 const StatBoxes = () => {
   const { theme } = useMode();
   return (
-    <MDBox sx={{ width: '100%', minHeight: '100%' }}>
+    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
       <TotalCardsCollectedStatBox />
       <TotalPriceStatBox />
     </MDBox>
@@ -56,13 +57,13 @@ const DistCircle = () => {
   const { allCollections } = useAppContext();
   if (!allCollections || allCollections.length === 0) {
     return (
-      <MDBox sx={{ width: '100%', minHeight: '100%' }}>
-        <SkeletonPieChart theme={theme} />{' '}
+      <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
+        <SkeletonPieChart theme={theme} />
       </MDBox>
     );
   }
   return (
-    <MDBox sx={{ width: '100%', minHeight: '100%' }}>
+    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
       <ValuDistributionCircle collections={allCollections} />
     </MDBox>
   );
@@ -73,7 +74,7 @@ const PriceList = () => {
   const colors = theme.palette.chartTheme;
 
   return (
-    <MDBox sx={{ width: '100%', minHeight: '100%' }}>
+    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
       <PricedCardList />
     </MDBox>
   );
@@ -106,7 +107,9 @@ const StatBoard = () => {
               key={index}
               sx={{ width: '100%', minHeight: '100%' }}
             >
-              {component}
+              <FlexBetween mt="0.25rem" gap="1.5rem" pr="1rem">
+                {component}
+              </FlexBetween>
             </Grid>
           )
         )}

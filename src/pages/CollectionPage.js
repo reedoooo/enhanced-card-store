@@ -5,7 +5,7 @@ import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import { useCollectionStore, useMode } from '../context';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
-import PageLayout from '../layout/Containers/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import { useIsFirstRender } from '../context/hooks/useIsFirstRender';
 import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';

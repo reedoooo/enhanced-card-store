@@ -1,16 +1,41 @@
 import { ResponsiveLine } from '@nivo/line';
 import { useChartContext, useMode } from '../../../../context';
-import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import {
   CustomTooltipLayer,
   useEventHandlers,
 } from '../../../../context/MAIN_CONTEXT/ChartContext/helpers';
 import { useEffect, useMemo } from 'react';
-import NivoContainer from './NivoContainer';
+import NivoContainer from '../../../REUSABLE_COMPONENTS/NivoContainer';
 import PropTypes from 'prop-types';
 import ChartErrorBoundary from './ChartErrorBoundary';
-import RCToolTip from '../../../REUSABLE_COMPONENTS/RCTOOLTIP/RCToolTip';
 import { BasicTooltip } from '@nivo/tooltip';
+const formatDateBasedOnRange = (range) => {
+  const formatMap = {
+    '24hr': { format: '%H:%M', ticks: 'every hour' },
+    '7d': { format: '%b %d', ticks: 'every day' },
+    '30d': { format: '%b %d', ticks: 'every day' },
+    '90d': { format: '%b %d', ticks: 'every 3 days' },
+    '180d': { format: '%b %d', ticks: 'every 6 days' },
+    '270d': { format: '%b %d', ticks: 'every 9 days' },
+    '365d': { format: '%b %d', ticks: 'every 12 days' },
+    default: { format: '%b %d', ticks: 'every day' },
+  };
+
+  return formatMap[range] || formatMap.default;
+};
+const TooltipLayer = ({ points }) => (
+  <>
+    {points?.map((point) => (
+      <BasicTooltip
+        key={point.id}
+        id={point.id}
+        value={point.data.yFormatted}
+        color="#000000"
+        enableChip
+      />
+    ))}
+  </>
+);
 
 export const ChartConfiguration = ({
   markers,
@@ -20,62 +45,27 @@ export const ChartConfiguration = ({
   loadingID,
 }) => {
   const { theme } = useMode();
+  const colors = theme.palette.chartTheme;
+  const { greenAccent, redAccent, grey } = colors;
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-
   const validMarkers = useMemo(
-    () => markers.filter((marker) => marker.value !== undefined),
+    () => markers?.filter((marker) => marker.value !== undefined),
     [markers]
   );
-  const TooltipLayer = ({ points }) => (
-    <>
-      {points.map((point) => (
-        <BasicTooltip
-          key={point.id}
-          id={point.id}
-          value={point.data.yFormatted}
-          color={'#000000'}
-          enableChip
-        />
-      ))}
-    </>
+
+  const { tickValues, xFormat } = useMemo(
+    () => formatDateBasedOnRange(range),
+    [range]
   );
-  const { tickValues, xFormat } = useMemo(() => {
-    let format, ticks;
-    switch (range) {
-      case '24hr':
-        format = '%H:%M';
-        ticks = 'every hour';
-        break;
-      case '7d':
-        format = '%b %d';
-        ticks = 'every day';
-        break;
-      case '30d':
-        format = '%b %d';
-        ticks = 'every day';
-        break;
-      case '90d':
-        format = '%b %d';
-        ticks = 'every 3 days';
-        break;
-      case '180d':
-        format = '%b %d';
-        ticks = 'every 6 days';
-        break;
-      case '270d':
-        format = '%b %d';
-        ticks = 'every 9 days';
-        break;
-      case '365d':
-        format = '%b %d';
-        ticks = 'every 12 days';
-        break;
-      default:
-        format = '%b %d';
-        ticks = 'every day';
-    }
-    return { tickValues: ticks, xFormat: `time:${format}` };
-  }, [range]);
+
+  const chartTheme = useMemo(
+    () => ({
+      axis: theme.palette.chartTheme.axis,
+      legends: theme.palette.chartTheme.legends,
+      tooltip: theme.palette.chartTheme.tooltip,
+    }),
+    [theme]
+  );
 
   const chartProps = useMemo(
     () => ({
@@ -151,59 +141,40 @@ export const ChartConfiguration = ({
         'legends',
         TooltipLayer,
       ],
-
-      // layers: [
-      //   'grid',
-      //   'markers',
-      //   'areas',
-      //   'lines',
-      //   'slices',
-      //   'points',
-      //   'axes',
-      //   'legends',
-      //   ({ points, xScale, yScale, markers: validMarkers }) => (
-      //     <CustomTooltipLayer
-      //       points={points}
-      //       xScale={xScale}
-      //       yScale={yScale}
-      //       markers={validMarkers}
-      //     />
-      //   ),
-      // ],
       theme: {
         axis: {
           domain: {
             line: {
-              stroke: theme.palette.chartTheme.grey.lightest,
+              stroke: grey.lightest,
             },
           },
           legend: {
             text: {
-              fill: theme.palette.chartTheme.greenAccent.darkest,
+              fill: greenAccent.darkest,
               fontSize: 12,
               outlineWidth: 0.1,
-              outlineColor: theme.palette.chartTheme.grey.darkest,
+              outlineColor: grey.darkest,
             },
           },
           ticks: {
             line: {
-              stroke: theme.palette.chartTheme.grey.lightest,
+              stroke: grey.lightest,
               strokeWidth: 1,
             },
             text: {
-              fill: theme.palette.chartTheme.grey.lightest,
+              fill: grey.lightest,
             },
           },
         },
         legends: {
           text: {
-            fill: theme.palette.chartTheme.grey.lightest,
+            fill: grey.lightest,
           },
         },
         tooltip: {
           container: {
-            color: theme.palette.chartTheme.grey.darkest,
-            borderColor: theme.palette.chartTheme.redAccent.darkest,
+            color: grey.darkest,
+            borderColor: redAccent.darkest,
           },
         },
       },

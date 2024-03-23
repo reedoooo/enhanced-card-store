@@ -14,18 +14,21 @@ const SimpleSectionHeader = ({
 }) => {
   const { theme } = useMode();
   const lgDown = useMediaQuery(theme.breakpoints.down('lg'));
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Box
       sx={{
-        margin: 'auto',
-        maxWidth: 1200,
-        padding: '20px',
+        margin: isMobileView ? 0 : 'auto',
+        // maxWidth: 1200,
+        padding: isMobileView ? 0 : '20px',
         textAlign: 'left',
         backgroundColor: theme.palette.background.paper,
         borderRadius: '8px',
         flexGrow: 1,
-        width: '100%',
+        width: isMobileView ? '100vw' : '100%',
+        maxWidth: isMobileView ? '100vw' : 1200,
+        justifyContent: isMobileView ? 'space-between' : 'center',
       }}
     >
       {/* Container for Section Name and Username adjusts direction based on lgDown */}
@@ -33,6 +36,7 @@ const SimpleSectionHeader = ({
         sx={{
           display: 'flex',
           flexDirection: lgDown ? 'column' : 'row',
+          width: isMobileView ? '60%' : 'auto',
           alignItems: 'baseline',
           marginBottom: '8px',
         }}
@@ -50,6 +54,7 @@ const SimpleSectionHeader = ({
             opacity: '50%',
             marginLeft: lgDown ? '0' : '8px',
             marginTop: lgDown ? '4px' : '0',
+            // width: isMobileView ? '100%' : 'auto',
           }} // Adjust spacing based on lgDown
           variant="h5"
         >
@@ -60,7 +65,10 @@ const SimpleSectionHeader = ({
         sx={{
           borderColor: theme.palette.primary.main,
           p: theme.spacing(1),
-          maxWidth: '25%',
+          // maxWidth: '25%',
+          // width: isMobileView ? '100%' : '25%',
+          // minWidth: isMobileView ? '100%' : '25%',
+          width: isMobileView ? '40%' : '25%',
         }}
       >
         {/* Section Description */}

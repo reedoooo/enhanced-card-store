@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import StatBox from '../../../../REUSABLE_COMPONENTS/StatBox';
-import useCollectionStats from '../../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionStats';
+// import useCollectionStats from '../../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionStats';
 import { useAppContext, useMode } from '../../../../../context';
 import styled from 'styled-components';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';

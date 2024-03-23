@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
 import CartContent from '../layout/cart/CartContent';
-import { useCartStore, useMode, usePageContext } from '../context';
+import { useCartStore, useMode } from '../context';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
-import PageLayout from '../layout/Containers/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import { useLoading } from '../context/hooks/useLoading';
 import { CartSummary } from '../layout/cart/CartSummary';
 
@@ -19,11 +19,9 @@ const CartPage = () => {
     cartCardQuantity,
     totalCost,
   } = useCartStore();
-  const { returnDisplay, setLoading } = usePageContext();
   const { startLoading, stopLoading, setError, isPageLoading } = useLoading();
   const calculateTotalPrice = getTotalCost();
 
-  // useEffect hook to fetch cart data for user
   useEffect(() => {
     const fetchData = async () => {
       startLoading('isPageLoading');
@@ -107,7 +105,7 @@ const CartPage = () => {
     <PageLayout>
       {/* <React.Fragment> */}
       {/* <PageLayout> */}
-      {isPageLoading && returnDisplay()}
+      {isPageLoading && <div>Loading...</div>}
       {/* {loadingStatus?.isLoading && returnDisplay()} */}
       <Box
         sx={{

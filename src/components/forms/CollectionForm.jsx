@@ -32,13 +32,14 @@ const CollectionForm = ({ collectionData, actionType }) => {
     actionType === 'add' ? 'addCollectionForm' : 'updateCollectionForm';
   const buttonLabel =
     actionType === 'add' ? 'Create Collection' : 'Update Collection';
-  const startIcon = actionType === 'add' ? <AddCircleOutlineIcon /> : null;
+  const startIcon =
+    actionType === 'add' ? <AddCircleOutlineIcon /> : <AddCircleOutlineIcon />;
 
-  useEffect(() => {
-    if (collectionData && actionType === 'update') {
-      setFormSchema(schemaName, collectionData);
-    }
-  }, [collectionData, setFormSchema, schemaName, actionType]);
+  // useEffect(() => {
+  //   if (collectionData && actionType === 'update') {
+  //     setFormSchema(schemaName, collectionData);
+  //   }
+  // }, [collectionData, setFormSchema, schemaName, actionType]);
 
   // const handleFormSubmit = async (data) => {
   //   const method = actionType === 'add' ? 'Add' : 'Update';

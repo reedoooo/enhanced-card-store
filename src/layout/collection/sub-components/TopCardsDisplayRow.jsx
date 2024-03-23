@@ -22,6 +22,7 @@ import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import { AspectRatioBox } from '../../../components/cards/styles/cardStyledComponents';
 import { FormBox } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import CardDetail from '../../../components/cards/CardDetail';
+import CardDetailsContainer from '../../../components/cards/CardDetailsContainer';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
@@ -59,16 +60,6 @@ export const TopCardsDisplayRow = () => {
         onSlideChange={handleSlideChange}
         style={{
           width: '100%',
-          // height: '320px', // Adjusted height to maintain aspect ratio
-          // bottom: theme.spacing(2),
-          // right: theme.spacing(2),
-          // width: '100%',
-          // height: 180,
-          // perspective: '1200px',
-          // [theme.breakpoints.up('md')]: {
-          //   width: '50%',
-          //   height: 250,
-          // },
         }}
       >
         {topFiveCards?.map((card, index) => (
@@ -80,18 +71,13 @@ export const TopCardsDisplayRow = () => {
               flexDirection: 'column',
               alignItems: 'flex-start',
               width: '100%',
-              // height: '100%',
-              // transform: index === activeCardIndex ? 'scale(1.7)' : 'scale(1)',
               transition: 'transform 0.9s',
-              // position: 'relative', // Ensure the slide content is positioned relatively
             }}
           >
             <MDBox
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                // justifyContent: 'center',
-                // alignItems: 'center',
                 width: '100%',
                 height: '100%',
               }}
@@ -107,13 +93,13 @@ export const TopCardsDisplayRow = () => {
                 <CardMedia
                   component="img"
                   alt={`Image for ${card.name || 'the card'}`}
-                  image={card?.image || placeHolder} // || placeHolder
+                  // image={card?.image || placeHolder} // || placeHolder
+                  // image={placeHolder}
+                  src={placeHolder}
                   loading="lazy"
                   style={{
                     borderRadius: 0,
-                    // transform: 'scale(1)',
                     width: 'auto',
-                    // height: 'auto',
                   }}
                   z
                 />
@@ -131,14 +117,6 @@ export const TopCardsDisplayRow = () => {
                   alignItems: 'center',
                 }}
               >
-                {/* <CardContent
-                  sx={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    mx: 'auto',
-                    px: 'auto',
-                  }}
-                > */}
                 <FormBox
                   theme={theme}
                   sx={{
@@ -146,26 +124,12 @@ export const TopCardsDisplayRow = () => {
                     alignItems: 'center',
                   }}
                 >
-                  <CardDetail
-                    className={'card-detail'}
-                    // icon={<FaRegCopy />}
-                    title="Description"
-                    value={card?.desc}
-                  />
-                  <CardDetail
-                    className={'card-detail'}
-                    // icon={<FaRegCopy />}
-                    title="Description"
-                    value={card?.desc}
-                  />
-                  <CardDetail
-                    className={'card-detail'}
-                    // icon={<FaRegCopy />}
-                    title="Description"
-                    value={card?.desc}
+                  <CardDetailsContainer
+                    card={card}
+                    isSwiperContent={true}
+                    titles={['Name', 'Description', 'Price']}
                   />
                 </FormBox>
-                {/* </CardContent> */}
               </Card>
             </MDBox>
           </SwiperSlide>

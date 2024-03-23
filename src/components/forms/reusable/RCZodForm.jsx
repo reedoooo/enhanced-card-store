@@ -32,9 +32,10 @@ const RCZodForm = ({
     handleChange,
     setFormSchema,
     currentForm,
+    currentFormSchema,
     formState: { errors, isSubmitting },
     // getValues,
-    handleSearchTermChange,
+    // handleSearchTermChange,
   } = useFormContext();
 
   // useEffect(() => {
@@ -47,11 +48,13 @@ const RCZodForm = ({
   //     formMethods.reset(initialValues);
   //   }
   // }, [setFormSchema, schemaName, formMethods, initialValues]);
-  useEffect(() => {
-    setFormSchema(schemaName);
-    // When currentForm or schemaName changes, reset form with new initialValues or empty values
-    formMethods.reset(initialValues || {});
-  }, [setFormSchema, schemaName, formMethods, initialValues, currentForm]);
+  // useEffect(() => {
+  //   // console.log('initialValues:', initialValues);
+  //   console.log('SCHEMA NAME CHANGED TO:', schemaName);
+  //   setFormSchema(schemaName);
+  //   // When currentForm or schemaName changes, reset form with new initialValues or empty values
+  //   formMethods.reset(initialValues || {});
+  // }, [setFormSchema, schemaName, formMethods, initialValues]);
   const onFormSubmit = (data) => {
     onSubmit(data, additionalData);
   };
@@ -120,11 +123,11 @@ const RCZodForm = ({
               initialValues && initialValues[field.name] ? '' : field.label
             }
             name={field.name}
-            // value={initialValues ? initialValues[field.name] : ''}
-            type={field.type || 'text'}
             register={formMethods.register}
             errors={errors}
-            error={errors[field.name]?.message}
+            error={!!errors[field?.name]} // Convert any truthy/falsy value to a strict boolean
+            helperText={errors[field?.name]?.message} // Presumably display the actual error message
+            type={field.type || 'text'}
             value={
               initialValues
                 ? initialValues[field.name]

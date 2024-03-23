@@ -4,11 +4,15 @@ import { useMediaQuery } from '@mui/material';
 import PrivateRoute from './layout/PrivateRoute.jsx';
 import LoginDialog from './components/dialogs/LoginDialog';
 import { useAuthContext, useConfiguratorContext, useMode } from './context';
-import PageLayout from './layout/Containers/PageLayout.jsx';
+import PageLayout from './layout/REUSABLE_COMPONENTS/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
 import LoadingIndicator from './layout/LoadingIndicator.js';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import LoadingOverlay from './layout/LoadingOverlay.jsx';
+import SelectionErrorDialog from './components/dialogs/SelectionErrorDialog.jsx';
+import useDialogState from './context/hooks/useDialogState.jsx';
+import useSelectedCollection from './context/MAIN_CONTEXT/CollectionContext/useSelectedCollection.jsx';
 
 const ROUTE_CONFIG = [
   { path: '/', componentName: 'HomePage', isPrivate: false },
@@ -36,6 +40,8 @@ const Main = () => {
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   const { isLoggedIn } = useAuthContext();
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
+  const { dialogState, openDialog, closeDialog } = useDialogState({});
+  const { selectedCollection } = useSelectedCollection();
   return (
     <>
       {!isLoggedIn ? (
@@ -46,11 +52,11 @@ const Main = () => {
             backgroundColor: '#3D3D3D',
           }}
         >
-          <Navigation isLoggedIn={isLoggedIn} isMobileView={isMobileView} />
+          <Navigation isLoggedIn={isLoggedIn} />
           {isConfiguratorOpen && <Configurator />}
-          <TransitionGroup component={null}>
+          <TransitionGroup component={null} exit={false}>
             <CSSTransition key={location.key} classNames="fade" timeout={300}>
-              <Suspense fallback={<LoadingIndicator />}>
+              <Suspense fallback={<LoadingOverlay />}>
                 <Routes>
                   {ROUTE_CONFIG.map(
                     ({ path, componentName, isPrivate }, index) => (
@@ -73,6 +79,13 @@ const Main = () => {
               </Suspense>
             </CSSTransition>
           </TransitionGroup>
+          {dialogState.isSelectionErrorDialogOpen && (
+            <SelectionErrorDialog
+              open={dialogState.isSelectionErrorDialogOpen}
+              onClose={() => closeDialog('isSelectionErrorDialogOpen')}
+              selectedValue={selectedCollection?.name}
+            />
+          )}
         </PageLayout>
       )}
     </>

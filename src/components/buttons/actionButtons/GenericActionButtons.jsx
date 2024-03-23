@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { getContextIcon } from '../../../layout/REUSABLE_COMPONENTS/icons/index';
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
@@ -37,7 +36,6 @@ const GenericActionButtons = ({
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
-  const { closeModal } = useModalContext();
   useEffect(() => {
     setButtonSize(buttonSizeMap[cardSize] || 'medium');
   }, [cardSize]);

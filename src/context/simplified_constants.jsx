@@ -1,5 +1,5 @@
 import card_info from '../data/initialCardData.jsx';
-import user from '../data/user';
+import user from './user.jsx';
 
 const defaultCardData = card_info.data;
 const defaultCard = defaultCardData[0];

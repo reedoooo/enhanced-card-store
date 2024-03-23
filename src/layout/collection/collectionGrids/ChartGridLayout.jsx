@@ -24,6 +24,22 @@ import ChartErrorBoundary from './cards-chart/ChartErrorBoundary';
 import { ChartConfiguration } from './cards-chart/ChartConfigs';
 import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import { TopCardsDisplayRow } from '../sub-components/TopCardsDisplayRow';
+import LoadingOverlay from '../../LoadingOverlay';
+import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import {
+  ResponsiveContainer,
+  CartesianGrid,
+  AreaChart,
+  BarChart,
+  Bar,
+  LineChart,
+  XAxis,
+  YAxis,
+  Legend,
+  Line,
+  Tooltip,
+  Area,
+} from 'recharts';
 const renderCardContainer = (content) => {
   return (
     <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
@@ -41,7 +57,7 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
   const tableSize = isXs ? 'less' : isLg ? 'large' : 'small';
   const env = process.env.CHART_ENVIRONMENT;
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const { selectedCollection } = useSelectedCollection();
+  const { selectedCollection, showCollections } = useSelectedCollection();
   const chartDataVariants = {
     averaged: selectedCollection.averagedChartData,
     raw: selectedCollection.nivoChartData,
@@ -53,67 +69,55 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
   const { stats, markers } = useStatisticsStore();
   const { SkeletonLoader } = useSkeletonLoader();
   const averagedData = selectedCollection.averagedChartData;
-
   if (!averagedData || !averagedData[selectedTimeRange]) {
-    return (
-      <Container sx={{ flexGrow: 1 }}>
-        <BoxHeader
-          title="Collection Card Chart"
-          subtitle="No data available"
-          icon={<SkeletonLoader type="icon" />}
-          sideText="Loading..."
-        />
-        <MDBox mt={4.5} sx={{ width: '100%' }}>
-          <Grid container spacing={1} sx={{ flexGrow: 1 }}>
-            <DashboardBox
-              item
-              xs={12}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
-              <SkeletonLoader type="chart" height={400} />
-              <SkeletonLoader type="text" height={50} width="80%" />
-              <SkeletonLoader type="text" height={20} width="60%" />
-            </DashboardBox>
-            <DashboardBox
-              item
-              xs={12}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
-              <SkeletonLoader type="table" />
-            </DashboardBox>
-          </Grid>
-        </MDBox>
-      </Container>
-    );
+    return <LoadingOverlay />;
   }
-
-  const selectedChartData = useMemo(() => {
-    // const averagedData = selectedCollection.averagedChartData;
-
-    // if (!averagedData || !averagedData[selectedTimeRange]) {
-    //   console.error(
-    //     'No averaged chart data available for the selected time range.'
-    //   );
-    //   return null;
-    // }
-    const chartData = averagedData[selectedTimeRange];
-    return chartData || null;
-  }, [selectedCollection.averagedChartData, selectedTimeRange]);
-  // if (!selectedChartData) {
+  // if (!averagedData || !averagedData[selectedTimeRange]) {
   //   return (
-  //     <Container sx={{ flexGrow: 1 }}>
-  //       <BoxHeader
-  //         title="Collection Card Chart"
-  //         subtitle="List of all cards in the collection"
-  //         icon={<Icon>table_chart</Icon>}
-  //         sideText={new Date().toLocaleString()}
-  //       />
-  //       <SkeletonLoader type="chart" height={isSmall ? 150 : 500} />
-  //       <SkeletonLoader type="text" count={2} />
-  //       <SkeletonLoader type="listItem" count={5} />
+  //     <Container
+  //       sx={{
+  //         flexGrow: 1,
+  //         height: '100%',
+  //         display: 'flex',
+  //         flexDirection: 'row',
+  //       }}
+  //     >
+  //       <MDBox sx={{ width: '50%', height: '100%' }}>
+  //         <Grid container spacing={2}>
+  //           <Grid
+  //             item
+  //             xs={12}
+  //             sx={{ display: 'flex', justifyContent: 'center' }}
+  //           >
+  //             <DashboardBox sx={{ height: 400, width: '100%' }}>
+  //               <SkeletonLoader type="chart" height="100%" />
+  //             </DashboardBox>
+  //           </Grid>
+  //         </Grid>
+  //       </MDBox>
+  //       <MDBox sx={{ width: '50%', height: '100%', overflow: 'auto' }}>
+  //         <Grid container spacing={2} direction="column">
+  //           {[...Array(5)].map((_, index) => (
+  //             <Grid
+  //               item
+  //               key={`skeleton-item-${index}`}
+  //               sx={{ display: 'flex', justifyContent: 'center' }}
+  //             >
+  //               <DashboardBox sx={{ height: 100, width: '90%', my: 0.5 }}>
+  //                 <SkeletonLoader type="text" height={60} />
+  //               </DashboardBox>
+  //             </Grid>
+  //           ))}
+  //         </Grid>
+  //       </MDBox>
   //     </Container>
   //   );
   // }
+
+  const selectedChartData = useMemo(() => {
+    const chartData = averagedData[selectedTimeRange];
+    return chartData || null;
+  }, [selectedCollection.averagedChartData, selectedTimeRange]);
   useEffect(() => {
     console.log('DEBUG LOG, ', {
       selectedChartData,
@@ -122,21 +126,6 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
     });
   }, []);
 
-  const IconWrapper = ({ children }) => (
-    <Box
-      sx={{
-        borderRadius: '50%',
-        width: 40,
-        height: 40,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: theme.palette.success.main,
-      }}
-    >
-      {children}
-    </Box>
-  );
   const updatedAt = selectedCollection?.updatedAt;
   const formattedTime = updatedAt
     ? new Date(updatedAt).toLocaleTimeString([], {
@@ -146,7 +135,7 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
     : 'Loading...';
 
   return (
-    <MDBox mt={4.5} sx={{ width: '100%' }}>
+    <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
         <DashboardBox
           component={Grid}
@@ -160,41 +149,38 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
             hasTitle={false}
             isTableOrChart={true}
             // cardTitle="Collection Card List"
-            data={''}
+            // data={''}
           >
             <BoxHeader
               title="Collection Card Chart"
               subtitle="List of all cards in the collection"
               icon={
-                <IconWrapper>
+                <RCWrappedIcon>
                   <Icon>show_chart</Icon>
-                </IconWrapper>
+                </RCWrappedIcon>
               }
               sideText="+4%"
             />
           </SimpleCard>
           {renderCardContainer(
             <Suspense fallback={<SkeletonLoader type="chart" height={500} />}>
-              <ChartArea
-                theme={theme}
-                sx={{
-                  minHeight: '500px',
-                }}
-              >
-                {/* <LinearChart
-                  nivoData={selectedChartData}
-                  height={500}
-                  timeRange={selectedTimeRange}
-                  specialPoints={markers}
-                /> */}
-                <ChartConfiguration
-                  nivoChartData={[selectedChartData]}
-                  markers={markers}
-                  height={500}
-                  range={selectedTimeRange}
-                  loadingID={selectedTimeRange}
-                />
-              </ChartArea>
+              <ResponsiveContainer width="100%" height="100%">
+                <ChartArea
+                  theme={theme}
+                  sx={{
+                    minHeight: '500px',
+                  }}
+                >
+                  <ChartConfiguration
+                    nivoChartData={[selectedChartData]}
+                    markers={markers}
+                    height={500}
+                    // range={selectedTimeRange}
+                    loadingID={selectedTimeRange}
+                    range={'24h'}
+                  />
+                </ChartArea>
+              </ResponsiveContainer>
             </Suspense>
           )}
           <SimpleCard
@@ -233,9 +219,9 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
               title="Collection Card List"
               subtitle="List of all cards in the collection"
               icon={
-                <IconWrapper>
+                <RCWrappedIcon color="success">
                   <Icon>list</Icon>
-                </IconWrapper>
+                </RCWrappedIcon>
               }
               // sideText="Updated recently"
               sideText={`Last Updated: ${formattedTime}`}

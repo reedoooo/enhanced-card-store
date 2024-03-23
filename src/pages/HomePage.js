@@ -4,10 +4,10 @@ import { useModalContext } from '../context/UTILITIES_CONTEXT/ModalContext/Modal
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import DetailsModal from '../components/dialogs/DetailsModal';
 import SplashPage2 from '../layout/REUSABLE_COMPONENTS/SplashPage2';
-import PageLayout from '../layout/Containers/PageLayout';
-import HeroSection from './sections/HeroSection';
-import MainContentSection from './sections/MainContentSection';
-import FeatureCardsSection from './sections/FeatureCardsSection';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
+// import MainContentSection from './sections/MainContentSection';
+import HeroSection from '../layout/sections/HeroSection';
+import FeatureCardsSection from '../layout/sections/FeatureCardsSection';
 
 const HomePage = () => {
   const {

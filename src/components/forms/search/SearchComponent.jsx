@@ -47,13 +47,21 @@ const SearchComponent = (pageContext) => {
   return (
     <Grid container spacing={2} direction="column">
       <Grid item xs={12}>
-        <SimpleCard theme={uniqueTheme} hasTitle={false} isFormHeader={true}>
+        <SimpleCard
+          theme={uniqueTheme}
+          hasTitle={false}
+          isSearchFormHeader={true}
+        >
           <MDBox
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              p: theme.spacing(2),
+              p: theme.spacing(1),
+              borderRadius: theme.spacing(1),
+              width: '90%',
+              mx: 'auto',
+              border: 'none',
             }}
           >
             <MDTypography
@@ -72,7 +80,11 @@ const SearchComponent = (pageContext) => {
               onClick={toggleConfigurator}
               size="large"
             >
-              <SettingsIcon />
+              <SettingsIcon
+                sx={{
+                  fontSize: '3rem',
+                }}
+              />
             </IconButton>
           </MDBox>
           <Container
@@ -80,10 +92,8 @@ const SearchComponent = (pageContext) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              p: theme.spacing(2),
             }}
           >
-            {/* eslint-disable-next-line max-len */}
             <SearchForm
               onFocus={() => setSearchBarFocused(true)}
               onBlur={() => setSearchBarFocused(false)}

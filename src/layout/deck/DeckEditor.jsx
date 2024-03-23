@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Box } from '@mui/material';
-import DeckEditPanel from './DeckEditPanel';
-import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useFormContext, useMode } from '../../context';
-import RCSwitch from '../../components/forms/reusable/RCSwitch';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useMode } from '../../context';
+import DeckForm from '../../components/forms/DeckForm';
 
 const DeckEditor = ({ deck, onClose }) => {
   const { theme } = useMode();
@@ -33,7 +30,7 @@ const DeckEditor = ({ deck, onClose }) => {
             }}
           ></Box>
         </Box>
-        <DeckEditPanel deck={deck} />
+        <DeckForm actionType="update" deckData={deck} />{' '}
       </Paper>
     </Box>
   );

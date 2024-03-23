@@ -205,7 +205,6 @@ export const CartProvider = ({ children }) => {
       console.error(error.message || 'Failed to create user cart');
     }
   }, [userId, fetchWrapper, setCartDataAndCookie]);
-
   const fetchUserCart = useCallback(async () => {
     const loadingID = 'fetchUserCart';
     if (!userId || isLoading(loadingID)) return;
@@ -242,9 +241,6 @@ export const CartProvider = ({ children }) => {
     setError,
     logger,
   ]);
-  // useEffect(() => {
-  //   if (!hasFetchedCart) fetchUserCart();
-  // }, [fetchUserCart, userId, hasFetchedCart, setCartDataAndCookie]);
   const updateCart = useCallback(
     async (cartId, updatedCart, method, type) => {
       if (!userId || !cartId) return;
@@ -281,80 +277,6 @@ export const CartProvider = ({ children }) => {
     },
     [userId, fetchWrapper, setCartDataAndCookie]
   );
-  // useEffect(() => {
-  //   if (userId) {
-  //     fetchUserCart(); // Fetch cart data when userId is available
-  //   }
-  // }, [userId, fetchUserCart]);
-  // useEffect to fetch and set cart data
-  // useEffect(() => {
-  //   if (userId && isLoggedIn) {
-  //     fetchUserCart().catch((error) =>
-  //       console.error('Failed to fetch or create cart:', error)
-  //     );
-  //   }
-  // }, [userId, fetchUserCart]);
-  // useEffect(() => {
-  //   const newTotalQuantity = cartData?.cart?.reduce(
-  //     (total, item) => total + item?.quantity,
-  //     0
-  //   );
-  //   setTotalQuantity(newTotalQuantity);
-  //   setTotalPrice(totalCost);
-  // }, [cartData?.cart, totalCost]);
-  // const updateCart = useCallback(
-  //   async (cartId, updatedCart, method, type) => {
-  //     if (!userId || !cartId) return;
-
-  //     const formattedCartData = {
-  //       userId: userId,
-  //       cart: updatedCart.map((item) => ({
-  //         id: item.id, // assuming id is the unique identifier for each cart item
-  //         quantity: item.quantity, // ensure this is the current quantity to be updated in the cart
-  //         price: item.price, // ensure this is the current price of the item
-  //         // Include other necessary fields as per your cart item structure
-  //       })),
-  //       method: method, // 'POST' for adding items, 'DELETE' for removing items, 'PUT' for updating items
-  //       type: type,
-  //       // Calculating total quantity and total price outside of the cart array
-  //       quantity: updatedCart.reduce((total, item) => total + item.quantity, 0),
-  //       totalPrice: updatedCart.reduce(
-  //         (total, item) => total + item.quantity * item.price,
-  //         0
-  //       ),
-  //     };
-
-  //     try {
-  //       const response = await fetch(
-  //         `${process.env.REACT_APP_SERVER}/api/users/${userId}/cart/${cartId}/update`,
-  //         {
-  //           method: 'PUT',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify(formattedCartData),
-  //         }
-  //       );
-
-  //       const { message, data } = await response.json();
-  //       console.log('PUT: /cart -----> response message', message);
-  //       if (response.ok) {
-  //         console.log('PUT: /cart -----> response data', data);
-  //         setCartDataAndCookie(data); // Update your cart state and cookie here
-  //       } else {
-  //         console.error(
-  //           'Failed to update cart: ',
-  //           data?.error || 'Error occurred'
-  //         );
-  //         // Handle errors appropriately (e.g., show an error message to the user)
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating cart: ', error);
-  //       // Handle errors appropriately (e.g., show an error message to the user)
-  //     }
-  //   },
-  //   [userId, setCartDataAndCookie] // dependencies array
-  // );
   const addCardsToCart = async (cards, cart) => {
     console.log('ADD CARDS TO CART: ', cards, cart);
     const newCards = [];

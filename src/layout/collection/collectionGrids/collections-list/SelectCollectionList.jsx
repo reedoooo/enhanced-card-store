@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -15,46 +15,28 @@ import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionCo
 import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { CollectionListItemSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 
-const FlexContainer = styled(Box)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: ${({ theme }) => theme.spacing(1, 2)};
-`;
-
-const CollectionListItemSkeleton = ({ count, index }) => (
-  <Collapse key={`skeleton-${index}-${count}`} in={true}>
-    <Box sx={{ p: 1, display: 'flex', flexDirection: 'row' }}>
-      <Card sx={{ width: '100%' }}>
-        <CardActionArea sx={{ width: '100%' }} disabled={true}>
-          <Grid container spacing={2} sx={{ p: 2 }}>
-            <Skeleton variant="circular" width={40} height={40} />
-            <Skeleton variant="text" sx={{ flexGrow: 1, mx: 2 }} />
-            <Skeleton variant="text" width="60%" />
-          </Grid>
-        </CardActionArea>
-      </Card>
-    </Box>
-  </Collapse>
-);
-
-CollectionListItemSkeleton.propTypes = {
-  count: PropTypes.number.isRequired,
-  index: PropTypes.number.isRequired,
-};
-
-const SelectCollectionList = ({ openDialog }) => {
-  const { allCollections, allIds } = useSelectedCollection();
+const SelectCollectionList = ({
+  openDialog,
+  handleSelectAndShowCollection,
+}) => {
+  const {
+    allCollections,
+    allIds,
+    handleSelectCollection,
+    toggleShowCollections,
+  } = useSelectedCollection();
   const [collectionList, setCollectionList] = useState([]);
   const numCollections = allIds?.length || 0;
+  const nonSkeletonCount = useRef(0);
 
   useEffect(() => {
     const minItems = 5;
-    // const numCollections = allCollections?.length || 0;
     const numRequired =
       minItems - numCollections > 0 ? minItems - numCollections : 0;
+    nonSkeletonCount.current = numCollections;
+
     const allSkeletonCollections = [...Array(numRequired).keys()].map(
       (index) => (
         <CollectionListItemSkeleton
@@ -64,9 +46,25 @@ const SelectCollectionList = ({ openDialog }) => {
         />
       )
     );
-    const combinedCollections = [...allCollections, ...allSkeletonCollections];
+    const combinedCollections = allCollections
+      .map((collection, index) => (
+        <Collapse key={collection?._id || `collection-${index}`}>
+          <Card
+            onClick={() => {
+              handleSelectAndShowCollection(collection);
+            }}
+          >
+            <CollectionListItem
+              collection={collection}
+              openDialog={openDialog}
+            />
+          </Card>
+        </Collapse>
+      ))
+      .concat(allSkeletonCollections);
+
     setCollectionList(combinedCollections);
-  }, [numCollections]);
+  }, [allIds?.length]); // Dependency on allIds.length instead of allIds and allCollections
 
   return (
     <SimpleCard
@@ -74,16 +72,19 @@ const SelectCollectionList = ({ openDialog }) => {
       hasTitle={false}
       isPrimary={false}
       noBottomMargin={true}
+      sx={
+        {
+          // hidden: !showCollections,
+        }
+      }
     >
       <List sx={{ justifyContent: 'center', alignItems: 'center', mx: 'auto' }}>
         <TransitionGroup>
-          {collectionList.map((item, index) =>
-            item.type === CollectionListItemSkeleton ? (
+          {collectionList?.map((item, index) =>
+            React.isValidElement(item) ? (
               item
             ) : (
-              <Collapse key={item?._id || `collection-${index}`}>
-                <CollectionListItem collection={item} openDialog={openDialog} />
-              </Collapse>
+              <Skeleton key={`skeleton-${index}`} count={1} />
             )
           )}
         </TransitionGroup>

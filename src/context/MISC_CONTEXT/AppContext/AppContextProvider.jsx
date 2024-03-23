@@ -1,4 +1,3 @@
-// CombinedContext.js
 import React, {
   createContext,
   useCallback,
@@ -12,10 +11,10 @@ import { CartContext } from '../../MAIN_CONTEXT/CartContext/CartContext';
 import { CollectionContext } from '../../MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { defaultContextValue } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import useSelectedContext from '../../hooks/useSelectedContext';
 import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useSelectedContext from '../../hooks/useSelectedContext';
 
-export const AppContext = createContext(defaultContextValue.APP_CONTEXT);
+const AppContext = createContext(defaultContextValue.APP_CONTEXT);
 
 export const AppContextProvider = ({ children }) => {
   const Deck = useContext(DeckContext);
@@ -23,10 +22,10 @@ export const AppContextProvider = ({ children }) => {
   const Collection = useContext(CollectionContext);
   const { selectedContext } = useSelectedContext();
   const [cardsWithQuantities, setCardsWithQuantities] = useState([]);
-  const [allCardsWithQuantities, setAllCardsWithQuantities] = useLocalStorage(
-    'allCardsWithQuantities',
-    []
-  );
+  // const [allCardsWithQuantities, setAllCardsWithQuantities] = useLocalStorage(
+  //   'allCardsWithQuantities',
+  //   []
+  // );
   const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
     'collectionMetaData',
     []
@@ -47,7 +46,7 @@ export const AppContextProvider = ({ children }) => {
       topFiveCards: cardsWithQuantities
         ?.sort((a, b) => b.price - a.price)
         .slice(0, 5),
-      numCardsCollected: allCardsWithQuantities?.length || 0,
+      numCardsCollected: cardsWithQuantities?.length || 0,
     };
 
     setCollectionMetaData(metaData);
@@ -94,8 +93,8 @@ export const AppContextProvider = ({ children }) => {
     }, {});
 
     const quantities = Object.values(cardQuantities);
-    setCardsWithQuantities(quantities);
-    setAllCardsWithQuantities(combinedCards);
+    setCardsWithQuantities(combinedCards);
+    // setAllCardsWithQuantities(combinedCards);
 
     return quantities;
   };

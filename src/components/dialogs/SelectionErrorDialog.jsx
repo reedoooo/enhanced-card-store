@@ -23,8 +23,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function SelectionErrorDialog(props) {
   const { onClose, selectedValue, open } = props;
-  const { handleBackToCollections, allCollections, handleSelectCollection } =
-    useSelectedCollection();
+  const { allCollections } = useSelectedCollection();
   const { showSuccess, showError, showInfo } = useSnackbarManager(); // Using custom snackbar hook
 
   const handleClose = () => {

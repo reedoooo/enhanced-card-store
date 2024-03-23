@@ -7,56 +7,47 @@ import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import SimpleSectionHeader from '../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
 import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
 
-const DeckPageHeaderSkeleton = () => {
-  const { SkeletonLoader } = useSkeletonLoader();
+const FlexContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1, 2),
+  flexDirection: 'row',
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+}));
 
-  return (
-    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
-      <Grid item xs={12} sm={6}>
-        <Card>
-          <SkeletonLoader type="title" />
-          <SkeletonLoader type="subtitle" />
-        </Card>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        sx={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        <SkeletonLoader type="button" />
-      </Grid>
-    </Grid>
-  );
-};
+// Adjusting Header container for mobile view
+const HeaderContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  maxWidth: '100%', // Allows the header to utilize full width on small screens
+  [theme.breakpoints.down('sm')]: {
+    marginBottom: theme.spacing(2),
+  },
+}));
 
-const FlexContainer = styled(Box)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: ${({ theme }) => theme.spacing(1, 2)};
-`;
-
-const HeaderContainer = styled(Box)`
-  flex: 1;
-  max-width: 50%;
-`;
-
-const ButtonContainer = styled(Box)`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  max-width: 50%;
-`;
+// Button container adjusted for mobile view
+const ButtonContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'flex-end',
+  maxWidth: '100%',
+  [theme.breakpoints.down('sm')]: {
+    justifyContent: 'center',
+    width: '100%',
+  },
+}));
 
 const DeckPageHeader = ({ openAddDeckDialog }) => {
   const { theme } = useMode();
   const { setCurrentForm } = useFormContext();
   const { user } = useUserContext();
   if (!user) {
-    return <DeckPageHeaderSkeleton />;
+    return <PageHeaderSkeleton />;
   }
 
   return (
@@ -65,6 +56,10 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
       hasTitle={false}
       isPrimary={false}
       noBottomMargin={true}
+      sx={{
+        maxWidth: '100vw',
+        justifyContent: 'center',
+      }}
     >
       <FlexContainer>
         <HeaderContainer>
@@ -80,10 +75,15 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
           />
         </HeaderContainer>
 
-        <ButtonContainer>
+        <ButtonContainer
+        // sx={{
+        //   maxWidth: '100%',
+        // }}
+        >
           <SimpleButton
             theme={uniqueTheme}
             isPrimary={true}
+            // customSize="md"
             onClick={() => {
               setCurrentForm('addDeckForm');
               openAddDeckDialog();

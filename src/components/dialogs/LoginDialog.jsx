@@ -13,8 +13,6 @@ import {
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import LoginForm from '../forms/LoginForm';
-import SignupForm from '../forms/SignupForm';
 import { useFormContext, useMode } from '../../context';
 import useAuthDialog from '../../context/hooks/useAuthDialog'; // Adjust import paths as necessary
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
@@ -28,6 +26,7 @@ import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
 import RCSwitch from '../forms/reusable/RCSwitch';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AuthForm from '../forms/AuthForm';
 function LoginDialog() {
   const { theme, toggleColorMode, mode } = useMode();
   const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
@@ -109,7 +108,7 @@ function LoginDialog() {
             >
               <LockOutlinedIcon />
             </MDAvatar>
-            <MDTypography component="h1" variant="h4">
+            <MDTypography component="h1" variant="h4" color="text">
               {formTitle}
             </MDTypography>
           </MDBox>
@@ -128,11 +127,12 @@ function LoginDialog() {
 
       <Divider />
       <StyledDialogContent theme={theme} elevation={20}>
-        {currentSchemaKey === 'loginForm' ? (
-          <LoginForm signupMode={signupMode} formLabel={formLabel} />
+        <AuthForm formType={currentSchemaKey} />
+        {/* {currentSchemaKey === 'loginForm' ? (
+          <AuthForm formType={currentSchemaKey} />
         ) : (
           <SignupForm signupMode={signupMode} formLabel={formLabel} />
-        )}
+        )} */}
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"

@@ -4,8 +4,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormContext } from '../../context';
 import RCZodForm from './reusable/RCZodForm';
 
-// You should have your schema definitions imported here
-
 const DeckForm = ({ actionType, deckData }) => {
   const { onSubmit, setFormSchema, formMethods } = useFormContext();
   const isUpdateMode = actionType === 'update';
@@ -118,27 +116,12 @@ const DeckForm = ({ actionType, deckData }) => {
     <RCZodForm
       schemaName={formId}
       fields={fields}
-      // onSubmit={handleSubmit}
-      // initialValues={deckData}
       buttonLabel={isUpdateMode ? 'Save Changes' : 'Create Deck'}
       startIcon={<SaveIcon />}
       initialValues={deckData}
       additionalData={{
         deckId: deckData ? deckData?._id : null,
       }}
-      //       additionalButtons={[
-      //         {
-      //           label: 'Delete Deck',
-      //           startIcon: <DeleteIcon />,
-      //           onClick: () => {
-      //             formMethods.setValue('_id', deck?._id);
-      //             formMethods.setValue('delete', true);
-      //             formMethods.submitForm();
-      //           },
-      //           color: 'error',
-      //           variant: 'contained',
-      //         },
-      //       ]}
       additionalButtons={
         isUpdateMode
           ? [

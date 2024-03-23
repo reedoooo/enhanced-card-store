@@ -13,31 +13,7 @@ import SimpleButton from '../../../REUSABLE_COMPONENTS/unique/SimpleButton';
 import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import SimpleSectionHeader from '../../../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
-const StyledButtonWrapper = styled.div`
-  margin-bottom: 1rem;
-`;
-const SelectCollectionHeaderSkeleton = () => {
-  const { SkeletonLoader } = useSkeletonLoader();
-
-  return (
-    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
-      <Grid item xs={12} sm={6}>
-        <Card>
-          <SkeletonLoader type="title" />
-          <SkeletonLoader type="subtitle" />
-        </Card>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        sx={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        <SkeletonLoader type="button" />
-      </Grid>
-    </Grid>
-  );
-};
+import { PageHeaderSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 
 const FlexContainer = styled(Box)`
   display: flex;
@@ -64,7 +40,7 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
   const { setCurrentForm } = useFormContext();
   const { user } = useUserContext();
   if (!user) {
-    return <SelectCollectionHeaderSkeleton />;
+    return <PageHeaderSkeleton />;
   }
 
   return (

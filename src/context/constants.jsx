@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createNewPriceEntry } from './Helpers';
-import jsonData from './MAIN_CONTEXT/CollectionContext/nivoTestData.json';
+import jsonData from '../data/nivoTestData.json';
 const { nivoTestData } = jsonData;
-import user from '../data/user';
+import user from './user';
 
 // import { lightTheme, indigoTheme } from '../assets/themes/colors';
 // ! DEFAULT VALUES FOR CARD OBJECTS

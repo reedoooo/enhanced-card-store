@@ -15,13 +15,12 @@ const useDeckManager = () => {
     selectedDeck,
     allDecks,
     selectedDeckId,
-    updateDecksData,
-    updateSelectedDeck,
+    updateMultipleDecks,
     handleSelectDeck,
-    resetDeck,
     addCardToSelectedDeck,
     setCustomError: setSelectedDeckError,
   } = useSelectedDeck();
+  const [decks] = useLocalStorage('decks', []);
   const [error, setError] = useState(null);
   const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const handleError = useCallback(
@@ -44,7 +43,9 @@ const useDeckManager = () => {
         null,
         'fetchDecks'
       );
-      updateDecksData(responseData?.data);
+      updateMultipleDecks(responseData?.data);
+
+      // handleSelectDeck(responseData?.data[decks?.byId?.[selectedDeckId]]);
       setHasFetchedDecks(true);
     } catch (error) {
       handleError(error, 'fetchDecks');
@@ -55,8 +56,9 @@ const useDeckManager = () => {
     status,
     fetchWrapper,
     createApiUrl,
-    updateDecksData,
+    updateMultipleDecks,
     handleError,
+    handleSelectDeck,
   ]);
 
   const performAction = useCallback(
@@ -83,18 +85,6 @@ const useDeckManager = () => {
       try {
         await fetchWrapper(path, method, data, actionName);
         options.afterAction?.();
-        // updateDecksData((prevDecks) => {
-        //   return prevDecks.map((deck) => {
-        //     if (deck._id === selectedDeckId) {
-        //       return {
-        //         ...deck,
-        //         ...data,
-        //       };
-        //     }
-        //     return deck;
-        //   });
-        // });
-
         fetchDecks(); // Refresh decks after any action
       } catch (error) {
         handleError(error, actionName);
@@ -132,7 +122,7 @@ const useDeckManager = () => {
 
       // Find and update the specific deck
       let updatedDeck = {};
-      updateDecksData((prevDecks) => {
+      updateDeck((prevDecks) => {
         return prevDecks.map((deck) => {
           if (deck._id === deckId) {
             updatedDeck = { ...deck, name, description, tags, color };
@@ -165,7 +155,7 @@ const useDeckManager = () => {
 
       return updatedDeck; // Return updated deck for any further operations
     },
-    [createApiUrl, fetchWrapper, updateDecksData, userId]
+    [createApiUrl, fetchWrapper, updateDeck, userId]
   );
   const addCardsToDeck = useCallback(
     (newCards, deck) => {
@@ -226,16 +216,23 @@ const useDeckManager = () => {
   );
 
   const removeCardsFromDeck = useCallback(
-    (cards, cardIds, deck) => {
-      if (!deck || !deck._id) {
-        console.error('No deck selected or deck ID is missing.');
+    (cards, cardIds, deckId) => {
+      if (!deckId) {
+        console.error(
+          'No deck selected or deck ID is missing.',
+          cards,
+          cardIds,
+          deckId
+        );
         return;
       }
+      const arrayOfCards = [cards];
+      const arrayOfCardIds = [cardIds];
 
       performAction(
-        createApiUrl(`${deck._id}/cards/remove`),
+        createApiUrl(`${deckId}/cards/remove`),
         'PUT',
-        { cards: cards, cardIds: cardIds },
+        { cards: arrayOfCards, cardIds: arrayOfCardIds },
         'removeCardsFromDeck',
         { paramTypes: ['object', 'array'] }
       );
@@ -257,7 +254,8 @@ const useDeckManager = () => {
     addCardsToDeck,
     removeCardsFromDeck,
     addOneToDeck: (cards, deck) => addCardsToDeck(cards, deck),
-    removeOneFromDeck: (cards, deck) => removeCardsFromDeck(cards, deck),
+    removeOneFromDeck: (cards, cardIds, deck) =>
+      removeCardsFromDeck(cards, cardIds, deck),
     updateDeckDetails,
   };
 };

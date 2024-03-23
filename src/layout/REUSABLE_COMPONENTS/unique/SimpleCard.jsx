@@ -36,6 +36,22 @@ const getFormHeaderStyle = (theme, isFormHeader) => ({
   width: '80%',
 });
 
+const getSearchFormHeaderStyle = (theme, isSearchFormHeader) => ({
+  background: isSearchFormHeader ? theme.colorCardBackground : undefined,
+  color: isSearchFormHeader ? theme.colorPrimary : undefined,
+  maxWidth: 'lg',
+  // padding: theme.lenMd3, // Updated to use theme's spacing method if available
+  borderRadius: '24px',
+  boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
+  margin: 'auto',
+  marginTop: '1rem',
+  // marginLeft: '5rem',
+  // marginRight: '5rem',
+  // marginTop: 'auto',
+  // marginBottom: 'auto',
+  width: '98%',
+});
+
 const getHeroDisplayStyles = (theme, isHeroDisplay) => ({
   background: isHeroDisplay ? theme.colorCardBackground : undefined,
   color: isHeroDisplay ? theme.colorPrimary : undefined,
@@ -108,6 +124,7 @@ const SimpleCard = ({
   cardTitle,
   data,
   isFormHeader,
+  isSearchFormHeader,
   isHeroDisplay,
   heroText,
   heroIcon,
@@ -124,7 +141,7 @@ const SimpleCard = ({
     background: theme.colorCardBackground,
     color: theme.colorText,
     ...(isHeroDisplay && getHeroDisplayStyles(theme, true)),
-
+    ...(isSearchFormHeader && getSearchFormHeaderStyle(theme, true)),
     ...(isFormHeader && getFormHeaderStyle(theme, true)),
     ...(isTableOrChart && getTableOrChartStyle(theme, true)),
     ...(isPrimary && getPrimaryStyle(theme, true)),
@@ -235,51 +252,3 @@ const SimpleCard = ({
 };
 
 export default SimpleCard;
-
-// const CardContent = ({ theme, children }) => (
-//   <div style={{ padding: `0 ${theme.lenMd3} ${theme.lenMd3}` }}>{children}</div>
-// );
-
-// const CardTitle = ({ theme, children }) => (
-//   <div
-//     style={{
-//       display: 'flex',
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       height: theme.lenXl2,
-//       padding: `0 ${theme.lenMd1}`,
-//       color: theme.colorLabel,
-//       fontSize: theme.lenMd2,
-//     }}
-//   >
-//     {children}
-//   </div>
-// );
-
-// export const SimpleCard = () => {
-//   theme,
-//   children,
-//   cardTitle,
-//   isPrimary,
-//   isAccent,
-//   noBottomMargin,
-// }) => {
-//   return (
-//     <Card
-//       theme={theme}
-//       hasTitle={!!cardTitle}
-//       isPrimary={isPrimary}
-//       isAccent={isAccent}
-//       noBottomMargin={noBottomMargin}
-//       {...rest}
-//     >
-//       {cardTitle && (
-//         <>
-//           <CardTitle theme={theme}>{cardTitle}</CardTitle>
-//           <CardContent theme={theme}>{children}</CardContent>
-//         </>
-//       )}
-//       {!cardTitle && children}
-//     </Card>
-//   );
-// };

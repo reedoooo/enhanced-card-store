@@ -12,86 +12,86 @@ import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import useCollectionManager from '../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useDialogState from '../../../../context/hooks/useDialogState';
-import { useMode, useVisibilityContext } from '../../../../context';
+import { useMode } from '../../../../context';
 import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
 import LongMenu from '../../../../layout/navigation/LongMenu';
 import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import RCChange from '../../../REUSABLE_COMPONENTS/RC/RCChange';
+import RCInfoItem from '../../../REUSABLE_COMPONENTS/RCInfoItem';
+import { useVisibility } from '../../../../context/hooks/useVisibility';
+import { roundToNearestTenth } from '../../../../context/Helpers';
 
-const CollectionInfoItem = ({ label, value, theme }) => (
-  <Grid item xs={12} sm={6} md={3}>
-    <CardContent
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        height: '100%',
-      }}
-    >
-      <MDTypography
-        variant="h4"
-        fontWeight="medium"
-        sx={{ color: theme.palette.chartTheme.grey.darkest }}
-      >
-        {`${label}:`}
-      </MDTypography>
-      <MDTypography
-        variant="h6"
-        sx={{ color: theme.palette.chartTheme.grey.light }}
-      >
-        {value}
-      </MDTypography>
-    </CardContent>
-  </Grid>
-);
+// const CollectionInfoItem = ({ label, value, theme }) => (
+//   <Grid item xs={12} sm={6} md={3}>
+//     <CardContent
+//       sx={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         justifyContent: 'center',
+//         height: '100%',
+//       }}
+//     >
+//       <MDTypography
+//         variant="h4"
+//         fontWeight="medium"
+//         sx={{ color: theme.palette.chartTheme.grey.darkest }}
+//       >
+//         {`${label}:`}
+//       </MDTypography>
+//       <MDTypography
+//         variant="h6"
+//         sx={{ color: theme.palette.chartTheme.grey.light }}
+//       >
+//         {value}
+//       </MDTypography>
+//     </CardContent>
+//   </Grid>
+// );
 
-CollectionInfoItem.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  theme: PropTypes.object.isRequired,
-};
+// CollectionInfoItem.propTypes = {
+//   label: PropTypes.string.isRequired,
+//   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+//   theme: PropTypes.object.isRequired,
+// };
 
 const CollectionListItem = memo(({ collection }) => {
   const { theme } = useMode();
   const { deleteCollection } = useCollectionManager();
   const { handleSelectCollection } = useSelectedCollection();
-  const { toggleCollectionVisibility } = useVisibilityContext();
   const { dialogState, openDialog, closeDialog } = useDialogState({
     isEditCollectionDialogOpen: false,
   });
 
-  const handleOpenDialog = useCallback(() => {
-    openDialog('editCollectionDialog', collection);
-  }, [collection, openDialog]);
-
-  const handleCloseDialog = useCallback(() => {
-    closeDialog('editCollectionDialog');
-  }, [closeDialog]);
+  const handleOpenDialog = useCallback((collection) => {
+    openDialog('isEditCollectionDialogOpen', collection);
+  }, []);
 
   const handleDelete = async () => {
-    await deleteCollection(collection._id);
+    await deleteCollection(collection?._id);
   };
 
   const renderToolTip = () => (
     <Tooltip title="Options">
       <div>
         <LongMenu
-          onEdit={handleOpenDialog}
+          onEdit={() => handleOpenDialog(collection)}
           onDelete={handleDelete}
           onSelect={() => handleSelectCollection(collection)}
-          collectionId={collection._id}
+          // onHide={() => toggleShowCollections(false)}
+          collectionId={collection?._id}
+          collection={collection}
         />
       </div>
     </Tooltip>
   );
 
   const percentageChange =
-    collection.collectionStatistics?.percentageChange || 0;
+    collection?.collectionStatistics?.percentageChange || 0;
 
   const handleSelection = useCallback(() => {
     handleSelectCollection(collection);
-    toggleCollectionVisibility();
-  }, [collection, handleSelectCollection, toggleCollectionVisibility]);
+    // toggleShowCollections();
+  }, [collection]);
 
   return (
     <Card>
@@ -113,20 +113,23 @@ const CollectionListItem = memo(({ collection }) => {
           }}
         >
           <Grid container alignItems="center" justify="center" spacing={2}>
-            <CollectionInfoItem
+            <RCInfoItem
               label="Name"
-              value={collection.name}
+              value={collection?.name}
               theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
             />
-            <CollectionInfoItem
+            <RCInfoItem
               label="Value"
-              value={`$${collection.totalPrice}`}
+              value={`$${roundToNearestTenth(collection?.totalPrice)}`}
               theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
             />
-            <CollectionInfoItem
+            <RCInfoItem
               label="Cards"
-              value={collection.totalQuantity}
+              value={collection?.totalQuantity}
               theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
             />
             <Grid item xs={12} sm={6} md={3}>
               <RCChange
@@ -156,11 +159,19 @@ const CollectionListItem = memo(({ collection }) => {
           </CardContent>
         </MDBox>
       </MDBox>
+      {/* <CollectionDialog
+        open={dialogState.isEditCollectionDialogOpen}
+        onClose={handleCloseDialog}
+        collectionData={collection}
+        isNew={false}
+      /> */}
       {dialogState.isEditCollectionDialogOpen && (
         <CollectionDialog
           open={dialogState.isEditCollectionDialogOpen}
-          onClose={handleCloseDialog}
+          onClose={() => closeDialog('isEditCollectionDialogOpen')}
+          // onClose={() => closeDialog('isAddDeckDialogOpen')}
           collectionData={collection}
+          isNew={false}
         />
       )}
     </Card>
