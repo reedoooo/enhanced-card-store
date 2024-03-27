@@ -6,8 +6,7 @@ import { useCartStore, useMode } from '../context';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import { useLoading } from '../context/hooks/useLoading';
-import { CartSummary } from '../layout/cart/CartSummary';
-
+import CartSummary from '../layout/cart/CartSummary';
 const CartPage = () => {
   const { theme } = useMode();
   const {
@@ -34,8 +33,6 @@ const CartPage = () => {
         stopLoading('isPageLoading');
       }
     };
-
-    // Fetch cart data if not already loaded
     if (!cartData) {
       fetchData();
     }
@@ -48,16 +45,6 @@ const CartPage = () => {
       console.error('Failed to adjust quantity in cart:', e);
     }
   };
-  // Function to render the cart content grid
-  const renderCartContent = () => (
-    <Grid item xs={12} lg={6}>
-      <CartContent
-        cartData={cartData}
-        calculateTotalPrice={calculateTotalPrice}
-        onQuantityChange={handleModifyItemInCart}
-      />
-    </Grid>
-  );
   // Function to render the checkout and summary section
   const renderCheckoutAndSummary = () => (
     <Grid item xs={12} lg={6}>
@@ -94,7 +81,13 @@ const CartPage = () => {
         }}
       >
         <Grid container spacing={3}>
-          {renderCartContent()}
+          <Grid item xs={12} lg={6}>
+            <CartContent
+              cartData={cartData}
+              calculateTotalPrice={calculateTotalPrice}
+              onQuantityChange={handleModifyItemInCart}
+            />
+          </Grid>{' '}
           {renderCheckoutAndSummary()}
         </Grid>
       </CardContent>

@@ -84,6 +84,7 @@ export default function prepareTableData(selectedCards) {
         Cell: ({ value }) => (
           <GenericActionButtons
             card={value}
+            variant="data-table"
             context={'Collection'}
             onClick={() => console.log('clicked')}
             onSuccess={() =>

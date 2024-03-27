@@ -228,11 +228,13 @@ const useDeckManager = () => {
       }
       const arrayOfCards = [cards];
       const arrayOfCardIds = [cardIds];
+      const existingCard = deckId?.cards?.find((card) => card.id === cardIds);
+      const removeType = existingCard?.quantity > 1 ? 'decrement' : 'delete';
 
       performAction(
         createApiUrl(`${deckId}/cards/remove`),
         'PUT',
-        { cards: arrayOfCards, cardIds: arrayOfCardIds },
+        { cards: arrayOfCards, cardIds: arrayOfCardIds, type: removeType },
         'removeCardsFromDeck',
         { paramTypes: ['object', 'array'] }
       );

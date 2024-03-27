@@ -71,10 +71,13 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
         </CardContent>
         <CardActions
           sx={{
-            alignSelf: 'end',
-            justifyContent: 'flex-end',
-            alignItems: 'baseline',
-            flexGrow: 1,
+            // alignSelf: 'end',
+            // justifyContent: 'flex-end',
+            // alignItems: 'baseline',
+            // flexGrow: 1,
+            marginTop: 'auto',
+            width: '100%', // Ensure CardActions takes full width
+            justifyContent: 'flex-end', // Align button to the end
           }}
         >
           <SimpleButton
@@ -90,9 +93,14 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
               bottom: 0,
               width: '100%',
               mt: 'auto',
+              borderColor: theme.palette.chartTheme.greenAccent.darker,
+              borderWidth: 2,
+              '&:hover': {
+                borderColor: theme.palette.chartTheme.greenAccent.dark,
+              },
             }}
           >
-            Manage Collections
+            Manage {tier.title}
           </SimpleButton>
         </CardActions>
       </FeatureCard>

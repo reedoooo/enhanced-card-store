@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -20,6 +20,8 @@ const HeroSwiper = ({
   handleSlideChange,
   activeCardIndex,
 }) => {
+  const swiperRef = useRef(null);
+
   const swiperConfig = {
     effect: 'coverflow',
     grabCursor: true,
@@ -51,6 +53,26 @@ const HeroSwiper = ({
     className: 'swiper_container',
   };
 
+  useEffect(() => {
+    // Ensuring the swiper instance is available
+    const swiperInstance = swiperRef.current?.swiper;
+    if (swiperInstance) {
+      // Listen to slideChange event
+      swiperInstance.on('slideChange', () => {
+        const { activeIndex } = swiperInstance;
+        handleSlideChange(activeIndex); // Assuming this function you pass handles updating activeCardIndex
+
+        // Check if the slide is every 4th slide (0-indexed, so we check for 3, 7, 11, ...)
+        if ((activeIndex + 1) % 4 === 0) {
+          swiperInstance.autoplay.stop();
+          setTimeout(() => {
+            swiperInstance?.autoplay?.start();
+          }, 10000); // Pause for 30 seconds
+        }
+      });
+    }
+  }, []);
+
   return (
     <MDBox
       sx={{
@@ -63,10 +85,12 @@ const HeroSwiper = ({
         // height: isMobileView ? '100vh' : null,
         height: isMobileView ? 'calc(100vh - 64px)' : null,
         border: 'none',
+        // background: '#2d2d34',
       }}
     >
       <Swiper
         {...swiperConfig}
+        ref={swiperRef}
         slidesPerView={isMobileView ? 'auto' : 9}
         pagination={{
           clickable: true,
@@ -80,6 +104,8 @@ const HeroSwiper = ({
           alignItems: isMobileView ? 'center' : 'flex-start',
           position: isMobileView ? 'absolute' : 'absolute',
           height: isMobileView ? 'calc(100vh - 64px)' : null,
+          background: 'transparent',
+
           // pb: '2rem',
           ml: isMobileView ? '0' : '60vw',
           // position: isMobileView ? 'absolute' : 'relative',

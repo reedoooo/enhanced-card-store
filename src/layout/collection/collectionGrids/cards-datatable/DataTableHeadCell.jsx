@@ -4,12 +4,15 @@ import { TableRow, Checkbox, Icon } from '@mui/material';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useMode } from '../../../../context';
+import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
 
 const DataTableHeadCell = ({ headerGroups, isSorted, setSortedValue }) => {
   const { theme } = useMode();
 
   const renderCellContent = (column, idx) => {
     const sorted = setSortedValue(column, isSorted);
+    const shouldShowIcons = column.showIcons;
+
     return (
       <MDBox
         component="th"
@@ -23,18 +26,23 @@ const DataTableHeadCell = ({ headerGroups, isSorted, setSortedValue }) => {
           position: 'sticky',
           top: 0,
           zIndex: 2,
-          width: column.id === 'selection' ? '50px' : 'auto',
+          width: '100%',
+          // justifyContent: 'space-evenly',
+          // width: column.id === 'selection' ? '50px' : 'auto',
           alignItems: 'center',
           boxShadow:
             '0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)',
           cursor: sorted ? 'pointer' : 'default',
+          flexGrow: 1,
         }}
       >
-        <MDBox
+        <FlexBetween
+          mt="0.25rem"
+          // gap="1.5rem"
           sx={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            // alignItems: 'center',
+            justifyContent: 'space-evenly',
             flexGrow: 1,
           }}
         >
@@ -45,11 +53,14 @@ const DataTableHeadCell = ({ headerGroups, isSorted, setSortedValue }) => {
             textTransform="uppercase"
             sx={{
               fontWeight: 'bold',
+              flexGrow: 1,
+              flexShrink: 0,
+              mx: '100%',
             }}
           >
             {column.render('Header')}
           </MDTypography>
-          {sorted && (
+          {shouldShowIcons && sorted && (
             <MDBox
               sx={{
                 display: 'flex',
@@ -68,7 +79,7 @@ const DataTableHeadCell = ({ headerGroups, isSorted, setSortedValue }) => {
               </Icon>
             </MDBox>
           )}
-        </MDBox>
+        </FlexBetween>
       </MDBox>
     );
   };

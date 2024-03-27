@@ -52,21 +52,10 @@ export const ChartConfiguration = ({
     () => markers?.filter((marker) => marker.value !== undefined),
     [markers]
   );
-
   const { tickValues, xFormat } = useMemo(
     () => formatDateBasedOnRange(range),
     [range]
   );
-
-  const chartTheme = useMemo(
-    () => ({
-      axis: theme.palette.chartTheme.axis,
-      legends: theme.palette.chartTheme.legends,
-      tooltip: theme.palette.chartTheme.tooltip,
-    }),
-    [theme]
-  );
-
   const chartProps = useMemo(
     () => ({
       data: nivoChartData,

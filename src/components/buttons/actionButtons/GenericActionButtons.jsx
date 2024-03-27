@@ -91,6 +91,7 @@ const ActionButtons = ({
   context,
   page,
   handleCardAction,
+  variant,
 }) => {
   const labelValue =
     typeof context === 'string' ? context : context?.pageContext;
@@ -133,17 +134,19 @@ const ActionButtons = ({
           },
         }}
       >
-        <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
-          <GlassyIcon
-            Icon={currentContextIcon}
-            iconColor="#FFFFFF"
-            size={160}
-            // gradientStartColor="#0C86DF"
-            // gradientEndColor="#FFFFFF"
-            // size={120}
-            // blurAmount={75}
-          />
-        </MDTypography>
+        {variant !== 'data-table' && (
+          <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
+            <GlassyIcon
+              Icon={currentContextIcon}
+              iconColor="#FFFFFF"
+              size={160}
+              // gradientStartColor="#0C86DF"
+              // gradientEndColor="#FFFFFF"
+              // size={120}
+              // blurAmount={75}
+            />
+          </MDTypography>
+        )}
       </MDBox>
       <Box
         sx={{
@@ -172,82 +175,3 @@ const ActionButtons = ({
 };
 
 export default GenericActionButtons;
-
-// import React, { useCallback, useEffect } from 'react';
-// import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-// import { renderFullWidthAddButton } from './renderFullWidthAddButton';
-// import useSelectedContext from '../../../context/hooks/useSelectedContext';
-
-// const GenericActionButtons = ({
-//   card,
-//   context = context || context?.pageContext,
-//   onClick, // New onClick prop for handling context selection
-//   onSuccess,
-//   onFailure,
-//   page,
-//   cardSize,
-// }) => {
-//   if (typeof context === 'undefined') {
-//     context = 'Collection';
-//   }
-//   const { closeModal, isModalOpen, setModalOpen } = useModalContext();
-//   const { selectedCollection, allCollections } = useSelectedContext();
-//   const [buttonSize, setButtonSize] = React.useState('medium');
-
-//   const labelValue =
-//     typeof context === 'string' ? context : context?.pageContext;
-//   useEffect(() => {
-//     const buttonSizeMap = {
-//       xs: 'extraSmall',
-//       sm: 'small',
-//       md: 'medium',
-//       lg: 'large', // Adjust if there's another size you want for 'l'
-//     };
-//     const size = buttonSizeMap[cardSize] || 'medium'; // Default to 'medium' if size is not defined
-//     setButtonSize(size);
-//   }, [cardSize]);
-
-//   return (
-//     <React.Fragment>
-//       {renderFullWidthAddButton(
-//         buttonSize,
-//         isModalOpen,
-//         labelValue,
-//         cardSize,
-//         context,
-//         card,
-//         page,
-//         onClick,
-//         closeModal,
-//         onSuccess,
-//         onFailure
-//       )}
-//     </React.Fragment>
-//   );
-// };
-
-// export default GenericActionButtons;
-
-// // const renderSelectionDialog = () => (
-// //   <Dialog open={selectDialogOpen} onClose={() => setSelectDialogOpen(false)}>
-// //     <DialogTitle
-// //       sx={{
-// //         backgroundColor: theme.palette.backgroundE.darker,
-// //         color: theme.palette.text.primary,
-// //       }}
-// //     >
-// //       <MDTypography variant="button" fontWeight="medium">
-// //         Select a {context}
-// //       </MDTypography>
-// //     </DialogTitle>
-// //     <DialogContent>
-// //       <DialogActions>
-// //         {itemsForSelection?.map((item) => (
-// //           <Button key={item.id} onClick={() => onClick(item)}>
-// //             {item.name}
-// //           </Button>
-// //         ))}
-// //       </DialogActions>
-// //     </DialogContent>
-// //   </Dialog>
-// // );

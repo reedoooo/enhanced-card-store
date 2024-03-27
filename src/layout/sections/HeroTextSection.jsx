@@ -14,12 +14,9 @@ const HeroTextSection = ({ shouldShow }) => {
         background: 'transparent',
         alignItems: isMobileView ? 'flex-start' : 'center',
         padding: 1,
+        my: isMobileView ? null : 1,
         width: isMobileView ? '100%' : '100%',
-        height: isMobileView ? 'calc(100vh - 64px)' : '30%',
         position: isMobileView ? 'absolute' : 'relative',
-        mt: isMobileView ? null : '25%',
-        // borderRadius: 'none',
-        // my: isMobileView ? null : '30%',
       }}
     >
       <Zoom in={shouldShow}>
@@ -28,10 +25,12 @@ const HeroTextSection = ({ shouldShow }) => {
             textAlign: 'center',
             background: 'transparent',
             maxWidth: '100%',
-            height: isMobileView ? '20vh' : '100%',
+            height: isMobileView ? null : '100%',
             alignItems: isMobileView ? 'center' : 'center',
             // mt: isMobileView ? '0.5rem' : 'auto',
             mx: 'auto',
+            my: 'auto',
+            borderColor: 'transparent',
           }}
         >
           <Typography
@@ -40,8 +39,7 @@ const HeroTextSection = ({ shouldShow }) => {
             sx={{
               fontWeight: 'bold',
               color: theme.palette.primary.main,
-              // marginBottom: 2,
-              mt: isMobileView ? '5%' : '10%',
+              my: isMobileView ? '1rem' : 'auto',
             }}
           >
             A New Era of Trading Card Games

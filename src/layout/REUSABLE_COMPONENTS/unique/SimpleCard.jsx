@@ -1,7 +1,7 @@
 import React from 'react';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import styled from 'styled-components';
-import { CardContent, IconButton, Typography } from '@mui/joy';
+import { AspectRatio, CardContent, IconButton, Typography } from '@mui/joy';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { useMode } from '../../../context';
 import { Icon, useMediaQuery } from '@mui/material';
@@ -9,6 +9,7 @@ import MDBox from '../MDBOX';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CollectionsIcon from '@mui/icons-material/Collections';
+import FlexBetween from '../FlexBetween';
 
 const getPrimaryStyle = (theme, isPrimary) => ({
   background: isPrimary ? theme.colorPrimary : undefined,
@@ -53,11 +54,11 @@ const getSearchFormHeaderStyle = (theme, isSearchFormHeader) => ({
 });
 
 const getHeroDisplayStyles = (theme, isHeroDisplay) => ({
-  background: isHeroDisplay ? theme.colorCardBackground : undefined,
+  background: 'transparent',
   color: isHeroDisplay ? theme.colorPrimary : undefined,
   root: {
     minWidth: 275,
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    background: 'transparent',
     backgroundImage:
       'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)',
     backdropFilter: 'blur(40)px',
@@ -165,25 +166,29 @@ const SimpleCard = ({
         <CardContent
           sx={{
             height: '100%',
-            width: '100%',
+            // width: '100%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            flexGrow: 1,
+            // flexGrow: 1,
+            background: 'transparent',
           }}
         >
-          <MDBox>
+          <MDBox
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: 'auto', // Adjust as needed
+            }}
+          >
             <IconButton
               disabled={false}
               variant="outlined"
               style={{
-                mr: themeSettings.spacing(4),
-                // Increase the icon size to better fill its container
-                fontSize: 'inherit',
-                height: '100%',
-                width: '100%',
-                // width: '100%',
+                color: themeSettings.palette.primary.main, // Adjust color directly via theme
+                '& .MuiIcon-root': { fontSize: isMobileView ? '3rem' : '4rem' }, // Use theme to adjust icon size conditionally
               }}
             >
               <Icon
@@ -199,52 +204,55 @@ const SimpleCard = ({
               </Icon>
             </IconButton>
           </MDBox>
-          <MDBox
+          <FlexBetween
             sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'row',
+              width: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-              flexGrow: 1,
-              border: 'none',
+              mt: themeSettings.spacing(2), // Add some top margin
             }}
           >
-            <IconButton
-              disabled={false}
-              variant="outlined"
-              style={{
-                mr: themeSettings.spacing(4),
-                // Increase the icon size to better fill its container
-                fontSize: 'inherit',
-                height: '100%',
-                // width: '100%',
-              }}
-            >
-              <CheckCircleOutlineOutlinedIcon
-                style={{
-                  // Adjust icon size to be larger based on the parent size
-                  // fontSize: '4rem', // Example size, adjust as needed
-                  fontSize: isMobileView ? '3rem' : '4rem', // Scaling text size by 8
-                  color: theme.colorPrimary,
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                }}
-              />
-            </IconButton>
-            <Typography
-              level="title-lg"
+            <AspectRatio
               sx={{
-                ml: themeSettings.spacing(4),
-
-                fontSize: isMobileView
-                  ? themeSettings.typography.d6
-                  : themeSettings.typography.d3, // Scaling text size by 8
+                width: isMobileView ? '3rem' : '4rem', // Control width based on view
+                height: 'auto', // Let height adjust to maintain aspect ratio
+                // maxHeight: 200,
+                // marginRight: themeSettings.spacing(4), // Right margin for spacing
+              }}
+              ratio="1" // Maintain a 1:1 aspect ratio
+            >
+              <IconButton
+                disabled={false}
+                sx={{
+                  color: themeSettings.palette.primary.main, // Adjust color directly via theme
+                  // '& .MuiIcon-root': {
+                  //   fontSize: isMobileView ? '3rem' : '4rem',
+                  // }, // Inherit fontSize
+                }}
+              >
+                <CheckCircleOutlineOutlinedIcon
+                  style={{
+                    // Adjust icon size to be larger based on the parent size
+                    // fontSize: '4rem', // Example size, adjust as needed
+                    fontSize: isMobileView ? '2rem' : '4rem', // Scaling text size by 8
+                    color: theme.colorPrimary,
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                  }}
+                />
+                {/* No need for additional style */}
+              </IconButton>
+            </AspectRatio>
+            <Typography
+              variant={isMobileView ? 'subtitle1' : 'h6'} // Adjust based on isMobileView
+              sx={{
+                marginLeft: themeSettings.spacing(4), // Left margin for spacing
+                fontSize: isMobileView ? '2rem' : '4rem', // Scaling text size by 8
               }}
             >
-              {heroText}
+              {heroText} {/* Display heroText */}
             </Typography>
-          </MDBox>
+          </FlexBetween>
         </CardContent>
       )}
     </div>

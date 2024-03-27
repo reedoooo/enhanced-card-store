@@ -1,13 +1,13 @@
 // OptionsComponent.jsx
 import React, { useEffect } from 'react';
-import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
+import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import {
   FormBox,
   FormFieldBox,
-} from '../../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import FormField from '../../../../components/forms/reusable/FormField';
-import { useFormContext, useMode } from '../../../../context';
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import FormField from './reusable/FormField';
+import { useFormContext, useMode } from '../../context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const OptionsComponent = ({
