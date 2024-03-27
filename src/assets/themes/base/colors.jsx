@@ -15,9 +15,15 @@ import {
   text,
   divider,
   action,
+  primary,
+  secondary,
 } from './customColorPalettes';
 const colors = {
   chartTheme: chartTheme,
+  background: {
+    default: '#f0f2f5',
+    paper: '#fff',
+  },
   // PRIMARY COLORS
   backgroundA,
   backgroundD: {
@@ -67,9 +73,6 @@ const colors = {
     qcr: hexToRgba(rarity.qcr, 0.5),
     // Add more rarities as needed
   },
-  background: {
-    default: '#f0f2f5',
-  },
   // TEXT COLORS
   text,
   // DIVIDER COLORS
@@ -117,20 +120,9 @@ const colors = {
     focus: '#05386B',
   },
 
-  primary: {
-    main: '#5CDB95',
-    focus: '#379683',
-  },
+  primary,
 
-  // primary: {
-  //   main: '#e91e63',
-  //   focus: '#e91e63',
-  // },
-
-  secondary: {
-    main: '#7b809a',
-    focus: '#8f93a9',
-  },
+  secondary,
   light: {
     main: '#f0f2f5',
     focus: '#f0f2f5',
@@ -182,6 +174,9 @@ const colors = {
     error: {
       main: '#EF5350',
       state: '#E53935',
+      dark: '#C62828',
+      darker: '#D32F2F',
+      evenDarker: '#DC143C',
     },
 
     light: {

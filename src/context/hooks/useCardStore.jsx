@@ -33,6 +33,8 @@ export const useCardStoreHook = () => {
     []
   );
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
+  const [randomCards, setRandomCards] = useLocalStorage('randomCards', []);
+
   const [isDataValid, setIsDataValid] = useState(searchData.length > 0);
   const [initialLoad, setInitialLoad] = useState(true); // New state to track the initial load
   const {
@@ -117,6 +119,27 @@ export const useCardStoreHook = () => {
     }, 100),
     []
   ); // 500ms delay, adjust as needed
+  async function fetchRandomCardsAndSet() {
+    startLoading('fetchRandomCardsAndSet');
+    try {
+      // Replace `http://your-server-address.com` with the actual server address
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER}/api/cards/randomCardData`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const cards = await response.json();
+
+      // Assuming you have a function to update your UI with these cards
+      setRandomCards(cards);
+    } catch (error) {
+      console.error('Failed to fetch random cards:', error);
+      startLoading('fetchRandomCardsAndSet');
+      // Optionally, update the UI to reflect the error state
+      // displayError('Failed to fetch random cards. Please try again later.');
+    }
+  }
 
   useEffect(() => {
     // Log updated search values only if it's not the initial load
@@ -132,12 +155,17 @@ export const useCardStoreHook = () => {
     isDataValid,
     setSearchData,
     cardsVersion,
+    setCardsVersion,
+    // toggleConfigurator,
+    // setIsConfiguratorOpen,
+    fetchRandomCardsAndSet,
+    handleRequest,
+    randomCards,
     // isConfiguratorOpen,
     // toggleConfigurator,
     // setPreviousSearchData,
     setIsDataValid,
     clearSearchData,
-    handleRequest,
     loadingSearchResults: isLoading('isSearchLoading'),
     setLoadingSearchResults: () => {
       startLoading('isSearchLoading');

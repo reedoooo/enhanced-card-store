@@ -3,8 +3,17 @@ import PropTypes from 'prop-types'; // Import PropTypes
 import { useMode } from '../../../context';
 import { StyledTextField } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
-const FormField = ({ name, register, errors, ...props }) => {
+const FormField = ({
+  name,
+  register,
+  initialValue,
+  value,
+  errors,
+  ...props
+}) => {
   const { theme } = useMode();
+  const showLabel = !initialValue;
+
   return (
     <StyledTextField
       {...register(name)}
@@ -14,7 +23,11 @@ const FormField = ({ name, register, errors, ...props }) => {
       fullWidth
       variant="outlined"
       theme={theme}
+      InputLabelProps={{
+        shrink: showLabel ? undefined : true,
+      }}
       {...props}
+      sx={{}}
     />
   );
 };
@@ -24,10 +37,8 @@ FormField.propTypes = {
   name: PropTypes.string.isRequired, // Name is a required string
   register: PropTypes.func.isRequired, // Register is a required function
   errors: PropTypes.object, // Errors is an object, not necessarily required
-  theme: PropTypes.object, // Theme is an object, not necessarily required
-
   // CONTROLLED FIELDS
-  value: PropTypes.string, // Value is a string, not necessarily required
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Value can be string or number
 };
 
 // Define default props if there are any optional props

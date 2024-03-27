@@ -9,40 +9,25 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
   FormControlLabel,
-  Grid,
-  IconButton,
-  Link,
-  Paper,
-  Switch,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar'; // Adjust import paths as necessary
-import LoginForm from '../forms/LoginForm';
-import SignupForm from '../forms/SignupForm';
 import { useFormContext, useMode } from '../../context';
 import useAuthDialog from '../../context/hooks/useAuthDialog'; // Adjust import paths as necessary
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import {
-  DialogContentsBox,
-  DialogPaer,
   DialogPaper,
-  FormPaper,
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
-import { AuthModeSwitch } from '../../layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
-import AuthSwitch from '../buttons/other/AuthSwitch';
-import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
-
-function LoginDialog({ showSnackbar }) {
+import RCSwitch from '../forms/reusable/RCSwitch';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AuthForm from '../forms/AuthForm';
+function LoginDialog() {
   const { theme, toggleColorMode, mode } = useMode();
   const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
   // const { currentForm, setFormSchema } = useFormContext();
@@ -63,6 +48,11 @@ function LoginDialog({ showSnackbar }) {
   const handleLogout = () => {
     logout();
     toggleLoginDialog();
+  };
+  const handleToggle = () => {
+    setFormSchema(
+      currentSchemaKey === 'loginForm' ? 'signupForm' : 'loginForm'
+    );
   };
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
 
@@ -118,40 +108,31 @@ function LoginDialog({ showSnackbar }) {
             >
               <LockOutlinedIcon />
             </MDAvatar>
-            <MDTypography component="h1" variant="h4">
+            <MDTypography component="h1" variant="h4" color="text">
               {formTitle}
             </MDTypography>
           </MDBox>
-          {/* <MDBox
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end', // Aligns the switch to the flex end
-              border: 'none',
-            }}
-          > */}
-          <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} />
-          {/* </MDBox> */}
+          {/* <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} /> */}
+          <RCSwitch
+            signupMode={signupMode}
+            checked={currentSchemaKey === 'signupForm'}
+            onChange={handleToggle}
+            labelLeft="Login"
+            labelRight="Sign Up"
+            iconLeft={<LoginIcon />}
+            iconRight={<PersonAddIcon />}
+          />
         </DialogTitle>
       </DialogPaper>
 
       <Divider />
       <StyledDialogContent theme={theme} elevation={20}>
-        {currentSchemaKey === 'loginForm' ? (
-          <LoginForm
-            // toggleAuthMode={toggleAuthMode}
-            signupMode={signupMode}
-            formLabel={formLabel}
-          />
+        <AuthForm formType={currentSchemaKey} />
+        {/* {currentSchemaKey === 'loginForm' ? (
+          <AuthForm formType={currentSchemaKey} />
         ) : (
-          <SignupForm
-            // toggleAuthMode={toggleAuthMode}
-            signupMode={signupMode}
-            formLabel={formLabel}
-          />
-        )}
-        {/* </MDBox> */}
+          <SignupForm signupMode={signupMode} formLabel={formLabel} />
+        )} */}
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"
@@ -177,4 +158,4 @@ function LoginDialog({ showSnackbar }) {
   );
 }
 
-export default withDynamicSnackbar(LoginDialog);
+export default LoginDialog;

@@ -1,16 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  // StyledAttributeSpan,
-  StyledDescriptionSpan,
-  StyledToolTipBox,
-  StyledTooltip,
-  StyledTooltipTitle,
-} from './styles/cardStyles';
 import { useMode } from '../../context';
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography, Zoom } from '@mui/material';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-
+import styled from 'styled-components';
+export const StyledToolTipBox = styled(Box)(({ theme }) => ({
+  width: 'auto',
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.backgroundA.lightest,
+  color: theme.palette.text.primary,
+  boxShadow: theme.shadows[3],
+  alignContent: 'flex-start',
+  alignItems: 'flex-start',
+  height: '100%',
+  maxWidth: 220,
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    display: 'block',
+    paddingTop: '100%',
+  },
+  '& > img': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+}));
+export const StyledTooltipTitle = styled('h4')(({ theme }) => ({
+  fontWeight: 'bold',
+  marginBottom: theme.spacing(1),
+  alignContent: 'flex-start',
+  alignItems: 'flex-start',
+}));
+export const StyledDescriptionSpan = styled('span')(({ theme }) => ({
+  display: 'block',
+  marginTop: theme.spacing(1),
+  flexGrow: 1,
+}));
 const formatKey = (key) =>
   key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 const StyledAttributeSpan = ({ theme, children }) => (
@@ -47,13 +78,12 @@ const createTooltip = (card, theme) => {
         boxShadow: theme.shadows[3],
         borderRadius: theme.shape.borderRadius,
         border: `1px solid ${theme.palette.divider}`,
-        w: 'auto',
-        h: '100%',
+        // w: 'auto',
+        // h: '100%',
         bgColor: theme.palette.backgroundC.lightest,
-        p: theme.spacing(2),
+        // p: theme.spacing(2),
         color: theme.palette.text.primary,
         alignContent: 'flex-start',
-
         '&::before': {
           content: '""',
           display: 'block',
@@ -81,11 +111,16 @@ const createTooltip = (card, theme) => {
 const CardToolTip = ({ card }) => {
   const { theme } = useMode();
   return (
-    <StyledTooltip arrow title="Card" placement="right-end">
+    <Tooltip
+      TransitionComponent={Zoom}
+      arrow
+      title="Card"
+      placement="right-end"
+    >
       <StyledToolTipBox theme={theme}>
         {createTooltip(card, theme)}
       </StyledToolTipBox>
-    </StyledTooltip>
+    </Tooltip>
   );
 };
 

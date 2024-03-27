@@ -13,25 +13,14 @@ import {
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import Icon from '@mui/material/Icon';
 import DataTableBodyCell from './DataTableBodyCell';
-import useScreenWidth from '../../../../context/hooks/useScreenWidth';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Grid,
-  Paper,
-  TableBody,
-  TextField,
-} from '@mui/material';
+import { Box, Button, Checkbox, Grid, Paper, TableBody } from '@mui/material';
 import PaginationComponent from './PaginationComponent';
-import OptionsComponent from './OptionsComponent';
-import { DataTableHeadComponent } from './DataTableHeadComponent';
-import BoxHeader from '../../../REUSABLE_COMPONENTS/BoxHeader';
+import OptionsComponent from '../../../../components/forms/OptionsComponent';
 import GenericActionButtons from '../../../../components/buttons/actionButtons/GenericActionButtons';
-import { enqueueSnackbar } from 'notistack';
 import { useMode } from '../../../../context';
+import DataTableHeadCell from './DataTableHeadCell';
+import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
 const setSortedValue = (column, isSorted) => {
   let sortedValue;
 
@@ -55,25 +44,15 @@ function DataTable({
   noEndBorder,
   tableSize,
 }) {
-  // ** New Custom Breakpoints for Tracking Visible Table Data **
-  // 800px - hide total price
-  // 650px = hide quantity
-  // 500px - hdie check box
   const { theme } = useMode();
   const [showTotalPrice, setShowTotalPrice] = useState(window.innerWidth > 800);
-  const [showQuantity, setShowQuantity] = useState(window.innerWidth > 650);
   const [showSelection, setShowSelection] = useState(window.innerWidth > 500);
-  const [showPrice, setShowPrice] = useState(window.innerWidth > 445);
   useEffect(() => {
     const handleResize = () => {
       setShowTotalPrice(window.innerWidth > 800);
-      setShowQuantity(window.innerWidth > 650);
       setShowSelection(window.innerWidth > 500);
-      setShowPrice(window.innerWidth > 445);
     };
-
     window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -82,47 +61,38 @@ function DataTable({
   const data = useMemo(() => table.data, [table.data]);
   const columns = useMemo(() => {
     let baseColumns = [
-      // Only include the selection column if showSelection is true
       showSelection && {
         id: 'selection',
+        showIcons: false,
         Header: ({ getToggleAllRowsSelectedProps }) => (
           <Checkbox {...getToggleAllRowsSelectedProps()} />
         ),
         Cell: ({ row }) => <Checkbox {...row.getToggleRowSelectedProps()} />,
+        // Apply a fixed width to the checkbox column
+        // width: 30, // Adjust the width as needed
+        // minWidth: 30, // Ensure it doesn't get smaller than the set width
+        // maxWidth: 30, // Ensure it doesn't get larger than the set width
       },
       { Header: 'Name', accessor: 'name' },
-      // { Header: 'Price', accessor: 'price' },
+      { Header: 'Price', accessor: 'price' },
+
+      { Header: 'Quantity', accessor: 'quantity', showIcons: false },
       {
         id: 'action',
         Header: 'Action',
         accessor: 'action',
+        showIcons: false,
+
         Cell: ({ value }) => (
           <GenericActionButtons
             card={value}
             context={'Collection'}
             onClick={() => console.log('clicked')}
-            onSuccess={() =>
-              enqueueSnackbar(
-                {
-                  title: 'Action successful',
-                  message: `Card added to ${value} successfully.`,
-                },
-                'success',
-                null
-              )
-            }
-            onFailure={(error) =>
-              enqueueSnackbar(
-                {
-                  title: 'Action failed',
-                  message: `Failed to add card to ${value}.`,
-                },
-                'error',
-                error
-              )
-            }
+            onSuccess={() => console.log('success')}
+            onFailure={(error) => console.log(error)}
             page={'Collection'}
             cardSize={'small'}
+            variant="data-table"
           />
         ),
       },
@@ -133,21 +103,9 @@ function DataTable({
         accessor: 'tPrice',
       });
     }
-    if (tableSize !== 'large' && showQuantity) {
-      baseColumns.push({
-        Header: 'Quantity',
-        accessor: 'quantity',
-      });
-    }
-    if (tableSize !== 'large' && showPrice) {
-      baseColumns.push({
-        Header: 'Price',
-        accessor: 'price',
-      });
-    }
     // Filter out any falsey values to remove the conditionally included columns when not shown
     return baseColumns.filter(Boolean);
-  }, [showTotalPrice, showQuantity, showSelection, tableSize, showPrice]);
+  }, [showTotalPrice, showSelection, tableSize]);
 
   const defaultPageSize = useMemo(
     () => entriesPerPage.defaultValue,
@@ -228,6 +186,9 @@ function DataTable({
         '& .MuiDataGrid-columnSeparator': {
           visibility: 'hidden',
         },
+        '& .MuiTableRow-root': {
+          flexGrow: 1,
+        },
       }}
     >
       <TableContainer sx={{ boxShadow: 'none', pt: 0 }} component={Paper}>
@@ -241,56 +202,73 @@ function DataTable({
           pageOptions={pageSizeOptions}
         />
         {/* Table */}
-        <Table {...getTableProps()} sx={{}}>
-          <DataTableHeadComponent
-            onSelectAllClick={handleSelectAllClick}
-            order="asc"
-            orderBy="name"
-            numSelected={0}
-            rowCount={data?.length}
-            onRequestSort={() => {}}
-            headerGroups={headerGroups}
-            isSorted={isSorted}
-            setSortedValue={setSortedValue}
-          />
-          {/* Table Body */}
-          <TableBody {...getTableBodyProps()}>
-            {page.map((row, key) => {
-              prepareRow(row);
-              return (
-                <TableRow
-                  {...row.getRowProps()}
-                  key={key}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    // Apply styling here to reduce padding
-                    '& td': { padding: '8px' }, // Example: reduce padding
-                  }}
-                >
-                  {row.cells.map((cell, idx) => (
-                    <DataTableBodyCell
-                      {...cell.getCellProps()}
-                      key={idx}
-                      sx={{ padding: '8px' }} // Adjust as needed
-                    >
-                      {cell.render('Cell')}
-                    </DataTableBodyCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <FlexBetween mt="0.25rem">
+          <Table
+            {...getTableProps()}
+            sx={{
+              maxWidth: '100%',
+            }}
+          >
+            <FlexBetween mt="0.25rem">
+              <DataTableHeadCell
+                onSelectAllClick={handleSelectAllClick}
+                order="asc"
+                orderBy="name"
+                numSelected={0}
+                rowCount={data?.length}
+                onRequestSort={() => {}}
+                headerGroups={headerGroups}
+                isSorted={isSorted}
+                setSortedValue={setSortedValue}
+              />
+            </FlexBetween>
+            {/* Table Body */}
+            <TableBody {...getTableBodyProps()}>
+              {page.map((row, key) => {
+                prepareRow(row);
+                return (
+                  <TableRow
+                    {...row.getRowProps()}
+                    key={key}
+                    sx={{
+                      width: '100%',
+                      flexGrow: 1,
+                      '&:last-child td, &:last-child th': { border: 0 },
+                      // Apply styling here to reduce padding
+                      '& td': { padding: '8px' }, // Example: reduce padding
+                      display: 'table-row', // Explicitly setting the display to table-row
+                    }}
+                  >
+                    {' '}
+                    <FlexBetween mt="0.25rem" gap="1.5rem">
+                      {row.cells.map((cell, idx) => (
+                        <DataTableBodyCell
+                          {...cell.getCellProps()}
+                          key={idx}
+                          sx={{ padding: '8px', flexGrow: 1 }} // Adjust as needed
+                        >
+                          {cell.render('Cell')}
+                        </DataTableBodyCell>
+                      ))}
+                    </FlexBetween>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </FlexBetween>
         {/* Pagination */}
-        <PaginationComponent
-          pageOptions={pageOptions}
-          pageIndex={pageIndex}
-          gotoPage={gotoPage}
-          canPreviousPage={canPreviousPage}
-          canNextPage={canNextPage}
-          nextPage={nextPage}
-          previousPage={previousPage}
-        />
+        <FlexBetween mt="0.25rem" gap="1.5rem">
+          <PaginationComponent
+            pageOptions={pageOptions}
+            pageIndex={pageIndex}
+            gotoPage={gotoPage}
+            canPreviousPage={canPreviousPage}
+            canNextPage={canNextPage}
+            nextPage={nextPage}
+            previousPage={previousPage}
+          />
+        </FlexBetween>
       </TableContainer>
     </Box>
   );

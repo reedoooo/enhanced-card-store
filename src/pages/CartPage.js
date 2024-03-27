@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
 import CartContent from '../layout/cart/CartContent';
-import { useCartStore, useMode, usePageContext } from '../context';
+import { useCartStore, useMode } from '../context';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
-import PageLayout from '../layout/Containers/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import { useLoading } from '../context/hooks/useLoading';
-import { CartSummary } from '../layout/cart/CartSummary';
-
+import CartSummary from '../layout/cart/CartSummary';
 const CartPage = () => {
   const { theme } = useMode();
   const {
@@ -19,11 +18,9 @@ const CartPage = () => {
     cartCardQuantity,
     totalCost,
   } = useCartStore();
-  const { returnDisplay, setLoading } = usePageContext();
   const { startLoading, stopLoading, setError, isPageLoading } = useLoading();
   const calculateTotalPrice = getTotalCost();
 
-  // useEffect hook to fetch cart data for user
   useEffect(() => {
     const fetchData = async () => {
       startLoading('isPageLoading');
@@ -36,8 +33,6 @@ const CartPage = () => {
         stopLoading('isPageLoading');
       }
     };
-
-    // Fetch cart data if not already loaded
     if (!cartData) {
       fetchData();
     }
@@ -50,16 +45,6 @@ const CartPage = () => {
       console.error('Failed to adjust quantity in cart:', e);
     }
   };
-  // Function to render the cart content grid
-  const renderCartContent = () => (
-    <Grid item xs={12} lg={6}>
-      <CartContent
-        cartData={cartData}
-        calculateTotalPrice={calculateTotalPrice}
-        onQuantityChange={handleModifyItemInCart}
-      />
-    </Grid>
-  );
   // Function to render the checkout and summary section
   const renderCheckoutAndSummary = () => (
     <Grid item xs={12} lg={6}>
@@ -96,7 +81,13 @@ const CartPage = () => {
         }}
       >
         <Grid container spacing={3}>
-          {renderCartContent()}
+          <Grid item xs={12} lg={6}>
+            <CartContent
+              cartData={cartData}
+              calculateTotalPrice={calculateTotalPrice}
+              onQuantityChange={handleModifyItemInCart}
+            />
+          </Grid>{' '}
           {renderCheckoutAndSummary()}
         </Grid>
       </CardContent>
@@ -107,7 +98,7 @@ const CartPage = () => {
     <PageLayout>
       {/* <React.Fragment> */}
       {/* <PageLayout> */}
-      {isPageLoading && returnDisplay()}
+      {isPageLoading && <div>Loading...</div>}
       {/* {loadingStatus?.isLoading && returnDisplay()} */}
       <Box
         sx={{

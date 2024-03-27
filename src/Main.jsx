@@ -1,17 +1,19 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
-import PrivateRoute from './components/reusable/PrivateRoute';
+import PrivateRoute from './layout/PrivateRoute.jsx';
 import LoginDialog from './components/dialogs/LoginDialog';
 import { useAuthContext, useConfiguratorContext, useMode } from './context';
-import PageLayout from './layout/Containers/PageLayout.jsx';
+import PageLayout from './layout/REUSABLE_COMPONENTS/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
-import LoadingIndicator from './components/reusable/indicators/LoadingIndicator.js';
+import LoadingIndicator from './layout/LoadingIndicator.js';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
-import { useCardStoreHook } from './context/hooks/useCardStore.jsx';
-import { AppContainer } from './pages/pageStyles/StyledComponents.jsx';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import LoadingOverlay from './layout/LoadingOverlay.jsx';
+import SelectionErrorDialog from './components/dialogs/SelectionErrorDialog.jsx';
+import useDialogState from './context/hooks/useDialogState.jsx';
+import useSelectedCollection from './context/MAIN_CONTEXT/CollectionContext/useSelectedCollection.jsx';
 
-// Define all routes in a single array including the component name for laziness
 const ROUTE_CONFIG = [
   { path: '/', componentName: 'HomePage', isPrivate: false },
   { path: '/home', componentName: 'HomePage', isPrivate: false },
@@ -29,7 +31,6 @@ const ROUTE_CONFIG = [
   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
 
-// Dynamically import page components based on route configuration
 const LazyRoute = ({ componentName, ...rest }) => {
   const Component = lazy(() => import(`./pages/${componentName}`));
   return <Component {...rest} />;
@@ -39,6 +40,8 @@ const Main = () => {
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   const { isLoggedIn } = useAuthContext();
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
+  const { dialogState, openDialog, closeDialog } = useDialogState({});
+  const { selectedCollection } = useSelectedCollection();
   return (
     <>
       {!isLoggedIn ? (
@@ -49,27 +52,40 @@ const Main = () => {
             backgroundColor: '#3D3D3D',
           }}
         >
-          <Navigation isLoggedIn={isLoggedIn} isMobileView={isMobileView} />
+          <Navigation isLoggedIn={isLoggedIn} />
           {isConfiguratorOpen && <Configurator />}
-          <Suspense fallback={<LoadingIndicator />}>
-            <Routes>
-              {ROUTE_CONFIG.map(({ path, componentName, isPrivate }, index) => (
-                <Route
-                  key={index}
-                  path={path}
-                  element={
-                    isPrivate ? (
-                      <PrivateRoute>
-                        <LazyRoute componentName={componentName} />
-                      </PrivateRoute>
-                    ) : (
-                      <LazyRoute componentName={componentName} />
+          <TransitionGroup component={null} exit={false}>
+            <CSSTransition key={location.key} classNames="fade" timeout={300}>
+              <Suspense fallback={<LoadingOverlay />}>
+                <Routes>
+                  {ROUTE_CONFIG.map(
+                    ({ path, componentName, isPrivate }, index) => (
+                      <Route
+                        key={index}
+                        path={path}
+                        element={
+                          isPrivate ? (
+                            <PrivateRoute>
+                              <LazyRoute componentName={componentName} />
+                            </PrivateRoute>
+                          ) : (
+                            <LazyRoute componentName={componentName} />
+                          )
+                        }
+                      />
                     )
-                  }
-                />
-              ))}
-            </Routes>
-          </Suspense>
+                  )}
+                </Routes>
+              </Suspense>
+            </CSSTransition>
+          </TransitionGroup>
+          {dialogState.isSelectionErrorDialogOpen && (
+            <SelectionErrorDialog
+              open={dialogState.isSelectionErrorDialogOpen}
+              onClose={() => closeDialog('isSelectionErrorDialogOpen')}
+              selectedValue={selectedCollection?.name}
+            />
+          )}
         </PageLayout>
       )}
     </>

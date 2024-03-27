@@ -3,10 +3,9 @@ import { FormControl, InputLabel } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 
-import SelectComponent from '../reusable/Select';
 import { useFormContext, useMode } from '../../../context';
 import { StyledChartBox } from '../../../pages/pageStyles/StyledComponents';
-import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import SelectComponent from '../reusable/Select';
 
 const ThemeSelector = ({ setTheme }) => {
   const { theme } = useMode();

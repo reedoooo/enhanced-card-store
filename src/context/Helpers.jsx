@@ -17,13 +17,6 @@ export const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
  */
 export const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
 
-const lastRequestTime = {
-  POST: 0,
-  PUT: 0,
-  DELETE: 0,
-  GET: 0,
-  PATCH: 0,
-};
 /**
  * Filters a collection of data points based on a time threshold.
  *
@@ -85,20 +78,17 @@ export const roundToNearestTenth = (value) => {
   return Math.round(value * 10) / 10;
 };
 
-// Function to calculate total price of a collection
 export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
   return Object.values(collection).reduce((total, price) => total + price, 0);
 };
 
-// Function to get the quantity of cards in a collection by its ID
 export const getCardQuantity = (collectionId, allCollections) => {
   // Assuming allCollections is an array of collection objects
   const collection = allCollections.find((coll) => coll._id === collectionId);
   return collection ? collection.cards.length : 0;
 };
 
-// Custom Hook to get the userId from cookies
 export const useUserId = () => {
   const [cookies] = useCookies(['authUser']);
   const [userId, setUserId] = useState(null);
@@ -164,4 +154,24 @@ export const createNewPriceEntry = (price) => {
     num: price,
     timestamp: new Date(),
   };
+};
+export const calculateCollectionValue = (collection) => {
+  if (!collection) return 0;
+
+  const cards = collection?.cards;
+
+  if (!Array.isArray(cards)) {
+    console.warn('Invalid collection format', collection, cards);
+    return 0;
+  }
+
+  return cards.reduce((totalValue, card) => {
+    const cardPrice = card?.price || 0;
+    const cardQuantity = card?.quantity || 0;
+    return totalValue + cardPrice * cardQuantity;
+  }, 0);
+};
+
+export const shouldFetchCollections = (prevUserId, currentUserId) => {
+  return prevUserId !== currentUserId && currentUserId != null;
 };

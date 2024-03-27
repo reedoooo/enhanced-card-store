@@ -1,108 +1,82 @@
 import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
 import BoxHeader from '../../../../REUSABLE_COMPONENTS/BoxHeader';
-import useSelectedCollection from '../../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useCollectionStats from '../../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionStats';
-import { Box } from '@mui/material';
-import { useMode } from '../../../../../context';
+import { Box, Card, CardContent } from '@mui/material';
+import { useAppContext, useMode } from '../../../../../context';
 import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../../../data/topCards';
+import styled from 'styled-components';
+import { useMemo } from 'react';
 
 const PricedCardList = () => {
-  const { collectionStats, metaStats } = useCollectionStats();
-  const { selectedCollection } = useSelectedCollection();
-  const { data, columns } = prepareTableData(selectedCollection);
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
-  const grey = theme.palette.chartTheme.grey.darkest;
-  const lightGrey = theme.palette.chartTheme.grey.lightest;
-
-  const greenAccent = colors.greenAccent.default;
-
-  // const renderCurrency = (params) => `$${params.value}`;
-
-  // const productColumns = [
-  //   {
-  //     field: '_id',
-  //     headerName: 'ID',
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'expense',
-  //     headerName: 'Expense',
-  //     flex: 0.5,
-  //     renderCell: renderCurrency,
-  //   },
-  //   {
-  //     field: 'price',
-  //     headerName: 'Price',
-  //     flex: 0.5,
-  //     renderCell: renderCurrency,
-  //   },
-  // ];
-
-  // const countItems = (params) => params.value.length;
-
-  // const transactionColumns = [
-  //   {
-  //     field: '_id',
-  //     headerName: 'ID',
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'buyer',
-  //     headerName: 'Buyer',
-  //     flex: 0.67,
-  //   },
-  //   {
-  //     field: 'amount',
-  //     headerName: 'Amount',
-  //     flex: 0.35,
-  //     renderCell: renderCurrency,
-  //   },
-  //   {
-  //     field: 'productIds',
-  //     headerName: 'Count',
-  //     flex: 0.1,
-  //     renderCell: countItems,
-  //   },
-  // ];
-
-  // Assuming productData is available in your context or props
-  // const productData = []; // Placeholder for actual data
+  const grey = colors.grey.darkest;
+  const lightGrey = colors.grey.lightest;
+  const primary = colors.primary.dark;
+  const greenAccent = colors.greenAccent.light;
+  const { cardsWithQuantities } = useAppContext();
+  const topFiveCards = useMemo(() => {
+    return cardsWithQuantities?.sort((a, b) => b.price - a.price).slice(0, 5);
+  }, [cardsWithQuantities]);
+  const { data, columns } = useMemo(
+    () => prepareTableData(topFiveCards),
+    [topFiveCards]
+  );
 
   return (
-    <MDBox>
-      <BoxHeader
-        title="List of Products"
-        sideText={`${metaStats.totalQuantity} products`}
-      />
+    <MDBox sx={{ width: '100%' }}>
       <Box
-        mt="0.5rem"
-        p="0 0.5rem"
-        height="75%"
         sx={{
-          '& .MuiDataGrid-root': {
-            color: grey,
-            border: 'none',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: `1px solid ${lightGrey} !important`,
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: `1px solid ${lightGrey} !important`,
-          },
-          '& .MuiDataGrid-columnSeparator': {
-            visibility: 'hidden',
-          },
+          background: primary,
+          borderRadius: theme.spacing(4),
+          minHeight: '270px',
+          // minHeight: '100%',
         }}
       >
-        <DataGrid
-          columnHeaderHeight={25}
-          rowHeight={35}
-          hideFooter={true}
-          rows={data}
-          columns={columns}
-        />
+        <MDBox>
+          <Card
+            sx={{
+              // borderRadius: theme.spacing(4),
+              p: theme.spacing(2),
+              background: theme.palette.chartTheme.grey.darkest,
+              border: theme.palette.chartTheme.greenAccent.dark,
+            }}
+          >
+            <BoxHeader
+              title="Top 5 Priced Cards"
+              subtitle="none"
+              sideText={`$${topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
+              colorVariant={greenAccent}
+              useSX={true}
+              titleVariant="h5"
+              paddingVariant={theme.spacing(2)}
+              sx={{
+                color: greenAccent,
+              }}
+            />
+          </Card>
+        </MDBox>
+        <Box
+          sx={{
+            '& .MuiDataGrid-root': { color: grey, border: 'none' },
+            '& .MuiDataGrid-cell': { borderBottom: `1px solid ${lightGrey}` },
+            '& .MuiDataGrid-columnHeaders': {
+              color: lightGrey,
+              borderBottom: `1px solid ${lightGrey}`,
+            },
+            // minHeight: '100%',
+            minHeight: `calc(270px - ${45})`, // 1rem = 16px typically, so theme.spacing(4) is used assuming the theme's base size is 8px
+            maxHeight: `calc(270px - ${45})`,
+          }}
+        >
+          <DataGrid
+            columnHeaderHeight={25}
+            rowHeight={35}
+            hideFooter={true}
+            rows={data || []}
+            columns={columns || []}
+          />
+        </Box>
       </Box>
     </MDBox>
   );

@@ -33,77 +33,75 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   maxHeight: '60px',
   width: '100%',
 }));
-export const StyledToolTipBox = styled(Box)(({ theme }) => ({
-  width: 'auto',
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  padding: theme.spacing(2),
-  backgroundColor: theme.palette.backgroundA.lightest,
-  color: theme.palette.text.primary,
-  boxShadow: theme.shadows[3],
-  alignContent: 'flex-start',
-  alignItems: 'flex-start',
-  height: '100%',
-  maxWidth: 220,
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    display: 'block',
-    paddingTop: '100%',
-  },
-  '& > img': {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-}));
-export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
-  // width: 'auto',
-  // border: `1px solid ${theme.palette.divider}`,
-  // borderRadius: theme.shape.borderRadius,
-  // padding: theme.spacing(2),
-  // backgroundColor: theme.palette.backgroundA.lightest,
-  // color: theme.palette.text.primary,
-  // boxShadow: theme.shadows[3],
-  // alignContent: 'flex-start',
-  // alignItems: 'flex-start',
-  // height: '100%',
-  // maxWidth: 220,
-  // position: 'relative',
-  // '&::before': {
-  //   content: '""',
-  //   display: 'block',
-  //   paddingTop: '100%',
-  // },
-  // '& > img': {
-  //   position: 'absolute',
-  //   top: 0,
-  //   left: 0,
-  //   width: '100%',
-  //   height: '100%',
-  //   objectFit: 'cover',
-  // },
-}));
-export const StyledTooltipTitle = styled('h4')(({ theme }) => ({
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(1),
-  alignContent: 'flex-start',
-  alignItems: 'flex-start',
-}));
-
-export const StyledDescriptionSpan = styled('span')(({ theme }) => ({
-  display: 'block',
-  marginTop: theme.spacing(1),
-  flexGrow: 1,
-}));
-
-export const StyledAttributeSpan = styled('span')(({ theme }) => ({
-  display: 'block',
-  marginBottom: theme.spacing(0.5),
-}));
+// export const StyledToolTipBox = styled(Box)(({ theme }) => ({
+//   width: 'auto',
+//   border: `1px solid ${theme.palette.divider}`,
+//   borderRadius: theme.shape.borderRadius,
+//   padding: theme.spacing(2),
+//   backgroundColor: theme.palette.backgroundA.lightest,
+//   color: theme.palette.text.primary,
+//   boxShadow: theme.shadows[3],
+//   alignContent: 'flex-start',
+//   alignItems: 'flex-start',
+//   height: '100%',
+//   maxWidth: 220,
+//   position: 'relative',
+//   '&::before': {
+//     content: '""',
+//     display: 'block',
+//     paddingTop: '100%',
+//   },
+//   '& > img': {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     width: '100%',
+//     height: '100%',
+//     objectFit: 'cover',
+//   },
+// }));
+// export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+//   // width: 'auto',
+//   // border: `1px solid ${theme.palette.divider}`,
+//   // borderRadius: theme.shape.borderRadius,
+//   // padding: theme.spacing(2),
+//   // backgroundColor: theme.palette.backgroundA.lightest,
+//   // color: theme.palette.text.primary,
+//   // boxShadow: theme.shadows[3],
+//   // alignContent: 'flex-start',
+//   // alignItems: 'flex-start',
+//   // height: '100%',
+//   // maxWidth: 220,
+//   // position: 'relative',
+//   // '&::before': {
+//   //   content: '""',
+//   //   display: 'block',
+//   //   paddingTop: '100%',
+//   // },
+//   // '& > img': {
+//   //   position: 'absolute',
+//   //   top: 0,
+//   //   left: 0,
+//   //   width: '100%',
+//   //   height: '100%',
+//   //   objectFit: 'cover',
+//   // },
+// }));
+// export const StyledTooltipTitle = styled('h4')(({ theme }) => ({
+//   fontWeight: 'bold',
+//   marginBottom: theme.spacing(1),
+//   alignContent: 'flex-start',
+//   alignItems: 'flex-start',
+// }));
+// export const StyledDescriptionSpan = styled('span')(({ theme }) => ({
+//   display: 'block',
+//   marginTop: theme.spacing(1),
+//   flexGrow: 1,
+// }));
+// export const StyledAttributeSpan = styled('span')(({ theme }) => ({
+//   display: 'block',
+//   marginBottom: theme.spacing(0.5),
+// }));
 
 export const CardDetailContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),

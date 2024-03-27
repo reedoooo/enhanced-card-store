@@ -1,5 +1,6 @@
 import React from 'react';
-import { Skeleton, Box, Stack, Grid } from '@mui/material';
+import { Box, Stack, Grid } from '@mui/material';
+import { Skeleton } from '@mui/joy';
 
 // Enhanced skeleton configurations for a wider variety of types
 const skeletonVariants = {
@@ -116,45 +117,6 @@ const useSkeletonLoader = () => {
     },
     ...props
   }) => {
-    // if (type === 'grid') {
-    //   const { variant, width, height } = skeletonVariants.grid;
-    //   const typesKeyMap = contentProps.types.reduce(
-    //     (acc, type) => ({ ...acc, [contentProps.numOfItems]: type }),
-    //     {}
-    //   );
-    //   console.log(typesKeyMap);
-    //   const selectedVariant = typesKeyMap[count] || variant;
-
-    //   // Render skeletons within Grid container for 'grid' type
-    //   return (
-    //     <Grid
-    //       container
-    //       {...gridProps}
-    //       sx={{
-    //         ...styleProps,
-    //       }}
-    //     >
-    //       {Array.from({ length: count }, (_, index) => (
-    //         <Grid item {...gridItemProps} key={index}>
-    //           {/* Customize Grid item props as needed */}
-    //           <Skeleton
-    //             variant={selectedVariant || variant}
-    //             animation="wave"
-    //             width={width}
-    //             height={height}
-    //             {...props}
-    //           />
-    //         </Grid>
-    //       ))}
-    //     </Grid>
-    //   );
-    // }
-    // const skeletonVariants = {
-    //   grid: { variant: 'rect', width: 210, height: 118 },
-    //   text: { variant: 'text', width: '100%', height: 20, marginBottom: 1 },
-    //   // Add other types as needed...
-    // };
-
     const generateVariantSequence = () => {
       return contentProps?.typeData?.flatMap((item) =>
         Array.from({ length: item.num }, () => item.type)
@@ -180,6 +142,25 @@ const useSkeletonLoader = () => {
             );
           })}
         </Grid>
+      );
+    }
+    if (type === 'pieChart') {
+      return (
+        <Box sx={{ ...styleProps }}>
+          <Skeleton
+            variant="circular"
+            animation="wave"
+            width="100%"
+            height={300}
+            {...props}
+          />{' '}
+          {/* <Skeleton
+            animation="wave"
+            variant="circular"
+            width={48}
+            height={48}
+          /> */}
+        </Box>
       );
     }
     const { variant, width, height, marginBottom } =

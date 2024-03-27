@@ -1,4 +1,3 @@
-// CombinedContext.js
 import React, {
   createContext,
   useCallback,
@@ -12,27 +11,51 @@ import { CartContext } from '../../MAIN_CONTEXT/CartContext/CartContext';
 import { CollectionContext } from '../../MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { defaultContextValue } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useSelectedContext from '../../hooks/useSelectedContext';
 
-// Create the combined context
-export const AppContext = createContext(defaultContextValue.APP_CONTEXT);
+const AppContext = createContext(defaultContextValue.APP_CONTEXT);
 
-// Create a provider component that combines the contexts
 export const AppContextProvider = ({ children }) => {
-  // const [context, setContext] = useState({});
   const Deck = useContext(DeckContext);
   const Cart = useContext(CartContext);
   const Collection = useContext(CollectionContext);
   const { selectedContext } = useSelectedContext();
   const [cardsWithQuantities, setCardsWithQuantities] = useState([]);
-  const [allCardsWithQuantities, setAllCardsWithQuantities] = useLocalStorage(
-    'allCardsWithQuantities',
+  // const [allCardsWithQuantities, setAllCardsWithQuantities] = useLocalStorage(
+  //   'allCardsWithQuantities',
+  //   []
+  // );
+  const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
+    'collectionMetaData',
     []
   );
-
   const { selectedCollection, allCollections } = Collection;
+  const { allIds } = useSelectedCollection();
   const { selectedDeck, allDecks } = Deck;
   const { cartData } = Cart;
+  const compileCollectionMetaData = useCallback(() => {
+    if (!allCollections || allCollections.length === 0) return;
+
+    const metaData = {
+      totalValue: allCollections?.reduce(
+        (total, collection) => total + collection?.totalPrice,
+        0
+      ),
+      numCollections: allIds?.length || 0,
+      topFiveCards: cardsWithQuantities
+        ?.sort((a, b) => b.price - a.price)
+        .slice(0, 5),
+      numCardsCollected: cardsWithQuantities?.length || 0,
+    };
+
+    setCollectionMetaData(metaData);
+  }, []);
+
+  useEffect(() => {
+    compileCollectionMetaData();
+  }, [compileCollectionMetaData]); // Re-calculate metadata when allCollections changes
+
   const isCardInContext = useCallback(
     (card) => {
       const cardsList = {
@@ -47,7 +70,7 @@ export const AppContextProvider = ({ children }) => {
   const compileCardsWithQuantities = () => {
     if (!selectedCollection && !selectedDeck && !cartData) return [];
     const deckCards = allDecks?.reduce((acc, deck) => {
-      if (deck.cards) {
+      if (deck?.cards) {
         acc = [...acc, ...deck.cards];
       }
       return acc;
@@ -64,16 +87,14 @@ export const AppContextProvider = ({ children }) => {
       if (acc[card.id]) {
         acc[card.id].quantity += card?.quantity;
       } else {
-        // Otherwise, add the card with its current quantity
         acc[card.id] = { ...card, quantity: card.quantity };
       }
       return acc;
     }, {});
 
     const quantities = Object.values(cardQuantities);
-    // console.log('cardsWithQuantities:', quantities);
-    setCardsWithQuantities(quantities);
-    setAllCardsWithQuantities(combinedCards);
+    setCardsWithQuantities(combinedCards);
+    // setAllCardsWithQuantities(combinedCards);
 
     return quantities;
   };
@@ -81,8 +102,6 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     compileCardsWithQuantities();
   }, []); // Dependency array based on when you want to recalculate
-
-  // Combine the context values into one object
   const appContextValues = useMemo(
     () => ({
       Deck,
@@ -99,8 +118,16 @@ export const AppContextProvider = ({ children }) => {
       getCardQuantities: compileCardsWithQuantities,
       isCardInContext,
       checkIfCardIsInContext: isCardInContext,
+      collectionMetaData,
     }),
-    [Deck, Cart, Collection, isCardInContext] // Include cardsWithQuantities here
+    [
+      Deck,
+      Cart,
+      Collection,
+      isCardInContext,
+      collectionMetaData,
+      // cardsWithQuantities,
+    ] // Include cardsWithQuantities here
   );
 
   return (

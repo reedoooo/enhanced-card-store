@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { calculateCollectionValue } from './collectionUtility';
+import { calculateCollectionValue } from '../../../assets/currentlyUnused/collectionUtility';
 import { useAuthContext } from '../AuthContext/authContext';
 import useCollectionManager from './useCollectionManager';
 import { defaultContextValue } from '../../constants';

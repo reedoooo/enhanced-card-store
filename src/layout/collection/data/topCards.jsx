@@ -1,95 +1,78 @@
-import Icon from '@mui/material/Icon';
-// Images
-import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import React from 'react';
-import GenericActionButtons from '../../../components/buttons/actionButtons/GenericActionButtons';
-import { useSnackbar } from 'notistack';
+import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+
 const Name = ({ name }) => (
   <MDTypography
     component="a"
     href="#"
-    variant="button"
-    color="text"
+    variant="body1"
+    color="secondary"
     fontWeight="medium"
   >
     {name}
   </MDTypography>
 );
+
 const Price = ({ price }) => (
   <MDTypography
     component="a"
     href="#"
-    variant="button"
-    color="text"
+    variant="body1"
+    color="secondary"
     fontWeight="medium"
   >
     {price}
   </MDTypography>
 );
-const TPrice = ({ tPrice }) => (
-  <MDTypography
-    component="a"
-    href="#"
-    variant="caption"
-    color="text"
-    fontWeight="medium"
-  >
-    {tPrice}
-  </MDTypography>
-);
+
 const Quantity = ({ quantity }) => (
   <MDTypography
     component="a"
     href="#"
-    variant="caption"
-    color="text"
+    variant="h6"
+    color="secondary"
     fontWeight="medium"
   >
     {quantity}
   </MDTypography>
 );
-export default function prepareTableData(selectedCards) {
-  const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'Name',
-        accessor: 'name',
-        id: 'name',
-        Cell: ({ value }) => <Name name={value} />,
-      },
-      {
-        Header: 'Price',
-        accessor: 'price',
-        id: 'price',
-        Cell: ({ value }) => <Price price={value} />,
-      },
-      {
-        Header: 'Quantity',
-        accessor: 'quantity',
-        id: 'quantity',
-        Cell: ({ value }) => <Quantity quantity={value} />,
-      },
-    ],
-    []
-  );
 
-  const data = React.useMemo(() => {
-    if (!selectedCards || selectedCards.length === 0) {
-      return [];
-    }
-    // Sort by totalPrice in descending order and take the top 5
-    const topFiveCards = selectedCards
-      ?.sort((a, b) => b.price - a.price)
-      .slice(0, 5)
-      .map((card) => ({
-        ...card,
-        tPrice: roundToNearestTenth(card.totalPrice),
-        action: card,
-      }));
+export default function prepareTableData(topCards) {
+  if (!topCards || topCards.length === 0) {
+    return { columns: [], data: [] };
+  }
+  console.log('topFiveCards:', topCards);
 
-    return topFiveCards;
-  }, [selectedCards]);
+  const columns = [
+    {
+      field: 'name',
+      headerName: 'Name',
+      renderCell: (params) => <Name name={params.value} />,
+      width: 250,
+      flex: 1,
+    },
+    {
+      field: 'price',
+      headerName: 'Price',
+      renderCell: (params) => <Price price={params.value} />,
+      maxWidth: 50,
+      flex: 1,
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      renderCell: (params) => <Quantity quantity={params.value} />,
+      maxWidth: 50,
+      flex: 1,
+    },
+  ];
+
+  const data = topCards?.map((card, index) => ({
+    id: card.id,
+    name: card.name,
+    price: card.price,
+    quantity: card.quantity,
+  }));
 
   return { columns, data };
 }

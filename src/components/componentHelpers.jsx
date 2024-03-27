@@ -1,4 +1,3 @@
-// Desc: Helper functions for components
 export const getQuantity = ({
   card,
   cartData,
@@ -7,7 +6,6 @@ export const getQuantity = ({
   selectedDeck,
   allDecks,
 }) => {
-  // Helper function to find the quantity of a card in a list of collections or decks
   const findCardQuantity = (collectionsOrDecks, cardId) =>
     collectionsOrDecks?.reduce(
       (acc, item) =>

@@ -1,27 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import AddButton from '../../../zcleanup/AddButton';
-import RemoveButton from '../../../zcleanup/RemoveButton';
-import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import useSelectedContext from '../../../context/hooks/useSelectedContext';
-import { getContextIcon } from '../../../components/reusable/icons/index';
-// import {
-//   useCollectionManager,
-//   useSelectedCollection,
-// } from '../../../context/MAIN_CONTEXT/CollectionContext';
+import { getContextIcon } from '../../../layout/REUSABLE_COMPONENTS/icons/index';
 import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
-import { DEFAULT_COLLECTION } from '../../../context/constants';
-import { useCardActions } from '../../../context/hooks/useCardActions';
 import useCollectionManager from '../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import ActionButton from './ActionButton';
 import { useSnackbar } from 'notistack';
-import GlassyIcon from '../../../components/reusable/icons/GlassyIcon';
+import GlassyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/GlassyIcon';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import useDeckManager from '../../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 
-// Utility function for mapping cardSize to buttonSize
 const buttonSizeMap = {
   xs: 'extraSmall',
   sm: 'small',
@@ -41,20 +31,11 @@ const GenericActionButtons = ({
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const { addOneToCollection, removeOneFromCollection } =
     useCollectionManager();
-  const { selectedCollection, allCollections, handleSelectCollection } =
-    useSelectedCollection();
-  const {
-    addOneToDeck,
-    removeOneFromDeck,
-    selectedDeck,
-    allDecks,
-    setSelectedDeck,
-  } = useDeckStore();
+  const { addOneToDeck, removeOneFromDeck } = useDeckManager();
   const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
-  const { closeModal } = useModalContext();
   useEffect(() => {
     setButtonSize(buttonSizeMap[cardSize] || 'medium');
   }, [cardSize]);
@@ -90,10 +71,6 @@ const GenericActionButtons = ({
       } else if (action === 'remove' && removeActions[currentContext]) {
         removeActions[currentContext](cardData);
       }
-
-      // Hook into success or failure callbacks as necessary
-      // onSuccess();
-      // onFailure();
     },
     [card, context, addActions, removeActions]
   );
@@ -114,10 +91,8 @@ const ActionButtons = ({
   context,
   page,
   handleCardAction,
+  variant,
 }) => {
-  // console.log(
-  //   `ActionButtons: buttonSize: ${buttonSize}, card: ${card?.name}, context: ${context}`
-  // );
   const labelValue =
     typeof context === 'string' ? context : context?.pageContext;
   const stackDirection = buttonSize === 'extraSmall' ? 'column' : 'row';
@@ -159,17 +134,19 @@ const ActionButtons = ({
           },
         }}
       >
-        <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
-          <GlassyIcon
-            Icon={currentContextIcon}
-            iconColor="#FFFFFF"
-            size={160}
-            // gradientStartColor="#0C86DF"
-            // gradientEndColor="#FFFFFF"
-            // size={120}
-            // blurAmount={75}
-          />
-        </MDTypography>
+        {variant !== 'data-table' && (
+          <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
+            <GlassyIcon
+              Icon={currentContextIcon}
+              iconColor="#FFFFFF"
+              size={160}
+              // gradientStartColor="#0C86DF"
+              // gradientEndColor="#FFFFFF"
+              // size={120}
+              // blurAmount={75}
+            />
+          </MDTypography>
+        )}
       </MDBox>
       <Box
         sx={{
@@ -198,82 +175,3 @@ const ActionButtons = ({
 };
 
 export default GenericActionButtons;
-
-// import React, { useCallback, useEffect } from 'react';
-// import { useModalContext } from '../../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-// import { renderFullWidthAddButton } from './renderFullWidthAddButton';
-// import useSelectedContext from '../../../context/hooks/useSelectedContext';
-
-// const GenericActionButtons = ({
-//   card,
-//   context = context || context?.pageContext,
-//   onClick, // New onClick prop for handling context selection
-//   onSuccess,
-//   onFailure,
-//   page,
-//   cardSize,
-// }) => {
-//   if (typeof context === 'undefined') {
-//     context = 'Collection';
-//   }
-//   const { closeModal, isModalOpen, setModalOpen } = useModalContext();
-//   const { selectedCollection, allCollections } = useSelectedContext();
-//   const [buttonSize, setButtonSize] = React.useState('medium');
-
-//   const labelValue =
-//     typeof context === 'string' ? context : context?.pageContext;
-//   useEffect(() => {
-//     const buttonSizeMap = {
-//       xs: 'extraSmall',
-//       sm: 'small',
-//       md: 'medium',
-//       lg: 'large', // Adjust if there's another size you want for 'l'
-//     };
-//     const size = buttonSizeMap[cardSize] || 'medium'; // Default to 'medium' if size is not defined
-//     setButtonSize(size);
-//   }, [cardSize]);
-
-//   return (
-//     <React.Fragment>
-//       {renderFullWidthAddButton(
-//         buttonSize,
-//         isModalOpen,
-//         labelValue,
-//         cardSize,
-//         context,
-//         card,
-//         page,
-//         onClick,
-//         closeModal,
-//         onSuccess,
-//         onFailure
-//       )}
-//     </React.Fragment>
-//   );
-// };
-
-// export default GenericActionButtons;
-
-// // const renderSelectionDialog = () => (
-// //   <Dialog open={selectDialogOpen} onClose={() => setSelectDialogOpen(false)}>
-// //     <DialogTitle
-// //       sx={{
-// //         backgroundColor: theme.palette.backgroundE.darker,
-// //         color: theme.palette.text.primary,
-// //       }}
-// //     >
-// //       <MDTypography variant="button" fontWeight="medium">
-// //         Select a {context}
-// //       </MDTypography>
-// //     </DialogTitle>
-// //     <DialogContent>
-// //       <DialogActions>
-// //         {itemsForSelection?.map((item) => (
-// //           <Button key={item.id} onClick={() => onClick(item)}>
-// //             {item.name}
-// //           </Button>
-// //         ))}
-// //       </DialogActions>
-// //     </DialogContent>
-// //   </Dialog>
-// // );

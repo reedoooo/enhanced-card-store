@@ -145,7 +145,7 @@ const [isToggled, toggle] = useToggle();
  * Description: Manages snack bar notifications in the application.
  * Useful for showing temporary messages or alerts to the user.
  */
-const { openSnackBar, closeSnackBar } = useSnackBar();
+// const { openSnackBar, closeSnackBar } = useSnackBar();
 
 /**
  * Hook: useVisible

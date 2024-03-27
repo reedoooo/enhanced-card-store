@@ -19,7 +19,7 @@ export const UserContext = createContext(defaultContextValue.USER_CONTEXT);
 export const UserProvider = ({ children }) => {
   const { userId, isLoggedIn } = useAuthContext(); // Assuming useAuthContext now provides userId directly
 
-  const [user, setUser] = useLocalStorage('user', {});
+  const [user, setUser] = useLocalStorage('user', null);
   const logger = useLogger('UserProvider');
   const { isLoading } = useLoading();
   const { fetchWrapper, status } = useFetchWrapper();
@@ -30,27 +30,35 @@ export const UserProvider = ({ children }) => {
     [userId]
   );
 
+  // Fetch user data from the server and update local storage if necessary
   const fetchUserData = useCallback(async () => {
-    if (!userId || !isLoggedIn || status === 'loading') return;
+    if (!userId || !isLoggedIn || isLoading('fetchUserData')) return;
+
+    // Check if user data is already fetched or present in local storage
+    if (user && Object.keys(user).length !== 0) {
+      setHasFetchedUser(true);
+      return;
+    }
+
     try {
       const responseData = await fetchWrapper(
-        `${process.env.REACT_APP_SERVER}/api/users/${userId}/userData`,
+        createApiUrl('userData'),
         'GET',
         null,
-        'getUserData'
+        'fetchUserData'
       );
-      setUser(responseData?.data);
+      setUser(responseData?.data); // Set user data in local storage
       setHasFetchedUser(true);
     } catch (error) {
       console.error('Error fetching user data:', error);
       setError(error.message || 'Failed to fetch user data');
       logger.logEvent('Failed to fetch user data', error.message);
     }
-  }, [userId, isLoggedIn, fetchWrapper, setUser, logger]);
+  }, [userId, isLoggedIn, fetchWrapper, setUser, logger, user]);
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    if (userId && isLoggedIn && !hasFetchedUser) fetchUserData();
+  }, [userId, isLoggedIn, hasFetchedUser]);
 
   const updateUser = useCallback(
     async (updatedUserData) => {

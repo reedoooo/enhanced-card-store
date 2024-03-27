@@ -1,8 +1,10 @@
 import hexToRgba from '../functions/hexToRgba';
 const error = {
+  light: '#e57373',
   main: '#f44336',
   focus: '#f44336',
   dark: '#d32f2f',
+  darkest: '#7f2e2eff', // --persian-plum--
   contrastText: '#fff',
   hoverContrastText: '#111',
 };
@@ -112,7 +114,6 @@ const backgroundF = {
   lighter: hexToRgba(backgroundE.lighter, 0.4),
   lightest: hexToRgba(backgroundE.lightest, 0.3),
 };
-
 const backgroundG = {
   darkest: '#073b4cff', // --midnight-green--
   darker: '#0c637fff', // --cerulean--
@@ -133,7 +134,6 @@ const backgroundGSecondary = {
   lightest: '#facbb0ff', // --navajo-white--
   contrastText: '#fff',
 };
-
 const grey = {
   darkest: '#141414',
   darkert: '#292929',
@@ -145,17 +145,22 @@ const grey = {
   evenLighter: '#c2c2c2',
   contrastText: '#e0e0e0',
 };
-
 const primary = {
   darkest: '#040509',
   darker: '#040509',
   dark: '#040509',
   default: '#f2f0f0',
+  main: '#5CDB95',
+  focus: '#379683',
   light: '#141b2d',
   lighter: '#1F2A40',
   lightest: '#727681',
-  evenLighter: '#a1a4ab',
+  evenLighter: '#8c8c8c',
   contrastText: '#e0e0e0',
+};
+const secondary = {
+  main: '#8c8c8c',
+  focus: '#8f93a9',
 };
 
 const greenAccent = {
@@ -169,7 +174,6 @@ const greenAccent = {
   evenLighter: '#b7ebde', // Even lighter than the lightest
   contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
 };
-
 const redAccent = {
   darkest: '#2c100f',
   darker: '#58201e',
@@ -181,7 +185,6 @@ const redAccent = {
   evenLighter: '#f1b9b7',
   contrastText: '#f8dcdb',
 };
-
 const blueAccent = {
   darkest: '#151632',
   darker: '#2a2d64',
@@ -193,7 +196,6 @@ const blueAccent = {
   evenLighter: '#c3c6fd',
   contrastText: '#e1e2fe',
 };
-
 const chartTheme = {
   primary,
   grey,
@@ -201,7 +203,6 @@ const chartTheme = {
   redAccent,
   blueAccent,
 };
-
 const rarity = {
   common: '#C0C0C0', // Silver
   uncommon: '#B8860B', // DarkGoldenRod
@@ -218,7 +219,6 @@ const rarity = {
   qcr: '#FF4500', // OrangeRed
   // Add more rarities as needed
 };
-
 export {
   chartTheme,
   backgroundA,
@@ -237,6 +237,8 @@ export {
   text,
   divider,
   action,
+  primary,
+  secondary,
 };
 // error: {
 //   main: colorsA.redAccent[500],

@@ -61,8 +61,9 @@ export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   border: '2px solid white',
   // left: -20,
   // borderRadius: '30px',
-  background:
-    'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
+  background: '#141414',
+  // background:
+  //   'linear-gradient(90deg, rgba(13, 93, 150, 1) 0%, rgba(160, 214, 186, 1) 100%);', // Subtle blue to green gradient
 }));
 export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // display: 'flex',
@@ -71,7 +72,7 @@ export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // alignItems: 'center',
   // width: '100%',
   // Do not explicitly set the height here to allow Toolbar's default styling to take effect
-  backgroundColor: theme.palette.backgroundA.darker,
+  // backgroundColor: theme.palette.backgroundA.darker,
   // borderRadius: '30px',
   flexGrow: 1,
 
@@ -464,7 +465,7 @@ export const CardListItem = styled(ListItem)(({ theme }) => ({
 export const ChartArea = styled(Container)(({ theme }) => ({
   height: '100%',
   width: '100%',
-  minHeight: '500px',
+  // minHeight: '500px',
   position: 'relative',
   flexGrow: 1,
   padding: theme.spacing(2),
@@ -567,7 +568,7 @@ export const AspectRatioBoxSkeleton = styled(Box)(({ theme }) => ({
 export const StyledCollectionListCard = styled(Card)(({ theme }) => ({
   // margin: theme.spacing(1),
   width: '100%',
-  // height: '100%',
+  height: '100%',
   flexGrow: 1,
   transition: 'transform 0.3s ease-in-out',
   boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)',

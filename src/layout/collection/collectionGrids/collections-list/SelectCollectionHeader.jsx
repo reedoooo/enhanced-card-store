@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Grid, Button, Box } from '@mui/material';
+import { Grid, Button, Box, useMediaQuery } from '@mui/material';
 import {
   useAuthContext,
   useFormContext,
@@ -7,42 +7,13 @@ import {
   useUserContext,
 } from '../../../../context';
 import { Card, Typography } from '@mui/joy';
-import MDButton from '../../../REUSABLE_COMPONENTS/MDBUTTON';
-import CustomButton from '../../../../components/buttons/other/CustomButton';
 import useSkeletonLoader from '../cards-datatable/useSkeletonLoader';
-import IconStatWrapper from '../../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import SimpleButton from '../../../REUSABLE_COMPONENTS/unique/SimpleButton';
 import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
-import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
 import SimpleSectionHeader from '../../../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
-import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
-const StyledButtonWrapper = styled.div`
-  margin-bottom: 1rem;
-`;
-const SelectCollectionHeaderSkeleton = () => {
-  const { SkeletonLoader } = useSkeletonLoader();
-
-  return (
-    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
-      <Grid item xs={12} sm={6}>
-        <Card>
-          <SkeletonLoader type="title" />
-          <SkeletonLoader type="subtitle" />
-        </Card>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        sx={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        <SkeletonLoader type="button" />
-      </Grid>
-    </Grid>
-  );
-};
+import { PageHeaderSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 
 const FlexContainer = styled(Box)`
   display: flex;
@@ -52,12 +23,12 @@ const FlexContainer = styled(Box)`
   padding: ${({ theme }) => theme.spacing(1, 2)};
 `;
 
-const HeaderContainer = styled.div`
+const HeaderContainer = styled(Box)`
   flex: 1;
-  max-width: 25%;
+  max-width: 50%;
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled(Box)`
   flex: 1;
   display: flex;
   justify-content: flex-end;
@@ -68,9 +39,8 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
   const { theme } = useMode();
   const { setCurrentForm } = useFormContext();
   const { user } = useUserContext();
-
   if (!user) {
-    return <SelectCollectionHeaderSkeleton />;
+    return <PageHeaderSkeleton />;
   }
 
   return (

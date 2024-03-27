@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-
-// material-ui
 import {
   Avatar,
   Box,
@@ -22,10 +20,7 @@ import {
   Switch,
   Typography,
 } from '@mui/material';
-
-// third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
-
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext, useMode } from '../../context';
 import Transitions from '../Transitions';

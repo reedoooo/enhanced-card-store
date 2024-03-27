@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-
+// This function tries to parse JSON and provides a fallback if parsing fails
+function safeJsonParse(value) {
+  try {
+    return value ? JSON.parse(value) : null;
+  } catch (e) {
+    console.error('Error reading localStorage key:', e);
+    return null;
+  }
+}
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === 'undefined') {
@@ -8,7 +16,7 @@ function useLocalStorage(key, initialValue) {
 
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      return item ? safeJsonParse(item) : initialValue;
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
       return initialValue;
@@ -52,8 +60,9 @@ function useLocalStorage(key, initialValue) {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
 
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      // window.localStorage.setItem(key, JSON.stringify(valueToStore));
       setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
 
       // Optionally, for cross-tab communication, you might want to trigger a storage event manually
       window.dispatchEvent(

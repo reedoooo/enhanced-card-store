@@ -1,45 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Typography,
-  FormControlLabel,
-  Switch,
-  Box,
-} from '@mui/material';
-import DeckEditPanel from '../../components/dialogs/DeckEditPanel';
-import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import useDeckStyles from '../../context/hooks/style-hooks/useDeckStyles';
-import { SwitchControl } from '../../pages/pageStyles/StyledComponents';
-import { useFormContext, useMode } from '../../context';
-import DeckSwitch from '../../components/buttons/other/DeckSwitch';
+import { Paper, Typography, Box } from '@mui/material';
+import { useMode } from '../../context';
+import DeckForm from '../../components/forms/DeckForm';
 
-const DeckEditor = () => {
-  const { selectedDeck, setSelectedDeck } = useDeckStore();
+const DeckEditor = ({ deck, onClose }) => {
   const { theme } = useMode();
-  const {
-    formStates, // Assuming this provides access to the current form state including errors
-    formMethods, // Assuming this provides access to register, handleSubmit, etc.
-    onSubmit,
-    currentForm,
-    toggleForm,
-
-    // handleChange,
-    // handleBlur,
-    // handleFocus,
-    // formMethods, // Assuming formMethods provides access to register, handleSubmit, etc.
-  } = useFormContext();
-
-  // const { currentForm: currentFormType } = formStates;
-
-  const handleToggleEdit = () => {
-    if (currentForm === 'updateDeckForm') {
-      toggleForm('addDeckForm');
-      setSelectedDeck(null);
-    }
-    if (currentForm === 'addDeckForm') {
-      toggleForm('updateDeckForm');
-    }
-  };
 
   return (
     <Box sx={{ margin: theme.spacing(3) }}>
@@ -52,12 +17,8 @@ const DeckEditor = () => {
           }}
         >
           <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
-            {selectedDeck ? 'Edit Deck' : 'Create New Deck'}
+            {deck ? 'Edit Deck' : 'Create New Deck'}
           </Typography>
-          {/* <FormControlLabel
-            control={<Switch checked={isEditing} onChange={handleToggleEdit} />}
-            label={isEditing ? 'Editing' : 'Adding'}
-          /> */}
           <Box
             sx={{
               display: 'flex',
@@ -67,14 +28,9 @@ const DeckEditor = () => {
               alignItems: 'center',
               gap: 2,
             }}
-          >
-            <DeckSwitch
-              editMode={currentForm === 'updateDeckForm'}
-              onToggle={handleToggleEdit}
-            />
-          </Box>
+          ></Box>
         </Box>
-        <DeckEditPanel selectedDeck={selectedDeck} />
+        <DeckForm actionType="update" deckData={deck} />{' '}
       </Paper>
     </Box>
   );

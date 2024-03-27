@@ -1,132 +1,80 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Box,
-  CssBaseline,
-  Dialog,
-  DialogContent,
-  Grid,
-  Paper,
-} from '@mui/material';
-import { useCollectionStore, useFormContext, useMode } from '../../context';
+import { CssBaseline, DialogTitle, Divider } from '@mui/material';
+import { useMode } from '../../context';
+import CollectionForm from '../forms/CollectionForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-import AddCollectionForm from '../forms/AddCollectionForm';
-import UpdateCollectionForm from '../forms/UpdateCollectionForm';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { withDynamicSnackbar } from '../../layout/REUSABLE_COMPONENTS/HOC/DynamicSnackbar';
-const CollectionDialog = ({
-  open,
-  onClose,
-  isNew,
-  collectionData,
-  collectionMode,
-}) => {
-  const { currentForm, setCurrentForm } = useFormContext();
-  const { theme } = useMode();
+import {
+  DialogPaper,
+  StyledDialog,
+  StyledDialogContent,
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
 
-  useEffect(() => {
-    if (collectionMode === 'edit') {
-      setCurrentForm('updateCollectionForm');
-    }
-  }, [collectionMode, setCurrentForm]);
+const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
+  const { theme } = useMode();
+  const actionType = isNew ? 'add' : 'update';
 
   return (
-    <Dialog
+    <StyledDialog
+      className="dialog-login"
       open={open}
       onClose={onClose}
-      sx={{
-        flexGrow: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minWidth: '100%',
-        borderRadius: '30px',
-        // background: theme.palette.backgroundE.light,
-      }}
+      theme={theme}
+      aria-labelledby="responsive-dialog-title"
+      maxWidth="xl"
     >
-      <MDBox>
-        <Grid
-          container
-          spacing={0}
-          // component="main"
-          sx={{ flexGrow: 1, width: '100%' }}
+      <CssBaseline />
+      <DialogPaper theme={theme}>
+        <DialogTitle
+          id="responsive-dialog-title"
+          sx={{
+            margin: '0 2rem',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            textAlign: 'center',
+            justifyContent: 'center',
+            width: 'auto',
+            boxSizing: 'border-box',
+            color: theme.palette.text.primary,
+          }}
         >
-          {/* <CssBaseline /> */}
-          <Grid
-            item
-            xs={12}
-            sm={12}
-            md={12}
-            component={Paper}
-            elevation={6}
-            square
+          <MDBox
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: 'none',
+            }}
           >
-            <Paper
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                p: 8,
-                flexGrow: 1,
-                width: '100%',
-                height: '100%',
-                background: theme.palette.backgroundE.lighter,
-              }}
-            >
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                width="100%"
-                minWidth={'30vw'}
-              >
-                <Avatar
-                  sx={{ m: 1, bgcolor: theme.palette.backgroundE.darker }}
-                >
-                  <LockOutlinedIcon />
-                </Avatar>
-                <MDTypography component="h1" variant="h5">
-                  {currentForm === 'addCollectionForm'
-                    ? 'Add a Collection'
-                    : 'Update a Collection'}
-                </MDTypography>
-                <DialogContent>
-                  <MDBox
-                    sx={{
-                      display: 'flex',
-                      // justifyContent: 'flex-end',
-                      flexGrow: 1,
-                      // mx: 'auto'
-                      m: theme.spacing(2),
-                      width: '100%',
-                      minWidth: '100%',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    {currentForm === 'addCollectionForm' ? (
-                      <AddCollectionForm />
-                    ) : (
-                      <UpdateCollectionForm collectionData={collectionData} />
-                    )}
-                  </MDBox>
-                </DialogContent>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </MDBox>
-    </Dialog>
+            <MDAvatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
+              <LockOutlinedIcon />
+            </MDAvatar>
+            <MDTypography component="h1" variant="h4">
+              {isNew ? 'Add a Collection' : 'Update a Collection'}
+            </MDTypography>
+          </MDBox>
+        </DialogTitle>
+      </DialogPaper>
+      <Divider />
+
+      <StyledDialogContent theme={theme} elevation={20}>
+        <CollectionForm
+          collectionData={!isNew ? collectionData : undefined}
+          actionType={actionType}
+        />
+      </StyledDialogContent>
+    </StyledDialog>
   );
 };
 
 CollectionDialog.propTypes = {
-  // open: PropTypes.bool.isRequired,
-  // onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
   collectionData: PropTypes.shape({
     name: PropTypes.string,
@@ -134,4 +82,4 @@ CollectionDialog.propTypes = {
   }),
 };
 
-export default withDynamicSnackbar(CollectionDialog);
+export default CollectionDialog;

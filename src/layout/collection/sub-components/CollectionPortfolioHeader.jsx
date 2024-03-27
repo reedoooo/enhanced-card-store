@@ -6,39 +6,14 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import { useMode } from '../../../context';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import { TransitionGroup } from 'react-transition-group';
-import useSkeletonLoader from '../collectionGrids/cards-datatable/useSkeletonLoader';
 import { DEFAULT_COLLECTION } from '../../../context/constants';
 import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import SimpleCard from '../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
-const SelectCollectionHeaderSkeleton = () => {
-  const { SkeletonLoader } = useSkeletonLoader();
+import { PageHeaderSkeleton } from '../../REUSABLE_COMPONENTS/SkeletonVariants';
+import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 
-  return (
-    <Grid container sx={{ padding: 1, alignItems: 'center' }}>
-      <Grid item xs={12} sm={6}>
-        <Card>
-          <SkeletonLoader type="title" />
-          <SkeletonLoader type="subtitle" />
-        </Card>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        sx={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        <SkeletonLoader type="button" />
-      </Grid>
-    </Grid>
-  );
-};
 const HeaderItem = ({ icon, label, value, delay }) => {
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -72,12 +47,13 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
   useEffect(() => {
     console.log('collection', collection);
   }, [collection]);
+
   if (
     !collection ||
-    collection === DEFAULT_COLLECTION ||
-    allCollections.length === 0
+    collection === DEFAULT_COLLECTION
+    // allCollections.length === 0
   ) {
-    return onBack();
+    return <PageHeaderSkeleton />;
   }
   const headerItems = [
     {
@@ -126,30 +102,19 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
         width: '100%',
       }}
     >
-      {/* <MDBox
-        sx={{
-          mx: 2,
-          mt: -3,
-          py: 2,
-          px: 2,
-          backgroundColor: theme.palette.info.main,
-          borderRadius: theme.shape.borderRadius,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-      > */}
       <IconButton
         onClick={onBack}
         aria-label="Back to Collections"
         color="inherit"
-        sx={{ marginRight: '4px' }}
+        sx={{
+          marginRight: '6px',
+          background: 'white',
+        }}
       >
-        <ArrowBackIcon />
+        <ArrowBackIcon color={theme.colorPrimary} />
       </IconButton>
       <Grid container spacing={2}>
-        {/* <TransitionGroup> */}
-        {headerItems.map((item, index) => (
+        {headerItems?.map((item, index) => (
           <HeaderItem
             key={item.label}
             icon={item.icon}
@@ -160,7 +125,6 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
         ))}
         {/* </TransitionGroup> */}
       </Grid>
-      {/* </MDBox> */}
     </DashboardBox>
   );
 };

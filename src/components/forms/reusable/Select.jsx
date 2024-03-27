@@ -71,7 +71,7 @@ const SelectComponent = React.forwardRef(
           },
         }}
       >
-        <MenuItem value="" disabled>
+        {/* <MenuItem value="" disabled>
           <MDTypography
             variant="button"
             sx={{
@@ -81,7 +81,7 @@ const SelectComponent = React.forwardRef(
           >
             Select Option
           </MDTypography>
-        </MenuItem>
+        </MenuItem> */}
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}

@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Grid } from '@mui/material';
-import GenericCardDialog from '../components/dialogs/cardDialog/GenericCardDialog';
+import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import StoreSearch from '../layout/store/StoreSearch';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
-import PageLayout from '../layout/Containers/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 const StorePage = () => {
   const { loadingStatus, returnDisplay, isModalOpen, modalContent } =
     useLoadingAndModal();

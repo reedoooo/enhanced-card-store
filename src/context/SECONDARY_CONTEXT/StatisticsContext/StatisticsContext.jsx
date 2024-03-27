@@ -13,18 +13,17 @@ import {
   getTopCollection,
   calculateStatsForCollection,
 } from './helpers';
-import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
 import { useCollectionStore } from '../../index';
 import { defaultContextValue } from '../../constants';
 import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useTimeRange from '../../../components/forms/selectors/useTimeRange';
 
 const StatisticsContext = createContext(defaultContextValue.STATISTICS_CONTEXT);
 
 export const StatisticsProvider = ({ children }) => {
   const { allXYValues, hasFetchedCollections } = useCollectionStore();
   const { selectedCollection, allCollections } = useSelectedCollection();
-  const { timeRange } = useChartContext();
-
+  const { selectedTimeRange } = useTimeRange();
   if (!Array.isArray(allCollections)) {
     return null;
   }
@@ -39,12 +38,12 @@ export const StatisticsProvider = ({ children }) => {
         ? allCollections?.reduce((acc, collection) => {
             acc[collection?._id] = calculateStatsForCollection(
               collection,
-              timeRange
+              selectedTimeRange
             );
             return acc;
           }, {})
         : {},
-    [allCollections, timeRange]
+    [allCollections, selectedTimeRange]
   );
 
   const totalValue = useMemo(() => {
@@ -68,22 +67,16 @@ export const StatisticsProvider = ({ children }) => {
     [allCollections]
   );
 
-  // if (hasFetchedCollections) {
-  //   console.log('SELECTED', selectedCollection);
-  //   console.log('ALL', allCollections);
-  //   console.log('VALID', validCollections);
-  // }
-  // Function to create markers for a given collection
   const createMarkers = (selectedCollection) => {
     if (!selectedCollection || !selectedCollection.collectionStatistics)
       return [];
 
-    const { highPoint, lowPoint, avgPrice } =
+    const { highPoint, lowPoint, avgPrice, percentageChange } =
       selectedCollection.collectionStatistics;
     return [
       {
         axis: 'y',
-        value: highPoint,
+        value: percentageChange,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
         legend: `${selectedCollection.name} High`,
         legendOrientation: 'vertical',
@@ -105,48 +98,28 @@ export const StatisticsProvider = ({ children }) => {
     ];
   };
 
-  // Example use of createMarkers within useMemo for selectedCollection
   const markers = useMemo(() => {
-    // Assuming selectedCollection is obtained from somewhere, e.g., state or context
     if (!selectedCollection) return [];
-    // console.log('SELECTED COLLECTION:', selectedCollection);
-    // const selectedCollection = allCollections.find(
-    //   (collection) => collection._id === someSelectedCollectionId
-    // );
     return createMarkers(selectedCollection);
   }, [allCollections]); // Add dependencies as necessary, e.g., someSelectedCollectionId
 
-  // const chartData = useMemo(
-  //   () =>
-  //     validCollections
-  //       ? allCollections.map((collection) => ({
-  //           id: collection._id,
-  //           value: collection.totalPrice,
-  //           label: collection.name,
-  //         }))
-  //       : [],
-  //   [allCollections]
-  // );
-
   const contextValue = useMemo(
     () => ({
-      // PRIMARY DATA
       stats:
-        calculateStatistics({ data: null }, timeRange, allCollections) || {},
+        calculateStatistics(
+          { data: null },
+          selectedTimeRange,
+          allCollections
+        ) || {},
 
       allStats: [statsByCollectionId],
       statsByCollectionId: statsByCollectionId[selectedCollection?._id],
       selectedStat,
       markers,
-      // PRIMARY FUNCTIONS
       setSelectedStat,
-      // SECONDARY DATA
       totalValue,
       topFiveCards,
-      // chartData,
-      // SECONDARY FUNCTIONS
       calculateTotalPriceOfAllCollections,
-      // calculateStatsByCollectionId,
       calculatePriceChanges,
       getTopCard,
       getTopCollection,
@@ -157,9 +130,8 @@ export const StatisticsProvider = ({ children }) => {
       markers,
       totalValue,
       topFiveCards,
-      // chartData,
       setSelectedStat,
-      timeRange,
+      selectedTimeRange,
     ]
   );
 
