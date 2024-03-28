@@ -1,6 +1,13 @@
 import React from 'react';
 import { rgba } from 'polished';
-
+import styled from 'styled-components';
+import { Box } from '@mui/material';
+const ButtonContainer = styled(Box)`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 50%;
+`;
 const SimpleButton = ({
   theme,
   children,
@@ -96,10 +103,12 @@ const SimpleButton = ({
   };
 
   return (
-    <button style={baseStyle} {...rest} disabled={isDisabled}>
-      <span style={buttonHoverStyle} />
-      <span style={buttonTextStyle}>{children}</span>
-    </button>
+    <ButtonContainer>
+      <button style={baseStyle} {...rest} disabled={isDisabled}>
+        <span style={buttonHoverStyle} />
+        <span style={buttonTextStyle}>{children}</span>
+      </button>
+    </ButtonContainer>
   );
 };
 

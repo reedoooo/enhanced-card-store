@@ -7,6 +7,7 @@ import {
   Grid,
   List,
   Skeleton,
+  useMediaQuery,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { TransitionGroup } from 'react-transition-group';
@@ -16,11 +17,15 @@ import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { CollectionListItemSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
+import { useMode } from '../../../../context';
 
 const SelectCollectionList = ({
   openDialog,
   handleSelectAndShowCollection,
 }) => {
+  const { theme } = useMode();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screen
+
   const {
     allCollections,
     allIds,
@@ -53,6 +58,14 @@ const SelectCollectionList = ({
             onClick={() => {
               handleSelectAndShowCollection(collection);
             }}
+            sx={{
+              ...(isMobile && {
+                boxShadow: 'none', // Remove shadow
+                '&:hover': {
+                  boxShadow: 'none',
+                },
+              }),
+            }}
           >
             <CollectionListItem
               collection={collection}
@@ -64,7 +77,7 @@ const SelectCollectionList = ({
       .concat(allSkeletonCollections);
 
     setCollectionList(combinedCollections);
-  }, [allIds?.length]); // Dependency on allIds.length instead of allIds and allCollections
+  }, [allIds?.length, isMobile]); // Dependency on allIds.length instead of allIds and allCollections
 
   return (
     <SimpleCard
@@ -72,11 +85,11 @@ const SelectCollectionList = ({
       hasTitle={false}
       isPrimary={false}
       noBottomMargin={true}
-      sx={
-        {
-          // hidden: !showCollections,
-        }
-      }
+      sx={{
+        ...(isMobile && {
+          boxShadow: 'none', // Optionally adjust the SimpleCard's style for mobile
+        }),
+      }}
     >
       <List sx={{ justifyContent: 'center', alignItems: 'center', mx: 'auto' }}>
         <TransitionGroup>
@@ -95,6 +108,7 @@ const SelectCollectionList = ({
 
 SelectCollectionList.propTypes = {
   openDialog: PropTypes.func.isRequired,
+  handleSelectAndShowCollection: PropTypes.func.isRequired,
 };
 
 export default memo(SelectCollectionList);

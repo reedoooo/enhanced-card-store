@@ -80,12 +80,9 @@ const HeroSwiper = ({
         display: 'flex',
         justifyContent: isMobileView ? 'center' : 'flex-start',
         alignItems: isMobileView ? 'center' : 'center',
-        // position: 'relative',
         position: isMobileView ? 'absolute' : 'relative',
-        // height: isMobileView ? '100vh' : null,
         height: isMobileView ? 'calc(100vh - 64px)' : null,
         border: 'none',
-        // background: '#2d2d34',
       }}
     >
       <Swiper
@@ -121,7 +118,6 @@ const HeroSwiper = ({
               flexDirection: 'column',
               alignItems: 'center',
               width: '100%',
-              // height: '100%',
               height: isMobileView ? 'calc(100vh - 8%)' : '100%',
               transform: index === activeCardIndex ? 'scale(2.2)' : 'scale(1)',
               transition: 'transform 0.9s',

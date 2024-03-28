@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  useMediaQuery,
 } from '@mui/material';
 import { useGetSearchData } from '../../../context/hooks/useGetSearchData';
 import SearchResults from './SearchResults';
@@ -24,6 +25,8 @@ import SimpleCard from '../../../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const itemsPerPage = 12;
   const [searchBarFocused, setSearchBarFocused] = useState(false);
   const { loadingSearchResults, searchSettings, setSearchSettings } =
@@ -51,6 +54,11 @@ const SearchComponent = (pageContext) => {
           theme={uniqueTheme}
           hasTitle={false}
           isSearchFormHeader={true}
+          sx={{
+            elevation: isMobile ? 0 : 3, // Remove elevation on mobile
+            p: isMobile ? 0 : theme.spacing(2), // Remove padding on mobile
+            boxShadow: isMobile ? 'none' : '0px 4px 4px rgba(0, 0, 0, 0.25)',
+          }}
         >
           <MDBox
             sx={{
@@ -62,6 +70,10 @@ const SearchComponent = (pageContext) => {
               width: '90%',
               mx: 'auto',
               border: 'none',
+              ...(isMobile && {
+                // flexDirection: 'column', // Stack elements vertically on mobile
+                p: theme.spacing(2),
+              }),
             }}
           >
             <MDTypography
@@ -71,6 +83,7 @@ const SearchComponent = (pageContext) => {
                 fontWeight: 'bold',
                 color: theme.palette.backgroundB.dark,
                 textTransform: 'uppercase',
+                marginBottom: isMobile ? theme.spacing(2) : 0, // Add bottom margin on mobile
               }}
             >
               Search Cards

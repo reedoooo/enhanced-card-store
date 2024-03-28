@@ -27,6 +27,7 @@ const GenericActionButtons = ({
   onFailure,
   page,
   cardSize = 'md',
+  datatable = false,
 }) => {
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const { addOneToCollection, removeOneFromCollection } =
@@ -81,6 +82,8 @@ const GenericActionButtons = ({
       context={context}
       page={page}
       handleCardAction={() => handleAction('add', card, context)}
+      datatable={datatable}
+      variant={datatable ? 'data-table' : 'card'}
     />
   );
 };
@@ -92,6 +95,7 @@ const ActionButtons = ({
   page,
   handleCardAction,
   variant,
+  datatable,
 }) => {
   const labelValue =
     typeof context === 'string' ? context : context?.pageContext;
@@ -109,51 +113,48 @@ const ActionButtons = ({
         height: '100%',
       }}
     >
-      <MDBox
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexBasis: '20%', // Adjusting to occupy the desired space, may vary based on layout
-          height: '100%', // Full height for alignment with siblings
-          borderRadius: '8px', // Smoother corners for a subtle glass effect
-          background: 'rgba(255, 255, 255, 0.4)', // Lighter background for a frosted glass look
-          boxShadow: `
+      {variant !== 'data-table' && (
+        <MDBox
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexBasis: '20%', // Adjusting to occupy the desired space, may vary based on layout
+            height: '100%', // Full height for alignment with siblings
+            borderRadius: '8px', // Smoother corners for a subtle glass effect
+            background: 'rgba(255, 255, 255, 0.4)', // Lighter background for a frosted glass look
+            boxShadow: `
           inset 0 0 10px rgba(12, 134, 223, 0.5), 
           0 0 15px rgba(12, 134, 223, 0.5)
         `, // Softer blue glow
-          backdropFilter: 'blur(5px)', // Reduced blur for a clearer effect
-          overflow: 'hidden', // Ensure contents do not overflow rounded corners
-          transition: 'all 0.3s ease', // Smooth transition for hover effects
-          '&:hover': {
-            transform: 'scale(1.05)', // Slight scale on hover for interactivity
-            boxShadow: `
+            backdropFilter: 'blur(5px)', // Reduced blur for a clearer effect
+            overflow: 'hidden', // Ensure contents do not overflow rounded corners
+            transition: 'all 0.3s ease', // Smooth transition for hover effects
+            '&:hover': {
+              transform: 'scale(1.05)', // Slight scale on hover for interactivity
+              boxShadow: `
             inset 0 0 12px rgba(12, 134, 223, 0.6), 
             0 0 20px rgba(12, 134, 223, 0.6)
           `, // Intensify glow on hover
-          },
-        }}
-      >
-        {variant !== 'data-table' && (
+            },
+          }}
+        >
           <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
             <GlassyIcon
               Icon={currentContextIcon}
               iconColor="#FFFFFF"
               size={160}
-              // gradientStartColor="#0C86DF"
-              // gradientEndColor="#FFFFFF"
-              // size={120}
-              // blurAmount={75}
             />
           </MDTypography>
-        )}
-      </MDBox>
+        </MDBox>
+      )}
+
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 1,
+          gap: variant === 'data-table' ? 0 : 1,
           width: '80%',
         }}
       >
@@ -162,12 +163,16 @@ const ActionButtons = ({
           buttonSize={buttonSize}
           handleCardAction={handleCardAction}
           labelValue={'add'} // Assuming 'context' is intended to be used as 'labelValue'
+          variant={variant}
+          actionType="add"
         />
         <ActionButton
           action="remove"
           buttonSize={buttonSize}
           handleCardAction={handleCardAction}
           labelValue={'remove'} // Assuming 'context' is intended to be used as 'labelValue'
+          variant={variant}
+          actionType="remove"
         />
       </Box>
     </Box>

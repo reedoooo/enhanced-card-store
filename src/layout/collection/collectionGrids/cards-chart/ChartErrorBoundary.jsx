@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Icon, Typography, useMediaQuery } from '@mui/material';
-import useSkeletonLoader from '../cards-datatable/useSkeletonLoader';
+import useSkeletonLoader from '../../../REUSABLE_COMPONENTS/useSkeletonLoader';
 import BoxHeader from '../../../REUSABLE_COMPONENTS/BoxHeader';
 import { useMode } from '../../../../context';
 

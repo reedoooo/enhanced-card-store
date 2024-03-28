@@ -6,6 +6,7 @@ import {
   CardContent,
   Grid,
   Tooltip,
+  useMediaQuery,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
@@ -15,47 +16,14 @@ import useDialogState from '../../../../context/hooks/useDialogState';
 import { useMode } from '../../../../context';
 import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
 import LongMenu from '../../../../layout/navigation/LongMenu';
-import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import RCChange from '../../../REUSABLE_COMPONENTS/RC/RCChange';
 import RCInfoItem from '../../../REUSABLE_COMPONENTS/RCInfoItem';
-import { useVisibility } from '../../../../context/hooks/useVisibility';
 import { roundToNearestTenth } from '../../../../context/Helpers';
-
-// const CollectionInfoItem = ({ label, value, theme }) => (
-//   <Grid item xs={12} sm={6} md={3}>
-//     <CardContent
-//       sx={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         justifyContent: 'center',
-//         height: '100%',
-//       }}
-//     >
-//       <MDTypography
-//         variant="h4"
-//         fontWeight="medium"
-//         sx={{ color: theme.palette.chartTheme.grey.darkest }}
-//       >
-//         {`${label}:`}
-//       </MDTypography>
-//       <MDTypography
-//         variant="h6"
-//         sx={{ color: theme.palette.chartTheme.grey.light }}
-//       >
-//         {value}
-//       </MDTypography>
-//     </CardContent>
-//   </Grid>
-// );
-
-// CollectionInfoItem.propTypes = {
-//   label: PropTypes.string.isRequired,
-//   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-//   theme: PropTypes.object.isRequired,
-// };
 
 const CollectionListItem = memo(({ collection }) => {
   const { theme } = useMode();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const { deleteCollection } = useCollectionManager();
   const { handleSelectCollection } = useSelectedCollection();
   const { dialogState, openDialog, closeDialog } = useDialogState({
@@ -101,6 +69,10 @@ const CollectionListItem = memo(({ collection }) => {
           flexDirection: 'row',
           justifyContent: 'center',
           height: '100%',
+          ...(isMobile &&
+            {
+              // flexDirection: 'column', // Stack elements vertically on mobile
+            }),
         }}
       >
         <CardActionArea
@@ -110,6 +82,9 @@ const CollectionListItem = memo(({ collection }) => {
             flexDirection: 'row',
             justifyContent: 'center',
             flexGrow: 1,
+            ...(isMobile && {
+              flexDirection: 'column', // Adjust layout for mobile
+            }),
           }}
         >
           <Grid container alignItems="center" justify="center" spacing={2}>
@@ -153,6 +128,10 @@ const CollectionListItem = memo(({ collection }) => {
               backgroundColor: theme.palette.success.main,
               mt: theme.spacing(1),
               mr: theme.spacing(1),
+              ...(isMobile && {
+                mt: theme.spacing(0.5), // Adjust margin top for mobile
+                mr: theme.spacing(0.5), // Adjust margin right for mobile
+              }),
             }}
           >
             {renderToolTip()}

@@ -129,12 +129,14 @@ const SimpleCard = ({
   isHeroDisplay,
   heroText,
   heroIcon,
+  sx,
   ...rest
 }) => {
   const { theme: themeSettings } = useMode();
   const isMobileView = useMediaQuery(themeSettings.breakpoints.down('sm'));
   const cardStyle = {
     // display: 'flex',
+    ...sx,
     width: '100%',
     padding: hasTitle ? 0 : theme.lenMd1,
     marginBottom: noBottomMargin ? 0 : theme.lenMd1,
@@ -188,7 +190,7 @@ const SimpleCard = ({
               variant="outlined"
               style={{
                 color: themeSettings.palette.primary.main, // Adjust color directly via theme
-                '& .MuiIcon-root': { fontSize: isMobileView ? '3rem' : '4rem' }, // Use theme to adjust icon size conditionally
+                '& .MuiIconRoot': { fontSize: isMobileView ? '3rem' : '4rem' }, // Use theme to adjust icon size conditionally
               }}
             >
               <Icon

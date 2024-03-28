@@ -5,6 +5,7 @@ import { useMode } from '../../../context';
 export default styled(Box)(({ color }) => {
   const { theme } = useMode();
   // const { color, size } = ownerstate;
+
   return {
     borderRadius: '50%',
     width: 40,
@@ -13,7 +14,8 @@ export default styled(Box)(({ color }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:
+    color: color,
+    background:
       color === 'success'
         ? theme.palette.chartTheme.greenAccent.light
         : 'black',

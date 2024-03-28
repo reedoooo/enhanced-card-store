@@ -32,11 +32,14 @@ const ActionButton = ({
   labelValue,
   actionType,
   card,
+  variant,
 }) => {
   const { theme } = useMode();
   const { isLoading } = useLoading();
+  const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
+
   const { buttonLabel, buttonVariant } = getLabelAndVariant(
-    buttonSize,
+    adjustedButtonSize,
     labelValue,
     actionType
   );
@@ -54,8 +57,8 @@ const ActionButton = ({
   return (
     <LoadingButton
       variant={'contained'}
-      color={actionType === 'add' ? 'success.main' : 'error'}
-      size={buttonSize}
+      // color={actionType === 'add' ? 'success.main' : 'error'}
+      size={adjustedButtonSize}
       loading={isLoading(loadingKey)}
       onClick={
         actionType === 'add'
@@ -76,10 +79,7 @@ const ActionButton = ({
             ? theme.palette.success.main
             : theme.palette.error.main,
         '&:hover': {
-          backgroundColor:
-            labelValue === 'add'
-              ? theme.palette.success.dark
-              : theme.palette.error.dark,
+          backgroundColor: labelValue === 'add' ? '#3da58a' : '#cc4a4aff',
         },
       }}
     >

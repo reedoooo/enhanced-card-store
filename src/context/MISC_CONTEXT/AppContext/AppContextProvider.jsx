@@ -42,19 +42,24 @@ export const AppContextProvider = ({ children }) => {
         (total, collection) => total + collection?.totalPrice,
         0
       ),
+      numCardsCollected: allCollections?.reduce((total, collection) => {
+        const collectionTotal = collection?.cards?.reduce(
+          (collectionTotal, card) => {
+            // Use the quantity property of each card, defaulting to 1 if not available
+            return collectionTotal + (card?.quantity || 1);
+          },
+          0
+        );
+        return total + collectionTotal;
+      }, 0),
       numCollections: allIds?.length || 0,
       topFiveCards: cardsWithQuantities
         ?.sort((a, b) => b.price - a.price)
         .slice(0, 5),
-      numCardsCollected: cardsWithQuantities?.length || 0,
     };
 
     setCollectionMetaData(metaData);
   }, []);
-
-  useEffect(() => {
-    compileCollectionMetaData();
-  }, [compileCollectionMetaData]); // Re-calculate metadata when allCollections changes
 
   const isCardInContext = useCallback(
     (card) => {
@@ -102,6 +107,10 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     compileCardsWithQuantities();
   }, []); // Dependency array based on when you want to recalculate
+  useEffect(() => {
+    compileCollectionMetaData();
+  }, [compileCollectionMetaData]); // Re-calculate metadata when allCollections changes
+
   const appContextValues = useMemo(
     () => ({
       Deck,

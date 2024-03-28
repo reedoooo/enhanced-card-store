@@ -166,6 +166,8 @@ const useDeckManager = () => {
       const existingCard = deck?.cards?.find(
         (card) => card.id === newCards[0].id
       );
+      console.log('DECK', selectedDeck);
+      console.log('NEWW CARDS', newCards);
 
       const options = {
         beforeAction: () => {
@@ -190,7 +192,7 @@ const useDeckManager = () => {
         const cardParams = { cards: [newCards] };
         const fullParams = { ...cardParams, type: 'increment' };
         performAction(
-          createApiUrl(`${selectedDeck?._id}/cards/update`),
+          createApiUrl(`${selectedDeckId}/cards/update`),
           'PUT',
           fullParams,
           'addCardsToDeck',
@@ -200,10 +202,10 @@ const useDeckManager = () => {
         // ADD NEW CARD
         const cardParams = { cards: newCards };
         const fullParams = { ...cardParams, type: 'addNew' };
-        addCardToSelectedDeck(newCards);
+        // addCardToSelectedDeck(newCards);
 
         performAction(
-          createApiUrl(`${selectedDeck?._id}/cards/add`),
+          createApiUrl(`${selectedDeckId}/cards/add`),
           'POST',
           fullParams,
           'addCardsToDeck',
@@ -212,7 +214,13 @@ const useDeckManager = () => {
         // updateSelectedDeck(cardParams);
       }
     },
-    [performAction, createApiUrl, selectedDeckId, selectedDeck?._id]
+    [
+      performAction,
+      createApiUrl,
+      selectedDeck,
+      selectedDeckId,
+      selectedDeck?._id,
+    ]
   );
 
   const removeCardsFromDeck = useCallback(

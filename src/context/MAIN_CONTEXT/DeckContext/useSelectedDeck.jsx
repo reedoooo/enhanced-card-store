@@ -19,10 +19,18 @@ const useSelectedDeck = () => {
     deckHasBeenSelected: false,
     deckHasBeenUpdated: false,
   });
+  const [selectedDeckId, setSelectedDeckId] = useState(null);
+  // const selectedDeckId = useState(decks?.selectedId)[0];
+  // const selectedDeck = decks.byId[selectedDeckId] || DEFAULT_DECK;
+  const prevSelectedDeckIdRef = useRef(null);
 
-  const selectedDeckId = useState(decks?.selectedId)[0];
-  const selectedDeck = decks.byId[selectedDeckId] || DEFAULT_DECK;
-
+  useEffect(() => {
+    prevSelectedDeckIdRef.current = selectedDeckId;
+  }, [selectedDeckId]);
+  const getSelectedDeck = useMemo(
+    () => decks.byId[decks?.selectedId],
+    [decks.byId, decks.selectedId]
+  );
   const updateDeck = useCallback(
     (updatedDeck, deckId = selectedDeckId) => {
       setDecks((prev) => ({
@@ -36,7 +44,6 @@ const useSelectedDeck = () => {
     },
     [setDecks, selectedDeckId]
   );
-
   const updateMultipleDecks = useCallback(
     (decksArray) => {
       setDecks((prev) => {
@@ -61,16 +68,17 @@ const useSelectedDeck = () => {
   const handleSelectDeck = useCallback(
     (deck) => {
       const deckId = deck?._id;
+      console.log('SELECTED DECK ID', deckId);
       setDecks((prev) => ({
         ...prev,
         selectedId: deckId,
         selectedDeck: deck,
         selectedDeckCards: deck?.cards,
         deckHasBeenSelected: true,
-        showDecks: true,
+        showDecks: !prev.showDecks,
       }));
     },
-    [setDecks]
+    [setDecks, selectedDeckId]
   );
   const addNewDeck = useCallback(
     (newDeck) => {
@@ -99,7 +107,6 @@ const useSelectedDeck = () => {
     },
     [setDecks]
   );
-
   const addCardToSelectedDeck = useCallback(
     (card) => {
       if (!selectedDeckId) return;
@@ -111,12 +118,19 @@ const useSelectedDeck = () => {
     },
     [decks.byId, selectedDeckId, updateDeck]
   );
+  const prevDecksRef = useRef();
 
+  useEffect(() => {
+    if (prevDecksRef.current) {
+      console.log('Collections data updated:', decks);
+    }
+    prevDecksRef.current = decks;
+  }, [decks]); // Dependency array ensures this runs only when collections change
   return {
-    selectedDeckId,
-    selectedDeck,
+    selectedDeckId: decks.selectedId,
+    selectedDeck: getSelectedDeck,
     allDecks: Object.values(decks.byId),
-    showDecks: decks.showDecks,
+    showDecks: !!decks.showDecks,
     deckHasBeenSelected: decks.deckHasBeenSelected,
     deckHasBeenUpdated: decks.deckHasBeenUpdated,
 

@@ -106,13 +106,6 @@ export const ChartConfiguration = ({
         stacked: false, // Changed to false unless stacking is needed
         reverse: false,
       },
-      // yScale: {
-      //   type: 'linear',
-      //   min: 'auto',
-      //   max: 'auto',
-      //   stacked: true,
-      //   reverse: false,
-      // },
       curve: 'catmullRom', // This curve type can create smoother, more wavy lines
       motionConfig: 'wobbly', // A more dynamic motion configuration      useMesh: true,
       stiffness: 90,

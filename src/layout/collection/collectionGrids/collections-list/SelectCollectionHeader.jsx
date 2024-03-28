@@ -6,8 +6,6 @@ import {
   useMode,
   useUserContext,
 } from '../../../../context';
-import { Card, Typography } from '@mui/joy';
-import useSkeletonLoader from '../cards-datatable/useSkeletonLoader';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import SimpleButton from '../../../REUSABLE_COMPONENTS/unique/SimpleButton';
 import styled from 'styled-components';
@@ -28,12 +26,12 @@ const HeaderContainer = styled(Box)`
   max-width: 50%;
 `;
 
-const ButtonContainer = styled(Box)`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  max-width: 50%;
-`;
+// const ButtonContainer = styled(Box)`
+//   flex: 1;
+//   display: flex;
+//   justify-content: flex-end;
+//   max-width: 50%;
+// `;
 
 const SelectCollectionHeader = ({ openNewDialog }) => {
   const { theme } = useMode();
@@ -51,31 +49,26 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
       noBottomMargin={true}
     >
       <FlexContainer>
-        <HeaderContainer>
-          <SimpleSectionHeader
-            sectionName="Collection Portfolio"
-            userName={user?.userBasicData?.firstName}
-            sectionDescription="Last updated:"
-            lastUpdated={new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          />
-        </HeaderContainer>
-
-        <ButtonContainer>
-          <SimpleButton
-            theme={uniqueTheme}
-            isPrimary={true}
-            onClick={() => {
-              setCurrentForm('addCollectionForm');
-              openNewDialog();
-            }}
-          >
-            Add New Collection
-          </SimpleButton>
-        </ButtonContainer>
+        <SimpleSectionHeader
+          sectionName="Collection Portfolio"
+          userName={user?.userBasicData?.firstName}
+          sectionDescription="Last updated:"
+          lastUpdated={new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        />
+        <SimpleButton
+          theme={uniqueTheme}
+          isPrimary={true}
+          onClick={() => {
+            setCurrentForm('addCollectionForm');
+            openNewDialog();
+          }}
+        >
+          Add New Collection
+        </SimpleButton>
       </FlexContainer>
     </SimpleCard>
   );
