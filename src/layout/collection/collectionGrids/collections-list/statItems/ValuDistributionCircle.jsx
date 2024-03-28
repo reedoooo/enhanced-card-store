@@ -43,7 +43,7 @@ const ValuDistributionCircle = ({ collections }) => {
         width: '100%',
         height: '100%',
         flexGrow: 1,
-        p: 2,
+        // p: 2,
         maxHeight: 270,
       }}
     >
@@ -55,27 +55,25 @@ const ValuDistributionCircle = ({ collections }) => {
           alignItems: 'center',
           flexDirection: 'column',
           borderRadius: theme.shape.borderRadius,
-          minHeight: '270px',
+          width: '100%',
+          height: '100%',
+          minHeight: 270,
           maxHeight: 270,
         }}
       >
-        {/* <Typography variant="h5" fontWeight="600" sx={{ mb: 2 }}>
-          Collection Value Distribution
-        </Typography> */}
         <MDBox>
           <Card
             sx={{
-              // borderRadius: theme.spacing(4),
               p: theme.spacing(2),
               background: theme.palette.chartTheme.grey.darkest,
               border: theme.palette.chartTheme.greenAccent.dark,
+              width: '100%',
             }}
           >
             <BoxHeader
               title="Collection Value Distribution"
               subtitle="none"
               sideText=""
-              // sideText={`$${topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
               colorVariant={greenAccent}
               useSX={true}
               titleVariant="h5"
@@ -86,7 +84,7 @@ const ValuDistributionCircle = ({ collections }) => {
             />
           </Card>
         </MDBox>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={230}>
           <PieChart>
             <Pie
               data={data}
@@ -111,56 +109,9 @@ const ValuDistributionCircle = ({ collections }) => {
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
-        <Typography
-          variant="h6"
-          sx={{ mt: 2 }}
-          color={theme.palette.text.primary}
-        >
-          Total Value: $
-          {collections.reduce((acc, cur) => acc + cur.totalPrice, 0).toFixed(2)}
-        </Typography>
-        <Typography variant="caption">
-          Includes extra misc expenditures and costs
-        </Typography>
       </Box>
     </MDBox>
   );
 };
 
 export default ValuDistributionCircle;
-// <MDBox sx={{ width: '100%', height: '100%', flexGrow: 1 }}>
-//   <Box
-//     sx={{
-//       bgcolor: theme.palette.chartTheme.primary.dark,
-//       display: 'flex',
-//       justifyContent: 'center',
-//       alignItems: 'center',
-//       flexDirection: 'column',
-//       borderRadius: theme.shape.borderRadius,
-//       minHeight: '270px',
-//     }}
-//   >
-//     <Typography variant="h5" fontWeight="600" sx={{ mb: 2 }}>
-//       Collection Value Distribution
-//     </Typography>
-//     <ProgressCircle
-//       progress={1} // Full circle
-//       size={120}
-//       collections={collections}
-//       tooltipContent={tooltipContent}
-//       background={`conic-gradient(${gradientStops}),
-//                    radial-gradient(circle, transparent 55%, ${theme.palette.chartTheme.primary.default} 55%) center/100% no-repeat,
-//                    ${theme.palette.chartTheme.greenAccent.default}`}
-//     />
-//     <Typography
-//       variant="h5"
-//       color={theme.palette.chartTheme.greenAccent.light}
-//       sx={{ mt: 2 }}
-//     >
-//       Total Value: ${collectionMetaData.totalValue.toFixed(2)}
-//     </Typography>
-//     <Typography variant="caption">
-//       Includes extra misc expenditures and costs
-//     </Typography>
-//   </Box>
-// </MDBox>

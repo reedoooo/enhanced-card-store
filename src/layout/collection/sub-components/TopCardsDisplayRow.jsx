@@ -81,14 +81,16 @@ export const TopCardsDisplayRow = () => {
             <MDBox
               sx={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
                 width: '100%',
                 height: '100%',
               }}
             >
               <Card
                 sx={{
-                  minWidth: '25%',
+                  // minWidth: '40%',
+                  minWidth: 290,
+                  width: isMobileView ? '100%' : '50%', // Adjust width based on screen size
                   height: '100%',
                   p: theme.spacing(2),
                   m: theme.spacing(1),
@@ -97,21 +99,25 @@ export const TopCardsDisplayRow = () => {
                 <CardMedia
                   component="img"
                   alt={`Image for ${card.name || 'the card'}`}
-                  // image={card?.image || placeHolder} // || placeHolder
+                  image={card?.image || placeHolder} // || placeHolder
                   // image={placeHolder}
-                  src={placeHolder}
+                  // src={placeHolder}
                   loading="lazy"
                   style={{
                     borderRadius: 0,
                     width: 'auto',
+                    // minWidth: 280,
+                    // height: '20%', // Ensure image covers the height on mobile
                   }}
                   z
                 />
               </Card>
               <Card
                 sx={{
-                  minWidth: isMobileView ? '100%' : '50%',
-                  maxWidth: '70%',
+                  // minWidth: isMobileView ? '100%' : '50%',
+                  // maxWidth: '70%',
+                  flexGrow: 1, // Card grows to fill available space
+                  width: isMobileView ? '100%' : 'auto', // Ensure card stretches on mobile
                   height: '100%',
                   minHeight: '100%',
                   p: theme.spacing(2),
@@ -121,19 +127,21 @@ export const TopCardsDisplayRow = () => {
                   alignItems: 'center',
                 }}
               >
-                <FormBox
+                {/* <FormBox
                   theme={theme}
                   sx={{
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}
-                >
-                  <CardDetailsContainer
-                    card={card}
-                    isSwiperContent={true}
-                    titles={['Name', 'Description', 'Price']}
-                  />
-                </FormBox>
+                > */}
+                <CardDetailsContainer
+                  card={card}
+                  isSwiperContent={true}
+                  // isTextSection={true}
+                  className={'card-details-container-swiper'}
+                  titles={['Name', 'Description', 'Price']}
+                />
+                {/* </FormBox> */}
               </Card>
             </MDBox>
           </SwiperSlide>

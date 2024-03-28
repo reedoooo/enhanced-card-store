@@ -2,11 +2,14 @@ import React from 'react';
 import { rgba } from 'polished';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
+import { useMode } from '../../../context';
 const ButtonContainer = styled(Box)`
-  flex: 1;
+  ${
+    '' /* flex: 1;
   display: flex;
   justify-content: flex-end;
-  max-width: 50%;
+  max-width: 50%; */
+  }
 `;
 const SimpleButton = ({
   theme,
@@ -15,11 +18,14 @@ const SimpleButton = ({
   isAccent,
   isDefault,
   isDisabled,
+  isError,
   customColor,
   customTextColor,
   customSize,
+  noContainer,
   ...rest
 }) => {
+  const { theme: themeSettings } = useMode();
   const calculateStyles = (size) => {
     switch (size) {
       case 'sm':
@@ -69,6 +75,11 @@ const SimpleButton = ({
       color: theme.colorPrimaryText,
       boxShadow: `0 0 0 4px ${rgba(theme.colorPrimary || 'white', 0.4)}`,
     }),
+    ...(isError && {
+      background: themeSettings.palette.error.main,
+      color: theme.colorPrimaryText,
+      boxShadow: `0 0 0 4px ${rgba(themeSettings.palette.error.main || 'white', 0.4)}`,
+    }),
     ...(isAccent && {
       background: theme.colorAccent,
       color: theme.colorAccentText,
@@ -103,7 +114,14 @@ const SimpleButton = ({
   };
 
   return (
-    <ButtonContainer>
+    <ButtonContainer
+      sx={{
+        flex: 1,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        maxWidth: noContainer ? '100%' : '50%',
+      }}
+    >
       <button style={baseStyle} {...rest} disabled={isDisabled}>
         <span style={buttonHoverStyle} />
         <span style={buttonTextStyle}>{children}</span>
