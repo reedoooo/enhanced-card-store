@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
 export const BASE_URL = `${process.env.REACT_APP_SERVER}/api`;
-
 export const createUrl = (path) => `${BASE_URL}/${path}`;
 /**
  * The base URL for all API calls.
@@ -82,13 +81,11 @@ export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
   return Object.values(collection).reduce((total, price) => total + price, 0);
 };
-
 export const getCardQuantity = (collectionId, allCollections) => {
   // Assuming allCollections is an array of collection objects
   const collection = allCollections.find((coll) => coll._id === collectionId);
   return collection ? collection.cards.length : 0;
 };
-
 export const useUserId = () => {
   const [cookies] = useCookies(['authUser']);
   const [userId, setUserId] = useState(null);
@@ -99,14 +96,12 @@ export const useUserId = () => {
 
   return userId;
 };
-
 export const isEmpty = (obj) => {
   return (
     [Object, Array].includes((obj || {}).constructor) &&
     !Object.entries(obj || {}).length
   );
 };
-
 export const validateData = (data, eventName, functionName) => {
   const dataType = typeof data || data.data || data.data.data || data.message;
   console.log(
@@ -171,7 +166,6 @@ export const calculateCollectionValue = (collection) => {
     return totalValue + cardPrice * cardQuantity;
   }, 0);
 };
-
 export const shouldFetchCollections = (prevUserId, currentUserId) => {
   return prevUserId !== currentUserId && currentUserId != null;
 };

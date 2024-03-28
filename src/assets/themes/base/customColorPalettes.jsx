@@ -26,7 +26,6 @@ const success = {
 };
 const info = {
   main: '#3781F1',
-
   // main: '#2196f3',
   dark: '#1976d2',
   light: '#64b5f6',
@@ -162,7 +161,6 @@ const secondary = {
   main: '#8c8c8c',
   focus: '#8f93a9',
 };
-
 const greenAccent = {
   darkest: '#0f2922', // Assuming this is the darkest
   darker: '#1e5245', // Next darker shade

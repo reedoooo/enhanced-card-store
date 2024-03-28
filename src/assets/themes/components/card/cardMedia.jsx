@@ -3,7 +3,7 @@ import pxToRem from '../../functions/pxToRem';
 
 const { borderRadius } = borders;
 
-const cardMedia = {
+export default {
   styleOverrides: {
     root: {
       borderRadius: borderRadius.xl,
@@ -15,5 +15,3 @@ const cardMedia = {
     },
   },
 };
-
-export default cardMedia;

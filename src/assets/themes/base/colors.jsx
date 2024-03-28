@@ -162,7 +162,7 @@ const colors = {
     },
 
     success: {
-      main: '#66BB6A',
+      main: '#5CDB95',
       state: '#43A047',
     },
 

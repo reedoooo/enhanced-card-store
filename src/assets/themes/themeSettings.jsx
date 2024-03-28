@@ -13,7 +13,6 @@ import Transitions from './Transitions';
 
 export const themeSettings = (mode) => {
   return {
-    components: components,
     functions: {
       boxShadow,
       hexToRgb,
@@ -38,6 +37,22 @@ export const themeSettings = (mode) => {
     zIndex: {
       appBar: 1200,
       drawer: 1100,
+    },
+    components: {
+      MuiCssBaseline: components.MuiCssBaseline,
+      MuiDivider: components.MuiDivider,
+      MuiTableContainer: components.MuiTableContainer,
+      MuiTableCell: components.MuiTableCell,
+      MuiTableHead: components.MuiTableHead,
+      MuiButton: components.MuiButton,
+      MuiInput: components.MuiInput,
+      MuiInputLabel: components.MuiInputLabel,
+      MuiSlider: components.MuiSlider,
+      MuiSwitch: components.MuiSwitch,
+      MuiCard: components.MuiCard,
+      MuiCardMedia: components.MuiCardMedia,
+      MuiCardContent: components.MuiCardContent,
+      // MuiContainer: components.MuiContainer,
     },
     // shadows: [
     //   'none',

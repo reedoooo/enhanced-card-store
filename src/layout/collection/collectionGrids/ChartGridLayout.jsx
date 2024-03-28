@@ -9,7 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import { useMode, useStatisticsStore } from '../../../context';
+import { useMode } from '../../../context';
 import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
 import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
 import { UpdaterAndStatisticsRow } from './cards-chart/UpdaterAndStatisticsRow';
@@ -19,7 +19,6 @@ import { ChartArea } from '../../../pages/pageStyles/StyledComponents';
 import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useTimeRange from '../../../components/forms/selectors/useTimeRange';
 import useSkeletonLoader from '../../REUSABLE_COMPONENTS/useSkeletonLoader';
-import ChartErrorBoundary from './cards-chart/ChartErrorBoundary';
 import { ChartConfiguration } from './cards-chart/ChartConfigs';
 import { TopCardsDisplayRow } from '../sub-components/TopCardsDisplayRow';
 import LoadingOverlay from '../../LoadingOverlay';
@@ -27,6 +26,7 @@ import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon
 import { ResponsiveContainer } from 'recharts';
 import PricedDataTable from './cards-datatable/PricedDataTable';
 import preparePortfolioTableData from '../data/portfolioData';
+
 const renderCardContainer = (content) => {
   return (
     <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
@@ -45,20 +45,9 @@ const renderCardContainer = (content) => {
 const ChartGridLayout = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
-  const isLg = useMediaQuery(theme.breakpoints.up('lg'));
-  const tableSize = isXs ? 'less' : isLg ? 'large' : 'small';
-  const env = process.env.CHART_ENVIRONMENT;
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const { selectedCollection, showCollections } = useSelectedCollection();
-  const chartDataVariants = {
-    averaged: selectedCollection.averagedChartData,
-    raw: selectedCollection.nivoChartData,
-    new: selectedCollection.newNivoChartData,
-    test: selectedCollection.nivoTestData,
-  };
-  const selectedData = chartDataVariants.averaged;
+  const { selectedCollection, showCollections, markers } =
+    useSelectedCollection();
   const { selectedTimeRange } = useTimeRange();
-  const { stats, markers } = useStatisticsStore();
   const { SkeletonLoader } = useSkeletonLoader();
   const averagedData = selectedCollection.averagedChartData;
   if (!averagedData || !averagedData[selectedTimeRange]) {
@@ -73,14 +62,6 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
     () => preparePortfolioTableData(selectedCollection?.cards),
     [selectedCollection?.cards]
   );
-  useEffect(() => {
-    console.log('DEBUG LOG, ', {
-      selectedChartData,
-      markers,
-      selectedTimeRange,
-    });
-  }, []);
-
   const updatedAt = selectedCollection?.updatedAt;
   const formattedTime = updatedAt
     ? new Date(updatedAt).toLocaleTimeString([], {
@@ -94,11 +75,6 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
   };
   return (
     <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
-      {console.log('DEBUG LOG, ', {
-        selectedChartData,
-        markers,
-        selectedTimeRange,
-      })}
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
         <DashboardBox
           component={Grid}
@@ -138,7 +114,7 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
                     height={500}
                     // range={selectedTimeRange}
                     loadingID={selectedTimeRange}
-                    range={'24h'}
+                    range={'24hr'}
                   />
                 </ChartArea>
               </ResponsiveContainer>

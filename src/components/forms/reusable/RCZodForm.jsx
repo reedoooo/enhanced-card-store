@@ -42,7 +42,13 @@ const RCZodForm = ({
   const onFormSubmit = (data) => {
     onSubmit(data, additionalData);
   };
-
+  useEffect(() => {
+    if (initialValues) {
+      Object.keys(initialValues).forEach((key) => {
+        formMethods.setValue(key, initialValues[key]);
+      });
+    }
+  }, [initialValues, formMethods.setValue]);
   const renderField = (field) => {
     const isSearchForm =
       schemaName === 'searchForm' && field.name === 'searchTerm';

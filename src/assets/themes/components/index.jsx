@@ -9,6 +9,9 @@ import tableHead from './table/tableHead';
 import card from './card/index';
 import cardMedia from './card/cardMedia';
 import cardContent from './card/cardContent';
+import slider from './slider';
+import switchButton from './forms/switchButton';
+import globals from '../base/globals';
 const cssbaseline = {
   styleOverrides: `
   body {
@@ -21,23 +24,36 @@ const cssbaseline = {
 };
 
 export const components = {
-  MuiCssBaseline: cssbaseline,
-  MuiButton: button,
-  // MuiListItemButton: listItemButton,
-  MuiContainer: container,
-  MuiDivider: divider,
+  MuiCssBaseline: {
+    styleOverrides: {
+      ...globals,
+      ...container,
+    },
+  },
+  MuiDivider: {
+    ...divider,
+  },
+  MuiTableContainer: {
+    ...tableContainer,
+  },
+  MuiTableCell: { ...tableCell },
+  MuiTableHead: { ...tableHead },
 
-  MuiTableContainer: tableContainer,
-  MuiTableCell: tableCell,
-  MuiTableHead: tableHead,
+  MuiButton: { ...button },
+  MuiInput: {
+    ...input,
+  },
+  MuiInputLabel: {
+    ...inputLabel,
+  },
+  MuiSlider: { ...slider },
+  MuiSwitch: { ...switchButton },
 
-  // MuiOutlinedInput: outlinedInput,
-  MuiInput: input,
-  MuiInputLabel: inputLabel,
+  MuiCard: { ...card },
+  MuiCardMedia: { ...cardMedia },
+  MuiCardContent: { ...cardContent },
 
-  MuiCard: card,
-  MuiCardMedia: cardMedia,
-  MuiCardContent: cardContent,
+  // MuiContainer: container,
 };
 
 export default components;

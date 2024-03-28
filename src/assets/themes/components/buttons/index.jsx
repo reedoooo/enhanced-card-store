@@ -3,7 +3,7 @@ import contained from './contained';
 import outlined from './outlined';
 import buttonText from './text';
 
-const button = {
+export default {
   defaultProps: {
     disableRipple: false,
   },
@@ -26,5 +26,3 @@ const button = {
     textSecondary: { ...buttonText.secondary },
   },
 };
-
-export default button;

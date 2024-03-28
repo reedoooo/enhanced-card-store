@@ -6,7 +6,7 @@ const { white } = colors;
 const { md } = boxShadows;
 const { borderRadius } = borders;
 
-const tableContainer = {
+export default {
   styleOverrides: {
     root: {
       backgroundColor: white.main,
@@ -15,5 +15,3 @@ const tableContainer = {
     },
   },
 };
-
-export default tableContainer;

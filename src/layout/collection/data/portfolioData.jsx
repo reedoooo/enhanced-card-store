@@ -54,7 +54,7 @@ const Quantity = ({ quantity }) => (
 
 export default function preparePortfolioTableData(selectedCards) {
   const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
 
   const columns = [
     {
@@ -117,26 +117,28 @@ export default function preparePortfolioTableData(selectedCards) {
           datatable={true}
           context={'Collection'}
           onClick={() => console.log('clicked')}
-          onSuccess={() =>
-            enqueueSnackbar(
-              {
-                title: 'Action successful',
-                message: `Card added to ${params?.name || ''} successfully.`,
-              },
-              'success',
-              null
-            )
-          }
-          onFailure={(error) =>
-            enqueueSnackbar(
-              {
-                title: 'Action failed',
-                message: `Failed to add card to ${params?.name || ''}.`,
-              },
-              'error',
-              error
-            )
-          }
+          onSuccess={() => console.log('success')}
+          onFailure={() => console.log('failure')}
+          // onSuccess={() =>
+          //   enqueueSnackbar(
+          //     {
+          //       title: 'Action successful',
+          //       message: `Card added to ${params?.name || ''} successfully.`,
+          //     },
+          //     'success',
+          //     null
+          //   )
+          // }
+          // onFailure={(error) =>
+          //   enqueueSnackbar(
+          //     {
+          //       title: 'Action failed',
+          //       message: `Failed to add card to ${params?.name || ''}.`,
+          //     },
+          //     'error',
+          //     error
+          //   )
+          // }
           page={'Collection'}
           cardSize={'small'}
           variant="data-table"

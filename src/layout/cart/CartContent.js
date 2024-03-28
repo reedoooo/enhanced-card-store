@@ -1,6 +1,5 @@
 import React from 'react';
 import { Typography, Skeleton, Box, Grid, Container } from '@mui/material';
-import CartContainer from './CartContainer';
 import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useMode, useUserContext } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
@@ -10,7 +9,35 @@ const CartContent = () => {
   const { cartData, isLoading } = useCartStore();
 
   return (
-    <CartContainer>
+    <Box
+      sx={{
+        width: '100%',
+        flexGrow: 1,
+        backgroundColor: theme.palette.backgroundB.lightest,
+        borderRadius: '5px',
+        padding: '0.5rem',
+        overflowY: 'auto',
+        [theme.breakpoints.up('sm')]: {
+          padding: '1rem',
+        },
+        [theme.breakpoints.up('md')]: {
+          padding: '1.5rem',
+        },
+      }}
+    >
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: 'bold',
+          marginBottom: '1rem',
+          color: theme.palette.text.primary,
+          [theme.breakpoints.down('sm')]: {
+            fontSize: '1.75rem',
+          },
+        }}
+      >
+        Your Cart
+      </Typography>
       <Container
         sx={{
           // ...theme.responsiveStyles.getProductGridContainerStyle,
@@ -33,7 +60,7 @@ const CartContent = () => {
           ))}
         </Grid>
       </Container>
-    </CartContainer>
+    </Box>
   );
 };
 

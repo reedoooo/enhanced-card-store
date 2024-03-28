@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 // @mui material components
 import Card from '@mui/material/Card';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
+// import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDButton from '../../REUSABLE_COMPONENTS/MDBUTTON';
+import { Avatar } from '@mui/material';
 
 function ProfilesList({ title, profiles, shadow }) {
   const renderProfiles = profiles.map(
@@ -22,7 +23,7 @@ function ProfilesList({ title, profiles, shadow }) {
         mb={1}
       >
         <MDBox mr={2}>
-          <MDAvatar src={image} alt="something here" shadow="md" />
+          <Avatar src={image} alt="something here" shadow="md" />
         </MDBox>
         <MDBox
           display="flex"

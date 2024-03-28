@@ -34,11 +34,19 @@ const DeckForm = ({ actionType, deckData }) => {
     formMethods.setValue('tags', updatedTags.join(', '));
   };
   const updateDeckFields = [
-    { name: 'name', label: 'Name', type: 'text', icon: null, required: true },
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      value: '',
+      icon: null,
+      required: true,
+    },
     {
       name: 'description',
       label: 'Description',
       type: 'text',
+      value: '',
       multiline: true,
       rows: 4,
       icon: null,
@@ -48,6 +56,7 @@ const DeckForm = ({ actionType, deckData }) => {
       name: 'tags',
       label: 'Tags',
       type: 'chips',
+      value: tags.join(', '),
       chipData: tags,
       icon: null,
       onAddChip: handleAddTag,
@@ -87,7 +96,7 @@ const DeckForm = ({ actionType, deckData }) => {
   ];
 
   const formId = isUpdateMode ? 'updateDeckForm' : 'addDeckForm';
-  const fields = isUpdateMode ? updateDeckFields : addDeckFields;
+  const deckFields = isUpdateMode ? updateDeckFields : addDeckFields;
 
   React.useEffect(() => {
     if (!isUpdateMode) {
@@ -115,10 +124,18 @@ const DeckForm = ({ actionType, deckData }) => {
   return (
     <RCZodForm
       schemaName={formId}
-      fields={fields}
+      // fields={fields}
+      fields={
+        actionType === 'add'
+          ? deckFields
+          : deckFields.map((field) => ({
+              ...field,
+              value: deckData?.[field.name],
+            }))
+      }
       buttonLabel={isUpdateMode ? 'Save Changes' : 'Create Deck'}
       startIcon={<SaveIcon />}
-      initialValues={deckData}
+      initialValues={isUpdateMode ? deckData : {}}
       additionalData={{
         deckId: deckData ? deckData?._id : null,
       }}

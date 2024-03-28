@@ -635,16 +635,16 @@ export const StyledFormPaper = styled(Paper)(({ theme }) => ({
     boxShadow: theme.shadows[9],
   },
 }));
-export const StyledButton = styled(Button)(({ theme }) => ({
-  background: theme.palette.backgroundA.default,
-  color: theme.palette.backgroundA.contrastTextB,
-  padding: theme.spacing(1.5),
-  marginTop: theme.spacing(2),
-  '&:hover': {
-    backgroundColor: theme.palette.backgroundA.darkest,
-    color: theme.palette.backgroundA.contrastTextA,
-  },
-}));
+// export const StyledButton = styled(Button)(({ theme }) => ({
+//   background: theme.palette.backgroundA.default,
+//   color: theme.palette.backgroundA.contrastTextB,
+//   padding: theme.spacing(1.5),
+//   marginTop: theme.spacing(2),
+//   '&:hover': {
+//     backgroundColor: theme.palette.backgroundA.darkest,
+//     color: theme.palette.backgroundA.contrastTextA,
+//   },
+// }));
 export const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     position: 'relative',

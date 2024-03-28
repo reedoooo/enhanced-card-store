@@ -106,6 +106,18 @@ const SimpleButton = ({
     opacity: 0,
     pointerEvents: 'none',
     transition: 'opacity 0.35s',
+    ...(isPrimary && {
+      background: rgba(theme.colorPrimary || 'white', 0.15),
+    }),
+    ...(isError && {
+      background: rgba(themeSettings.palette.error.main || 'white', 0.15),
+    }),
+    ...(isAccent && {
+      background: rgba(theme.colorAccent || 'white', 0.15),
+    }),
+    ...(isDisabled && {
+      background: rgba(theme.colorDisabledBackground || 'white', 0.15),
+    }),
   };
 
   const buttonTextStyle = {

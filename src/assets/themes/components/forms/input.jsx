@@ -6,7 +6,7 @@ const { info, inputBorderColor, dark } = colors;
 const { size } = typography;
 const { borderWidth } = borders;
 
-const input = {
+export default {
   styleOverrides: {
     root: {
       fontSize: size.sm,
@@ -27,5 +27,3 @@ const input = {
     },
   },
 };
-
-export default input;

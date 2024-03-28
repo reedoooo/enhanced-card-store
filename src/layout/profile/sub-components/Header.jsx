@@ -15,8 +15,9 @@ import backgroundImage from '../../../assets/images/bg1.jpg';
 import burceMars from '../../../assets/images/bg1.jpg';
 import { useMode } from '../../../context';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
+// import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { Avatar } from '@mui/material';
 
 function Header({ children }) {
   const { theme } = useMode();
@@ -72,12 +73,7 @@ function Header({ children }) {
       >
         <Grid container spacing={3} alignItems="center">
           <Grid item>
-            <MDAvatar
-              src={burceMars}
-              alt="profile-image"
-              size="xl"
-              shadow="sm"
-            />
+            <Avatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>

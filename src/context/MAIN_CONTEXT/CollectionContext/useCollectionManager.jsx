@@ -111,7 +111,7 @@ const useCollectionManager = () => {
     performAction(
       createApiUrl(`${collectionId}/delete`),
       'DELETE',
-      {},
+      { collectionId: collectionId },
       'deleteCollection'
     );
   const updateCollection = (collectionId, updatedData) =>

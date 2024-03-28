@@ -5,7 +5,7 @@ import pxToRem from '../../functions/pxToRem';
 const { fontWeightBold, size } = typography;
 const { borderRadius } = borders;
 
-const root = {
+export default {
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -43,5 +43,3 @@ const root = {
     marginTop: pxToRem(-2),
   },
 };
-
-export default root;

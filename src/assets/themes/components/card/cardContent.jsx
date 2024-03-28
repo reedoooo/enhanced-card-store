@@ -1,6 +1,6 @@
 import pxToRem from '../../functions/pxToRem';
 
-const cardContent = {
+export default {
   styleOverrides: {
     root: {
       marginTop: 0,
@@ -9,5 +9,3 @@ const cardContent = {
     },
   },
 };
-
-export default cardContent;

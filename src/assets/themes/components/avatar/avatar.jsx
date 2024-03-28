@@ -2,7 +2,7 @@ import borders from '../../base/borders';
 
 const { borderRadius } = borders;
 
-const avatar = {
+export default {
   styleOverrides: {
     root: {
       transition: 'all 200ms ease-in-out',
@@ -17,5 +17,3 @@ const avatar = {
     },
   },
 };
-
-export default avatar;

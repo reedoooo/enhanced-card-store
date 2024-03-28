@@ -10,18 +10,12 @@ import CardMediaSection from './CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholder from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import { PopoverContext } from '../../context/UTILITIES_CONTEXT/PopoverContext/PopoverContext';
+import { PopoverContext } from '../../assets/currentlyUnused/PopoverContext/PopoverContext';
 import { Box } from '@mui/system';
 import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
 import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
 import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
 import { useTheme } from 'styled-components';
-import {
-  AspectRatioBox,
-  QuantityLine,
-  StyledCard,
-  StyledCardContent,
-} from './styles/cardStyledComponents';
 import { getQuantity } from '../componentHelpers';
 import { useMode } from '../../context';
 import { useAppContext } from '../../context';
@@ -29,6 +23,12 @@ import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypogr
 import { enqueueSnackbar } from 'notistack';
 import useSelectedContext from '../../context/hooks/useSelectedContext';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import {
+  AspectRatioBox,
+  StyledCard,
+  StyledCardContent,
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { usePopover } from '../../context/hooks/usePopover';
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
   const effectiveContext =
@@ -37,7 +37,6 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { theme } = useMode();
   const cardRef = useRef(null);
   const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
-
   useEffect(() => {
     const measureCard = () => {
       const width = cardRef.current?.offsetWidth;
@@ -54,7 +53,6 @@ const GenericCard = React.forwardRef((props, ref) => {
       window.removeEventListener('resize', measureCard);
     };
   }, []);
-
   const { cartData } = useCartStore();
   const { selectedCollection, allCollections } = useSelectedCollection();
   const { selectedDeck, allDecks } = useDeckStore();
@@ -62,14 +60,14 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { isCardInContext } = useAppContext();
   const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
     useModalContext();
-  const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
-    useContext(PopoverContext);
+  // const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
+  //   useContext(PopoverContext);
+  const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
   const handleClick = useCallback(() => {
     openModalWithCard(card);
     setModalOpen(true);
     setIsPopoverOpen(false);
   }, [openModalWithCard, setModalOpen, setIsPopoverOpen, card]);
-
   const handleInteraction = useCallback(
     (hoverState) => {
       setHoveredCard(hoverState ? card : null);

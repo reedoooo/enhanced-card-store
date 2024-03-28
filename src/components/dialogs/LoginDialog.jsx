@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useFormContext, useMode } from '../../context';
+import { useAuthContext, useFormContext, useMode } from '../../context';
 import useAuthDialog from '../../context/hooks/useAuthDialog'; // Adjust import paths as necessary
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -22,14 +22,18 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
+import MDAvatar from '../../assets/currentlyUnused/MDAVATAR';
 import RCSwitch from '../forms/reusable/RCSwitch';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AuthForm from '../forms/AuthForm';
+import useDialog from '../../context/hooks/useDialog';
 function LoginDialog() {
   const { theme, toggleColorMode, mode } = useMode();
-  const { toggleLoginDialog, isLoggedIn, logout } = useAuthDialog();
+  const { isLoggedIn, logout } = useAuthContext();
+  const dialogName = 'loginDialog'; // Define a name for the dialog
+  const { openDialog, closeDialog, isDialogOpen } = useDialog(); // Adjusted to useDialog
+  const [checked, setChecked] = useState(false);
   // const { currentForm, setFormSchema } = useFormContext();
   const { formMethods, onSubmit, setFormSchema, currentSchemaKey } =
     useFormContext();
@@ -37,9 +41,9 @@ function LoginDialog() {
   // EFFECT: If the user is not logged in, open the login dialog
   useEffect(() => {
     if (!isLoggedIn) {
-      toggleLoginDialog();
+      openDialog(dialogName);
     }
-  }, [isLoggedIn, toggleLoginDialog]);
+  }, [isLoggedIn, openDialog]);
   // EFFECT: Set the current form to 'loginForm' when the component mounts
   useEffect(() => {
     setFormSchema('loginForm');
@@ -47,12 +51,14 @@ function LoginDialog() {
   // HANDLE: Logout the user and close the login dialog
   const handleLogout = () => {
     logout();
-    toggleLoginDialog();
+    closeDialog(dialogName);
   };
+  // HANDLE: Open the register dialog and close the login dialog
   const handleToggle = () => {
     setFormSchema(
       currentSchemaKey === 'loginForm' ? 'signupForm' : 'loginForm'
     );
+    setChecked(!checked);
   };
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
 
@@ -66,7 +72,7 @@ function LoginDialog() {
     <StyledDialog
       className="dialog-login"
       open={!isLoggedIn}
-      onClose={toggleLoginDialog}
+      onClose={() => closeDialog(dialogName)}
       tbeme={theme}
       aria-labelledby="responsive-dialog-title"
       maxWidth="xl"
@@ -87,9 +93,9 @@ function LoginDialog() {
           }}
         >
           <MDBox sx={{ visibility: 'hidden' }}>
-            <MDAvatar sx={{ m: 1 }}>
+            <Avatar sx={{ m: 1 }}>
               <LockOutlinedIcon />
-            </MDAvatar>
+            </Avatar>
           </MDBox>
           <MDBox
             sx={{
@@ -100,14 +106,14 @@ function LoginDialog() {
               border: 'none',
             }}
           >
-            <MDAvatar
+            <Avatar
               sx={{
                 m: 1,
                 bgcolor: theme.palette.backgroundG.light,
               }}
             >
               <LockOutlinedIcon />
-            </MDAvatar>
+            </Avatar>
             <MDTypography component="h1" variant="h4" color="text">
               {formTitle}
             </MDTypography>
@@ -115,6 +121,7 @@ function LoginDialog() {
           {/* <AuthSwitch signupMode={currentSchemaKey !== 'loginForm'} /> */}
           <RCSwitch
             signupMode={signupMode}
+            formTitle={formTitle}
             checked={currentSchemaKey === 'signupForm'}
             onChange={handleToggle}
             labelLeft="Login"

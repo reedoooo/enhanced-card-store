@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom';
-
-// prop-types is a library for typechecking of props
 import PropTypes from 'prop-types';
-
-// @mui material components
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Tooltip from '@mui/material/Tooltip';
-import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDButton from '../../REUSABLE_COMPONENTS/MDBUTTON';
+import { Avatar } from '@mui/material';
 
 function DefaultProjectCard({
   image,
@@ -22,7 +18,7 @@ function DefaultProjectCard({
 }) {
   const renderAuthors = authors.map(({ image: media, name }) => (
     <Tooltip key={name} title={name} placement="bottom">
-      <MDAvatar
+      <Avatar
         src={media}
         alt={name}
         size="xs"
