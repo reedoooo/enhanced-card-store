@@ -192,6 +192,15 @@ const DynamicSkeletonList = ({ itemType, count, gridItemProps, context }) => (
   </MDBox>
 );
 
+const SkeletonCartItem = () => (
+  <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
+    <Skeleton variant="rectangular" width="100%" height={118} />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+  </Box>
+);
+
 export {
   LoadingCardSkeleton,
   HeroSectionSkeleton,
@@ -200,4 +209,5 @@ export {
   SkeletonCard,
   CollectionListItemSkeleton,
   DeckListItemSkeleton,
+  SkeletonCartItem,
 };

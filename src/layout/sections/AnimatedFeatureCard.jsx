@@ -83,6 +83,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           <SimpleButton
             color="primary"
             customSize="md"
+            isPrimary={true}
             customColor={theme.palette.chartTheme.greenAccent.light}
             customTextColor={theme.palette.chartTheme.primary.lighter}
             theme={uniqueTheme}

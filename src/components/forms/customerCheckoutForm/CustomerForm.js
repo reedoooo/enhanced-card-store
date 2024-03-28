@@ -82,7 +82,7 @@ const CustomerForm = () => {
       <StripeCheckoutModal
         open={isModalOpen}
         onClose={handleModalToggle}
-        purchases={cartData.cart}
+        purchases={cartData?.cart}
         total={totalCost}
       />
     </Container>

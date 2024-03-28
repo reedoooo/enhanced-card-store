@@ -19,6 +19,8 @@ import LongMenu from '../../../../layout/navigation/LongMenu';
 import RCChange from '../../../REUSABLE_COMPONENTS/RC/RCChange';
 import RCInfoItem from '../../../REUSABLE_COMPONENTS/RCInfoItem';
 import { roundToNearestTenth } from '../../../../context/Helpers';
+import SimpleButton from '../../../REUSABLE_COMPONENTS/unique/SimpleButton';
+import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const CollectionListItem = memo(({ collection }) => {
   const { theme } = useMode();
@@ -38,20 +40,20 @@ const CollectionListItem = memo(({ collection }) => {
     await deleteCollection(collection?._id);
   };
 
-  const renderToolTip = () => (
-    <Tooltip title="Options">
-      <div>
-        <LongMenu
-          onEdit={() => handleOpenDialog(collection)}
-          onDelete={handleDelete}
-          onSelect={() => handleSelectCollection(collection)}
-          // onHide={() => toggleShowCollections(false)}
-          collectionId={collection?._id}
-          collection={collection}
-        />
-      </div>
-    </Tooltip>
-  );
+  // const renderToolTip = () => (
+  //   <Tooltip title="Options">
+  //     <div>
+  //       <LongMenu
+  //         onEdit={() => handleOpenDialog(collection)}
+  //         onDelete={handleDelete}
+  //         onSelect={() => handleSelectCollection(collection)}
+  //         // onHide={() => toggleShowCollections(false)}
+  //         collectionId={collection?._id}
+  //         collection={collection}
+  //       />
+  //     </div>
+  //   </Tooltip>
+  // );
 
   const percentageChange =
     collection?.collectionStatistics?.percentageChange || 0;
@@ -75,49 +77,50 @@ const CollectionListItem = memo(({ collection }) => {
             }),
         }}
       >
-        <CardActionArea
+        {/* <CardContent
           onClick={handleSelection}
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
+            p: 'none !!important',
             flexGrow: 1,
             ...(isMobile && {
               flexDirection: 'column', // Adjust layout for mobile
             }),
           }}
-        >
-          <Grid container alignItems="center" justify="center" spacing={2}>
-            <RCInfoItem
-              label="Name"
-              value={collection?.name}
-              theme={theme}
-              gridSizes={{ xs: 12, sm: 6, md: 3 }}
+        > */}
+        <Grid container alignItems="center" justify="center" spacing={2}>
+          <RCInfoItem
+            label="Name"
+            value={collection?.name}
+            theme={theme}
+            gridSizes={{ xs: 12, sm: 6, md: 3 }}
+          />
+          <RCInfoItem
+            label="Value"
+            value={`$${roundToNearestTenth(collection?.totalPrice)}`}
+            theme={theme}
+            gridSizes={{ xs: 12, sm: 6, md: 3 }}
+          />
+          <RCInfoItem
+            label="Cards"
+            value={collection?.totalQuantity}
+            theme={theme}
+            gridSizes={{ xs: 12, sm: 6, md: 3 }}
+          />
+          <Grid item xs={12} sm={6} md={3}>
+            <RCChange
+              progress={100} // Default value; replace with actual data if available
+              increase={percentageChange > 0}
+              change={percentageChange}
+              rangeLevel="24hr" // Default value; replace with actual data if available
             />
-            <RCInfoItem
-              label="Value"
-              value={`$${roundToNearestTenth(collection?.totalPrice)}`}
-              theme={theme}
-              gridSizes={{ xs: 12, sm: 6, md: 3 }}
-            />
-            <RCInfoItem
-              label="Cards"
-              value={collection?.totalQuantity}
-              theme={theme}
-              gridSizes={{ xs: 12, sm: 6, md: 3 }}
-            />
-            <Grid item xs={12} sm={6} md={3}>
-              <RCChange
-                progress={100} // Default value; replace with actual data if available
-                increase={percentageChange > 0}
-                change={percentageChange}
-                rangeLevel="24hr" // Default value; replace with actual data if available
-              />
-            </Grid>
           </Grid>
-        </CardActionArea>
+        </Grid>
+        {/* </CardContent> */}
         <MDBox>
-          <CardContent
+          {/* <CardContent
             sx={{
               borderRadius: '50%',
               width: 40,
@@ -133,9 +136,17 @@ const CollectionListItem = memo(({ collection }) => {
                 mr: theme.spacing(0.5), // Adjust margin right for mobile
               }),
             }}
-          >
-            {renderToolTip()}
-          </CardContent>
+          > */}
+          {/* {renderToolTip()} */}
+          <SimpleButton
+            onClick={handleSelection}
+            theme={uniqueTheme}
+            isPrimary={true}
+            customSize="sm"
+            noContainer={true}
+            isError={true}
+          ></SimpleButton>
+          {/* </CardContent> */}
         </MDBox>
       </MDBox>
       {/* <CollectionDialog

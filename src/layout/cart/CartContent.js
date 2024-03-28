@@ -7,20 +7,7 @@ import GenericCard from '../../components/cards/GenericCard';
 
 const CartContent = () => {
   const { theme } = useMode();
-  // const { getProductGridContainerStyle } = theme.responsiveStyles;
-  // const containerStyles = responsiveStyles.getProductGridContainerStyle;
   const { cartData, isLoading } = useCartStore();
-  // const { user } = useUserContext();
-
-  // if (isLoading && (!cartData?.cart || cartData.cart.length === 0)) {
-  //   return (
-  //     <CartContainer>
-  //       <Typography variant="h6" color="text.secondary">
-  //         Your cart is empty.
-  //       </Typography>
-  //     </CartContainer>
-  //   );
-  // }
 
   return (
     <CartContainer>
@@ -51,12 +38,3 @@ const CartContent = () => {
 };
 
 export default CartContent;
-
-const SkeletonCartItem = () => (
-  <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
-    <Skeleton variant="rectangular" width="100%" height={118} />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-  </Box>
-);
