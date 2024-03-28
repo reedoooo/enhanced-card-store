@@ -16,6 +16,7 @@ import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
 import StatBoard from './collectionGrids/collections-list/StatBoard';
 import { Tab, Tabs } from '@mui/material';
 import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
+import preparePortfolioTableData from './data/portfolioData';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -77,7 +78,11 @@ const CollectionPortfolio = () => {
     handleSelectCollection,
   } = useSelectedCollection();
   const { dialogState, openDialog, closeDialog } = useDialogState();
-  const { columns, data } = collectionPortfolioData(selectedCollection?.cards);
+  // const { columns, data } = collectionPortfolioData(selectedCollection?.cards);
+  const { columns, data } = preparePortfolioTableData(
+    selectedCollection?.cards
+  );
+
   const [activeTab, setActiveTab] = useState(0);
   const tabs = [<Tab label="Collections" value={0} key={'collections-tab'} />];
   if (selectedCollectionId) {
@@ -90,8 +95,12 @@ const CollectionPortfolio = () => {
   };
   const handleSelectAndShowCollection = useCallback(
     (collection) => {
-      handleSelectCollection(collection._id); // Assume this function sets the selectedCollectionId
+      handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
       setActiveTab(1); // Switch to Portfolio View tab
+      console.log('DEBUG LOG, ', {
+        selectedCollectionId: selectedCollectionId,
+        selectedCollection: selectedCollection,
+      });
     },
     [handleSelectCollection]
   );

@@ -30,12 +30,10 @@ import HeroSwiper from './HeroSwiper';
 import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
 import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
 import styled from 'styled-components';
-import { ChartArea } from '../../pages/pageStyles/StyledComponents';
 import { useCardStoreHook } from '../../context/hooks/useCardStore';
 import useLocalStorage from '../../context/hooks/useLocalStorage';
-import { AspectRatio } from '@mui/joy';
 import { useLoading } from '../../context/hooks/useLoading';
-import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
+import useSkeletonLoader from '../REUSABLE_COMPONENTS/useSkeletonLoader';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -73,36 +71,6 @@ const HeroSection = () => {
     image: placeHolder,
   }));
   const cards = [...randomCards, ...defaultCards];
-  // const swiperConfig = {
-  //   effect: 'coverflow',
-  //   grabCursor: true,
-  //   centeredSlides: true,
-  //   loop: true,
-  //   resizeObserver: true,
-  //   spaceBetween: 10,
-  //   coverflowEffect: {
-  //     stretch: 0,
-  //     modifier: 1,
-  //     rotate: 0,
-  //     depth: 200,
-  //     slideShadows: false,
-  //   },
-  //   autoplay: {
-  //     delay: 2500,
-  //     disableOnInteraction: false,
-  //   },
-  //   modules: [EffectCoverflow, Pagination, Navigation, Autoplay],
-  //   scrollbar: {
-  //     el: '.swiper-scrollbar',
-  //     draggable: true,
-  //   },
-  //   navigation: {
-  //     nextEl: '.swiper-button-next',
-  //     prevEl: '.swiper-button-prev',
-  //     clickable: true,
-  //   },
-  //   className: 'swiper_container',
-  // };
   useEffect(() => setShouldShow(true), []);
   useEffect(() => fetchRandomCardsAndSet(), []);
 
@@ -124,20 +92,17 @@ const HeroSection = () => {
         position: 'relative',
         minHeight: isMobileView ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
         flexDirection: isMobileView ? 'column' : 'row',
-        // flexDirection: 'column',
       }}
     >
       <MDBox
         sx={{
           width: isMobileView ? '100%' : '60%',
           height: isMobileView ? '100%' : 'calc(100vh - 64px)',
-          // height: isMobileView ? 'calc(100vh - 64px)' : '100vh',
           display: 'flex',
           alignItems: 'center',
           position: isMobileView ? 'absolute' : 'absolute',
           left: 0,
           justifyContent: 'flex-start', // Align content at the top in mobile view
-          // p: isMobileView ? theme.spacing(0) : theme.spacing(8),
           zIndex: isMobileView ? 1 : 5,
           border: 'none',
           flexDirection: 'column',
@@ -183,26 +148,8 @@ const HeroSection = () => {
                 >
                   <Card sx={{ height: '100%' }}>
                     <FlexBetween>
-                      {/* <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        padding: theme.spacing(2),
-                      }}
-                    > */}
-                      {/* </Box> */}
                       <CardContent className="hero-section-container">
                         <DashboardBox gridArea="b">
-                          {/* <BoxHeader
-                            title="Profit and Revenue"
-                            // eslint-disable-next-line max-len
-                            subtitle={`${cards[activeCardIndex]?.name}: top line represents revenue, bottom line represents expenses`}
-                            sideText="+4%"
-                          /> */}
                           <img src={placeHolder} />
                         </DashboardBox>
                       </CardContent>

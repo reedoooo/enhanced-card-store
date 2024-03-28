@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   Chip,
+  useMediaQuery,
 } from '@mui/material';
 import FormField from './FormField';
 import ReusableLoadingButton from '../../buttons/other/ReusableLoadingButton';
@@ -26,6 +27,8 @@ const RCZodForm = ({
   additionalData,
 }) => {
   const { theme } = useMode();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const {
     formMethods,
     onSubmit,
@@ -34,27 +37,8 @@ const RCZodForm = ({
     currentForm,
     currentFormSchema,
     formState: { errors, isSubmitting },
-    // getValues,
-    // handleSearchTermChange,
   } = useFormContext();
 
-  // useEffect(() => {
-  //   setFormSchema(schemaName);
-  // }, [setFormSchema, schemaName]);
-  // useEffect(() => {
-  //   setFormSchema(schemaName);
-  //   if (initialValues) {
-  //     console.log('initialValues:', initialValues);
-  //     formMethods.reset(initialValues);
-  //   }
-  // }, [setFormSchema, schemaName, formMethods, initialValues]);
-  // useEffect(() => {
-  //   // console.log('initialValues:', initialValues);
-  //   console.log('SCHEMA NAME CHANGED TO:', schemaName);
-  //   setFormSchema(schemaName);
-  //   // When currentForm or schemaName changes, reset form with new initialValues or empty values
-  //   formMethods.reset(initialValues || {});
-  // }, [setFormSchema, schemaName, formMethods, initialValues]);
   const onFormSubmit = (data) => {
     onSubmit(data, additionalData);
   };
@@ -90,6 +74,9 @@ const RCZodForm = ({
                 '& .MuiSvgIcon-root': {
                   color: theme.palette.text.primary,
                 },
+                ...(isMobile && {
+                  fontSize: '0.875rem', // Adjust font size for mobile
+                }),
               }}
             >
               {field?.options?.map((option) => (
@@ -163,6 +150,11 @@ const RCZodForm = ({
       component="form"
       onSubmit={formMethods.handleSubmit(onFormSubmit)}
       theme={theme}
+      sx={{
+        ...(isMobile && {
+          padding: theme.spacing(3), // Reduce padding on mobile
+        }),
+      }}
     >
       {fields?.map(renderField)}
       <ReusableLoadingButton
@@ -175,6 +167,11 @@ const RCZodForm = ({
           </Box>
         }
         fullWidth
+        sx={{
+          ...(isMobile && {
+            fontSize: '0.75rem', // Adjust button font size for mobile
+          }),
+        }}
       />
       {additionalButtons &&
         additionalButtons?.map((button, index) => (

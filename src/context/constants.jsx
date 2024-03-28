@@ -282,13 +282,7 @@ const defaultCollection = {
     userId: '',
     allXYValues: [],
   },
-  nivoChartData: [
-    {
-      id: '',
-      color: '',
-      data: [{ x: new Date(), y: 0 }],
-    },
-  ],
+  nivoChartData: new Map(),
   newNivoChartData: [
     {
       id: '',

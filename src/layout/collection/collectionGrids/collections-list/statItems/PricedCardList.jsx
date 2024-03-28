@@ -15,8 +15,20 @@ const PricedCardList = () => {
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
   const { cardsWithQuantities } = useAppContext();
+  // const topFiveCards = useMemo(() => {
+  //   return cardsWithQuantities?.sort((a, b) => b.price - a.price).slice(0, 5);
+  // }, [cardsWithQuantities]);
   const topFiveCards = useMemo(() => {
-    return cardsWithQuantities?.sort((a, b) => b.price - a.price).slice(0, 5);
+    const uniqueCards = new Map();
+    cardsWithQuantities.forEach((card) => {
+      if (!uniqueCards.has(card.id)) {
+        uniqueCards.set(card.id, card);
+      }
+    });
+
+    const uniqueCardsArray = Array.from(uniqueCards.values());
+
+    return uniqueCardsArray.sort((a, b) => b.price - a.price).slice(0, 5);
   }, [cardsWithQuantities]);
   const { data, columns } = useMemo(
     () => prepareTableData(topFiveCards),

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { Box, Grid, Typography, Skeleton } from '@mui/material';
+import { Box, Grid, Typography, Skeleton, useMediaQuery } from '@mui/material';
 // import PieChart from './statItems/PieChart';
 import TotalPriceStatBox from './statItems/TotalPriceStatBox';
 // import ValuDistributionCircle from './statItems/ValuDistributionCircle';
@@ -9,9 +9,7 @@ import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { useAppContext, useMode } from '../../../../context';
 import ValuDistributionCircle from './statItems/ValuDistributionCircle';
 import PricedCardList from './statItems/PricedCardList';
-import PerformanceStatBox from './statItems/PerformanceStatBox';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
-import styled from 'styled-components';
 import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
 import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
 
@@ -63,7 +61,9 @@ const DistCircle = () => {
     );
   }
   return (
-    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
+    <MDBox
+      sx={{ width: '100%', minHeight: '100%', flexGrow: 1, maxHeight: 270 }}
+    >
       <ValuDistributionCircle collections={allCollections} />
     </MDBox>
   );
@@ -72,6 +72,7 @@ const DistCircle = () => {
 const PriceList = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
@@ -80,6 +81,10 @@ const PriceList = () => {
   );
 };
 const StatBoard = () => {
+  const { theme } = useMode();
+  const colors = theme.palette.chartTheme;
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <SimpleCard
       theme={uniqueTheme}
@@ -92,9 +97,18 @@ const StatBoard = () => {
         // spacing={2}
         sx={{
           alignItems: 'flex-start',
-          maxHeight: '270px',
-          minHeight: '270px',
-          my: 2,
+          ...(isMobile
+            ? {
+                flexDirection: 'column', // Stack items vertically on mobile
+                maxHeight: 'none', // Remove maxHeight to allow content to flow
+                minHeight: 'none', // Adjust minHeight accordingly
+                my: 1, // Adjust vertical margin
+              }
+            : {
+                maxHeight: '270px',
+                minHeight: '270px',
+                my: 2, // Maintain original styling for larger screens
+              }),
         }}
       >
         {[<StatBoxes />, <DistCircle />, <PriceList />].map(
@@ -102,10 +116,10 @@ const StatBoard = () => {
             <Grid
               item
               xs={12}
-              sm={12}
+              sm={6}
               md={4}
               key={index}
-              sx={{ width: '100%', minHeight: '100%' }}
+              sx={{ width: '100%', minHeight: '100%', maxHeight: 270 }}
             >
               <FlexBetween mt="0.25rem" gap="1.5rem" pr="1rem">
                 {component}

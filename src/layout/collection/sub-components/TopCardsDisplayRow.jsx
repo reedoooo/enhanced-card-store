@@ -6,6 +6,7 @@ import {
   CardContent,
   Typography,
   Box,
+  useMediaQuery,
 } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -26,6 +27,8 @@ import CardDetailsContainer from '../../../components/cards/CardDetailsContainer
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+
   const { selectedCollection } = useSelectedCollection();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
@@ -45,6 +48,7 @@ export const TopCardsDisplayRow = () => {
         padding: theme.spacing(2),
         background: theme.palette.backgroundB.darker,
         borderRadius: theme.shape.borderRadius,
+        flexDirection: isMobileView ? 'column' : 'row', // Stack items vertically on mobile
       }}
     >
       <Swiper
@@ -106,7 +110,7 @@ export const TopCardsDisplayRow = () => {
               </Card>
               <Card
                 sx={{
-                  minWidth: '50%',
+                  minWidth: isMobileView ? '100%' : '50%',
                   maxWidth: '70%',
                   height: '100%',
                   minHeight: '100%',

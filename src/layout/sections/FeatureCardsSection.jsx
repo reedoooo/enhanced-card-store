@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
-import { AnimatedFeatureCard } from '../../layout/AnimatedFeatureCard';
+import { AnimatedFeatureCard } from './AnimatedFeatureCard';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useMode } from '../../context';
 import pages from '../../data/pages.json';

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
 import { Box, Card, Grid } from '@mui/material';
 import { useFormContext, useMode, useUserContext } from '../../context';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
@@ -62,37 +61,30 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
       }}
     >
       <FlexContainer>
-        <HeaderContainer>
-          <SimpleSectionHeader
-            sectionName="Deck Builder"
-            userName={user?.userBasicData?.firstName}
-            sectionDescription="Last updated:"
-            lastUpdated={new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          />
-        </HeaderContainer>
-
-        <ButtonContainer
-        // sx={{
-        //   maxWidth: '100%',
-        // }}
+        {/* <HeaderContainer> */}
+        <SimpleSectionHeader
+          sectionName="Deck Builder"
+          userName={user?.userBasicData?.firstName}
+          sectionDescription="Last updated:"
+          lastUpdated={new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        />
+        {/* </HeaderContainer> */}
+        <SimpleButton
+          theme={uniqueTheme}
+          isPrimary={true}
+          // customSize="md"
+          onClick={() => {
+            setCurrentForm('addDeckForm');
+            openAddDeckDialog();
+            console.log('openAddDeckDialog');
+          }}
         >
-          <SimpleButton
-            theme={uniqueTheme}
-            isPrimary={true}
-            // customSize="md"
-            onClick={() => {
-              setCurrentForm('addDeckForm');
-              openAddDeckDialog();
-              console.log('openAddDeckDialog');
-            }}
-          >
-            Add New Deck
-          </SimpleButton>
-        </ButtonContainer>
+          Add New Deck
+        </SimpleButton>
       </FlexContainer>
     </SimpleCard>
   );

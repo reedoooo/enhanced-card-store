@@ -6,11 +6,11 @@ import {
   CardListItem,
   CardUnorderedList,
   FeatureCard,
-} from '../pages/pageStyles/StyledComponents';
-import { useMode } from '../context';
-import MDButton from './REUSABLE_COMPONENTS/MDBUTTON';
-import SimpleButton from './REUSABLE_COMPONENTS/unique/SimpleButton';
-import uniqueTheme from './REUSABLE_COMPONENTS/unique/uniqueTheme';
+} from '../../pages/pageStyles/StyledComponents';
+import { useMode } from '../../context';
+import MDButton from '../REUSABLE_COMPONENTS/MDBUTTON';
+import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
+import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const AnimatedBox = animated(Box);
 

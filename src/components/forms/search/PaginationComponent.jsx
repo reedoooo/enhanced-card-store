@@ -1,10 +1,10 @@
 // PaginationComponent.jsx
 import React from 'react';
-import MDPagination from '../../../REUSABLE_COMPONENTS/MDPAGINATION';
-import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
-import MDInput from '../../../REUSABLE_COMPONENTS/MDINPUT';
+import MDPagination from '../../../layout/REUSABLE_COMPONENTS/MDPAGINATION';
+import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDInput from '../../../layout/REUSABLE_COMPONENTS/MDINPUT';
 import Icon from '@mui/material/Icon';
-import MDTypography from '../../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
 const PaginationComponent = ({
   pageOptions,

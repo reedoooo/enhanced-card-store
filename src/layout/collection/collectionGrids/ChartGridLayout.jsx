@@ -9,7 +9,6 @@ import {
   Box,
 } from '@mui/material';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import DataTable from './cards-datatable';
 import { useMode, useStatisticsStore } from '../../../context';
 import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
 import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
@@ -19,38 +18,31 @@ import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { ChartArea } from '../../../pages/pageStyles/StyledComponents';
 import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useTimeRange from '../../../components/forms/selectors/useTimeRange';
-import useSkeletonLoader from './cards-datatable/useSkeletonLoader';
+import useSkeletonLoader from '../../REUSABLE_COMPONENTS/useSkeletonLoader';
 import ChartErrorBoundary from './cards-chart/ChartErrorBoundary';
 import { ChartConfiguration } from './cards-chart/ChartConfigs';
-import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import { TopCardsDisplayRow } from '../sub-components/TopCardsDisplayRow';
 import LoadingOverlay from '../../LoadingOverlay';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
-import {
-  ResponsiveContainer,
-  CartesianGrid,
-  AreaChart,
-  BarChart,
-  Bar,
-  LineChart,
-  XAxis,
-  YAxis,
-  Legend,
-  Line,
-  Tooltip,
-  Area,
-} from 'recharts';
+import { ResponsiveContainer } from 'recharts';
+import PricedDataTable from './cards-datatable/PricedDataTable';
+import preparePortfolioTableData from '../data/portfolioData';
 const renderCardContainer = (content) => {
   return (
     <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
-      <SimpleCard theme={uniqueTheme} content={content} hasTitle={false}>
+      <SimpleCard
+        theme={uniqueTheme}
+        content={content}
+        hasTitle={false}
+        sx={{ height: '100%' }}
+      >
         {content}
       </SimpleCard>
     </MDBox>
   );
 };
 
-const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
+const ChartGridLayout = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const isLg = useMediaQuery(theme.breakpoints.up('lg'));
@@ -72,52 +64,15 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
   if (!averagedData || !averagedData[selectedTimeRange]) {
     return <LoadingOverlay />;
   }
-  // if (!averagedData || !averagedData[selectedTimeRange]) {
-  //   return (
-  //     <Container
-  //       sx={{
-  //         flexGrow: 1,
-  //         height: '100%',
-  //         display: 'flex',
-  //         flexDirection: 'row',
-  //       }}
-  //     >
-  //       <MDBox sx={{ width: '50%', height: '100%' }}>
-  //         <Grid container spacing={2}>
-  //           <Grid
-  //             item
-  //             xs={12}
-  //             sx={{ display: 'flex', justifyContent: 'center' }}
-  //           >
-  //             <DashboardBox sx={{ height: 400, width: '100%' }}>
-  //               <SkeletonLoader type="chart" height="100%" />
-  //             </DashboardBox>
-  //           </Grid>
-  //         </Grid>
-  //       </MDBox>
-  //       <MDBox sx={{ width: '50%', height: '100%', overflow: 'auto' }}>
-  //         <Grid container spacing={2} direction="column">
-  //           {[...Array(5)].map((_, index) => (
-  //             <Grid
-  //               item
-  //               key={`skeleton-item-${index}`}
-  //               sx={{ display: 'flex', justifyContent: 'center' }}
-  //             >
-  //               <DashboardBox sx={{ height: 100, width: '90%', my: 0.5 }}>
-  //                 <SkeletonLoader type="text" height={60} />
-  //               </DashboardBox>
-  //             </Grid>
-  //           ))}
-  //         </Grid>
-  //       </MDBox>
-  //     </Container>
-  //   );
-  // }
-
   const selectedChartData = useMemo(() => {
     const chartData = averagedData[selectedTimeRange];
     return chartData || null;
-  }, [selectedCollection.averagedChartData, selectedTimeRange]);
+  }, [selectedCollection?.averagedChartData, selectedTimeRange]);
+
+  const { data, columns } = useMemo(
+    () => preparePortfolioTableData(selectedCollection?.cards),
+    [selectedCollection?.cards]
+  );
   useEffect(() => {
     console.log('DEBUG LOG, ', {
       selectedChartData,
@@ -133,9 +88,17 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
         minute: '2-digit',
       })
     : 'Loading...';
-
+  const entriesPerPage = {
+    defaultValue: 5,
+    entries: [5, 10, 15, 20],
+  };
   return (
     <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
+      {console.log('DEBUG LOG, ', {
+        selectedChartData,
+        markers,
+        selectedTimeRange,
+      })}
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
         <DashboardBox
           component={Grid}
@@ -148,8 +111,6 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
             theme={uniqueTheme}
             hasTitle={false}
             isTableOrChart={true}
-            // cardTitle="Collection Card List"
-            // data={''}
           >
             <BoxHeader
               title="Collection Card Chart"
@@ -207,7 +168,11 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
           item
           xs={12}
           lg={5}
-          sx={{ display: 'flex', flexDirection: 'column' }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '800px',
+          }}
         >
           <SimpleCard
             theme={uniqueTheme}
@@ -228,17 +193,12 @@ const ChartGridLayout = ({ selectedCards, removeCard, columns, data }) => {
             />
           </SimpleCard>
           {renderCardContainer(
-            <DataTable
+            <PricedDataTable
+              entriesPerPage={entriesPerPage}
+              canSearch={true}
               table={{ columns, data }}
               isSorted={true}
-              entriesPerPage={{
-                defaultValue: 10,
-                entries: [5, 10, 15, 20, 25],
-              }}
-              canSearch={true}
-              showTotalEntries={true}
               noEndBorder
-              tableSize={tableSize}
             />
           )}
         </DashboardBox>

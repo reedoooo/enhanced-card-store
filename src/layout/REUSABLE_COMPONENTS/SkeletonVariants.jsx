@@ -10,7 +10,7 @@ import {
   Collapse,
   CardActionArea,
 } from '@mui/material';
-import useSkeletonLoader from '../collection/collectionGrids/cards-datatable/useSkeletonLoader';
+import useSkeletonLoader from './useSkeletonLoader';
 import MDBox from './MDBOX';
 import { useMode } from '../../context';
 import {
