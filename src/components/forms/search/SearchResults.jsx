@@ -39,15 +39,22 @@ const SearchResults = ({
           {renderItems}
         </Grid>
         <Grid container justifyContent="center">
-          <PaginationComponent
-            pageCount={pageCount}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            pageContext={pageContext}
-            isLoading={isLoading}
-            searchData={searchData}
-          />
+          <Grid item xs={12}>
+            <PaginationComponent
+              pageOptions={searchData}
+              pageCount={pageCount}
+              pageIndex={currentPage}
+              currentPage={currentPage}
+              gotoPage={setCurrentPage}
+              canPreviousPage={currentPage > 0}
+              canNextPage={currentPage < pageCount - 1}
+              setCurrentPage={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              pageContext={pageContext}
+              isLoading={isLoading}
+              searchData={searchData}
+            />
+          </Grid>
         </Grid>
       </MDBox>
     </React.Fragment>

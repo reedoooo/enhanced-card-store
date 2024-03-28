@@ -1,14 +1,21 @@
 import React from 'react';
-import { FormControl } from '@mui/material';
+import { FormControl, InputLabel } from '@mui/material';
 
 import SelectComponent from '../reusable/Select';
-import { useStatisticsStore, useMode } from '../../../context';
+import { useStatisticsStore, useMode, useFormContext } from '../../../context';
 import { StyledChartBox } from '../../../pages/pageStyles/StyledComponents';
+import { enqueueSnackbar } from 'notistack';
+import { Controller } from 'react-hook-form';
 
 const CollectionStatisticsSelector = () => {
-  const { selectedStat, setSelectedStat } = useStatisticsStore();
+  const { formMethods } = useFormContext();
+  const [selectedStat, setSelectedStat] = React.useState('');
   const { theme } = useMode();
-
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
   const statisticsOptions = [
     { value: 'highPoint', label: 'High Point' },
     { value: 'lowPoint', label: 'Low Point' },
@@ -18,16 +25,25 @@ const CollectionStatisticsSelector = () => {
     { value: 'volatility', label: 'Volatility' },
   ];
 
-  const handleChange = (event) => setSelectedStat(event.target.value);
-
+  // const handleChange = (event) => setSelectedStat(event.target.value);
+  const onFormSubmit = (data) => {
+    setSelectedStat(data.themeRange);
+    enqueueSnackbar('Stat updated successfully', { variant: 'success' });
+  };
   return (
-    <StyledChartBox theme={theme}>
-      <FormControl fullWidth variant="outlined">
-        <SelectComponent
-          name="statistic"
-          value={selectedStat}
-          onChange={handleChange}
-          options={statisticsOptions}
+    <StyledChartBox
+      theme={theme}
+      component="form"
+      onSubmit={handleSubmit(onFormSubmit)}
+    >
+      <FormControl fullWidth variant="outlined" error={!!errors?.themeRange}>
+        <InputLabel id="theme-range-select-label">Statistics Range</InputLabel>
+        <Controller
+          name="statisticsRange"
+          control={control}
+          render={({ field }) => (
+            <SelectComponent {...field} options={statisticsOptions} />
+          )}
         />
       </FormControl>
     </StyledChartBox>

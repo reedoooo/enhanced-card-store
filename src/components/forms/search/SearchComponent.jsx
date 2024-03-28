@@ -11,7 +11,6 @@ import {
   Paper,
   useMediaQuery,
 } from '@mui/material';
-import { useGetSearchData } from '../../../context/hooks/useGetSearchData';
 import SearchResults from './SearchResults';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import SearchForm from '../SearchForm';

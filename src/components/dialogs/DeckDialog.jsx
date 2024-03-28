@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CssBaseline, DialogTitle, Divider } from '@mui/material';
+import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
 import DeckForm from '../forms/DeckForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
@@ -11,7 +11,7 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
+import MDAvatar from '../../assets/currentlyUnused/MDAVATAR';
 
 const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();
@@ -51,9 +51,9 @@ const DeckDialog = ({ open, onClose, isNew, deckData }) => {
               border: 'none',
             }}
           >
-            <MDAvatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
+            <Avatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
               <LockOutlinedIcon />
-            </MDAvatar>
+            </Avatar>
             <MDTypography component="h1" variant="h4">
               {isNew ? 'Add a Deck' : 'Update a Deck'}
             </MDTypography>

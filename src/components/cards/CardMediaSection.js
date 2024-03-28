@@ -1,13 +1,11 @@
 import React, { useEffect, forwardRef, useState } from 'react';
 import CardToolTip from './CardToolTip';
 import PropTypes from 'prop-types';
-import { useMode } from '../../context';
 import {
-  MediaContainer,
   Media,
+  MediaContainer,
   MediaPopover,
-} from '../../context/hooks/style-hooks/usePortfolioStyles';
-import { useOverlay } from '../../context/hooks/useOverlay';
+} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 const CardMediaSection = forwardRef(
   (
     {
@@ -22,21 +20,6 @@ const CardMediaSection = forwardRef(
     ref
   ) => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const { theme } = useMode();
-    const {
-      generateOverlay,
-      handleRarityClick,
-      backdropColor,
-      isOverlayVisible,
-    } = useOverlay(theme);
-
-    // Handle overlay state and interaction
-    const [overlay, setOverlay] = useState(null);
-
-    const handleOverlayChange = (newOverlay) => {
-      // Logic to change overlay based on rarity or other property
-      setOverlay(newOverlay);
-    };
 
     useEffect(() => {
       if (isHovered && ref?.current) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CssBaseline, DialogTitle, Divider } from '@mui/material';
+import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
 import CollectionForm from '../forms/CollectionForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
@@ -11,7 +11,7 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
+// import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
 
 const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
   const { theme } = useMode();
@@ -51,9 +51,9 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
               border: 'none',
             }}
           >
-            <MDAvatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
+            <Avatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
               <LockOutlinedIcon />
-            </MDAvatar>
+            </Avatar>
             <MDTypography component="h1" variant="h4">
               {isNew ? 'Add a Collection' : 'Update a Collection'}
             </MDTypography>
@@ -77,6 +77,7 @@ CollectionDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
   collectionData: PropTypes.shape({
+    _id: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,
   }),

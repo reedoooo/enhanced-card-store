@@ -5,7 +5,7 @@ import pxToRem from '../../functions/pxToRem';
 const { transparent, light, info, secondary, backgroundE } = colors;
 const { size } = typography;
 
-const outlined = {
+export default {
   base: {
     minHeight: pxToRem(40),
     color: light.main,
@@ -60,5 +60,3 @@ const outlined = {
     },
   },
 };
-
-export default outlined;

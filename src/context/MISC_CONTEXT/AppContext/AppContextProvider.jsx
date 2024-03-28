@@ -34,6 +34,40 @@ export const AppContextProvider = ({ children }) => {
   const { allIds } = useSelectedCollection();
   const { selectedDeck, allDecks } = Deck;
   const { cartData } = Cart;
+  // const createMarkers = (selectedCollection) => {
+  //   if (!selectedCollection || !selectedCollection.collectionStatistics)
+  //     return [];
+
+  //   const { highPoint, lowPoint, avgPrice, percentageChange } =
+  //     selectedCollection.collectionStatistics;
+  //   return [
+  //     {
+  //       axis: 'y',
+  //       value: percentageChange,
+  //       lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+  //       legend: `${selectedCollection.name} High`,
+  //       legendOrientation: 'vertical',
+  //     },
+  //     {
+  //       axis: 'y',
+  //       value: lowPoint,
+  //       lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+  //       legend: `${selectedCollection.name} Low`,
+  //       legendOrientation: 'vertical',
+  //     },
+  //     {
+  //       axis: 'y',
+  //       value: avgPrice,
+  //       lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+  //       legend: `${selectedCollection.name} Avg`,
+  //       legendOrientation: 'vertical',
+  //     },
+  //   ];
+  // };
+  // const markers = useMemo(() => {
+  //   if (!selectedCollection) return [];
+  //   return createMarkers(selectedCollection);
+  // }, [allCollections]); // Add dependencies as necessary, e.g., someSelectedCollectionId
   const compileCollectionMetaData = useCallback(() => {
     if (!allCollections || allCollections.length === 0) return;
 
@@ -60,6 +94,23 @@ export const AppContextProvider = ({ children }) => {
 
     setCollectionMetaData(metaData);
   }, []);
+  const selectedCollectionMetaData = useMemo(() => {
+    if (!selectedCollection) return;
+
+    const metaData = {
+      totalValue: selectedCollection?.totalPrice,
+      numCardsCollected: selectedCollection?.cards?.reduce((total, card) => {
+        // Use the quantity property of each card, defaulting to 1 if not available
+        return total + (card?.quantity || 1);
+      }, 0),
+      numCollections: 1,
+      topFiveCards: cardsWithQuantities
+        ?.sort((a, b) => b.price - a.price)
+        .slice(0, 5),
+    };
+
+    return metaData;
+  }, [selectedCollection, cardsWithQuantities]);
 
   const isCardInContext = useCallback(
     (card) => {

@@ -25,44 +25,34 @@ import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 const CollectionListItem = memo(({ collection }) => {
   const { theme } = useMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const { deleteCollection } = useCollectionManager();
-  const { handleSelectCollection } = useSelectedCollection();
-  const { dialogState, openDialog, closeDialog } = useDialogState({
-    isEditCollectionDialogOpen: false,
-  });
-
-  const handleOpenDialog = useCallback((collection) => {
-    openDialog('isEditCollectionDialogOpen', collection);
-  }, []);
-
-  const handleDelete = async () => {
-    await deleteCollection(collection?._id);
-  };
-
-  // const renderToolTip = () => (
-  //   <Tooltip title="Options">
-  //     <div>
-  //       <LongMenu
-  //         onEdit={() => handleOpenDialog(collection)}
-  //         onDelete={handleDelete}
-  //         onSelect={() => handleSelectCollection(collection)}
-  //         // onHide={() => toggleShowCollections(false)}
-  //         collectionId={collection?._id}
-  //         collection={collection}
-  //       />
-  //     </div>
-  //   </Tooltip>
-  // );
+  const { handleSelectCollection, selectedCollection } =
+    useSelectedCollection();
+  const { dialogState, openDialog, closeDialog } = useDialogState();
 
   const percentageChange =
     collection?.collectionStatistics?.percentageChange || 0;
 
+  const handleDelete = useCallback(
+    async (event) => {
+      event.stopPropagation(); // Prevent triggering the selection when clicking delete
+      await deleteCollection(collection?._id);
+    },
+    [deleteCollection, collection?._id]
+  );
+
+  const handleEdit = useCallback(
+    (event) => {
+      event.stopPropagation(); // Prevent triggering the selection when clicking edit
+      // handleSelectCollection(collection);
+      openDialog('isEditCollectionDialogOpen');
+    },
+    [openDialog]
+  );
+
   const handleSelection = useCallback(() => {
     handleSelectCollection(collection);
-    // toggleShowCollections();
-  }, [collection]);
-
+  }, [handleSelectCollection, collection]);
   return (
     <Card>
       <MDBox
@@ -77,7 +67,7 @@ const CollectionListItem = memo(({ collection }) => {
             }),
         }}
       >
-        {/* <CardContent
+        <CardActionArea
           onClick={handleSelection}
           sx={{
             display: 'flex',
@@ -89,81 +79,79 @@ const CollectionListItem = memo(({ collection }) => {
               flexDirection: 'column', // Adjust layout for mobile
             }),
           }}
-        > */}
-        <Grid container alignItems="center" justify="center" spacing={2}>
-          <RCInfoItem
-            label="Name"
-            value={collection?.name}
-            theme={theme}
-            gridSizes={{ xs: 12, sm: 6, md: 3 }}
-          />
-          <RCInfoItem
-            label="Value"
-            value={`$${roundToNearestTenth(collection?.totalPrice)}`}
-            theme={theme}
-            gridSizes={{ xs: 12, sm: 6, md: 3 }}
-          />
-          <RCInfoItem
-            label="Cards"
-            value={collection?.totalQuantity}
-            theme={theme}
-            gridSizes={{ xs: 12, sm: 6, md: 3 }}
-          />
-          <Grid item xs={12} sm={6} md={3}>
-            <RCChange
-              progress={100} // Default value; replace with actual data if available
-              increase={percentageChange > 0}
-              change={percentageChange}
-              rangeLevel="24hr" // Default value; replace with actual data if available
+        >
+          <Grid container alignItems="center" justify="center" spacing={2}>
+            <RCInfoItem
+              label="Name"
+              value={collection?.name}
+              theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
             />
+            <RCInfoItem
+              label="Value"
+              value={`$${roundToNearestTenth(collection?.totalPrice)}`}
+              theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
+            />
+            <RCInfoItem
+              label="Cards"
+              value={collection?.totalQuantity}
+              theme={theme}
+              gridSizes={{ xs: 12, sm: 6, md: 3 }}
+            />
+            <Grid item xs={12} sm={6} md={3}>
+              <RCChange
+                progress={100} // Default value; replace with actual data if available
+                increase={percentageChange > 0}
+                change={percentageChange}
+                rangeLevel="24hr" // Default value; replace with actual data if available
+              />
+            </Grid>
           </Grid>
-        </Grid>
-        {/* </CardContent> */}
-        <MDBox>
-          {/* <CardContent
-            sx={{
-              borderRadius: '50%',
-              width: 40,
-              height: 40,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: theme.palette.success.main,
-              mt: theme.spacing(1),
-              mr: theme.spacing(1),
-              ...(isMobile && {
-                mt: theme.spacing(0.5), // Adjust margin top for mobile
-                mr: theme.spacing(0.5), // Adjust margin right for mobile
-              }),
-            }}
-          > */}
-          {/* {renderToolTip()} */}
-          <SimpleButton
-            onClick={handleSelection}
-            theme={uniqueTheme}
-            isPrimary={true}
-            customSize="sm"
-            noContainer={true}
-            isError={true}
-          ></SimpleButton>
-          {/* </CardContent> */}
-        </MDBox>
+        </CardActionArea>
+        <CardContent
+          sx={{
+            width: '20%',
+            maxWidth: 200,
+            flexGrow: 1,
+            ...(isMobile && {
+              flexDirection: 'column', // Adjust layout for mobile
+            }),
+          }}
+        >
+          <MDBox>
+            <SimpleButton
+              onClick={handleDelete}
+              theme={uniqueTheme}
+              isPrimary={true}
+              customSize="sm"
+              noContainer={true}
+              isError={true}
+            >
+              Delete
+            </SimpleButton>
+            <SimpleButton
+              onClick={handleEdit}
+              theme={uniqueTheme}
+              isPrimary={true}
+              customSize="sm"
+              noContainer={true}
+            >
+              Edit
+            </SimpleButton>
+          </MDBox>
+        </CardContent>
       </MDBox>
-      {/* <CollectionDialog
+      <CollectionDialog
         open={dialogState.isEditCollectionDialogOpen}
-        onClose={handleCloseDialog}
-        collectionData={collection}
+        onClose={() => closeDialog('isEditCollectionDialogOpen')}
+        collectionData={{
+          _id: collection?._id,
+          name: collection?.name,
+          description: collection?.description,
+        }}
         isNew={false}
-      /> */}
-      {dialogState.isEditCollectionDialogOpen && (
-        <CollectionDialog
-          open={dialogState.isEditCollectionDialogOpen}
-          onClose={() => closeDialog('isEditCollectionDialogOpen')}
-          // onClose={() => closeDialog('isAddDeckDialogOpen')}
-          collectionData={collection}
-          isNew={false}
-        />
-      )}
+      />
     </Card>
   );
 });

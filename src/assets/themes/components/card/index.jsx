@@ -7,7 +7,7 @@ const { black, backgroundA } = colors;
 const { borderWidth, borderRadius } = borders;
 const { md } = boxShadows;
 
-const card = {
+export default {
   styleOverrides: {
     root: {
       display: 'flex',
@@ -25,5 +25,3 @@ const card = {
     },
   },
 };
-
-export default card;

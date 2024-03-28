@@ -12,7 +12,6 @@ import {
   DeckProvider,
   CartProvider,
   ChartProvider,
-  StatisticsProvider,
   SidebarProvider,
   AppContextProvider,
   useAuthContext,
@@ -53,13 +52,11 @@ const App = () => {
                       <DeckProvider>
                         <CartProvider>
                           <ChartProvider>
-                            <StatisticsProvider>
-                              <SidebarProvider>
-                                <AppContextProvider>
-                                  <Main />
-                                </AppContextProvider>
-                              </SidebarProvider>
-                            </StatisticsProvider>
+                            <SidebarProvider>
+                              <AppContextProvider>
+                                <Main />
+                              </AppContextProvider>
+                            </SidebarProvider>
                           </ChartProvider>
                         </CartProvider>
                       </DeckProvider>

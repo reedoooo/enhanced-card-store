@@ -36,18 +36,18 @@ const useLogger = (componentName, options = {}) => {
   };
 
   useEffect(() => {
-    console.log(`[${componentName}] Mounted`, options);
+    // console.log(`[${componentName}] Mounted`, options);
     mountedRef.current = true;
 
     return () => {
-      console.log(`[${componentName}] Unmounted`, options);
+      // console.log(`[${componentName}] Unmounted`, options);
       mountedRef.current = false;
     };
   }, []);
 
   useEffect(() => {
     if (mountedRef.current) {
-      console.log(`[${componentName}] Updated`, state);
+      // console.log(`[${componentName}] Updated`, state);
     }
   }, [state]);
 

@@ -23,59 +23,8 @@ import { GiAxeSword } from 'react-icons/gi';
 import { useMode } from '../../context';
 import styled from 'styled-components';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-import { CardDetailContainer, CardIconWrapper } from './styles/cardStyles';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-const CardDetailTitle = ({ title }) => (
-  <Typography variant="h5" sx={{ mr: 1 }}>
-    {title}:
-  </Typography>
-);
-const CardDetailDescription = ({ value }) => (
-  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
-    {value}
-  </MDTypography>
-);
-const CardDetailPrice = ({ value }) => (
-  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
-    {value}
-  </MDTypography>
-);
-const CardDetailRarity = ({ values, onRarityClick }) => {
-  const { theme } = useMode();
-
-  // Assuming `values` is an array of objects { name: string, value: any }
-  // If it's not, you might need to adapt this part to fit your data structure
-  console.log('VALUES ', values);
-  return values?.map(({ val }, index) => (
-    <Chip
-      key={index}
-      label={`${val?.name}: ${val?.value}`}
-      onClick={() => onRarityClick(val?.name)}
-      sx={{
-        margin: '5px',
-        // Add styles or logic to determine chip color based on rarity if needed
-      }}
-      variant="outlined"
-    />
-  ));
-};
-const CardDetailSet = ({ values }) => {
-  const { theme } = useMode();
-
-  return values?.map((setValue, index) => (
-    <Chip
-      key={index}
-      label={setValue || ''}
-      onClick={() => console.log(setValue.toString())}
-      sx={{
-        borderWidth: '2px',
-        fontWeight: 700,
-        margin: '5px',
-      }}
-      variant="outlined"
-    />
-  ));
-};
+import { CardDetailContainer } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 const IconWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -90,9 +39,6 @@ const IconWrapper = styled(Box)(({ theme }) => ({
   },
   color: theme.palette.text.primary,
 }));
-
-const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;
-
 const iconDetails = [
   { icon: FaLevelUpAlt, title: 'Level' },
   { icon: FaVenusMars, title: 'Type' },
@@ -101,7 +47,6 @@ const iconDetails = [
   { icon: GiAxeSword, title: 'ATK' },
   { icon: FaShieldAlt, title: 'DEF' },
 ];
-
 const textDetails = [
   { title: 'Description', key: 'desc' },
   { title: 'Price', key: 'price' },
@@ -118,17 +63,67 @@ const textDetails = [
     action: 'onRarityClick',
   },
 ];
-
 const inventoryDetails = [
   { title: 'Deck', key: 'deck' },
   { title: 'Collection', key: 'collection' },
   { title: 'Cart', key: 'cart' },
 ];
-// Consolidating the rendering of both icon and text details into a single component.
+const CardDetailTitle = ({ title }) => (
+  <Typography variant="h5" sx={{ mr: 1 }}>
+    {title}:
+  </Typography>
+);
+const CardDetailDescription = ({ value }) => (
+  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
+    {value}
+  </MDTypography>
+);
+const CardDetailPrice = ({ value }) => (
+  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
+    {value}
+  </MDTypography>
+);
+const CardDetailRarity = ({ values, onRarityClick }) => {
+  return values?.map((rarity, index) => (
+    <Chip
+      key={index}
+      label={`${rarity.name}: ${rarity.value}`}
+      onClick={() => onRarityClick(rarity.name)}
+      sx={{
+        borderWidth: '2px',
+        fontWeight: 700,
+        margin: '5px',
+      }}
+      variant="outlined"
+    />
+  ));
+};
+const CardDetailSet = ({ values }) => {
+  return values?.map((set, index) => (
+    <Chip
+      key={index}
+      label={`${set.name}: ${set.value}`}
+      onClick={() => console.log(set.toString())}
+      sx={{
+        borderWidth: '2px',
+        fontWeight: 700,
+        margin: '5px',
+      }}
+      variant="outlined"
+    />
+  ));
+};
+const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;
 const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   const { theme } = useMode();
-  console.log('CARD DETAILS', details);
-  const raritiesArray = Object.entries(card?.rarities)?.map(
+
+  const raritiesArray = Object.entries(card?.rarities || {}).map(
+    ([name, value]) => ({
+      name,
+      value,
+    })
+  );
+  const cardSetsArray = Object.entries(card?.sets || {}).map(
     ([name, value]) => ({
       name,
       value,
@@ -136,34 +131,24 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   );
 
   return details?.map((detail, index) => (
-    <Grid item xs={12} sm={12} md={6} lg={6} xl={6} key={index}>
-      <MDBox>
-        <CardDetailContainer className={className}>
-          <CardDetailTitle title={detail.title} />
-          <Divider />
-          {detail.key === 'desc' && (
-            <CardDetailDescription value={card?.desc} />
-          )}
-          {detail.key === 'price' && <CardDetailPrice value={card?.price} />}
-          {detail.key === 'rarities' && (
-            <CardDetailRarity
-              values={raritiesArray}
-              onRarityClick={handleAction}
+    <Grid item xs={12} sm={12} md={12} lg={6} xl={6} key={index}>
+      <CardDetailTitle title={detail.title} />
+      <Divider />
+      {detail.key === 'desc' && <CardDetailDescription value={card?.desc} />}
+      {detail.key === 'price' && <CardDetailPrice value={card?.price} />}
+      {detail.key === 'rarities' && (
+        <CardDetailRarity values={raritiesArray} onRarityClick={handleAction} />
+      )}
+      {detail.key === 'card_sets' && <CardDetailSet values={cardSetsArray} />}
+      {/* {detail.icon && (
+            <CardDetailIcon
+              icon={
+                iconDetails.forEach(
+                  (iconDetail) => iconDetail.key === detail.key
+                )?.icon
+              }
             />
-          )}
-          {/* {detail.key === 'card_sets' && (
-          <CardDetailSet values={card.card_sets} />
-        )}
-        {detail.icon && (
-          <CardDetailIcon
-            icon={
-              iconDetails.forEach((iconDetail) => iconDetail.key === detail.key)
-                ?.icon
-            }
-          />
-        )} */}
-        </CardDetailContainer>
-      </MDBox>
+          )} */}
     </Grid>
   ));
 };
@@ -193,40 +178,22 @@ const RenderInventoryList = () => (
 const CardDetailsContainer = ({
   card,
   className,
-  isIconSection,
   isTextSection,
   isInventorySection,
-  isSwiperContent,
   titles,
 }) => {
   const { theme } = useMode();
   const handleAction = () => console.log('Action clicked');
-  console.log('CARD DETAILS CONTAINER', {
-    card,
-    className,
-    isIconSection,
-    isTextSection,
-    isInventorySection,
-    titles,
-  });
-
   return (
     <Grid
       container
       spacing={2}
       sx={{
-        background: theme.palette.chartTheme.greenAccent.light,
+        // background: theme.palette.chartTheme.greenAccent.light,
         justifyContent: 'center',
         borderRadius: theme.shape.borderRadius,
       }}
     >
-      {isIconSection && (
-        <RenderDetailsSection
-          details={iconDetails}
-          card={card}
-          className={className}
-        />
-      )}
       {isTextSection && (
         <RenderDetailsSection
           details={textDetails}
@@ -237,14 +204,12 @@ const CardDetailsContainer = ({
       )}
       {isInventorySection && <RenderInventoryList />}
       {className === 'card-details-container-swiper' && (
-        <>
-          <RenderDetailsSection
-            details={textDetails}
-            card={card}
-            className={className}
-            handleAction={handleAction}
-          />
-        </>
+        <RenderDetailsSection
+          details={textDetails}
+          card={card}
+          className={className}
+          handleAction={handleAction}
+        />
       )}
     </Grid>
   );

@@ -7,6 +7,9 @@ import {
 import useLocalStorage from '../../hooks/useLocalStorage';
 import jsonData from '../../../data/nivoTestData.json';
 import _set from 'lodash/set';
+import useTimeRange from '../../../components/forms/selectors/useTimeRange';
+import { calculateStatistics, calculateStatsForCollection } from './helpers';
+import { a } from 'react-spring';
 
 function useSelectedCollection() {
   const { nivoTestData } = jsonData;
@@ -22,7 +25,61 @@ function useSelectedCollection() {
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [customError, setCustomError] = useState(null);
   const prevSelectedCollectionIdRef = useRef(null);
+  // const { selectedTimeRange } = useTimeRange();
+  if (!Array.isArray(collections.allIds) || !collections.allIds.length) {
+    return null;
+  }
+  const [selectedStat, setSelectedStat] = useState('');
+  // const validCollections =
+  //   Array.isArray(collections.allIds) && collections.allIds.length > 0;
+  // const statsByCollectionId = useMemo(
+  //   () =>
+  //     validCollections
+  //       ? collections.byId?.reduce((acc, collection) => {
+  //           acc[collection?._id] = calculateStatsForCollection(
+  //             collection,
+  //             selectedTimeRange
+  //           );
+  //           return acc;
+  //         }, {})
+  //       : {},
+  //   [collections.byId, selectedTimeRange]
+  //   // [collections.allIds, selectedTimeRange]
+  // );
+  const createMarkers = (selectedCollection) => {
+    if (!selectedCollection || !selectedCollection.collectionStatistics)
+      return [];
 
+    const { highPoint, lowPoint, avgPrice, percentageChange } =
+      selectedCollection.collectionStatistics;
+    return [
+      {
+        axis: 'y',
+        value: percentageChange,
+        lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+        legend: `${selectedCollection.name} High`,
+        legendOrientation: 'vertical',
+      },
+      {
+        axis: 'y',
+        value: lowPoint,
+        lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+        legend: `${selectedCollection.name} Low`,
+        legendOrientation: 'vertical',
+      },
+      {
+        axis: 'y',
+        value: avgPrice,
+        lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+        legend: `${selectedCollection.name} Avg`,
+        legendOrientation: 'vertical',
+      },
+    ];
+  };
+  const markers = useMemo(() => {
+    if (!collections.selectedId) return [];
+    return createMarkers(collections.byId[collections.selectedId]);
+  }, [collections.allIds]); // Add dependencies as necessary, e.g., someSelectedCollectionId
   useEffect(() => {
     prevSelectedCollectionIdRef.current = selectedCollectionId;
   }, [selectedCollectionId]);
@@ -53,14 +110,6 @@ function useSelectedCollection() {
     },
     [collections.byId, setCollections, setSelectedCollectionId]
   );
-  // const handleBackToCollections = useCallback(() => {
-  //   setCollections((prev) => ({
-  //     ...prev,
-  //     selectedId: null,
-  //     showCollections: true,
-  //   }));
-  //   setCustomError(null);
-  // }, [setCollections]);
   const updateCollectionField = useCallback(
     (collectionId, fieldPath, value) => {
       setCollections((prev) =>
@@ -141,6 +190,25 @@ function useSelectedCollection() {
     removeCollection,
     setCustomError,
     prevSelectedCollectionId: prevSelectedCollectionIdRef.current,
+    // stats:
+    //   calculateStatistics(
+    //     { data: null },
+    //     selectedTimeRange,
+    //     Object.values(collections.byId)
+    //   ) || {},
+
+    // allStats: [statsByCollectionId],
+    // statsByCollectionId: statsByCollectionId[collections?.selectedId] || {},
+
+    selectedStat,
+    markers,
+    setSelectedStat,
+    // totalValue,
+    // topFiveCards,
+    // calculateTotalPriceOfAllCollections,
+    // calculatePriceChanges,
+    // getTopCard,
+    // getTopCollection,
   };
 }
 

@@ -4,7 +4,7 @@ import rgba from '../../functions/rgba';
 
 const { dark, transparent, white } = colors;
 
-const divider = {
+export default {
   styleOverrides: {
     root: {
       backgroundColor: transparent.main,
@@ -46,5 +46,3 @@ const divider = {
     },
   },
 };
-
-export default divider;

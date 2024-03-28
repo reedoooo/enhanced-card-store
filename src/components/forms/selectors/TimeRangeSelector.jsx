@@ -26,18 +26,7 @@ const TimeRangeSelector = () => {
         sx={{ width: '100%' }}
       >
         <InputLabel id="time-range-select-label" sx={{}}>
-          {/* <Typography
-            variant="button"
-            color="secondary"
-            sx={{
-              m: 0,
-              p: 0,
-              // color: theme.palette.chartTheme.redAccent.default,
-              fontSize: '1.2rem',
-            }}
-          > */}
           Time Range
-          {/* </Typography> */}
         </InputLabel>
         <Controller
           name="timeRange"

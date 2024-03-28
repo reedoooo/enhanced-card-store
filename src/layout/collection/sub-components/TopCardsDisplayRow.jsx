@@ -17,13 +17,9 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { useMode } from '../../../context';
 import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import placeHolder from '../../../assets/images/placeholder.jpeg';
-import GenericCard from '../../../components/cards/GenericCard';
-import { StyledSwiperSlide } from '../../../pages/pageStyles/StyledComponents';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import { AspectRatioBox } from '../../../components/cards/styles/cardStyledComponents';
-import { FormBox } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import CardDetail from '../../../components/cards/CardDetail';
 import CardDetailsContainer from '../../../components/cards/CardDetailsContainer';
+import { FormBox } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
@@ -109,7 +105,6 @@ export const TopCardsDisplayRow = () => {
                     // minWidth: 280,
                     // height: '20%', // Ensure image covers the height on mobile
                   }}
-                  z
                 />
               </Card>
               <Card
@@ -122,26 +117,27 @@ export const TopCardsDisplayRow = () => {
                   minHeight: '100%',
                   p: theme.spacing(2),
                   m: theme.spacing(1),
-                  my: 'auto',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  // my: 'auto',
+                  // justifyContent: 'center',
+                  // alignItems: 'center',
                 }}
               >
-                {/* <FormBox
+                <CardContent
                   theme={theme}
                   sx={{
                     justifyContent: 'center',
                     alignItems: 'center',
+                    width: 'auto',
                   }}
-                > */}
-                <CardDetailsContainer
-                  card={card}
-                  isSwiperContent={true}
-                  // isTextSection={true}
-                  className={'card-details-container-swiper'}
-                  titles={['Name', 'Description', 'Price']}
-                />
-                {/* </FormBox> */}
+                >
+                  <CardDetailsContainer
+                    card={card}
+                    // isSwiperContent={true}
+                    // isTextSection={true}
+                    className={'card-details-container-swiper'}
+                    titles={['Name', 'Description', 'Price']}
+                  />
+                </CardContent>
               </Card>
             </MDBox>
           </SwiperSlide>

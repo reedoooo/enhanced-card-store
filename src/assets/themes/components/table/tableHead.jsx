@@ -2,7 +2,7 @@ import borders from '../../base/borders';
 import pxToRem from '../../functions/pxToRem';
 const { borderRadius } = borders;
 
-const tableHead = {
+export default {
   styleOverrides: {
     root: {
       display: 'block',
@@ -11,5 +11,3 @@ const tableHead = {
     },
   },
 };
-
-export default tableHead;

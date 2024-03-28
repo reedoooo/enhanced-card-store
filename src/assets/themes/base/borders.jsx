@@ -3,10 +3,10 @@ import pxToRem from '../functions/pxToRem';
 const { grey } = colors;
 
 const borders = {
-  borderColor: grey[300],
+  borderColor: grey.light,
   tableCell: {
-    border: `${pxToRem(1)} solid ${grey[300]}`,
-    borderColor: grey[300],
+    border: `${pxToRem(1)} solid ${grey.light}`,
+    borderColor: grey.light,
   },
   borderWidth: {
     0: 0,

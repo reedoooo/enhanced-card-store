@@ -1,7 +1,14 @@
 // hooks/useDialogState.js
 import { useState, useCallback } from 'react';
 
-const useDialogState = (initialState = {}) => {
+const useDialogState = (
+  initialState = {
+    isAddDeckDialogOpen: false,
+    isEditDeckDialogOpen: false,
+    isAddCollectionDialogOpen: false,
+    isEditCollectionDialogOpen: false,
+  }
+) => {
   const [state, setState] = useState(initialState);
 
   const toggleDialog = useCallback((dialogName) => {

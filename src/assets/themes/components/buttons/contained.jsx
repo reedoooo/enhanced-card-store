@@ -15,7 +15,7 @@ const {
 } = colors;
 const { size } = typography;
 
-const contained = {
+export default {
   base: {
     backgroundColor: backgroundG.default,
     minHeight: pxToRem(40),
@@ -81,5 +81,3 @@ const contained = {
     },
   },
 };
-
-export default contained;

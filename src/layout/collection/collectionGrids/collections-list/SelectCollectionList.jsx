@@ -13,16 +13,12 @@ import PropTypes from 'prop-types';
 import { TransitionGroup } from 'react-transition-group';
 import CollectionListItem from './CollectionListItem';
 import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { CollectionListItemSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 import { useMode } from '../../../../context';
 
-const SelectCollectionList = ({
-  openDialog,
-  handleSelectAndShowCollection,
-}) => {
+const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
   const { theme } = useMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screen
 
@@ -69,7 +65,7 @@ const SelectCollectionList = ({
           >
             <CollectionListItem
               collection={collection}
-              openDialog={openDialog}
+              // openEditDialog={openNewDialog}
             />
           </Card>
         </Collapse>
@@ -107,7 +103,7 @@ const SelectCollectionList = ({
 };
 
 SelectCollectionList.propTypes = {
-  openDialog: PropTypes.func.isRequired,
+  // openNewDialog: PropTypes.func.isRequired,
   handleSelectAndShowCollection: PropTypes.func.isRequired,
 };
 

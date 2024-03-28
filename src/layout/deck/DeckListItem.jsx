@@ -56,7 +56,7 @@ const DeckListItem = ({
   const infoItems = [
     { label: 'Name', value: deck?.name },
     { label: 'Value', value: `$${roundToNearestTenth(deck?.totalPrice)}` },
-    { label: 'Cards', value: deck?.totalQuantity },
+    { label: 'Cards', value: `${deck?.totalQuantity}` },
   ];
 
   return (
@@ -104,17 +104,6 @@ const DeckListItem = ({
                     }}
                   >
                     <DeckOfCardsIcon color={'white'} />
-                    {/* <MoneyIcon
-                      // color={greenAccent}
-                      background={'white'}
-                      sx={{
-                        // fontSize: 20,
-                        // color: 'white',
-                        background: 'white',
-                        // color: greenAccent,
-                        fontSize: '26px',
-                      }}
-                    /> */}
                   </RCWrappedIcon>
                 </MDBox>
               </Grid>
@@ -127,7 +116,7 @@ const DeckListItem = ({
                   flexGrow={1}
                   spacing={2}
                 >
-                  {infoItems.map((item, index) => (
+                  {infoItems?.map((item, index) => (
                     <AnimatedInfoItem
                       key={item.label}
                       label={item.label}
@@ -146,7 +135,17 @@ const DeckListItem = ({
       <Collapse in={isEditPanelOpen}>
         {/* <DeckEditor deck={deck} onClose={() => handleSelectAndShowDeck(deck)} /> */}
         <MDBox sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}>
-          <DeckForm actionType="update" deckData={deck} /> {/* </Paper> */}
+          <DeckForm
+            actionType="update"
+            deckData={{
+              name: deck.name,
+              description: deck.description,
+              tags: deck.tags,
+              color: deck.color,
+              _id: deck._id,
+            }}
+          />{' '}
+          {/* </Paper> */}
         </MDBox>
       </Collapse>
       <Collapse in={isEditPanelOpen}>

@@ -29,6 +29,7 @@ import {
 } from '@mui/joy';
 import { useCookies } from 'react-cookie';
 import { baseMenuItems } from '../../data/baseMenuItems';
+import rgba from '../../assets/themes/functions/rgba';
 const Navigation = ({ isLoggedIn }) => {
   const { theme } = useMode();
   const navigate = useNavigate();
@@ -97,7 +98,9 @@ const Navigation = ({ isLoggedIn }) => {
           sx={{
             maxHeight: 64,
             maxWidth: '100%',
-            '&:hover': { backgroundColor: theme.palette.backgroundF.light },
+            '&:hover': {
+              backgroundColor: rgba(theme.palette.backgroundE.light),
+            },
           }}
         >
           <ContentContainer
