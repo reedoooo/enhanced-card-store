@@ -19,7 +19,7 @@ const BoxHeader = ({
   return (
     <FlexBetween
       color={theme.palette.backgroundB.default}
-      margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
+      // margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
       paddingTop={useSX ? paddingVariant : 0}
       sx={useSX ? sx : {}}
     >
@@ -29,12 +29,15 @@ const BoxHeader = ({
           <Typography
             variant={useSX ? titleVariant : 'h4'}
             mb="-0.1rem"
+            ml="0.5rem"
             color={useSX ? colorVariant : theme.palette.backgroundE.dark}
           >
             {title}
           </Typography>
           {subtitle !== 'none' && (
-            <Typography variant="h6">{subtitle}</Typography>
+            <Typography variant="h6" ml="0.5rem">
+              {subtitle}
+            </Typography>
           )}
         </Box>
       </FlexBetween>

@@ -44,6 +44,8 @@ const renderCardContainer = (content) => {
 
 const ChartGridLayout = ({ selectedCards, removeCard }) => {
   const { theme } = useMode();
+  const colors = theme.palette.chartTheme;
+  const greenAccent = colors.greenAccent.light;
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const { selectedCollection, showCollections, markers } =
     useSelectedCollection();
@@ -92,9 +94,17 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
               title="Collection Card Chart"
               subtitle="List of all cards in the collection"
               icon={
-                <RCWrappedIcon>
-                  <Icon>show_chart</Icon>
-                </RCWrappedIcon>
+                <MDBox>
+                  <RCWrappedIcon
+                    // color="success"
+                    color="white"
+                    sx={{
+                      background: greenAccent,
+                    }}
+                  >
+                    <Icon>show_chart</Icon>
+                  </RCWrappedIcon>
+                </MDBox>
               }
               sideText="+4%"
             />
@@ -123,9 +133,11 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
           <SimpleCard
             theme={uniqueTheme}
             hasTitle={false}
-            isPrimary={true}
+            isSelectorRow={true}
+            // isPrimary={true}
             // cardTitle=""
             data={''}
+            // noBottomMargin={true}
           >
             <UpdaterAndStatisticsRow isSmall={isXs} />
           </SimpleCard>
@@ -155,14 +167,25 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
             hasTitle={false}
             data=""
             isTableOrChart={true}
+            sx={{
+              alignItems: 'flex-start',
+            }}
           >
             <BoxHeader
               title="Collection Card List"
               subtitle="List of all cards in the collection"
               icon={
-                <RCWrappedIcon color="success">
-                  <Icon>list</Icon>
-                </RCWrappedIcon>
+                <MDBox>
+                  <RCWrappedIcon
+                    // color="success"
+                    color="white"
+                    sx={{
+                      background: greenAccent,
+                    }}
+                  >
+                    <Icon>list</Icon>
+                  </RCWrappedIcon>
+                </MDBox>
               }
               // sideText="Updated recently"
               sideText={`Last Updated: ${formattedTime}`}

@@ -10,6 +10,8 @@ import useDialogState from '../../context/hooks/useDialogState';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import DeckListItem from './DeckListItem';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
+import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
+import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -61,7 +63,14 @@ const DeckBuilder = () => {
             <Grid item xs={6}>
               <SearchComponent pageContext="Deck" />
             </Grid>
-            <Grid item xs={6}>
+            <DashboardBox
+              component={Grid}
+              item
+              xs={6}
+              // lg={7}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              \{/* <Grid item xs={6}> */}
               {allDecks?.map((deck, index) => (
                 <Collapse
                   in={activeTab === index}
@@ -80,7 +89,7 @@ const DeckBuilder = () => {
                   />
                 </Collapse>
               ))}
-            </Grid>
+            </DashboardBox>
           </Grid>
         </Grid>
       </DashboardLayout>

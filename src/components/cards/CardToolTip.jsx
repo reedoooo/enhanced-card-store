@@ -4,6 +4,7 @@ import { useMode } from '../../context';
 import { Box, Tooltip, Typography, Zoom } from '@mui/material';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import styled from 'styled-components';
+import rgba from '../../assets/themes/functions/rgba';
 export const StyledToolTipBox = styled(Box)(({ theme }) => ({
   width: 'auto',
   border: `1px solid ${theme.palette.divider}`,
@@ -78,30 +79,45 @@ const createTooltip = (card, theme) => {
         boxShadow: theme.shadows[3],
         borderRadius: theme.shape.borderRadius,
         border: `1px solid ${theme.palette.divider}`,
-        // w: 'auto',
-        // h: '100%',
-        bgColor: theme.palette.backgroundC.lightest,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: theme.spacing(2),
+        // alignItems: 'center',
+        // height: '100%',
+        // maxWidth: 220,
+        // // w: 'auto',
+        h: '100%',
+        background: rgba(
+          theme.palette.chartTheme.grey.lightest || 'white',
+          0.85
+        ),
         // p: theme.spacing(2),
         color: theme.palette.text.primary,
         alignContent: 'flex-start',
         '&::before': {
           content: '""',
           display: 'block',
-          paddingTop: '100%',
+          // paddingTop: '100%',
         },
-        '& > img': {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          w: '100%',
-          h: '100%',
-          objectFit: 'cover',
-        },
+        // '& > img': {
+        //   position: 'absolute',
+        //   top: 0,
+        //   left: 0,
+        //   // w: '100%',
+        //   // h: '100%',
+        //   objectFit: 'cover',
+        // },
       }}
     >
       {Object.entries(cardAttributes).map(([key, value]) => (
         <StyledAttributeSpan theme={theme} key={key}>
-          <strong>{formatKey(key)}:</strong> {value}
+          <Typography variant="h6">
+            <Typography variant="h5">
+              <strong>{formatKey(key)}:</strong>{' '}
+            </Typography>
+            {value}
+          </Typography>
         </StyledAttributeSpan>
       ))}
     </MDBox>
@@ -117,9 +133,9 @@ const CardToolTip = ({ card }) => {
       title="Card"
       placement="right-end"
     >
-      <StyledToolTipBox theme={theme}>
-        {createTooltip(card, theme)}
-      </StyledToolTipBox>
+      {/* <StyledToolTipBox theme={theme}> */}
+      {createTooltip(card, theme)}
+      {/* </StyledToolTipBox> */}
     </Tooltip>
   );
 };

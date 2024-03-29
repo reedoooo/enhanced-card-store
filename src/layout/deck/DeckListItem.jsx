@@ -18,6 +18,7 @@ import GenericCard from '../../components/cards/GenericCard';
 import DeckForm from '../../components/forms/DeckForm';
 import DeckOfCardsIcon from '../REUSABLE_COMPONENTS/icons/DeckOfCardsIcon';
 import MoneyIcon from '../REUSABLE_COMPONENTS/icons/MoneyIcon';
+import rgba from '../../assets/themes/functions/rgba';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
 
@@ -152,11 +153,25 @@ const DeckListItem = ({
         <MDBox sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}>
           {/* Adjust the spacing as needed */}
           <Card>
-            <Grid container spacing={1}>
+            <Grid container spacing={2}>
               {cards &&
                 cards.length > 0 &&
                 cards.map((card) => (
-                  <Grid item xs={6} sm={4} md={2} key={card._id}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={4}
+                    md={2}
+                    key={card._id}
+                    sx={{
+                      boxShadow: `0 0 0 1px ${rgba(theme.palette.white.main || 'white', 0.4)}`,
+                      border: `1px solid ${rgba(theme.palette.white.main || 'white', 0.4)}`,
+                      background: rgba(
+                        theme.palette.grey.main || 'white',
+                        0.15
+                      ),
+                    }}
+                  >
                     {/* Adjust breakpoints as needed for responsive design */}
                     <GenericCard key={card._id} card={card} />
                   </Grid>

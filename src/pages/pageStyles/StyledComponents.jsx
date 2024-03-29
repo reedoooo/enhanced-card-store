@@ -832,14 +832,16 @@ export const PortfolioTablePriceBox = styled(Box)(({ theme }) => ({
 }));
 // ! CHART AND DATATABLES
 export const StyledChartBox = styled(Box)(({ theme }) => ({
-  padding: '15px',
+  padding: '10px',
+  mx: 'auto',
   border: '2px solid #444',
   borderRadius: '8px',
+  borderColor: theme.palette.chartTheme.greenAccent.light,
   backgroundColor: '#222',
   color: '#fff',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  maxWidth: '400px',
+  // maxWidth: '400px',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
