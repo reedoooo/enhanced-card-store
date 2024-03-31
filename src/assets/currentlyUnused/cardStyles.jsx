@@ -38,7 +38,7 @@
 // //   border: `1px solid ${theme.palette.divider}`,
 // //   borderRadius: theme.shape.borderRadius,
 // //   padding: theme.spacing(2),
-// //   backgroundColor: theme.palette.backgroundA.lightest,
+// //   backgroundColor: theme.palette.greenAccent.contrastText,
 // //   color: theme.palette.text.primary,
 // //   boxShadow: theme.shadows[3],
 // //   alignContent: 'flex-start',
@@ -65,7 +65,7 @@
 // //   // border: `1px solid ${theme.palette.divider}`,
 // //   // borderRadius: theme.shape.borderRadius,
 // //   // padding: theme.spacing(2),
-// //   // backgroundColor: theme.palette.backgroundA.lightest,
+// //   // backgroundColor: theme.palette.greenAccent.contrastText,
 // //   // color: theme.palette.text.primary,
 // //   // boxShadow: theme.shadows[3],
 // //   // alignContent: 'flex-start',
@@ -107,7 +107,7 @@
 //   padding: theme.spacing(2),
 //   borderRadius: theme.shape.borderRadius,
 //   boxShadow: `0 4px 8px 0 ${theme.palette.shadow}`,
-//   backgroundColor: theme.palette.backgroundA.lightest,
+//   backgroundColor: theme.palette.greenAccent.contrastText,
 //   display: 'flex',
 //   flexDirection: 'column',
 //   gap: theme.spacing(1),
@@ -196,7 +196,7 @@
 // //     border: `1px solid ${theme.palette.divider}`, // Add border
 // //     borderRadius: theme.shape.borderRadius, // Use theme border radius
 // //     padding: theme.spacing(2), // Add some padding
-// //     backgroundColor: theme.palette.backgroundA.lightest, // Use theme background
+// //     backgroundColor: theme.palette.greenAccent.contrastText, // Use theme background
 // //     color: theme.palette.text.primary, // Use theme text color
 // //     boxShadow: theme.shadows[3], // Use theme shadow
 // //     alignContent: 'flex-start',
@@ -263,7 +263,7 @@
 // //     padding: theme.spacing(2),
 // //     borderRadius: theme.shape.borderRadius,
 // //     boxShadow: `0 4px 8px 0 ${theme2.palette.shadow}`,
-// //     backgroundColor: theme.palette.backgroundA.lightest,
+// //     backgroundColor: theme.palette.greenAccent.contrastText,
 // //     display: 'flex',
 // //     flexDirection: 'column',
 // //     gap: theme.spacing(1),

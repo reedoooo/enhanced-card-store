@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Switch, FormControlLabel, FormControl } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useMode } from '../../../context';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { useCookies } from 'react-cookie';
 
 const RCSwitch = ({
   checked,

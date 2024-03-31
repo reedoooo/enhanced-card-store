@@ -18,7 +18,7 @@ const BoxHeader = ({
   const { theme } = useMode();
   return (
     <FlexBetween
-      color={theme.palette.backgroundB.default}
+      color={theme.palette.grey.simpleGrey}
       // margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
       paddingTop={useSX ? paddingVariant : 0}
       sx={useSX ? sx : {}}
@@ -30,7 +30,9 @@ const BoxHeader = ({
             variant={useSX ? titleVariant : 'h4'}
             mb="-0.1rem"
             ml="0.5rem"
-            color={useSX ? colorVariant : theme.palette.backgroundE.dark}
+            color={
+              useSX ? colorVariant : theme.palette.greenAccent.pureGreenBlue
+            }
           >
             {title}
           </Typography>
@@ -44,7 +46,7 @@ const BoxHeader = ({
       <Typography
         variant="h5"
         fontWeight="700"
-        color={theme.palette.backgroundE.dark}
+        color={theme.palette.greenAccent.pureGreenBlue}
         sx={useSX ? sx : {}}
       >
         {sideText}

@@ -17,20 +17,33 @@ import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { CollectionListItemSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 import { useMode } from '../../../../context';
+import LoadingOverlay from '../../../REUSABLE_COMPONENTS/LoadingOverlay';
 
 const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
   const { theme } = useMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screen
+  const collectionData = useSelectedCollection();
+
+  if (!collectionData) {
+    // Handle the scenario where collectionData is null
+    // Maybe set some default state or perform error handling
+    return <LoadingOverlay />;
+  }
 
   const {
+    selectedCollection,
     allCollections,
     allIds,
-    handleSelectCollection,
-    toggleShowCollections,
-  } = useSelectedCollection();
+    refreshCollections,
+    // other returned values
+  } = collectionData;
   const [collectionList, setCollectionList] = useState([]);
   const numCollections = allIds?.length || 0;
   const nonSkeletonCount = useRef(0);
+  // useEffect(() => {
+  //   // This effect will run whenever `allCollections` changes, including when a collection is deleted.
+  //   refreshCollections(); // Fetch the latest collections whenever the component mounts or updates.
+  // }, [refreshCollections]); // Dependency on `allCollections.length` to trigger re-fetching.
 
   useEffect(() => {
     const minItems = 5;
@@ -38,6 +51,15 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
       minItems - numCollections > 0 ? minItems - numCollections : 0;
     nonSkeletonCount.current = numCollections;
 
+    // const allSkeletonCollections = [...Array(numRequired).keys()].map(
+    //   (index) => (
+    //     <CollectionListItemSkeleton
+    //       key={`skeleton-${index}`}
+    //       count={1}
+    //       index={index}
+    //     />
+    //   )
+    // );
     const allSkeletonCollections = [...Array(numRequired).keys()].map(
       (index) => (
         <CollectionListItemSkeleton
@@ -48,27 +70,13 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
       )
     );
     const combinedCollections = allCollections
-      .map((collection, index) => (
-        <Collapse key={collection?._id || `collection-${index}`}>
-          <Card
-            onClick={() => {
-              handleSelectAndShowCollection(collection);
-            }}
-            sx={{
-              ...(isMobile && {
-                boxShadow: 'none', // Remove shadow
-                '&:hover': {
-                  boxShadow: 'none',
-                },
-              }),
-            }}
-          >
-            <CollectionListItem
-              collection={collection}
-              // openEditDialog={openNewDialog}
-            />
-          </Card>
-        </Collapse>
+      ?.map((collection, index) => (
+        <CollectionListItem
+          key={collection?._id || `collection-${index}`}
+          collection={collection}
+          handleSelectAndShowCollection={handleSelectAndShowCollection}
+          // openEditDialog={openNewDialog}
+        />
       ))
       .concat(allSkeletonCollections);
 
@@ -89,13 +97,14 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
     >
       <List sx={{ justifyContent: 'center', alignItems: 'center', mx: 'auto' }}>
         <TransitionGroup>
-          {collectionList?.map((item, index) =>
+          {collectionList?.map((item, index) => item)}
+          {/* {collectionList?.map((item, index) =>
             React.isValidElement(item) ? (
               item
             ) : (
               <Skeleton key={`skeleton-${index}`} count={1} />
             )
-          )}
+          )} */}
         </TransitionGroup>
       </List>
     </SimpleCard>

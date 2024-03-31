@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -10,12 +9,11 @@ import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import { DialogContent, Slide } from '@mui/material';
-import useSnackbarManager from '../../context/hooks/useSnackbarManager';
+import { useSnackbar } from 'notistack';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -24,8 +22,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function SelectionErrorDialog(props) {
   const { onClose, selectedValue, open } = props;
   const { allCollections } = useSelectedCollection();
-  const { showSuccess, showError, showInfo } = useSnackbarManager(); // Using custom snackbar hook
-
+  const { enqueueSnackbar } = useSnackbar();
+  const showNotification = (message, variant) => {
+    enqueueSnackbar(message, {
+      variant: variant,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
+  };
   const handleClose = () => {
     onClose(selectedValue);
   };
@@ -33,13 +39,13 @@ function SelectionErrorDialog(props) {
   const handleListItemClick = React.useCallback(
     (collection) => {
       if (collection._id) {
-        showInfo('Not implemented yet'); // Show an informational snackbar
+        showNotification('Not implemented yet', 'info');
       } else {
-        showSuccess(`${collection} selected as backup account`); // Show a success snackbar
+        showNotification(`${collection} selected as backup account`, 'success');
       }
       onClose(collection);
     },
-    [onClose, showInfo, showSuccess]
+    [onClose, showNotification]
   );
 
   return (

@@ -16,15 +16,15 @@
 
 // export const EditButton = styled(Button)(({ theme }) => ({
 //   marginLeft: theme.spacing(2),
-//   backgroundColor: theme.palette.backgroundA.dark,
+//   backgroundColor: theme.palette.greenAccent.light,
 //   color: '#ffffff',
 //   '&:hover': {
-//     backgroundColor: theme.palette.backgroundA.darker,
+//     backgroundColor: theme.palette.greenAccent.default,
 //   },
 // }));
 
 // export const CollectionListItem = styled('div')(({ theme }) => ({
-//   backgroundColor: theme.palette.backgroundA.lightest,
+//   backgroundColor: theme.palette.greenAccent.contrastText,
 //   transition: theme.transitions.create(['background-color', 'box-shadow']),
 //   '&:hover': {
 //     backgroundColor: theme.palette.grey[100],
@@ -51,7 +51,7 @@
 //   width: '100%',
 //   borderRadius: theme.shape.borderRadius,
 //   // eslint-disable-next-line max-len
-//   background: `linear-gradient(to right, ${theme.palette.backgroundA.lightest} 40%, ${theme.palette.grey[300]} 70%, ${theme.palette.backgroundA.lightest} 100%)`,
+//   background: `linear-gradient(to right, ${theme.palette.greenAccent.contrastText} 40%, ${theme.palette.grey[300]} 70%, ${theme.palette.greenAccent.contrastText} 100%)`,
 //   animation: '$shimmer 2s infinite',
 // }));
 
@@ -126,14 +126,14 @@
 // //     },
 // //     editButton: {
 // //       marginLeft: theme.spacing(2),
-// //       backgroundColor: theme.palette.backgroundA.dark,
+// //       backgroundColor: theme.palette.greenAccent.light,
 // //       color: '#ffffff',
 // //       '&:hover': {
-// //         backgroundColor: theme.palette.backgroundA.darker,
+// //         backgroundColor: theme.palette.greenAccent.default,
 // //       },
 // //     },
 // //     collectionListItem: {
-// //       backgroundColor: theme.palette.backgroundA.lightest,
+// //       backgroundColor: theme.palette.greenAccent.contrastText,
 // //       transition: theme.transitions.create(['background-color', 'box-shadow']),
 // //       '&:hover': {
 // //         backgroundColor: theme.palette.grey[100],
@@ -150,7 +150,7 @@
 // //       borderRadius: theme.shape.borderRadius,
 // //       // For shimmer effect
 // //       // eslint-disable-next-line max-len
-// //       background: `linear-gradient(to right, ${theme.palette.backgroundA.lightest} 40%, ${theme.palette.grey[300]} 70%, ${theme.palette.backgroundA.lightest} 100%)`,
+// //       background: `linear-gradient(to right, ${theme.palette.greenAccent.contrastText} 40%, ${theme.palette.grey[300]} 70%, ${theme.palette.greenAccent.contrastText} 100%)`,
 // //       animation: '$shimmer 2s infinite',
 // //     },
 // //     '@keyframes shimmer': {

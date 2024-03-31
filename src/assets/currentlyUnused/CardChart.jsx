@@ -133,7 +133,7 @@
 // //       <Card
 // //         variant="outlined"
 // //         sx={{
-// //           background: theme.palette.backgroundA.lightest,
+// //           background: theme.palette.greenAccent.contrastText,
 // //           display: 'flex',
 // //           flexDirection: 'column',
 // //           alignItems: 'center',
@@ -242,7 +242,7 @@
 // //             <Paper
 // //               sx={{
 // //                 background: theme.palette.backgroundA.lighter,
-// //                 border: `1px solid${theme.palette.backgroundA.darker}`,
+// //                 border: `1px solid${theme.palette.greenAccent.default}`,
 // //                 borderRadius: '5px',
 // //                 elevation: 2,
 // //                 boxShadow: 2,
@@ -375,7 +375,7 @@
 //       <Card
 //         variant="outlined"
 //         sx={{
-//           background: theme.palette.backgroundA.lightest,
+//           background: theme.palette.greenAccent.contrastText,
 //           display: isMobileView ? 'flex' : 'block',
 //           // flexDirection: isMobileView ? 'row' : 'column',
 //           flexDirection: 'column',

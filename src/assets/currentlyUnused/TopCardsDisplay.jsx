@@ -22,7 +22,7 @@
 //   background: theme.palette.backgroundB.dark,
 //   border: `1px solid ${theme.palette.backgroundB.lighter}`,
 //   borderRadius: theme.shape.borderRadiusLarge,
-//   color: theme.palette.backgroundA.light,
+//   color: theme.palette.greenAccent.lightest,
 //   overflow: 'hidden',
 //   padding: theme.spacing(1),
 //   height: '100%',
@@ -145,7 +145,7 @@
 //                 onClick={handleNext}
 //                 disabled={activeStep === maxSteps - 1}
 //                 sx={{
-//                   color: theme.palette.backgroundA.light,
+//                   color: theme.palette.greenAccent.lightest,
 //                 }}
 //               >
 //                 {theme.direction === 'rtl' ? (
@@ -162,7 +162,7 @@
 //                 onClick={handleBack}
 //                 disabled={activeStep === 0}
 //                 sx={{
-//                   color: theme.palette.backgroundA.light,
+//                   color: theme.palette.greenAccent.lightest,
 //                   '&.Mui-disabled': {
 //                     // background: theme.palette.background.disabled,
 //                     color: theme.palette.background.disabled,

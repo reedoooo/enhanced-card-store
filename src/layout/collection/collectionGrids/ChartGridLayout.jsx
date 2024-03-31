@@ -21,11 +21,12 @@ import useTimeRange from '../../../components/forms/selectors/useTimeRange';
 import useSkeletonLoader from '../../REUSABLE_COMPONENTS/useSkeletonLoader';
 import { ChartConfiguration } from './cards-chart/ChartConfigs';
 import { TopCardsDisplayRow } from '../sub-components/TopCardsDisplayRow';
-import LoadingOverlay from '../../LoadingOverlay';
+import LoadingOverlay from '../../REUSABLE_COMPONENTS/LoadingOverlay';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import { ResponsiveContainer } from 'recharts';
 import PricedDataTable from './cards-datatable/PricedDataTable';
 import preparePortfolioTableData from '../data/portfolioData';
+import { calculateChangePercentage } from '../../../context/Helpers';
 
 const renderCardContainer = (content) => {
   return (
@@ -75,6 +76,7 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
     defaultValue: 5,
     entries: [5, 10, 15, 20],
   };
+
   return (
     <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
@@ -92,21 +94,20 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
           >
             <BoxHeader
               title="Collection Card Chart"
-              subtitle="List of all cards in the collection"
+              subtitle="Chart of the collection price performance"
               icon={
                 <MDBox>
                   <RCWrappedIcon
-                    // color="success"
                     color="white"
                     sx={{
-                      background: greenAccent,
+                      background: theme.palette.success.main,
                     }}
                   >
                     <Icon>show_chart</Icon>
                   </RCWrappedIcon>
                 </MDBox>
               }
-              sideText="+4%"
+              sideText={`Change: ${calculateChangePercentage(selectedCollection)}`}
             />
           </SimpleCard>
           {renderCardContainer(
@@ -180,7 +181,7 @@ const ChartGridLayout = ({ selectedCards, removeCard }) => {
                     // color="success"
                     color="white"
                     sx={{
-                      background: greenAccent,
+                      background: theme.palette.success.main,
                     }}
                   >
                     <Icon>list</Icon>

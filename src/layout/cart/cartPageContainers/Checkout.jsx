@@ -16,7 +16,7 @@ import PaymentForm from './PaymentForm';
 import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useUserContext } from '../../../context';
+import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 function Copyright() {
   return (
@@ -49,7 +49,7 @@ function getStepContent(step) {
 
 export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
-  const { user } = useUserContext();
+  const { user } = useUserData();
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };

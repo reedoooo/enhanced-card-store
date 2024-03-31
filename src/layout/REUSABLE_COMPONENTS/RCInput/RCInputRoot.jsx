@@ -58,7 +58,7 @@ export default styled(TextField)(({ ownerState }) => {
   return {
     // color: 'white',
     backgroundColor: disabled
-      ? `${theme.palette.backgroundA.default} !important`
+      ? `${theme.palette.greenAccent.lighter} !important`
       : transparent.main,
     pointerEvents: disabled ? 'none' : 'auto',
     ...(error && errorStyles()),

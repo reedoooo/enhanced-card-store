@@ -1,27 +1,47 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import useLogger from '../../hooks/useLogger';
-import { DEFAULT_COLLECTION } from '../../constants';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
-import { useAuthContext } from '../..';
-import { useCookies } from 'react-cookie';
-import useLocalStorage from '../../hooks/useLocalStorage';
+import useManageCookies from '../../hooks/useManageCookies';
 import useSelectedCollection from './useSelectedCollection';
-
+const defaultExportValue = {
+  fetchCollections: () => {},
+  createNewCollection: () => {},
+  deleteCollection: () => {},
+  updateCollection: () => {},
+  addNewCollection: () => {},
+  removeCollection: () => {},
+  setCustomError: () => {},
+  customError: '',
+  refreshCollections: () => {},
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+  updateOneInCollection: () => {},
+  hasFetchedCollections: false,
+  handleError: () => {},
+};
 const useCollectionManager = () => {
-  const { fetchWrapper, status } = useFetchWrapper();
-  const { userId, isLoggedIn } = useAuthContext(); // Now getting userId from context
+  const { fetchWrapper, status, data } = useFetchWrapper();
+  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { isLoggedIn, authUser, userId } = getCookie([
+    'isLoggedIn',
+    'authUser',
+    'userId',
+  ]);
   const logger = useLogger('useCollectionManager');
+  const collectionData = useSelectedCollection();
+  if (!collectionData) {
+    console.error('Collection data not found');
+    return null;
+  }
   const {
     selectedCollection,
-    allCollections,
-    showCollections,
     selectedCollectionId,
-    customError: selectedCollectionError,
+    customError,
+    setCustomError,
+    refreshCollections,
     updateCollectionsData,
-    handleSelectCollection,
-    resetCollection,
-    setCustomError: setSelectedCollectionError,
-  } = useSelectedCollection();
+  } = collectionData;
   const [error, setError] = useState(null);
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
   const handleError = useCallback(
@@ -57,7 +77,6 @@ const useCollectionManager = () => {
     updateCollectionsData,
     handleError,
   ]);
-
   const performAction = useCallback(
     async (path, method, data, actionName, options = {}) => {
       if (!userId || !isLoggedIn || status === 'loading') {
@@ -65,13 +84,12 @@ const useCollectionManager = () => {
         return;
       }
 
-      if (!selectedCollection) {
-        setSelectedCollectionError('No collection selected');
+      if (!selectedCollection || selectedCollection === null) {
+        console.warn('No collection selected');
         return;
       }
 
       options.beforeAction?.();
-
       console.log(
         'PERFORM ACTION',
         path,
@@ -83,9 +101,7 @@ const useCollectionManager = () => {
 
       try {
         console.log('URL', path);
-
         await fetchWrapper(path, method, data, actionName);
-
         options.afterAction?.();
         fetchCollections(); // Refresh collections after any action
       } catch (error) {
@@ -100,27 +116,69 @@ const useCollectionManager = () => {
       createApiUrl,
       fetchCollections,
       handleError,
-      setSelectedCollectionError,
+      setCustomError,
       selectedCollection,
     ]
   );
 
-  const createNewCollection = (data) =>
-    performAction(createApiUrl('create'), 'POST', data, 'createNewCollection');
-  const deleteCollection = (collectionId) =>
-    performAction(
-      createApiUrl(`${collectionId}/delete`),
-      'DELETE',
-      { collectionId: collectionId },
-      'deleteCollection'
-    );
-  const updateCollection = (collectionId, updatedData) =>
-    performAction(
-      createApiUrl(`${collectionId}/update`),
-      'PUT',
-      updatedData,
-      'updateCollection'
-    );
+  const createNewCollection = useCallback(async (datas) => {
+    const newCollection = {
+      name: datas.name,
+      description: datas.description,
+    };
+
+    const path = createApiUrl('create');
+    performAction(path, 'POST', newCollection, 'createNewCollection');
+  }, []);
+
+  // performAction(createApiUrl('create'), 'POST', datas, 'createNewCollection');
+  const deleteCollection = useCallback(
+    async (collectionId) => {
+      performAction(
+        createApiUrl(`${collectionId}/delete`),
+        'DELETE',
+        { collectionId: collectionId },
+        'deleteCollection',
+        {
+          beforeAction: () => {
+            console.log('BEFORE ACTION', collectionId);
+          },
+          // afterAction: () => {
+          //   console.log(`Collection ${collectionId} deleted successfully.`);
+          //   removeCollection(collectionId, data);
+          //   refreshCollections(); // Refresh collections after any action
+          // },
+          afterAction: async () => {
+            console.log(`Collection ${collectionId} deleted successfully.`);
+            // Fetch the latest collections after deletion
+            try {
+              // removeCollection(collectionId, data);
+              // const updatedCollections = await fetchWrapper(
+              //   createApiUrl('allCollections'),
+              //   'GET'
+              // );
+              // refreshCollections(updatedCollections.data);
+            } catch (error) {
+              handleError(error, 'fetching collections after deletion');
+            }
+          },
+        }
+      );
+    },
+    [performAction, createApiUrl, fetchWrapper, handleError]
+  );
+
+  const updateCollection = useCallback(
+    async (collectionId, updatedData) => {
+      performAction(
+        createApiUrl(`${collectionId}/update`),
+        'PUT',
+        updatedData,
+        'updateCollection'
+      );
+    },
+    [performAction, createApiUrl]
+  );
   const addCardsToCollection = useCallback(
     (newCards, collection) => {
       if (selectedCollectionId === 'selectedCollectionId')
@@ -157,7 +215,6 @@ const useCollectionManager = () => {
           options
         );
       } else {
-        // ADD NEW CARD
         performAction(
           createApiUrl(`${selectedCollectionId}/cards/add`),
           'POST',
@@ -166,13 +223,6 @@ const useCollectionManager = () => {
           options
         );
       }
-      // performAction(
-      //   createCardApiUrl('update'),
-      //   'PUT',
-      //   { cards: newCards },
-      //   'addCardsToCollection',
-      //   ['object']
-      // );
     },
     [performAction]
   );
@@ -188,27 +238,41 @@ const useCollectionManager = () => {
     },
     [performAction]
   );
-  return {
-    fetchCollections,
-    createNewCollection,
-    deleteCollection,
-    updateCollection,
-    addCardsToCollection,
-    addOneToCollection: (cards, collection) =>
-      addCardsToCollection(cards, collection),
-    removeCardsFromCollection,
-    removeOneFromCollection: (cards, collection) =>
-      removeCardsFromCollection(cards, collection),
-    selectedCollection,
-    allCollections,
-    showCollections,
-    selectedCollectionId,
-    selectedCollectionError,
-    error,
-    hasFetchedCollections,
-    handleError,
-    setSelectedCollectionError,
-  };
+  const memoizedReturnValues = useMemo(
+    () => ({
+      fetchCollections,
+      createNewCollection,
+      deleteCollection,
+      updateCollection,
+      addCardsToCollection,
+      removeCardsFromCollection,
+      customError,
+      setCustomError,
+      refreshCollections,
+      updateCollectionsData,
+      hasFetchedCollections,
+      handleError,
+      removeOneFromCollection: (cards, collection) =>
+        removeCardsFromCollection(cards, collection),
+      addOneToCollection: (cards, collection) =>
+        addCardsToCollection(cards, collection),
+    }),
+    [
+      fetchCollections,
+      createNewCollection,
+      deleteCollection,
+      updateCollection,
+      addCardsToCollection,
+      removeCardsFromCollection,
+      customError,
+      setCustomError,
+      refreshCollections,
+      updateCollectionsData,
+      hasFetchedCollections,
+      handleError,
+    ]
+  );
+  return memoizedReturnValues;
 };
 
 export default useCollectionManager;

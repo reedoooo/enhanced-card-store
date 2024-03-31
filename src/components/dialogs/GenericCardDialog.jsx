@@ -37,8 +37,6 @@ const GenericCardDialog = ({
 
   const { closeModal } = useModalContext();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
-  const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
-
   const handleAction = useCallback(
     (message, variant) => {
       enqueueSnackbar(message, { variant });
@@ -102,7 +100,7 @@ const GenericCardDialog = ({
       </FlexBetween>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <CardMediaSection card={card} imgUrl={imageUrl} />
+          <CardMediaSection card={card} imgUrl={card?.image} />
         </Grid>
         <Grid item xs={12} sm={6}>
           <CardDetailsContainer

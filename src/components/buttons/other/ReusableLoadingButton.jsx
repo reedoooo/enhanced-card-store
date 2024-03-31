@@ -34,11 +34,11 @@ const ReusableLoadingButton = ({
       };
     }
     return {
-      background: theme.palette.backgroundG.light,
-      borderColor: theme.palette.backgroundG.light,
+      background: theme.palette.greenAccent.emerald,
+      borderColor: theme.palette.greenAccent.emerald,
       borderWidth: 2,
-      '&:hover': { background: theme.palette.backgroundG.default },
-      '&:focus': { background: theme.palette.backgroundG.default },
+      '&:hover': { background: theme.palette.greenAccent.lightSeaGreen },
+      '&:focus': { background: theme.palette.greenAccent.lightSeaGreen },
     };
   };
 

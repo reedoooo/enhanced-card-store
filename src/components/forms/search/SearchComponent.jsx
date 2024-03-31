@@ -16,12 +16,12 @@ import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import SearchForm from '../SearchForm';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { useCardStore, useMode } from '../../../context';
+import { useMode } from '../../../context';
 import useLocalStorage from '../../../context/hooks/useLocalStorage';
-import { useCardStoreHook } from '../../../context/hooks/useCardStore';
 import { useConfiguratorContext } from '../../../context';
 import SimpleCard from '../../../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { useCardStoreHook } from '../../../context/MAIN_CONTEXT/CardContext/useCardStore';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -80,7 +80,7 @@ const SearchComponent = (pageContext) => {
               align="left"
               sx={{
                 fontWeight: 'bold',
-                color: theme.palette.backgroundB.dark,
+                color: theme.palette.grey.simpleGrey,
                 textTransform: 'uppercase',
                 marginBottom: isMobile ? theme.spacing(2) : 0, // Add bottom margin on mobile
               }}
@@ -113,14 +113,21 @@ const SearchComponent = (pageContext) => {
           </Container>
         </SimpleCard>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          mx: '2rem',
+        }}
+      >
         <Card
-          className="hero-section-container"
+          // className="hero-section-container"
           sx={{
             width: '100%',
             backgroundColor: 'transparent', // Make the Card background transparent
-            p: theme.spacing(2),
+            p: theme.spacing(1),
             m: theme.spacing(2),
+            justifyContent: 'center',
           }}
         >
           <SearchResults

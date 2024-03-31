@@ -47,7 +47,6 @@ const signupFields = [
 ];
 
 const AuthForm = ({ formType }) => {
-  // Combine forms to make signup forms
   const combinedFields = [...signupFields, ...loginFields];
   const isSignup = formType === 'signupForm';
   const fields = isSignup ? combinedFields : loginFields;

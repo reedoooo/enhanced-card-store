@@ -12,22 +12,25 @@ export default function DeckBuilderIcon(props) {
     'M70 873 c0 -18 7 -38 15 -47 38 -37 490 -413 514 -426 17 -10 52 -14 101 -14 71 1 104 11 634 198 307 108 572 204 588 212 30 15 48 49 48 87 -1 19 -2 20 -13 7 -7 -8 -19 -21 -28 -27 -20 -16 -1140 -408 -1192 -417 -21 -4 -63 -2 -93 4 -51 11 -72 26 -282 202 -125 105 -242 204 -259 221 l-33 31 0 -31z',
     'M70 778 c0 -30 10 -39 324 -301 181 -152 203 -167 253 -177 30 -7 71 -9 92 -5 44 8 1109 379 1167 406 22 11 46 31 52 45 19 39 14 49 -11 26 -36 -34 -1183 -432 -1243 -432 -89 0 -111 14 -370 232 -137 116 -252 215 -256 222 -5 6 -8 -1 -8 -16z',
   ];
-  const paths = customPaths || defaultPaths;
+  const paths = defaultPaths;
   return (
     <SvgIcon
       {...otherProps}
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="200.000000pt"
-      height="200.000000pt"
+      width="300.000000pt"
+      height="300.000000pt"
       viewBox="0 0 200.000000 200.000000"
       preserveAspectRatio="xMidYMid meet"
+      strokeWidth={1.5}
     >
       <g
         transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)"
         // fill="rgba(0, 0, 0, 0.54)"
         fill={iconColor || 'rgba(0, 0, 0, 0.54)'}
         stroke="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {paths?.map((d, i) => (
           <path key={i} d={d} />

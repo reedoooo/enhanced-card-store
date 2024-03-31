@@ -10,30 +10,55 @@ import CardMediaSection from './CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholder from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
-import { PopoverContext } from '../../assets/currentlyUnused/PopoverContext/PopoverContext';
-import { Box } from '@mui/system';
-import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
-import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
-import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useTheme } from 'styled-components';
-import { getQuantity } from '../componentHelpers';
 import { useMode } from '../../context';
-import { useAppContext } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { enqueueSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 import useSelectedContext from '../../context/hooks/useSelectedContext';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import {
   AspectRatioBox,
   StyledCard,
   StyledCardContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { usePopover } from '../../context/hooks/usePopover';
+import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/LoadingOverlay';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
+const getQuantity = ({
+  card,
+  cart,
+  selectedCollection,
+  allCollections,
+  selectedDeck,
+  allDecks,
+}) => {
+  const findCardQuantity = (collectionsOrDecks, cardId) =>
+    collectionsOrDecks?.reduce(
+      (acc, item) =>
+        acc + (item?.cards?.find((c) => c.id === cardId)?.quantity ?? 0),
+      0
+    ) ?? 0;
+
+  const cartQuantity =
+    cart?.items?.find((c) => c.id === card.id)?.quantity ?? 0;
+  const collectionQuantity = selectedCollection
+    ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
+    : findCardQuantity(allCollections, card.id);
+  const deckQuantity = selectedDeck
+    ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
+    : findCardQuantity(allDecks, card.id);
+
+  return {
+    cartQuantity,
+    collectionQuantity,
+    deckQuantity,
+  };
+};
+
 const GenericCard = React.forwardRef((props, ref) => {
   const { card, context, page } = props;
   const effectiveContext =
     typeof context === 'object' ? context.pageContext : context;
-
   const { theme } = useMode();
   const cardRef = useRef(null);
   const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
@@ -53,16 +78,18 @@ const GenericCard = React.forwardRef((props, ref) => {
       window.removeEventListener('resize', measureCard);
     };
   }, []);
-  const { cartData } = useCartStore();
-  const { selectedCollection, allCollections } = useSelectedCollection();
-  const { selectedDeck, allDecks } = useDeckStore();
+  const { cart } = useCartManager();
+  const collectiondata = useSelectedContext();
+  if (!collectiondata) return <LoadingOverlay />;
+  const { selectedCollection, allCollections } = collectiondata;
+  const { selectedDeck, allDecks } = useSelectedDeck();
   const { setContext, setIsContextSelected } = useSelectedContext();
-  const { isCardInContext } = useAppContext();
+  const { isCardInContext } = useCompileCardData();
   const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
     useModalContext();
-  // const { setHoveredCard, setIsPopoverOpen, hoveredCard } =
-  //   useContext(PopoverContext);
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
+  const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
+
   const handleClick = useCallback(() => {
     openModalWithCard(card);
     setModalOpen(true);
@@ -96,7 +123,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   }`;
   const { cartQuantity, collectionQuantity, deckQuantity } = getQuantity({
     card: card,
-    cartData: cartData,
+    cart: cart,
     selectedCollection: selectedCollection,
     allCollections: allCollections,
     selectedDeck: selectedDeck,

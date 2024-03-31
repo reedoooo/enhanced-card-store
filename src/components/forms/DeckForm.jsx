@@ -9,18 +9,6 @@ const DeckForm = ({ actionType, deckData }) => {
   const isUpdateMode = actionType === 'update';
   const [tags, setTags] = useState(deckData?.tags || []);
 
-  useEffect(() => {
-    setFormSchema('updateDeckForm');
-    if (deckData) {
-      console.log('deckData:', deckData);
-      formMethods.reset({
-        ...deckData,
-        tags: deckData?.tags?.join(', '),
-        color: deckData?.color || 'red',
-      });
-    }
-  }, [deckData, setFormSchema, formMethods]);
-
   const handleAddTag = (tag) => {
     if (tag && !tags.includes(tag)) {
       setTags([...tags, tag]);
@@ -100,19 +88,17 @@ const DeckForm = ({ actionType, deckData }) => {
 
   React.useEffect(() => {
     if (!isUpdateMode) {
-      setFormSchema(formId);
+      setFormSchema('addDeckForm');
+    }
+    if (deckData) {
+      console.log('deckData:', deckData);
+      formMethods.reset({
+        ...deckData,
+        tags: deckData?.tags?.join(', '),
+        color: deckData?.color || 'red',
+      });
     }
   }, [setFormSchema, formId, isUpdateMode]);
-
-  const handleSubmit = (data) => {
-    if (isUpdateMode) {
-      console.log('Submitting update deck data:', data);
-      onSubmit(data);
-    } else {
-      console.log('Add Deck Data:', data);
-      onSubmit(data);
-    }
-  };
 
   const handleDelete = () => {
     if (isUpdateMode) {

@@ -16,8 +16,6 @@ import { roundToNearestTenth } from '../../context/Helpers';
 import { useMode } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
 import DeckForm from '../../components/forms/DeckForm';
-import DeckOfCardsIcon from '../REUSABLE_COMPONENTS/icons/DeckOfCardsIcon';
-import MoneyIcon from '../REUSABLE_COMPONENTS/icons/MoneyIcon';
 import rgba from '../../assets/themes/functions/rgba';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
@@ -99,12 +97,13 @@ const DeckListItem = ({
               <Grid item xs={12} sm={12} md={2}>
                 <MDBox>
                   <RCWrappedIcon
-                    color="white"
+                    // color="white"
                     sx={{
-                      background: greenAccent,
+                      background: theme.palette.success.main,
                     }}
                   >
-                    <DeckOfCardsIcon color={'white'} />
+                    <DeckBuilderIcon iconColor={'white'} />
+                    {/* <DeckOfCardsIcon color="white" /> */}
                   </RCWrappedIcon>
                 </MDBox>
               </Grid>
@@ -155,14 +154,15 @@ const DeckListItem = ({
           <Card>
             <Grid container spacing={2}>
               {cards &&
-                cards.length > 0 &&
-                cards.map((card) => (
+                cards?.length > 0 &&
+                cards?.map((card, index) => (
                   <Grid
                     item
                     xs={6}
                     sm={4}
-                    md={2}
-                    key={card._id}
+                    md={3}
+                    lg={2}
+                    key={`${card._id}-${index}`}
                     sx={{
                       boxShadow: `0 0 0 1px ${rgba(theme.palette.white.main || 'white', 0.4)}`,
                       border: `1px solid ${rgba(theme.palette.white.main || 'white', 0.4)}`,
@@ -173,7 +173,7 @@ const DeckListItem = ({
                     }}
                   >
                     {/* Adjust breakpoints as needed for responsive design */}
-                    <GenericCard key={card._id} card={card} />
+                    <GenericCard card={card} />
                   </Grid>
                 ))}
             </Grid>

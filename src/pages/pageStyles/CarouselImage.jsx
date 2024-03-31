@@ -12,9 +12,7 @@ export const CarouselImage = ({ image, caption }) => {
         sx={{
           position: 'absolute',
           bottom: 0,
-          // backgroundColor: (theme) => theme.palette.backgroundA.lighter,
-          color: (theme) =>
-            theme.palette.backgroundA.contrastTextD || 'common.white',
+          color: (theme) => theme.palette.grey.black || 'common.white',
           width: '100%',
           padding: 2,
           textAlign: 'center',

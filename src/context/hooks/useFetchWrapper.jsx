@@ -2,8 +2,7 @@ import { useState, useCallback } from 'react';
 import useLogger from './useLogger';
 import useLocalStorage from './useLocalStorage';
 import { useLoading } from './useLoading';
-import useSnackbarManager from './useSnackbarManager';
-
+import { useSnackbar } from 'notistack';
 const useFetchWrapper = () => {
   const [status, setStatus] = useState('idle');
   const [data, setData] = useState(null);
@@ -11,16 +10,21 @@ const useFetchWrapper = () => {
   const [error, setError] = useState(null);
   const { logEvent } = useLogger('useFetchWrapper');
   const { startLoading, stopLoading, isLoading } = useLoading();
-  const { showSuccess, showInfo, showError } = useSnackbarManager();
-
+  const { enqueueSnackbar } = useSnackbar();
+  const showNotification = (message, variant) => {
+    enqueueSnackbar(message, {
+      variant: variant,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
+  };
   const fetchWrapper = useCallback(
     async (url, method = 'GET', body = null, loadingID) => {
       setStatus('loading');
       startLoading(loadingID);
-
-      // Showing loading snackbar
-      const loadingSnackbar = showInfo('Loading', loadingID);
-
+      showNotification(`Loading ${loadingID}...`, 'info');
       try {
         const headers = { 'Content-Type': 'application/json' };
         const options = {
@@ -47,35 +51,25 @@ const useFetchWrapper = () => {
           ...prevCache,
           [loadingID]: responseData,
         }));
-
-        // Showing success snackbar
-        showSuccess(`Your ${loadingID} data has been fetched successfully.`);
+        showNotification(
+          `Success: Your ${loadingID} data has been fetched.`,
+          'success'
+        );
 
         return responseData;
       } catch (error) {
         setError(error.toString());
         setStatus('error');
         logEvent('fetch error', { url, error: error.toString() });
-
-        // Showing error snackbar
-        showError(`Error fetching ${loadingID}: ${error.toString()}`);
+        showNotification(
+          `Error fetching ${loadingID}: ${error.toString()}`,
+          'error'
+        );
       } finally {
         stopLoading(loadingID);
-
-        // Closing loading snackbar
-        // closeSnackbar(loadingSnackbar);
       }
     },
-    [
-      setResponseCache,
-      startLoading,
-      stopLoading,
-      logEvent,
-      showSuccess,
-      showInfo,
-      showError,
-      // closeSnackbar,
-    ]
+    [startLoading, stopLoading, logEvent, setResponseCache]
   );
 
   return {

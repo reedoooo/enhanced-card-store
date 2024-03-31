@@ -12,7 +12,7 @@ import uniqueTheme from '../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from '../../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import DashboardBox from '../../REUSABLE_COMPONENTS/DashboardBox';
 import { PageHeaderSkeleton } from '../../REUSABLE_COMPONENTS/SkeletonVariants';
-import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import { collectionPortfolioHeaderItems } from '../../../data/collectionPortfolioHeaderItems';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
   return (
@@ -55,42 +55,8 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
   ) {
     return <PageHeaderSkeleton />;
   }
-  const headerItems = [
-    {
-      // icon: <CollectionsIcon />,
-      icon: 'collections',
-      label: 'Portfolio Selected',
-      value: collection?.name || 'Select a collection to view its statistics',
-      delay: 0,
-    },
-    {
-      // icon: <AttachMoneyIcon />,
-      icon: 'attach_money',
-      label: 'Total Value',
-      value:
-        collection?.totalPrice || 'Select a collection to view its statistics',
-      delay: 200,
-    },
-    {
-      // icon: <FormatListNumberedIcon />,
-      icon: 'format_list_numbered',
-      label: 'Number of Unique Cards',
-      value:
-        collection?.cards?.length ||
-        'Select a collection to view its statistics',
-      delay: 400,
-    },
-    {
-      // icon: <TrendingUpIcon />,
-      icon: 'trending_up',
-      label: "Today's Performance",
-      value:
-        collection?.statistics?.percentChange ||
-        'Select a collection to view its statistics',
-      delay: 600,
-    },
-  ];
 
+  const items = collectionPortfolioHeaderItems(collection);
   return (
     <DashboardBox
       sx={{
@@ -114,7 +80,7 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
         <ArrowBackIcon color={theme.colorPrimary} />
       </IconButton>
       <Grid container spacing={2}>
-        {headerItems?.map((item, index) => (
+        {items?.map((item, index) => (
           <HeaderItem
             key={item.label}
             icon={item.icon}

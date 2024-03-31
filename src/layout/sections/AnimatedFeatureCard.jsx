@@ -10,6 +10,7 @@ import {
 import { useMode } from '../../context';
 import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
+import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 
 const AnimatedBox = animated(Box);
 
@@ -55,7 +56,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
           sx={{
-            backgroundColor: theme.palette.backgroundA.dark,
+            backgroundColor: theme.palette.greenAccent.light,
             height: '20%',
           }}
         />
@@ -79,9 +80,18 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             justifyContent: 'flex-end', // Align button to the end
           }}
         >
-          <SimpleButton
-            color="primary"
-            customSize="md"
+          <RCButton
+            color="success"
+            size="large"
+            variant="holo"
+            withContainer={false}
+            onClick={() => onOpenModal(tier.title)}
+          >
+            Manage Collections
+          </RCButton>
+          {/* <SimpleButton
+            // color="primary"
+            customSize="medium"
             isPrimary={true}
             customColor={theme.palette.chartTheme.greenAccent.light}
             customTextColor={theme.palette.chartTheme.primary.lighter}
@@ -101,7 +111,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             }}
           >
             Manage {tier.title}
-          </SimpleButton>
+          </SimpleButton> */}
         </CardActions>
       </FeatureCard>
     </AnimatedBox>

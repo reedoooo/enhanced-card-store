@@ -6,6 +6,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "paths": {
+      "*": ["src/*"],
       "@material-ui/core": ["../node_modules/@material-ui/core"],
       "@material-ui/icons": ["../node_modules/@material-ui/icons"],
       "@material-ui/lab": ["../node_modules/@material-ui/lab"],

@@ -6,6 +6,7 @@ import LoadingIndicator from '../../../components/reusable/indicators/LoadingInd
 import GenericCard from '../components/cards/GenericCard';
 import { Container } from '@mui/system';
 import { Box } from '@mui/material';
+import { roundToNearestTenth } from '../context/Helpers';
 const SearchItem = memo(({ card, context, page, index }) => {
   return (
     <Box
@@ -38,10 +39,6 @@ SearchItem.displayName = 'SearchItem';
 
 export default function prepareTableData(selectedCards) {
   if (!selectedCards) return <LoadingIndicator />;
-  // Helper function to round total price to the nearest tenth
-  const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-
-  // Define column structure for react-table
   const columns = React.useMemo(
     () => [
       {

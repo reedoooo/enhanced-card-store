@@ -204,7 +204,7 @@ const typography = {
   },
 
   size: {
-    xxs: baseProperties.fontSizeXXS,
+    // xxs: baseProperties.fontSizeXXS,
     xs: baseProperties.fontSizeXS,
     sm: baseProperties.fontSizeSM,
     md: baseProperties.fontSizeMD,

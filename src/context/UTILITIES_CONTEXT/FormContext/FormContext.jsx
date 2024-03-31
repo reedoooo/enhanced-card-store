@@ -17,28 +17,27 @@ import {
   handleZodValidation,
 } from './schemas'; // Update the path as necessary
 import { defaultContextValue } from '../../constants';
-import { ZodError } from 'zod';
-import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
-import { useCardStoreHook } from '../../hooks/useCardStore';
-import useCollectionManager from '../../MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import { useDeckStore } from '../../MAIN_CONTEXT/DeckContext/DeckContext';
-import { useChartContext } from '../../MAIN_CONTEXT/ChartContext/ChartContext';
+import { useCardStoreHook } from '../../MAIN_CONTEXT/CardContext/useCardStore';
 import { useLoading } from '../../hooks/useLoading';
 import useDeckManager from '../../MAIN_CONTEXT/DeckContext/useDeckManager';
+import useTimeRange from '../../../components/forms/selectors/useTimeRange';
+import useCollectionManager from '../../MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import LoadingOverlay from '../../../layout/REUSABLE_COMPONENTS/LoadingOverlay';
+import useAuthManager from '../../MAIN_CONTEXT/AuthContext/useAuthManager';
 const initializeFormState = (schema) =>
   Object.keys(schema).reduce((acc, key) => ({ ...acc, [key]: false }), {});
-
 const FormContext = createContext(defaultContextValue.FORM_CONTEXT);
-
 export const FormProvider = ({ children }) => {
-  const { signup, login, isLoggedIn, userId } = useAuthContext();
+  const { signup, login } = useAuthManager();
   const { handleRequest, setSearchSettings, searchSettings } =
     useCardStoreHook();
-  const { createNewCollection, updateCollection, selectedCollection } =
-    useCollectionManager();
+  const collectionmanagedata = useCollectionManager();
+  if (!collectionmanagedata) {
+    return <LoadingOverlay />;
+  }
+  const { createNewCollection, updateCollection } = collectionmanagedata;
   const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
-  const { setTimeRange } = useChartContext();
-
+  // const { setTimeRange } = useTimeRange();
   // ** * * * * * * * * * * * * * * * * * * * |/\ /\ /\| ** * * * * * * * * * * * * * * * * * * *
   // **                                       || | | | ||                                      **
   // **                                     CONTEXT ACTIONS
@@ -63,7 +62,6 @@ export const FormProvider = ({ children }) => {
     resolver: zodResolver(formSchemas[currentSchemaKey]),
     defaultValues: getDefaultValuesFromSchema(formSchemas[currentSchemaKey]),
   });
-  // Use useCallback to ensure these functions are memoized
   const setFormSchema = useCallback(
     (schemaKey) => {
       setCurrentSchemaKey(schemaKey);
@@ -73,20 +71,27 @@ export const FormProvider = ({ children }) => {
     },
     [methods]
   );
+  // const setFormSchema = useCallback(
+  //   (schemaKey) => {
+  //     setCurrentSchemaKey(schemaKey);
+  //     methods.reset(getDefaultValuesFromSchema(formSchemas[schemaKey]));
+  //   },
+  //   [methods]
+  // );
   const initialValues = getDefaultValuesFromSchema(
     formSchemas[Object.keys(formSchemas)[0]]
   );
   const values = useRef(initialValues);
   const touched = useRef(initializeFormState(formSchemas));
   const dirty = useRef(initializeFormState(formSchemas));
-  const handleTimeRangeChange = useCallback(
-    (timeRangeValue) => {
-      console.log('TIME RANGE CHANGE', timeRangeValue);
-      // Example: setTimeRange could update the context state and trigger re-renders or API calls as needed
-      setTimeRange(timeRangeValue);
-    },
-    [setTimeRange]
-  );
+  // const handleTimeRangeChange = useCallback(
+  //   (timeRangeValue) => {
+  //     console.log('TIME RANGE CHANGE', timeRangeValue);
+  //     // Example: setTimeRange could update the context state and trigger re-renders or API calls as needed
+  //     setTimeRange(timeRangeValue);
+  //   },
+  //   [setTimeRange]
+  // );
   const handleFieldChange = (formId, field, value) => {
     setFormStates((prev) => ({
       ...prev,
@@ -96,11 +101,7 @@ export const FormProvider = ({ children }) => {
       },
     }));
   };
-  const toggleAuthMode = () => {
-    setCurrentSchemaKey((prevForm) =>
-      prevForm === 'loginForm' ? 'signupForm' : 'loginForm'
-    );
-  };
+
   const formHandlers = {
     signupForm: (formData) =>
       signup(
@@ -116,8 +117,6 @@ export const FormProvider = ({ children }) => {
       createNewCollection(formData, additionalData),
     updateCollectionForm: (formData, additionalData) =>
       updateCollection(additionalData, formData),
-    createCollectionForm: (formData, additionalData) =>
-      createNewCollection(additionalData, formData),
     updateDeckForm: (formData, additionalData) =>
       updateDeckDetails(formData, additionalData),
     addDeckForm: (formData, additionalData) =>
@@ -128,8 +127,8 @@ export const FormProvider = ({ children }) => {
       setSearchSettings(formData, additionalData),
     collectionSearchForm: (formData, additionalData) =>
       console.log(formData, additionalData),
-    timeRangeSelector: (formData, additionalData) =>
-      handleTimeRangeChange(formData, additionalData),
+    // timeRangeSelector: (formData, additionalData) =>
+    //   handleTimeRangeChange(formData, additionalData),
     searchSettingsSelector: (formData, additionalData) =>
       setSearchSettings(formData, additionalData),
     rememberMeForm: (formData) => {
@@ -138,13 +137,14 @@ export const FormProvider = ({ children }) => {
     },
     authSwitch: (formData) => {
       console.log('Auth Switch Form Data:', formData);
-      toggleAuthMode();
+      setCurrentSchemaKey((prevForm) =>
+        !prevForm === 'loginForm' ? 'signupForm' : 'loginForm'
+      );
     },
   };
   const onSubmit = useCallback(
     async (formData, additionalData) => {
       startLoading(currentSchemaKey);
-
       const formHandler = formHandlers[currentSchemaKey];
       try {
         console.log(
@@ -152,6 +152,7 @@ export const FormProvider = ({ children }) => {
           `formdata ${formData}`,
           `additionalData ${additionalData}`
         );
+
         await formHandler(formData);
       } catch (error) {
         console.error(`Error submitting ${currentSchemaKey}:`, error);
@@ -161,7 +162,7 @@ export const FormProvider = ({ children }) => {
     },
     [
       currentSchemaKey,
-      handleTimeRangeChange,
+      // handleTimeRangeChange,
       setSearchSettings,
       startLoading,
       stopLoading,
@@ -169,8 +170,17 @@ export const FormProvider = ({ children }) => {
     ]
   );
   useEffect(() => {
+    console.log(
+      'FormProvider: Setting up form handlers',
+      Object.keys(formHandlers),
+      'Current Schema Key:',
+      currentSchemaKey
+    );
     setFormSchema(currentSchemaKey);
+    // console.log('SETTING INITIAL VALUES:', initialValues);
+    // methods.reset(getDefaultValuesFromSchema(formSchemas[currentSchemaKey]));
   }, [currentSchemaKey, setFormSchema]);
+  // EFFECT: Setting initial values when the fo
   const onChange = (formData, currentSchemaKey) => {
     console.log('Form data changed:', formData, currentSchemaKey);
     const validation = handleZodValidation(
@@ -182,10 +192,6 @@ export const FormProvider = ({ children }) => {
       console.log('Form data is valid:', validation.data);
       handleRequest(validation.data.searchTerm); // Use handleRequest for the search form
     }
-    if (formData === false) {
-      console.log('Signup Mode:', validation.data.signupMode);
-      toggleAuthMode();
-    }
   };
   const handleSetAllForms = useCallback(() => {
     const allFormConfigs = Object.keys(formSchemas).map((formId) => ({
@@ -194,6 +200,7 @@ export const FormProvider = ({ children }) => {
       schema: formSchemas[formId],
     }));
     console.log('Setting all forms:', allFormConfigs);
+
     setForms(allFormConfigs);
   }, []);
   const handleSearchTermChange = useCallback(
@@ -236,15 +243,14 @@ export const FormProvider = ({ children }) => {
     dirty.current[name] = true;
     console.log('Form field blurred:', name);
   }, []);
+  // EFFECT: Setting all forms when the component mounts
   useEffect(() => {
     console.log('SETTING ALL FORMS:', formSchemas);
     handleSetAllForms(formSchemas);
   }, [handleSetAllForms]);
-
   useEffect(() => {
     methods.reset(getDefaultValuesFromSchema(formSchemas[currentSchemaKey]));
   }, [currentSchemaKey, methods]);
-
   const setInitialValues = useCallback(
     (newInitialValues) => {
       if (newInitialValues) {
@@ -254,10 +260,27 @@ export const FormProvider = ({ children }) => {
     },
     [methods]
   );
-
-  // Ensure initial values are set when they change
+  // EFFECT: When the currentSchemaKey changes, reset the form state
   // useEffect(() => {
-  //   if (initialValues ) {
+  //   console.log(
+  //     'FormProvider: Setting up form handlers',
+  //     Object.keys(formHandlers),
+  //     'Current Schema Key:',
+  //     currentSchemaKey
+  //   );
+  //   setFormSchema(currentSchemaKey);
+  //   // console.log('SETTING INITIAL VALUES:', initialValues);
+  //   // methods.reset(getDefaultValuesFromSchema(formSchemas[currentSchemaKey]));
+  // }, [currentSchemaKey, setFormSchema]);
+  // // EFFECT: Setting initial values when the form schema changes
+  // useEffect(() => {
+  //   console.log('SETTING INITIAL VALUES:', initialValues);
+  //   methods.reset(getDefaultValuesFromSchema(formSchemas[currentSchemaKey]));
+  // }, [currentSchemaKey, methods]);
+  // EFFECT: When the initialValues prop changes, update the form state
+  // useEffect(() => {
+  //   if (initialValues) {
+  //     console.log('Setting initial values:', initialValues);
   //     setInitialValues(initialValues);
   //   }
   // }, [initialValues, setInitialValues]);
@@ -275,7 +298,7 @@ export const FormProvider = ({ children }) => {
       currentForm: currentSchemaKey,
       forms,
       getValues: methods.getValues,
-      handleTimeRangeChange,
+      // handleTimeRangeChange,
       handleSearchTermChange,
       handleFieldChange,
       handleChange,
@@ -302,7 +325,7 @@ export const FormProvider = ({ children }) => {
       formSchemas,
       isFormDataLoading,
 
-      handleTimeRangeChange,
+      // handleTimeRangeChange,
       handleSearchTermChange,
       handleFieldChange,
       handleChange,
@@ -323,134 +346,3 @@ export const FormProvider = ({ children }) => {
 };
 
 export const useFormContext = () => useContext(FormContext);
-// switch (formId) {
-//   case 'signupForm':
-//     await signup(
-//       formData.firstName,
-//       formData.lastName,
-//       formData.username,
-//       formData.password,
-//       formData.email
-//     );
-//     break;
-//   case 'loginForm':
-//     await login(formData.username, formData.password);
-//     break;
-//   case 'updateUserDataForm':
-//     // await updateUserData(formData);
-//     break;
-//   case 'updateCollectionForm':
-//     await updateAndSyncCollection(additionalData, formData);
-//     break;
-//   case 'addCollectionForm':
-//     await createNewCollection(formData);
-//     break;
-//   case 'updateDeckForm':
-//     await updateDeckDetails(formData);
-//     break;
-//   case 'addDeckForm':
-//     await createUserDeck(formData.name, formData.description);
-//     break;
-//   case 'searchForm':
-//     await handleRequest(formData.searchTerm);
-//     break;
-//   case 'timeRangeSelector':
-//     console.log('Time range selected:', formData.timeRange);
-//     handleTimeRangeChange(formData.timeRange); // Directly use formData.timeRange
-//     break;
-//   case 'searchSettingsSelector':
-//     setSearchSettings(formData);
-//     break;
-//   default:
-//     console.error('Unhandled form submission:', formId);
-// }
-// Function to dynamically set the current form and its schema
-// const setCurrentForm = useCallback((formId) => {
-//   setCurrentFormId(formId);
-// }, []);
-// const useFormMethods = useCallback((formId) => {
-//   const schema = formSchemas[formId] || formSchemas.default;
-//   return useForm({
-//     resolver: zodResolver(schema),
-//     defaultValues: schema.safeParse({}), // Assuming you have a parse method to get default values from Zod schema
-//   });
-// }, []);
-// Initialize useForm with the first form schema as default
-// const initialFormKey = Object.keys(formSchemas)[0];
-// const methods = useForm({
-//   resolver: zodResolver(formSchemas[initialFormKey]),
-//   defaultValues: getDefaultValuesFromSchema(formSchemas[initialFormKey]),
-// });
-// const [forms, setForms] = useState({});
-
-// const [currentForm, setCurrentForm] = useState({});
-// const onSubmit = useCallback(async (formData, formId, additionalData) => {
-
-//   setIsFormDataLoading(true);
-//   // const validation = handleZodValidation(formData, formSchemas[formId]);
-//   // console.log('isValid:', validation.isValid);
-//   try {
-
-//     try {
-//       if (formId === 'signupForm') {
-//         console.log('Submitting signup form:', formData);
-//         await signup(
-//           formData.firstName,
-//           formData.lastName,
-//           formData.username,
-//           formData.password,
-//           formData.email
-//         );
-//       } else if (formId === 'loginForm') {
-//         console.log('Submitting login form:', formData);
-//         await login(formData.username, formData.password);
-//       } else if (formId === 'updateUserDataForm') {
-//         console.log('Submitting update user data form:', formData);
-//         // await updateUserData(formData);
-//       } else if (formId === 'updateCollectionForm') {
-//         console.log('Updating collection:', formData);
-//         console.log('Selected collection:', additionalData);
-
-//         const updatedData = {
-//           name: formData.name,
-//           description: formData.description,
-//         };
-//         await updateAndSyncCollection(additionalData, updatedData);
-//       } else if (formId === 'addCollectionForm') {
-//         console.log('Adding collection:', formData);
-//         const newData = {
-//           name: formData.name,
-//           description: formData.description,
-//         };
-//         await createNewCollection(newData);
-//       } else if (formId === 'updateDeckForm') {
-//         console.log('Updating deck:', formData);
-//         await updateDeckDetails(formData);
-//       } else if (formId === 'addDeckForm') {
-//         console.log('Adding deck:', formData);
-//         await createUserDeck(formData.name, formData.description);
-//       } else if (formId === 'searchForm') {
-//         console.log('Submitting search form:', formData);
-//         await handleRequest(formData.searchTerm); // Use handleRequest for the search form
-//       } else if (formId === 'TimeRangeSchema') {
-//         console.log('Submitting TimeRange form:', formData);
-//         setTimeRange(formData.timeRange);
-//         // handleTimeRangeChange(formData);
-//       } else if (formId === 'searchSettingsForm') {
-//         console.log('Submitting SearchSettings form:', formData);
-//         setSearchSettings(formData);
-//       } else if (formId === 'defaultForm') {
-//         console.log('Submitting default form:', formData);
-//       }
-//       console.log(`${formId} form submitted successfully`, formData);
-//       // Reset form logic here if needed
-//     } catch (error) {
-//       console.error('Error submitting form:', error);
-//     } finally {
-//       setIsFormDataLoading(false);
-//     }
-//   } else {
-//     console.error('Form validation failed:', validation.errors);
-//     // Optionally, display validation.errors using your UI logic
-//     setIsFormDataLoading(false);
-//   }

@@ -28,7 +28,6 @@ const RCZodForm = ({
 }) => {
   const { theme } = useMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const {
     formMethods,
     onSubmit,
@@ -39,16 +38,16 @@ const RCZodForm = ({
     formState: { errors, isSubmitting },
   } = useFormContext();
 
-  const onFormSubmit = (data) => {
-    onSubmit(data, additionalData);
-  };
+  // const onFormSubmit = (data) => {
+  //   onSubmit(data, additionalData);
+  // };
   useEffect(() => {
     if (initialValues) {
       Object.keys(initialValues).forEach((key) => {
         formMethods.setValue(key, initialValues[key]);
       });
     }
-  }, [initialValues, formMethods.setValue]);
+  }, [initialValues]);
   const renderField = (field) => {
     const isSearchForm =
       schemaName === 'searchForm' && field.name === 'searchTerm';
@@ -64,11 +63,6 @@ const RCZodForm = ({
               {...formMethods.register(field.name)}
               label={field.label}
               value={formMethods.getValues(field.name) || ''} // Manage value explicitly
-              // defaultValues={initialValues ? initialValues[field.name] : ''}
-              // value={initialValues ? initialValues[field.name] : ''}
-              // onChange={onChange}
-              // options={field.options}
-              // defaultValue={initialValues ? initialValues[field.name] : ''}
               sx={{
                 width: '100%',
                 marginBottom: 2,
@@ -154,7 +148,7 @@ const RCZodForm = ({
   return (
     <FormBox
       component="form"
-      onSubmit={formMethods.handleSubmit(onFormSubmit)}
+      onSubmit={formMethods.handleSubmit(onSubmit)}
       theme={theme}
       sx={{
         ...(isMobile && {
@@ -167,6 +161,7 @@ const RCZodForm = ({
         type="submit"
         loading={isSubmitting}
         label={buttonLabel}
+        onClick={formMethods.handleSubmit(onSubmit)}
         startIcon={
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             {startIcon}
@@ -179,6 +174,7 @@ const RCZodForm = ({
           }),
         }}
       />
+
       {additionalButtons &&
         additionalButtons?.map((button, index) => (
           <ReusableLoadingButton

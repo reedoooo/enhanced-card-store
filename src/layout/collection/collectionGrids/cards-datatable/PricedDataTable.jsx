@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { useMode } from '../../../../context';
-import OptionsComponent from '../../../../components/forms/OptionsComponent';
-import GenericActionButtons from '../../../../components/buttons/actionButtons/GenericActionButtons';
-import { enqueueSnackbar } from 'notistack';
 
 function PricedDataTable({ entriesPerPage, canSearch, table }) {
   const { theme } = useMode();

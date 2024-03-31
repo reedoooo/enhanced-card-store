@@ -72,7 +72,7 @@ export const StyledToolBarContainer = styled(AppBar)(({ theme }) => ({
   // alignItems: 'center',
   // width: '100%',
   // Do not explicitly set the height here to allow Toolbar's default styling to take effect
-  // backgroundColor: theme.palette.backgroundA.darker,
+  // backgroundColor: theme.palette.greenAccent.default,
   // borderRadius: '30px',
   flexGrow: 1,
 
@@ -93,7 +93,7 @@ export const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   // alignItems: 'center',
   // width: '100%',
   // // Do not explicitly set the height here to allow Toolbar's default styling to take effect
-  // backgroundColor: theme.palette.backgroundA.darker,
+  // backgroundColor: theme.palette.greenAccent.default,
   mr: 2,
   display: { xs: 'none', md: 'flex' },
   fontFamily: 'monospace',
@@ -110,12 +110,7 @@ export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   px: '2',
   py: '1',
   borderRadius: '30px',
-  // height: '100%',
-  // width: '100%',
   height: '100%',
-  // '&:hover': {
-  //   backgroundColor: theme.palette.backgroundA.onHover,
-  // },
   '&:hover': {
     backgroundColor:
       'linear-gradient( 90deg, rgba(78, 78, 246, 0.647) 0%, rgba(247, 90, 216, 0.696) 100% );',
@@ -166,14 +161,9 @@ export const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    backgroundColor: theme.palette.backgroundA.default,
-    // top: 64,
-    // width: 240,
-    // position: 'absolute',
+    backgroundColor: theme.palette.greenAccent.lighter,
     flexGrow: 1,
     justifyContent: 'space-between',
-    // backgroundColor: theme.palette.backgroundA.lightest,
-    // !-----
   },
 }));
 export const DrawerHeader = styled('div')(({ theme }) => ({
@@ -184,14 +174,6 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
-// export const StyledListItem = styled(ListItem)(({ theme }) => ({
-//   cursor: 'pointer',
-//   height: '100%',
-//   flexGrow: 1,
-//   '&:hover': {
-//     backgroundColor: theme.palette.backgroundA.onHover,
-//   },
-// }));
 export const StyledListItemButton = styled(ListItem)(({ theme }) => ({
   cursor: 'pointer',
   '&:hover': {
@@ -232,7 +214,7 @@ export const MainContainer2 = styled(Box)(({ theme }) => ({
 export const CardDetails = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   width: '100%',
-  border: `1px solid ${theme.palette.backgroundB.lighter}`,
+  border: `1px solid ${theme.palette.grey.lighterSimpleGrey}`,
   borderRadius: theme.shape.borderRadius,
 }));
 export const ChartContainer = styled(Box)(({ theme, height, width }) => ({
@@ -247,7 +229,7 @@ export const ChartContainer = styled(Box)(({ theme, height, width }) => ({
   minWidth: '390px',
   position: 'relative',
   padding: theme.spacing(2),
-  background: theme.palette.backgroundB.darker,
+  background: theme.palette.grey.blueGrey,
 }));
 export const LinearChartContainer = styled(Box)(({ theme }) => ({
   chartContainer: {
@@ -281,7 +263,7 @@ export const DeckBuilderBanner = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   flexGrow: 1,
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   width: '100%',
   maxWidth: '1600px',
   // margin: 'auto',
@@ -317,7 +299,7 @@ export const RootGrid = styled(Grid)(({ theme }) => ({
   alignItems: 'center',
   flexWrap: 'wrap', // Ensure wrapping on smaller screens
   overflow: 'auto',
-  backgroundColor: theme.palette.backgroundB.default,
+  backgroundColor: theme.palette.grey.simpleGrey,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
 }));
@@ -330,7 +312,7 @@ export const GridContainer = styled(Grid)(({ theme }) => ({
 // ! DECK DISPLAY PAGE
 export const DeckDisplayBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.backgroundB.lightest,
+  backgroundColor: theme.palette.grey.lighterSimpleGrey,
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
   margin: 'auto',
@@ -341,7 +323,7 @@ export const DeckDisplayPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.backgroundA.light,
+  backgroundColor: theme.palette.greenAccent.lightest,
   color: theme.palette.text.primary,
   display: 'flex',
   flexDirection: 'column',
@@ -355,10 +337,10 @@ export const DeckDisplayTitleTypography = styled(Typography)(({ theme }) => ({
 
 export const DeckStyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
-  backgroundColor: theme.palette.backgroundA.dark,
-  color: theme.palette.backgroundA.contrastTextA,
+  backgroundColor: theme.palette.greenAccent.light,
+  color: theme.palette.grey.white,
   '&:hover': {
-    backgroundColor: theme.palette.backgroundA.darker,
+    backgroundColor: theme.palette.greenAccent.default,
   },
   display: 'flex',
   alignItems: 'center',
@@ -388,7 +370,7 @@ export const NoCardsTypography = styled(Typography)(({ theme }) => ({
 
 // ! HOME PAGE STYLED COMPONENTS
 export const HomePageBox = styled(Box)(({ theme }) => ({
-  background: theme.palette.backgroundA.lighter,
+  background: theme.palette.greenAccent.evenLighter,
   padding: theme.spacing(2, 4, 8),
   margin: theme.spacing(1, 2, 4),
   borderRadius: theme.shape.borderRadius,
@@ -406,7 +388,7 @@ export const HomePageBox = styled(Box)(({ theme }) => ({
 //   },
 // }));
 export const FeatureCard = styled(Card)(({ theme }) => ({
-  background: theme.palette.backgroundA.light,
+  background: theme.palette.greenAccent.lightest,
   boxShadow: theme.shadows[5],
   transition: 'box-shadow 0.3s ease-in-out', // smooth transition for shadow
   '&:hover': {
@@ -415,16 +397,16 @@ export const FeatureCard = styled(Card)(({ theme }) => ({
   },
 }));
 export const ActionButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.backgroundA.dark,
-  background: theme.palette.backgroundA.dark,
+  color: theme.palette.greenAccent.light,
+  background: theme.palette.greenAccent.light,
   '&:hover': {
-    background: theme.palette.backgroundA.light, // Darken button on hover for feedback
+    background: theme.palette.greenAccent.lightest, // Darken button on hover for feedback
   },
 }));
 export const MainContentContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2, 4, 6),
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.backgroundD.dark,
+  backgroundColor: theme.palette.greenAccent.crystalGreen,
   boxShadow: theme.shadows[10],
   marginTop: theme.spacing(2),
   margin: theme.spacing(4, 0), // added vertical spacing
@@ -436,7 +418,7 @@ export const SecondaryContentContainer = styled(Paper)(({ theme }) => ({
   alignItems: 'center',
   width: '100%',
   padding: theme.spacing(2),
-  background: theme.palette.backgroundD.dark,
+  background: theme.palette.greenAccent.crystalGreen,
   borderRadius: theme.shape.borderRadius,
   transition: 'background-color 0.3s',
 }));
@@ -444,7 +426,7 @@ export const TertiaryContentContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundD.dark,
+  background: theme.palette.greenAccent.crystalGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -476,7 +458,7 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   justifyContent: 'center',
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundB.contrastText,
+  background: theme.palette.grey.contrastText,
 }));
 export const SquareChartContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -494,7 +476,7 @@ export const SquareChartContainer = styled(Box)(({ theme }) => ({
 export const ChartPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   color: theme.palette.text.secondary,
   padding: theme.spacing(2),
   display: 'flex',
@@ -510,7 +492,7 @@ export const ChartPaper = styled(Paper)(({ theme }) => ({
 export const ResponsiveSquare = styled(Box)(({ theme }) => ({
   width: '100%',
   paddingTop: '100%',
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
   display: 'flex',
@@ -535,7 +517,7 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   flexGrow: 1,
   // width: 'auto',
   maxHeight: '14vh',
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
   transition: 'transform 0.3s ease-in-out',
@@ -592,7 +574,7 @@ export const StyledStatisticTypography = styled(Typography)(({ theme }) => ({
 // ! FORMS / INPUTS
 export const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: theme.spacing(1, 0),
-  backgroundColor: theme.palette.backgroundA.lightest, // Adjusted for a slight contrast
+  backgroundColor: theme.palette.greenAccent.contrastText, // Adjusted for a slight contrast
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[1], // Subtle shadow for depth
 
@@ -602,14 +584,14 @@ export const StyledFormControl = styled(FormControl)(({ theme }) => ({
       backgroundColor: theme.palette.action.hover,
     },
     '&.Mui-focused': {
-      backgroundColor: theme.palette.backgroundA.lightest,
-      borderColor: theme.palette.backgroundA.dark,
+      backgroundColor: theme.palette.greenAccent.contrastText,
+      borderColor: theme.palette.greenAccent.light,
     },
   },
 }));
 export const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   fontWeight: 'bold', // Making label text bold
-  color: theme.palette.backgroundB.dark,
+  color: theme.palette.grey.simpleGrey,
 }));
 // FORM STYLES
 // export const FormWrapper = styled('form')(({ theme }) => ({
@@ -620,7 +602,7 @@ export const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 //   padding: theme.spacing(3),
 //   margin: 'auto',
 //   alignItems: 'center',
-//   backgroundColor: theme.palette.backgroundA.light,
+//   backgroundColor: theme.palette.greenAccent.lightest,
 //   borderRadius: theme.shape.borderRadius,
 // }));
 export const StyledFormPaper = styled(Paper)(({ theme }) => ({
@@ -635,16 +617,6 @@ export const StyledFormPaper = styled(Paper)(({ theme }) => ({
     boxShadow: theme.shadows[9],
   },
 }));
-// export const StyledButton = styled(Button)(({ theme }) => ({
-//   background: theme.palette.backgroundA.default,
-//   color: theme.palette.backgroundA.contrastTextB,
-//   padding: theme.spacing(1.5),
-//   marginTop: theme.spacing(2),
-//   '&:hover': {
-//     backgroundColor: theme.palette.backgroundA.darkest,
-//     color: theme.palette.backgroundA.contrastTextA,
-//   },
-// }));
 export const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     position: 'relative',
@@ -653,18 +625,18 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
       borderColor: theme.palette.transparent.main,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      color: theme.palette.backgroundA.darker,
-      borderColor: theme.palette.backgroundA.darker,
+      color: theme.palette.greenAccent.default,
+      borderColor: theme.palette.greenAccent.default,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.backgroundA.darker,
+      borderColor: theme.palette.greenAccent.default,
       borderWidth: '2px', // or other width as you like
     },
   },
   borderRadius: theme.shape.borderRadius,
-  color: theme.palette.backgroundA.darkest,
+  color: theme.palette.greenAccent.dark,
   width: '100%',
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   boxShadow: `0px 2px 4px -1px ${theme.palette.grey[400]}`,
   marginBottom: theme.spacing(2),
 }));
@@ -675,13 +647,13 @@ export const StyledFormBox = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(3),
   minHeight: '100%',
-  // backgroundColor: theme.palette.backgroundA.lightest,
+  // backgroundColor: theme.palette.greenAccent.contrastText,
   borderRadius: theme.shape.borderRadius,
   color: theme.palette.text.primary,
 }));
 export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background: theme.palette.backgroundA.dark, // Or any other appropriate color
-  color: theme.palette.backgroundA.contrastTextA,
+  background: theme.palette.greenAccent.light, // Or any other appropriate color
+  color: theme.palette.grey.white,
   padding: theme.spacing(2),
   display: 'flex',
   justifyContent: 'space-between',
@@ -691,7 +663,7 @@ export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     fontWeight: 'bold',
   },
   '& .MuiIconButton-root': {
-    color: theme.palette.backgroundA.contrastTextA, // Ensure it stands out or matches
+    color: theme.palette.grey.white, // Ensure it stands out or matches
   },
 }));
 
@@ -707,7 +679,7 @@ export const PortfolioTablePaper = styled(Paper)(({ theme }) => ({
   maxWidth: 'lg',
   margin: 'auto',
   overflowX: 'auto', // Ensures table doesn't overflow the paper
-  background: theme.palette.backgroundB.default,
+  background: theme.palette.grey.simpleGrey,
   padding: theme.spacing(2),
   [theme.breakpoints.up('xs')]: {
     padding: theme.spacing(1), // Smaller padding for xs
@@ -730,34 +702,26 @@ export const PortfolioTable = styled(Table)(({ theme }) => ({
   minHeight: 300,
   width: '100%',
   height: '100%',
-  background: theme.palette.backgroundA.lightest,
+  background: theme.palette.greenAccent.contrastText,
 }));
 // TABLE HEADER
 export const PortfolioTableHeader = styled(TableHead)(({ theme }) => ({
-  background: theme.palette.backgroundA.lighter,
-  color: theme.palette.backgroundA.contrastTextA,
+  background: theme.palette.greenAccent.evenLighter,
+  color: theme.palette.grey.white,
   [theme.breakpoints.up('md')]: {
     fontSize: '1rem',
   },
 }));
 // TABLE BODY
 export const PortfolioTableBody = styled(TableBody)(({ theme }) => ({
-  background: theme.palette.backgroundA.lightest,
+  background: theme.palette.greenAccent.contrastText,
   border: '2px solid',
   borderColor: theme.palette.divider,
-}));
-export const PortfolioTableRow = styled(TableRow)(({ theme }) => ({
-  // '&:nth-of-type(odd)': {
-  //   background: theme.palette.backgroundA.light,
-  // },
-  // '&:nth-of-type(even)': {
-  //   background: theme.palette.backgroundA.lighter,
-  // },
 }));
 export const PortfolioTableCell = styled(TableCell)(({ theme }) => ({
   border: '2px solid',
   borderColor: theme.palette.divider,
-  // background: theme.palette.backgroundA.light,
+  // background: theme.palette.greenAccent.lightest,
 
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(1),
@@ -770,7 +734,7 @@ export const PortfolioTableCell = styled(TableCell)(({ theme }) => ({
 }));
 // TABLE FOOTER
 export const PortfolioTableFooter = styled(TableFooter)(({ theme }) => ({
-  backgroundColor: theme.palette.backgroundA.lighter,
+  backgroundColor: theme.palette.greenAccent.evenLighter,
   borderTop: `1px solid ${theme.palette.divider}`,
   '& .MuiTableCell-root': {
     padding: theme.spacing(2),
@@ -779,7 +743,7 @@ export const PortfolioTableFooter = styled(TableFooter)(({ theme }) => ({
 export const PortfolioPaginationActionsTableRow = styled(TableRow)(
   ({ theme }) => ({
     // Example styling, you can customize as needed
-    backgroundColor: theme.palette.backgroundA.lighter,
+    backgroundColor: theme.palette.greenAccent.evenLighter,
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
     },
@@ -794,11 +758,11 @@ export const PortfolioPaginationActionsTableCell = styled(TableCell)(
     // Example styling, you can customize as needed
     fontSize: '0.9rem',
     fontWeight: 'bold',
-    color: theme.palette.backgroundA.contrastTextA,
-    backgroundColor: theme.palette.backgroundA.lighter,
+    color: theme.palette.grey.white,
+    backgroundColor: theme.palette.greenAccent.evenLighter,
 
     '&:hover': {
-      color: theme.palette.backgroundA.contrastTextA,
+      color: theme.palette.grey.white,
     },
     '& .MuiTableCell-root': {
       textAlign: 'right',
@@ -828,7 +792,7 @@ export const PortfolioTablePriceBox = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   width: '100%',
   padding: theme.spacing(2),
-  background: theme.palette.backgroundB.lighter,
+  background: theme.palette.grey.lighterSimpleGrey,
 }));
 // ! CHART AND DATATABLES
 export const StyledChartBox = styled(Box)(({ theme }) => ({
@@ -886,20 +850,12 @@ export const PortfolioBox = styled(Box)(({ theme }) => ({
   height: '100%',
   margin: theme.spacing(0, 'auto'),
   padding: theme.spacing(1, 2, 3),
-  // backgroundColor: theme.palette.backgroundE.lightest,
   color: theme.palette.text.primary,
 }));
 export const PortfolioBoxA = styled(Box)(({ theme }) => ({
-  // flexDirection: 'column',
   flexGrow: 1,
-  // height: 'auto',
-  // width: '100%',
-  // minHeight: '100vh', // Reducing height by 128px
   boxShadow: theme.shadows[5],
-  // backgroundColor: theme.palette.backgroundE.lightestBlue,
-  [theme.breakpoints.down('sm')]: {
-    // padding: theme.spacing(2),
-  },
+  [theme.breakpoints.down('sm')]: {},
 }));
 export const PortfolioBoxB = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -907,7 +863,7 @@ export const PortfolioBoxB = styled(Box)(({ theme }) => ({
   gap: theme.spacing(4),
   borderRadius: theme.shape.borderRadius,
   flexGrow: 1,
-  background: theme.palette.backgroundD.dark,
+  background: theme.palette.greenAccent.crystalGreen,
   padding: theme.spacing(4),
   width: '100%',
   height: '100%',

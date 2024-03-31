@@ -5,7 +5,11 @@ import useSubmitHandler from '../hooks/useSubmitHandler';
 
 function useTimeRange() {
   const { formMethods, onSubmit } = useFormContext();
+
   const { selectedCollection } = useSelectedCollection();
+  if (!selectedCollection) {
+    return console.error('No collection selected');
+  }
   const averagedChartData = selectedCollection?.averagedChartData;
   const selectedTimeRange = formMethods.watch('timeRange', '24hr');
   const timeRangeOptions = useMemo(() => {

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-// This function tries to parse JSON and provides a fallback if parsing fails
 function safeJsonParse(value) {
   try {
     return value ? JSON.parse(value) : null;
@@ -16,6 +15,7 @@ function useLocalStorage(key, initialValue) {
 
     try {
       const item = window.localStorage.getItem(key);
+
       return item ? safeJsonParse(item) : initialValue;
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
@@ -33,10 +33,11 @@ function useLocalStorage(key, initialValue) {
     }
 
     try {
-      // React to external changes in local storage
       const onStorageChange = (event) => {
         if (event.key === key) {
-          setStoredValue(JSON.parse(event.newValue));
+          setStoredValue(
+            event.newValue ? JSON.parse(event.newValue) : initialValue
+          );
         }
       };
 
@@ -45,7 +46,7 @@ function useLocalStorage(key, initialValue) {
     } catch (error) {
       console.error('Listening for local storage changes failed:', error);
     }
-  }, [key]);
+  }, [key, initialValue]);
 
   // Set value to localStorage and update local state
   const setValue = (value) => {
@@ -63,11 +64,18 @@ function useLocalStorage(key, initialValue) {
       // window.localStorage.setItem(key, JSON.stringify(valueToStore));
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
-
+      const storageEvent = new StorageEvent('storage', {
+        key: key,
+        newValue: JSON.stringify(valueToStore),
+        oldValue: window.localStorage.getItem(key),
+        storageArea: localStorage,
+        url: window.location.href,
+      });
+      window.dispatchEvent(storageEvent);
       // Optionally, for cross-tab communication, you might want to trigger a storage event manually
-      window.dispatchEvent(
-        new Event('storage', { key, newValue: JSON.stringify(valueToStore) })
-      );
+      // window.dispatchEvent(
+      //   new Event('storage', { key, newValue: JSON.stringify(valueToStore) })
+      // );
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
     }

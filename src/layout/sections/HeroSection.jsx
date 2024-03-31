@@ -2,18 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary, useMode, useStatisticsStore } from '../../context';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from '../../assets/images/placeholder.jpeg';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import {
-  EffectCoverflow,
-  Pagination,
-  Navigation,
-  Autoplay,
-} from 'swiper/modules';
-import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { HeroSectionSkeleton } from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
 import {
   Box,
@@ -23,17 +11,11 @@ import {
   Zoom,
   useMediaQuery,
 } from '@mui/material';
-import pages from '../../data/pages.json';
 import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';
 import HeroSwiper from './HeroSwiper';
 import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
-import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
-import styled from 'styled-components';
-import { useCardStoreHook } from '../../context/hooks/useCardStore';
 import useLocalStorage from '../../context/hooks/useLocalStorage';
-import { useLoading } from '../../context/hooks/useLoading';
-import useSkeletonLoader from '../REUSABLE_COMPONENTS/useSkeletonLoader';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -50,18 +32,15 @@ import {
 } from 'recharts';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/BoxHeader';
+import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
 
 const HeroSection = () => {
   const { theme } = useMode();
   const { breakpoints } = theme;
-  const { introText } = pages;
   const { fetchRandomCardsAndSet } = useCardStoreHook();
   const [randomCards, setRandomCards] = useLocalStorage('randomCards', []);
   const isMobileView = useMediaQuery(breakpoints.down('sm'));
   const isMidView = useMediaQuery(breakpoints.down('md'));
-  const isFullView = useMediaQuery(breakpoints.up('lg'));
-  const { isLoading } = useLoading();
-  const { SkeletonLoader } = useSkeletonLoader();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [shouldShow, setShouldShow] = useState(false);
   const defaultCards = new Array(45).fill({}).map((_, index) => ({

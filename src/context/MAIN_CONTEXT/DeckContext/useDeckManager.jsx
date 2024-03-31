@@ -1,15 +1,17 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import useLogger from '../../hooks/useLogger';
-import { DEFAULT_COLLECTION } from '../../constants';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
-import { useAuthContext } from '../..';
-import { useCookies } from 'react-cookie';
-import useLocalStorage from '../../hooks/useLocalStorage';
 import useSelectedDeck from './useSelectedDeck';
+import useManageCookies from '../../hooks/useManageCookies';
 
 const useDeckManager = () => {
   const { fetchWrapper, status } = useFetchWrapper();
-  const { userId, isLoggedIn } = useAuthContext();
+  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { isLoggedIn, authUser, userId } = getCookie([
+    'isLoggedIn',
+    'authUser',
+    'userId',
+  ]);
   const logger = useLogger('useDeckManager');
   const {
     selectedDeck,
@@ -18,9 +20,10 @@ const useDeckManager = () => {
     updateMultipleDecks,
     handleSelectDeck,
     addCardToSelectedDeck,
+    deckUpdated,
     setCustomError: setSelectedDeckError,
   } = useSelectedDeck();
-  const [decks] = useLocalStorage('decks', []);
+  // const [decks] = useLocalStorage('decks', []);
   const [error, setError] = useState(null);
   const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const handleError = useCallback(
@@ -33,7 +36,6 @@ const useDeckManager = () => {
   );
   const baseUrl = `${process.env.REACT_APP_SERVER}/api/users/${userId}/decks`;
   const createApiUrl = useCallback((path) => `${baseUrl}/${path}`, [baseUrl]);
-
   const fetchDecks = useCallback(async () => {
     if (!userId || !isLoggedIn || status === 'loading') return;
     try {
@@ -44,8 +46,6 @@ const useDeckManager = () => {
         'fetchDecks'
       );
       updateMultipleDecks(responseData?.data);
-
-      // handleSelectDeck(responseData?.data[decks?.byId?.[selectedDeckId]]);
       setHasFetchedDecks(true);
     } catch (error) {
       handleError(error, 'fetchDecks');
@@ -71,7 +71,6 @@ const useDeckManager = () => {
         setSelectedDeckError('No deck selected');
         return;
       }
-
       options.beforeAction?.();
       console.log(
         'PERFORM ACTION',
@@ -130,14 +129,6 @@ const useDeckManager = () => {
           }
           return deck;
         });
-        // setDecks((prevDecks) => {
-        //   return prevDecks.map((deck) => {
-        //     if (deck._id === deckId) {
-        //       updatedDeck = { ...deck, name, description, tags, color };
-        //       return updatedDeck;
-        //     }
-        //     return deck;
-        //   });
       });
 
       try {
@@ -178,6 +169,8 @@ const useDeckManager = () => {
         },
         afterAction: () => {
           if (existingCard) {
+            addCardToSelectedDeck(newCards); // This method should handle the logic internally
+
             console.log('Card already exists in deck');
             return;
           }
@@ -255,12 +248,8 @@ const useDeckManager = () => {
     createNewDeck,
     deleteDeck,
     updateDeck,
-    selectedDeck,
-    allDecks,
-    error,
     hasFetchedDecks,
     handleError,
-    setSelectedDeckError,
     addCardsToDeck,
     removeCardsFromDeck,
     addOneToDeck: (cards, deck) => addCardsToDeck(cards, deck),

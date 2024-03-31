@@ -1,14 +1,11 @@
 import { ResponsiveLine } from '@nivo/line';
-import { useChartContext, useMode } from '../../../../context';
-import {
-  CustomTooltipLayer,
-  useEventHandlers,
-} from '../../../../context/MAIN_CONTEXT/ChartContext/helpers';
+import { useMode } from '../../../../context';
 import { useEffect, useMemo } from 'react';
 import NivoContainer from '../../../REUSABLE_COMPONENTS/NivoContainer';
 import PropTypes from 'prop-types';
 import ChartErrorBoundary from './ChartErrorBoundary';
 import { BasicTooltip } from '@nivo/tooltip';
+import { useEventHandlers } from '../../../../context/hooks/useEventHandlers';
 const formatDateBasedOnRange = (range) => {
   const formatMap = {
     '24hr': { format: '%H:%M', ticks: 'every hour' },

@@ -1,17 +1,13 @@
 import React, { useEffect } from 'react';
 import { Grid, Button, Box, useMediaQuery } from '@mui/material';
-import {
-  useAuthContext,
-  useFormContext,
-  useMode,
-  useUserContext,
-} from '../../../../context';
+import { useFormContext } from '../../../../context';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import SimpleButton from '../../../REUSABLE_COMPONENTS/unique/SimpleButton';
 import styled from 'styled-components';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import SimpleSectionHeader from '../../../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
 import { PageHeaderSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
+import RCButton from '../../../REUSABLE_COMPONENTS/RCBUTTON';
+import useUserData from '../../../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 const FlexContainer = styled(Box)`
   display: flex;
@@ -21,22 +17,9 @@ const FlexContainer = styled(Box)`
   padding: ${({ theme }) => theme.spacing(1, 2)};
 `;
 
-const HeaderContainer = styled(Box)`
-  flex: 1;
-  max-width: 50%;
-`;
-
-// const ButtonContainer = styled(Box)`
-//   flex: 1;
-//   display: flex;
-//   justify-content: flex-end;
-//   max-width: 50%;
-// `;
-
 const SelectCollectionHeader = ({ openNewDialog }) => {
-  const { theme } = useMode();
   const { setCurrentForm } = useFormContext();
-  const { user } = useUserContext();
+  const { user } = useUserData();
   if (!user) {
     return <PageHeaderSkeleton />;
   }
@@ -59,7 +42,7 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
             day: 'numeric',
           })}
         />
-        <SimpleButton
+        {/* <SimpleButton
           theme={uniqueTheme}
           isPrimary={true}
           onClick={() => {
@@ -68,7 +51,19 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
           }}
         >
           Add New Collection
-        </SimpleButton>
+        </SimpleButton> */}
+        <RCButton
+          color="success"
+          size="large"
+          variant="holo"
+          withContainer={true}
+          onClick={() => {
+            setCurrentForm('addCollectionForm');
+            openNewDialog();
+          }}
+        >
+          Add New Collection
+        </RCButton>
       </FlexContainer>
     </SimpleCard>
   );

@@ -16,23 +16,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useAuthContext, useMode } from '../../../context';
-
-// assets
-// import {
-//   IconBrandTelegram,
-//   IconBuildingStore,
-//   IconMailbox,
-//   IconPhoto,
-// } from '../../../../../node_modules/@tabler/icons-react';
-// import User1 from 'assets/images/users/user-round.svg';
-
-// styles
+import { useMode } from '../../../context';
+import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
 const ListItemWrapper = styled('div')(({ theme }) => ({
   cursor: 'pointer',
   padding: 16,
   '&:hover': {
-    background: theme.palette.primary?.light,
+    background: theme.palette.grey.blueGrey,
   },
   '& .MuiListItem-root': {
     padding: 0,
@@ -43,7 +33,7 @@ const ListItemWrapper = styled('div')(({ theme }) => ({
 
 const NotificationList = () => {
   const { theme } = useMode();
-  const { user } = useAuthContext();
+  const { user } = useUserData();
   const chipSX = {
     height: 24,
     padding: '0 6px',
@@ -54,13 +44,11 @@ const NotificationList = () => {
     backgroundColor: theme.palette.rariry?.ultra,
     marginRight: '5px',
   };
-
   const chipWarningSX = {
     ...chipSX,
     color: theme.palette.warning?.dark,
     backgroundColor: theme.palette.warning?.light,
   };
-
   const chipSuccessSX = {
     ...chipSX,
     color: theme.palette.success?.dark,
@@ -135,7 +123,7 @@ const NotificationList = () => {
                 borderColor: theme.palette.success.main,
               }}
             >
-              <IconBuildingStore stroke={1.5} size="1.3rem" />
+              {/* <IconBuildingStore stroke={1.5} size="1.3rem" /> */}
             </Avatar>
           </ListItemAvatar>
           <ListItemText
@@ -176,13 +164,13 @@ const NotificationList = () => {
           <ListItemAvatar>
             <Avatar
               sx={{
-                color: theme.palette.primary?.dark,
-                backgroundColor: theme.palette.primary?.light,
+                color: theme.palette.grey.black,
+                backgroundColor: theme.palette.grey.blueGrey,
                 border: 'none',
-                borderColor: theme.palette.primary.main,
+                borderColor: theme.palette.success.secondary,
               }}
             >
-              <IconMailbox stroke={1.5} size="1.3rem" />
+              {/* <IconMailbox stroke={1.5} size="1.3rem" /> */}
             </Avatar>
           </ListItemAvatar>
           <ListItemText
@@ -215,7 +203,7 @@ const NotificationList = () => {
                   disableElevation
                   endIcon={
                     <>
-                      <IconBrandTelegram stroke={1.5} size="1.3rem" />
+                      {/* <IconBrandTelegram stroke={1.5} size="1.3rem" /> */}
                     </>
                   }
                 >
@@ -230,7 +218,7 @@ const NotificationList = () => {
       <ListItemWrapper>
         <ListItem alignItems="center">
           <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
+            {/* <Avatar alt="John Doe" src={User1} /> */}
           </ListItemAvatar>
           <ListItemText
             primary={<Typography variant="subtitle1">John Doe</Typography>}
@@ -259,14 +247,14 @@ const NotificationList = () => {
               <Grid item xs={12}>
                 <Card
                   sx={{
-                    backgroundColor: theme.palette.secondary?.light,
+                    backgroundColor: theme.palette.grey.evenLighter,
                   }}
                 >
                   <CardContent>
                     <Grid container direction="column">
                       <Grid item xs={12}>
                         <Stack direction="row" spacing={2}>
-                          <IconPhoto stroke={1.5} size="1.3rem" />
+                          {/* <IconPhoto stroke={1.5} size="1.3rem" /> */}
                           <Typography variant="subtitle1">demo.jpg</Typography>
                         </Stack>
                       </Grid>
@@ -282,7 +270,7 @@ const NotificationList = () => {
       <ListItemWrapper>
         <ListItem alignItems="center">
           <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
+            {/* <Avatar alt="John Doe" src={User1} /> */}
           </ListItemAvatar>
           <ListItemText
             primary={<Typography variant="subtitle1">John Doe</Typography>}

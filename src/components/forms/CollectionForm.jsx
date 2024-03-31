@@ -1,26 +1,38 @@
 import React, { useEffect } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useFormContext, useMode } from '../../context';
-import useSnackbarManager from '../../context/hooks/useSnackbarManager';
+import useSnackbarManager from '../../assets/useSnackbarManager';
 import RCZodForm from './reusable/RCZodForm';
 
 // Common fields structure used in both add and update forms
 const collectionFields = [
   {
-    name: 'name',
     label: 'Name',
     type: 'text',
+    placeHolder: 'Enter collection name',
+    defaultValue: '',
+    rules: {
+      required: true,
+    },
     value: '',
     required: true,
+    name: 'name',
   },
   {
-    name: 'description',
     label: 'Description',
     type: 'text',
+    placeHolder: 'Enter collection description',
+    defaultValue: '',
+    rules: {
+      required: true,
+      multiline: true,
+      rows: 4,
+    },
     value: '',
     required: true,
     multiline: true,
     rows: 4,
+    name: 'description',
   },
 ];
 
@@ -33,7 +45,7 @@ const CollectionForm = ({ collectionData, actionType }) => {
     actionType === 'add' ? 'Create Collection' : 'Update Collection';
   const startIcon =
     actionType === 'add' ? <AddCircleOutlineIcon /> : <AddCircleOutlineIcon />;
-  console.log('COLLECTION DATA', collectionData);
+  // console.log('COLLECTION DATA', collectionData);
   return (
     <RCZodForm
       schemaName={schemaName}

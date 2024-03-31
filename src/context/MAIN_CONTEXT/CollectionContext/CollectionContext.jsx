@@ -7,57 +7,57 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { calculateCollectionValue } from '../../../assets/currentlyUnused/collectionUtility';
-import { useAuthContext } from '../AuthContext/authContext';
-import useCollectionManager from './useCollectionManager';
 import { defaultContextValue } from '../../constants';
-import useSelectedCollection from './useSelectedCollection';
-import { json } from 'react-router-dom';
-
+import useManageCookies from '../../hooks/useManageCookies';
 export const CollectionContext = createContext(
   defaultContextValue.COLLECTION_CONTEXT
 );
 
 export const CollectionProvider = ({ children }) => {
-  const { isLoggedIn, authUser, userId } = useAuthContext();
-  const {
-    selectedCollection,
-    allCollections,
-    showCollections,
-    selectedCollectionId,
-  } = useSelectedCollection();
-  const {
-    fetchCollections,
-    createNewCollection,
-    deleteCollection,
-    updateCollection,
-    addCardsToCollection,
-    removeCardsFromCollection,
-    selectedCollectionError,
-    error,
-    hasFetchedCollections,
-    handleError,
-    setSelectedCollectionError,
-  } = useCollectionManager();
+  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { isLoggedIn, authUser, userId } = getCookie([
+    'isLoggedIn',
+    'authUser',
+    'userId',
+  ]);
+  // const {
+  //   selectedCollection,
+  //   allCollections,
+  //   showCollections,
+  //   selectedCollectionId,
+  // } = useSelectedCollection();
+  // const {
+  //   fetchCollections,
+  //   createNewCollection,
+  //   deleteCollection,
+  //   updateCollection,
+  //   addCardsToCollection,
+  //   removeCardsFromCollection,
+  //   selectedCollectionError,
+  //   error,
+  //   hasFetchedCollections,
+  //   handleError,
+  //   setSelectedCollectionError,
+  // } = useCollectionManager();
 
-  useEffect(() => {
-    // Check if collections need to be fetched for the logged-in user
-    if (!hasFetchedCollections && isLoggedIn && userId) {
-      fetchCollections();
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Check if collections need to be fetched for the logged-in user
+  //   if (!hasFetchedCollections && isLoggedIn && userId) {
+  //     fetchCollections();
+  //   }
+  // }, []);
 
   const contextValue = useMemo(
     () => ({
-      ...selectedCollection,
-      selectedCollection: selectedCollection,
-      selectedCollectionId,
-      allCollections,
-      showCollections,
-      error,
-      selectedCollectionError,
+      // ...selectedCollection,
+      // selectedCollection: selectedCollection,
+      // selectedCollectionId,
+      // allCollections,
+      // showCollections,
+      // error,
+      // selectedCollectionError,
     }),
-    [selectedCollection, allCollections, showCollections, error]
+    []
   );
 
   useEffect(() => {

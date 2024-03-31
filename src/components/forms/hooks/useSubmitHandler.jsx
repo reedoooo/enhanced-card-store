@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import useSnackbarManager from '../../../context/hooks/useSnackbarManager';
+import { useSnackbar } from 'notistack';
 
 function useSubmitHandler(
   onSubmit,
@@ -7,32 +7,45 @@ function useSubmitHandler(
   successDescription,
   errorDescription
 ) {
-  const { showSuccess, showError } = useSnackbarManager();
+  const { enqueueSnackbar } = useSnackbar();
 
   return useCallback(
     (data, formType) => {
       onSubmit(data, formType)
         .then(() => {
-          // Using showSuccess for positive feedback
-          showSuccess(
-            `${successTitle}: ${successDescription.replace('{timeRange}', data?.timeRange)}`
+          // Correctly formatted enqueueSnackbar call for success
+          enqueueSnackbar(
+            `${successTitle}: ${successDescription.replace('{timeRange}', data?.timeRange)}`,
+            {
+              variant: 'success',
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+              },
+            }
           );
         })
         .catch((error) => {
-          // Using showError for negative feedback
-          showError(
-            `${errorDescription.replace('{timeRange}', data?.timeRange)}: ${error}`
+          // Correctly formatted enqueueSnackbar call for error
+          enqueueSnackbar(
+            `${errorDescription.replace('{timeRange}', data?.timeRange)}: ${error}`,
+            {
+              variant: 'error',
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+              },
+            }
           );
         });
     },
     [
       onSubmit,
-      showSuccess,
-      showError,
+      enqueueSnackbar,
       successTitle,
       successDescription,
       errorDescription,
-    ]
+    ] // Removed showSuccess and showError from dependencies
   );
 }
 

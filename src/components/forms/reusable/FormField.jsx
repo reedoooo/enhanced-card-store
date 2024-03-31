@@ -12,7 +12,6 @@ const FormField = ({
   ...props
 }) => {
   const { theme } = useMode();
-  const showLabel = !initialValue;
 
   return (
     <StyledTextField
@@ -24,10 +23,9 @@ const FormField = ({
       variant="outlined"
       theme={theme}
       InputLabelProps={{
-        shrink: showLabel ? undefined : true,
+        shrink: !initialValue ? undefined : true,
       }}
       {...props}
-      sx={{}}
     />
   );
 };

@@ -2,6 +2,7 @@ import root from './root';
 import contained from './contained';
 import outlined from './outlined';
 import buttonText from './text';
+import holo from './holo';
 
 export default {
   defaultProps: {
@@ -19,6 +20,12 @@ export default {
     outlinedSizeLarge: { ...outlined.large },
     outlinedPrimary: { ...outlined.primary },
     outlinedSecondary: { ...outlined.secondary },
+    holo: { ...holo.base },
+    holoSizeSmall: { ...holo.small },
+    holoSizeMedium: { ...holo.medium },
+    holoSizeLarge: { ...holo.large },
+    holoPrimary: { ...holo.primary },
+    holoSecondary: { ...holo.secondary },
     text: { ...buttonText.base },
     textSizeSmall: { ...buttonText.small },
     textSizeLarge: { ...buttonText.large },

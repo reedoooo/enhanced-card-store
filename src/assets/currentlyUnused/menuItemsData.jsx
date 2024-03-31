@@ -36,7 +36,7 @@
 //   // const { cartCardQuantity } = useCartStore();
 //   // const [isOpen, setIsOpen] = useState(false); // Manage open state locally
 //   // const toggleSidebar = useCallback(() => setIsOpen(!isOpen), [isOpen]);
-//   // const iconColor = isMobileView ? theme.palette.primary.main : 'white';
+//   // const iconColor = isMobileView ? theme.palette.success.secondary : 'white';
 
 //   try {
 //     const baseMenuItems = [

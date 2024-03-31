@@ -3,7 +3,6 @@ import { styled } from 'styled-components';
 import { useMode, useSidebarContext } from '../../../context';
 
 export default styled(Box)(({ ownerstate }) => {
-  // const { backgroundA, backgroundB, backgroundC, rarity } = theme;
   const { isSidebarOpen } = useSidebarContext();
   const { theme } = useMode();
   const { palette, functions, borders, boxShadows, transitions, breakpoints } =
@@ -126,14 +125,6 @@ export default styled(Box)(({ ownerstate }) => {
   // Map background color
   const mapBgColor = () => {
     switch (bgColor) {
-      case 'backgroundA':
-        return variant === 'gradient'
-          ? theme.palette.backgroundA.dark
-          : theme.palette.backgroundA.default;
-      case 'backgroundB':
-        return theme.palette.backgroundB.default;
-      case 'backgroundC':
-        return theme.palette.backgroundC.default;
       default:
         return theme.palette[bgColor] ? theme.palette[bgColor].main : bgColor;
     }

@@ -1,68 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-
-export const BASE_URL = `${process.env.REACT_APP_SERVER}/api`;
-export const createUrl = (path) => `${BASE_URL}/${path}`;
 /**
  * The base URL for all API calls.
  * @type {String}
  */
 export const BASE_API_URL = `${process.env.REACT_APP_SERVER}/api/users`;
-
 /**
  * Creates a full API URL from a given path.
  * @param {String} path - API path.
  * @returns {String} Full API URL.
  */
 export const createApiUrl = (path) => `${BASE_API_URL}/${path}`;
-
 /**
- * Filters a collection of data points based on a time threshold.
+ * Calculates the total price of a collection based on the card prices and quantities.
  *
- * @param {Array} collection - The data points collection.
- * @param {number} threshold - Time threshold for filtering.
- * @returns {Array} - Array with data points filtered by the time threshold.
+ * @param {Object} collection - The collection object with card information.
+ * @returns {number} The total price of the collection.
  */
-const filterCollectionByTimeRange = (collection, threshold) => {
-  return collection?.filter((point) => {
-    const pointTime = new Date(point.x).getTime();
-    return pointTime >= threshold;
-  });
-};
-/**
- * Filters data points based on a time range.
- *
- * @param {Array} data - Array of objects containing data points.
- * @param {string} timeRange - Time range string for filtering data points.
- * @returns {Array} - Array with data points filtered by the time range.
- */
-export const filterDataByTimeRange = (data, timeRange) => {
-  if (!data || data.length === 0) return [];
-
-  const now = new Date().getTime();
-  console.log('TIME RANGE:', timeRange);
-  const timeThreshold = timeRange;
-  console.log('Time Threshold:', timeThreshold);
-  if (!timeThreshold) {
-    console.error(`Invalid timeRange provided: ${timeRange}`);
-    return [];
-  }
-
-  return data?.map((collection) => ({
-    ...collection,
-    data: filterCollectionByTimeRange(collection.data, now - timeThreshold),
-  }));
-};
-
-export const removeDuplicateCollections = (collections) => {
-  const seen = new Set();
-  return collections.filter((collection) => {
-    const duplicate = seen.has(collection._id);
-    seen.add(collection._id);
-    return !duplicate;
-  });
-};
-
 export const calculateAndUpdateTotalPrice = (collection) => {
   let totalPrice = 0;
   if (collection && collection.cards) {
@@ -72,11 +24,9 @@ export const calculateAndUpdateTotalPrice = (collection) => {
   }
   return totalPrice;
 };
-
 export const roundToNearestTenth = (value) => {
   return Math.round(value * 10) / 10;
 };
-
 export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
   return Object.values(collection).reduce((total, price) => total + price, 0);
@@ -86,58 +36,34 @@ export const getCardQuantity = (collectionId, allCollections) => {
   const collection = allCollections.find((coll) => coll._id === collectionId);
   return collection ? collection.cards.length : 0;
 };
-export const useUserId = () => {
-  const [cookies] = useCookies(['authUser']);
-  const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    setUserId(cookies?.authUser?.id);
-  }, [cookies]);
-
-  return userId;
+export const getCartCardQuantity = (cart, cardId) => {
+  let totalItems = 0;
+  let quantityOfSameId = 0;
+  cart?.items?.forEach((item) => {
+    totalItems += item.quantity;
+    if (item.id === cardId) {
+      quantityOfSameId += item.quantity;
+    }
+  });
+  return { totalItems, quantityOfSameId };
+};
+/**
+ * Checks if a card exists in a cart, collection, or deck.
+ *
+ * @param {Object} entity - The cart, collection, or deck to search within.
+ * @param {Object} cardToFind - The card to search for.
+ * @return {boolean} - Returns true if the card exists in the entity, otherwise false.
+ */
+export const doesCardExistInEntity = (entity, cardToFind) => {
+  const entityCards = entity.cards || entity.items || [];
+  const cardExists = entityCards.some((card) => card.id === cardToFind.id);
+  return cardExists;
 };
 export const isEmpty = (obj) => {
   return (
     [Object, Array].includes((obj || {}).constructor) &&
     !Object.entries(obj || {}).length
   );
-};
-export const validateData = (data, eventName, functionName) => {
-  const dataType = typeof data || data.data || data.data.data || data.message;
-  console.log(
-    '----------------------------------------------------------------------------------------------------'
-  );
-  console.log(
-    `| [SUCCESS] Received data of type: ${dataType} in ${functionName} triggered by event: ${eventName}] |`
-  );
-  console.log(
-    '----------------------------------------------------------------------------------------------------'
-  );
-  if (data === null || data === undefined) {
-    console.log(
-      '----------------------------------------------------------------------------------------------------'
-    );
-    console.warn(
-      `[Warning] Received null or undefined data in ${functionName} triggered by event: ${eventName}`
-    );
-    console.log(
-      '----------------------------------------------------------------------------------------------------'
-    );
-    return false;
-  }
-  if (isEmpty(data) && isEmpty(data?.data) && isEmpty(data?.data?.data)) {
-    console.log(
-      '----------------------------------------------------------------------------------------------------'
-    );
-    console.error(
-      `[Error] Received empty data object or array in ${functionName} triggered by event: ${eventName}`
-    );
-    console.log(
-      '----------------------------------------------------------------------------------------------------'
-    );
-    return false;
-  }
-  return true;
 };
 /**
  * Creates a new price entry object.
@@ -150,22 +76,20 @@ export const createNewPriceEntry = (price) => {
     timestamp: new Date(),
   };
 };
-export const calculateCollectionValue = (collection) => {
-  if (!collection) return 0;
-
-  const cards = collection?.cards;
-
-  if (!Array.isArray(cards)) {
-    console.warn('Invalid collection format', collection, cards);
-    return 0;
-  }
-
-  return cards.reduce((totalValue, card) => {
-    const cardPrice = card?.price || 0;
-    const cardQuantity = card?.quantity || 0;
-    return totalValue + cardPrice * cardQuantity;
-  }, 0);
+const roundDecimalToWholeNumber = (value) => {
+  return Math.round(value * 100) / 100;
 };
-export const shouldFetchCollections = (prevUserId, currentUserId) => {
-  return prevUserId !== currentUserId && currentUserId != null;
+export const calculateChangePercentage = (collectionData) => {
+  const history = collectionData?.collectionValueHistory;
+  if (!history || history.length < 2) return 'N/A';
+
+  const oldValue = roundDecimalToWholeNumber(history[1]?.num || 0); // First entry's num value
+  const newValue = roundDecimalToWholeNumber(
+    history[history.length - 1]?.num || 0
+  ); // Last entry's num value
+
+  if (oldValue === 0) return 'N/A'; // Avoid division by zero
+
+  const percentageChange = ((newValue - oldValue) / oldValue) * 100;
+  return percentageChange?.toFixed(2) + '%'; // Format to 2 decimal places
 };

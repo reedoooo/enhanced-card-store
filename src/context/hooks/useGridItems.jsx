@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
-import { useCardStoreHook } from './useCardStore';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import GenericCard from '../../components/cards/GenericCard';
 import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
-import DeleteIcon from '@mui/icons-material/Delete';
 import useMode from '../UTILITIES_CONTEXT/ColorModeContext/useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import useDeckManager from '../MAIN_CONTEXT/DeckContext/useDeckManager';
+import { useCardStoreHook } from '../MAIN_CONTEXT/CardContext/useCardStore';
 const useGridItems = ({
   itemsPerPage,
   cards,
@@ -20,12 +19,10 @@ const useGridItems = ({
   deckId,
 }) => {
   const { loadingSearchResults } = useCardStoreHook();
-  const skeletonCount = isLoading ? itemsPerPage : cards?.length;
   const { theme } = useMode();
   const { removeOneFromDeck } = useDeckManager();
   const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations
   const gridItems = useMemo(() => {
-    console.log('GRID ITEMS:', cards);
     return (
       isLoading || loadingSearchResults
         ? Array.from({ length: itemsPerPage })
@@ -115,7 +112,6 @@ const useGridItems = ({
                 )}
               </React.Fragment>
             )}
-            {/* TODO: create a very small delete icon which appears on hover at the top right of the grid Item. It will need to be a higher z index or posiito naboslujte or somethihng to be visible above the card */}
           </MDBox>
         </Grow>
       </Grid>

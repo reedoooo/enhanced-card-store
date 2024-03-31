@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 import CollectionPortfolio from '../layout/collection';
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
-import { useCollectionStore, useMode } from '../context';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import { useIsFirstRender } from '../context/hooks/useIsFirstRender';
 import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import { useLoading } from '../context/hooks/useLoading';
 
@@ -19,7 +17,6 @@ const CollectionPage = () => {
   const { returnDisplay, isModalOpen, modalContent, closeModal } =
     useLoadingAndModal();
   const { isPageLoading } = useLoading();
-  const isFirstRender = useIsFirstRender();
 
   useEffect(() => {
     if (!hasFetchedCollections) {
@@ -38,7 +35,6 @@ const CollectionPage = () => {
           }
         }
       >
-        {isPageLoading && returnDisplay()}
         {!selectedCollection && (
           <HeroBanner
             title="Your Collection's Home"

@@ -1,11 +1,6 @@
 import hexToRgba from '../functions/hexToRgba';
 import {
-  backgroundA,
-  backgroundB,
-  backgroundE,
-  backgroundF,
-  backgroundG,
-  backgroundGSecondary,
+  rarityOverlay,
   chartTheme,
   rarity,
   info,
@@ -17,6 +12,11 @@ import {
   action,
   primary,
   secondary,
+  grey,
+  greenAccent,
+  redAccent,
+  blueAccent,
+  customDarkTheme,
 } from './customColorPalettes';
 const colors = {
   chartTheme: chartTheme,
@@ -24,55 +24,14 @@ const colors = {
     default: '#f0f2f5',
     paper: '#fff',
   },
-  // PRIMARY COLORS
-  backgroundA,
-  backgroundD: {
-    darkest: hexToRgba(backgroundA.darkest, 0.9),
-    darker: hexToRgba(backgroundA.darker, 0.7),
-    dark: hexToRgba(backgroundA.dark, 0.6),
-    default: hexToRgba(backgroundA.default, 0.5),
-    light: hexToRgba(backgroundA.light, 0.4),
-    lighter: hexToRgba(backgroundA.lighter, 0.3),
-    lightest: hexToRgba(backgroundA.lightest, 0.2),
-    contrastText: '#FBFAF2',
-  },
-  // SECONDARY COLORS
-  backgroundB,
-  backgroundC: {
-    darkest: hexToRgba(backgroundB.darkest, 0.9),
-    darker: hexToRgba(backgroundB.darker, 0.8),
-    dark: hexToRgba(backgroundB.dark, 0.7),
-    default: hexToRgba(backgroundB.default, 0.6),
-    light: hexToRgba(backgroundB.light, 0.5),
-    lighter: hexToRgba(backgroundB.lighter, 0.4),
-    lightest: hexToRgba(backgroundB.lightest, 0.3),
-    contrastText: '#FBFAF2',
-  },
-  // TERTIARY COLORS
-  backgroundE,
-  backgroundF,
-  backgroundG,
-  backgroundGSecondary,
-
+  greenAccent: greenAccent,
+  redAccent: redAccent,
+  blueAccent: blueAccent,
+  customDarkTheme: customDarkTheme,
   // COLORS FOR CARD RARITY OVERLAY
   rarity,
   // CARD RARITY OVERLAYS
-  rarityOverlay: {
-    common: hexToRgba(rarity.common, 0.5),
-    uncommon: hexToRgba(rarity.uncommon, 0.5),
-    rare: hexToRgba(rarity.rare, 0.5),
-    super: hexToRgba(rarity.super, 0.5),
-    ultra: hexToRgba(rarity.ultra, 0.5),
-    secret: hexToRgba(rarity.secret, 0.5),
-    ghost: hexToRgba(rarity.ghost, 0.5),
-    starlight: hexToRgba(rarity.starlight, 0.5),
-    prismatic: hexToRgba(rarity.prismatic, 0.5),
-    collector: hexToRgba(rarity.collector, 0.5),
-    shortPrint: hexToRgba(rarity.shortPrint, 0.5),
-    parallel: hexToRgba(rarity.parallel, 0.5),
-    qcr: hexToRgba(rarity.qcr, 0.5),
-    // Add more rarities as needed
-  },
+  rarityOverlay,
   // TEXT COLORS
   text,
   // DIVIDER COLORS
@@ -87,7 +46,7 @@ const colors = {
   warning,
   // ERROR COLORS
   error,
-
+  grey,
   // OTHER COLORS
   // text: {
   //   main: '#7b809a',
@@ -113,38 +72,16 @@ const colors = {
     main: '#5CDB95',
     focus: '#379683',
   },
-
-  // COLOR TO COMPLEMENT GREEN
-  greenComplement: {
-    main: '#05386B',
-    focus: '#05386B',
-  },
-
   primary,
-
   secondary,
   light: {
     main: '#f0f2f5',
     focus: '#f0f2f5',
   },
-
   dark: {
     main: '#344767',
     focus: '#2c3c58',
   },
-
-  grey: {
-    100: '#f8f9fa',
-    200: '#f0f2f5',
-    300: '#dee2e6',
-    400: '#ced4da',
-    500: '#adb5bd',
-    600: '#6c757d',
-    700: '#495057',
-    800: '#343a40',
-    900: '#212529',
-  },
-
   gradients: {
     primary: {
       main: '#EC407A',
@@ -188,21 +125,7 @@ const colors = {
       main: '#42424a',
       state: '#191919',
     },
-
-    backgroundA: {
-      main: '#f8f9fa',
-      state: '#f8f9fa',
-    },
-    backgroundB: {
-      main: '#f0f2f5',
-      state: '#f0f2f5',
-    },
-    backgroundF: {
-      main: '#f8f9fa',
-      state: '#f8f9fa',
-    },
   },
-
   socialMediaColors: {
     facebook: {
       main: '#3b5998',
@@ -264,7 +187,6 @@ const colors = {
       dark: '#2a3749',
     },
   },
-
   badgeColors: {
     primary: {
       background: '#f8b3ca',
@@ -306,7 +228,6 @@ const colors = {
       text: '#1e2e4a',
     },
   },
-
   coloredShadows: {
     primary: '#e91e62',
     secondary: '#110e0e',
@@ -316,34 +237,14 @@ const colors = {
     error: '#f44336',
     light: '#adb5bd',
     dark: '#404040',
-    backgroundA: '#f8f9fa',
-    backgroundF: '#f8f9fa',
+    greenAccent: '#4caf4f',
+    redAccent: '#f44336',
+    blueAccent: '#2196f3',
   },
-
   inputBorderColor: '#d2d6da',
-
   tabs: {
     indicator: { boxShadow: '#ddd' },
   },
-  // info: {
-  //   main: '#1A73E8',
-  //   focus: '#1662C4',
-  // },
-
-  // success: {
-  //   main: '#4CAF50',
-  //   focus: '#67bb6a',
-  // },
-
-  // warning: {
-  //   main: '#fb8c00',
-  //   focus: '#fc9d26',
-  // },
-
-  // error: {
-  //   main: '#F44335',
-  //   focus: '#f65f53',
-  // },
 };
 
 export default colors;

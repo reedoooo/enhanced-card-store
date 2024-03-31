@@ -1,7 +1,7 @@
 import { useState, useMemo, createContext, useEffect, useContext } from 'react';
 import { createTheme } from '@mui/material';
-import { useCookies } from 'react-cookie';
 import { themeSettings } from '../../../assets/themes/themeSettings';
+import useManageCookies from '../../hooks/useManageCookies';
 
 export const ColorModeContext = createContext({
   mode: 'dark',
@@ -12,25 +12,24 @@ export const ColorModeContext = createContext({
 });
 
 export const ColorModeProvider = ({ children }) => {
-  // Get the mode from the cookie or default to 'dark' if the cookie doesn't exist
-  const [cookie, setCookie] = useCookies(['colorMode']);
-  const initialMode = cookie['colorMode'] || 'dark';
+  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { initialMode } = getCookie(['colorMode']) || 'dark';
   const [mode, setMode] = useState(initialMode);
 
   useEffect(() => {
     // Set the cookie whenever the mode changes
-    setCookie('colorMode', mode, { path: '/' });
-  }, [mode, setCookie]);
+    addCookies(['colorMode'], [mode], { path: '/' });
+  }, [mode]);
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
         const newMode = mode === 'dark' ? 'dark' : 'light';
         setMode(newMode);
-        setCookie('colorMode', newMode); // also set the cookie here for immediate effect
+        addCookies(['colorMode'], [newMode], { path: '/' });
       },
     }),
-    [mode, setCookie]
+    [mode, addCookies]
   );
 
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
@@ -41,7 +40,7 @@ export const ColorModeProvider = ({ children }) => {
     theme,
     setMode: (newMode) => {
       setMode(newMode);
-      setCookie('colorMode', newMode); // also set the cookie here for immediate effect
+      addCookies(['colorMode'], [newMode], { path: '/' });
     },
     toggleColorMode: colorMode.toggleColorMode,
   };

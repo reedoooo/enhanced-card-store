@@ -16,7 +16,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
         width: '100%',
         height: '100%',
         textAlign: 'center',
-        background: theme.palette.backgroundE.light,
+        background: theme.palette.greenAccent.lighterSeaGreen,
         padding: theme2.spacing(2), // Adjust padding as needed
       }}
     >
@@ -24,7 +24,7 @@ const HeroCenter = ({ decorative, title, subtitle }) => {
         <Typography
           component="span"
           sx={{
-            color: theme.palette.primary.main,
+            color: theme.palette.success.secondary,
             fontWeight: theme.typography.fontWeightMedium,
             fontSize: {
               xs: theme2.typography.body2.fontSize, // smaller screens

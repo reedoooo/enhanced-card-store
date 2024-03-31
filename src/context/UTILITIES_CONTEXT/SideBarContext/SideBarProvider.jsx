@@ -1,15 +1,22 @@
 import React, { createContext, useContext, useState } from 'react';
-import { useAuthContext } from '../../MAIN_CONTEXT/AuthContext/authContext';
 import HomeIcon from '@mui/icons-material/Home';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import StoreIcon from '@mui/icons-material/Store';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import PersonIcon from '@mui/icons-material/Person';
 import DeckBuilderIcon from '../../../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
+import useManageCookies from '../../hooks/useManageCookies';
+import useAuthManager from '../../MAIN_CONTEXT/AuthContext/useAuthManager';
 const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {
-  const { login, logout, isLoggedIn } = useAuthContext();
+  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { isLoggedIn, authUser, userId } = getCookie([
+    'isLoggedIn',
+    'authUser',
+    'userId',
+  ]);
+  const { login, logout } = useAuthManager();
   // TOPBAR
   const [visibleItems, setVisibleItems] = useState([]);
   const baseMenuItems = [

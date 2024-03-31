@@ -75,7 +75,7 @@ const SimpleSectionHeader = ({
         </Box>
         <MDBox
           sx={{
-            borderColor: theme.palette.primary.main,
+            borderColor: theme.palette.success.secondary,
             p: theme.spacing(1),
             // maxWidth: '25%',
             // width: isMobileView ? '100%' : '25%',

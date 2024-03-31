@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
-import { AuthProvider, ColorModeProvider } from './context';
+import { AuthProvider, ColorModeProvider, ErrorBoundary } from './context';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { Helmet } from 'react-helmet';
@@ -59,18 +59,20 @@ const AppWrapper = () => {
   );
 
   return (
-    <Router>
-      <HelmetMetadata />
-      <ColorModeProvider>
-        <SnackbarProvider>
-          <AuthProvider>
-            <Elements stripe={stripePromise}>
-              <App />
-            </Elements>
-          </AuthProvider>
-        </SnackbarProvider>
-      </ColorModeProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <HelmetMetadata />
+        <ColorModeProvider>
+          <SnackbarProvider>
+            <AuthProvider>
+              <Elements stripe={stripePromise}>
+                <App />
+              </Elements>
+            </AuthProvider>
+          </SnackbarProvider>
+        </ColorModeProvider>
+      </Router>
+    </ErrorBoundary>
   );
 };
 

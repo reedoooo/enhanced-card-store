@@ -4,12 +4,13 @@ import { FormControl, InputLabel } from '@mui/material';
 import SelectComponent from '../reusable/Select';
 import { useStatisticsStore, useMode, useFormContext } from '../../../context';
 import { StyledChartBox } from '../../../pages/pageStyles/StyledComponents';
-import { enqueueSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 import { Controller } from 'react-hook-form';
 
 const CollectionStatisticsSelector = () => {
   const { formMethods } = useFormContext();
   const [selectedStat, setSelectedStat] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
   const { theme } = useMode();
   const {
     control,

@@ -38,7 +38,7 @@ const HeroTextSection = ({ shouldShow }) => {
             variant={isMobileView ? 'h3' : 'h2'}
             sx={{
               fontWeight: 'bold',
-              color: theme.palette.primary.main,
+              color: theme.palette.success.secondary,
               my: isMobileView ? '1rem' : 'auto',
             }}
           >

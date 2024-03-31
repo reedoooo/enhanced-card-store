@@ -26,7 +26,7 @@ export const StyledContainerBoxPrimary = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundB.dark,
+  background: theme.palette.grey.simpleGrey,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -38,7 +38,7 @@ export const StyledContainerBoxSecondary = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundE.light,
+  background: theme.palette.greenAccent.lighterSeaGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -50,7 +50,7 @@ export const StyledContainerBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundD.dark,
+  background: theme.palette.greenAccent.crystalGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -60,7 +60,7 @@ export const StyledPaperPrimary = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   color: theme.palette.text.primary,
   display: 'flex',
   flexDirection: 'column',
@@ -73,30 +73,12 @@ export const StyledPaper = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   mx: 'auto',
   padding: '1rem',
-  background: theme.palette.backgroundC.dark,
+  background: theme.palette.grey.clearGrey,
   // maxWidth: '1200px',
   borderRadius: '8px',
   boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
   transition: 'all 0.3s ease-in-out', // smooth all transitions
 }));
-// BUTTON: #4cceac - transparent
-// export const StyledButton = styled(MDButton)(({ theme }) => ({
-//   // background: theme.palette.backgroundE.darker,
-//   // borderColor: theme.palette.backgroundB.darkest,
-//   borderWidth: 2,
-//   flexGrow: 1,
-//   justifySelf: 'bottom',
-//   bottom: 0,
-//   mx: 1,
-//   width: '70%',
-//   '&:hover': {
-//     // color: theme.palette.backgroundA.contrastTextC,
-//     fontWeight: 'bold',
-//     background: theme.palette.backgroundF.dark,
-//     borderColor: theme.palette.backgroundB.darkest,
-//     border: `1px solid ${theme.palette.backgroundB.darkest}`,
-//   },
-// }));
 
 // ! DIALOG STYLES
 export const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -109,7 +91,7 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   // width: 240,
   width: '100%',
   padding: 0,
-  background: theme.palette.backgroundC.dark,
+  background: theme.palette.grey.clearGrey,
   boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
   transition: 'all 0.3s ease-in-out', // smooth all transitions
   // mx: 'auto',
@@ -144,7 +126,6 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
     justifyContent: 'flex-end',
   },
 }));
-
 export const DialogPaper = styled(Paper)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -169,7 +150,7 @@ export const DialogContentsBox = styled(Box)(({ theme }) => ({
   width: '100%',
   // minWidth: '500px',
   // borderRadius: theme.shape.borderRadius,
-  background: theme.palette.backgroundE.lighter,
+  background: theme.palette.greenAccent.evenLighter,
   boxShadow: theme.shadows[10],
   transition: 'all 0.3s ease-in-out', // smooth all transitions
   '@media (max-width:600px)': {
@@ -183,7 +164,7 @@ export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   width: '100%',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
-  // backgroundColor: theme.palette.backgroundA.lightest,
+  // backgroundColor: theme.palette.greenAccent.contrastText,
 }));
 export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   display: 'flex',
@@ -192,7 +173,7 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   width: '100%',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
 }));
 export const FormBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -203,7 +184,7 @@ export const FormBox = styled(Box)(({ theme }) => ({
   mx: 'auto',
   padding: '1rem',
   background: 'rgba(255, 255, 255, 0.2)', // Adjust for desired translucency
-  backdropFilter: 'blur(20px)',
+  // backdropFilter: 'blur(20px)',
   boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
   transition: 'all 0.3s ease-in-out',
   borderRadius: '20px',
@@ -219,20 +200,8 @@ export const FormPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,
   width: '100%',
   height: '100%',
-  background: theme.palette.backgroundE.lighter,
+  background: theme.palette.greenAccent.evenLighter,
   borderRadius: '16px',
-  // display: 'flex',
-  // flexDirection: 'column',
-  // alignItems: 'center',
-  // justifyContent: 'center',
-  // width: '100%',
-  // mx: 'auto',
-  // padding: '1rem',
-  // background: theme.palette.backgroundC.dark,
-  // // maxWidth: '1200px',
-  // borderRadius: '8px',
-  // boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
-  // transition: 'all 0.3s ease-in-out', // smooth all transitions
 }));
 export const FormFieldBox = styled(Box)(({ theme }) => ({
   m: theme.spacing(1),
@@ -252,18 +221,18 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
       borderColor: theme.palette.transparent.main,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      color: theme.palette.backgroundA.darker,
-      borderColor: theme.palette.backgroundA.darker,
+      color: theme.palette.greenAccent.default,
+      borderColor: theme.palette.greenAccent.default,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.backgroundA.darker,
+      borderColor: theme.palette.greenAccent.default,
       borderWidth: '2px', // or other width as you like
     },
   },
   borderRadius: theme.shape.borderRadius,
-  color: theme.palette.backgroundA.darkest,
+  color: theme.palette.greenAccent.dark,
   width: '100%',
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   boxShadow: `0px 2px 4px -1px ${theme.palette.grey[400]}`,
   marginBottom: theme.spacing(2),
 }));
@@ -292,8 +261,8 @@ export const CardIconWrapper = styled('div')(({ theme }) => ({
   height: theme.spacing(4),
   width: theme.spacing(4),
   borderRadius: '50%',
-  backgroundColor: theme.palette.backgroundA.lighter,
-  color: theme.palette.backgroundA.contrastTextD,
+  backgroundColor: theme.palette.greenAccent.evenLighter,
+  color: theme.palette.grey.black,
   '& svg': {
     fontSize: theme.typography.pxToRem(20),
   },
@@ -302,7 +271,7 @@ export const CardDetailContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   boxShadow: `0 4px 8px 0 ${theme.palette.shadow}`,
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
@@ -323,7 +292,7 @@ export const StyledCardContent = styled(CardContent)(({ theme }) => ({
   flexGrow: 1,
   textAlign: 'left',
   minHeight: '50px', // Adjust based on the size of the text
-  border: `1px solid ${theme.palette.backgroundB.lighter}`,
+  border: `1px solid ${theme.palette.grey.lighterSimpleGrey}`,
   borderRadius: theme.shape.borderRadius,
   // Media queries for padding
   padding: theme.spacing(1), // default padding
@@ -348,7 +317,7 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   maxHeight: '100%', // Adjusted for better height management
   // height: 'auto',
   flexGrow: 1,
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[5],
   justifyContent: 'center',

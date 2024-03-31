@@ -1,19 +1,19 @@
 import React from 'react';
 import { Typography, Skeleton, Box, Grid, Container } from '@mui/material';
-import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
-import { useMode, useUserContext } from '../../context';
+import { useMode } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
+import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
 
 const CartContent = () => {
   const { theme } = useMode();
-  const { cartData, isLoading } = useCartStore();
+  const { cart } = useCartManager();
 
   return (
     <Box
       sx={{
         width: '100%',
         flexGrow: 1,
-        backgroundColor: theme.palette.backgroundB.lightest,
+        backgroundColor: theme.palette.grey.lighterSimpleGrey,
         borderRadius: '5px',
         padding: '0.5rem',
         overflowY: 'auto',
@@ -46,7 +46,7 @@ const CartContent = () => {
         }}
       >
         <Grid container spacing={3}>
-          {cartData?.cart?.map((card, index) => (
+          {cart?.items?.map((card, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               {console.log(card)}
               <GenericCard

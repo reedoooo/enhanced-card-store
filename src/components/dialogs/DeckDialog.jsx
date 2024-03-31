@@ -51,7 +51,7 @@ const DeckDialog = ({ open, onClose, isNew, deckData }) => {
               border: 'none',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
+            <Avatar sx={{ m: 1, bgcolor: theme.palette.grey.lighter2 }}>
               <LockOutlinedIcon />
             </Avatar>
             <MDTypography component="h1" variant="h4">

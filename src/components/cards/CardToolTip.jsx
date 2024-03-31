@@ -10,7 +10,7 @@ export const StyledToolTipBox = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(2),
-  backgroundColor: theme.palette.backgroundA.lightest,
+  backgroundColor: theme.palette.greenAccent.contrastText,
   color: theme.palette.text.primary,
   boxShadow: theme.shadows[3],
   alignContent: 'flex-start',
@@ -112,8 +112,8 @@ const createTooltip = (card, theme) => {
     >
       {Object.entries(cardAttributes).map(([key, value]) => (
         <StyledAttributeSpan theme={theme} key={key}>
-          <Typography variant="h6">
-            <Typography variant="h5">
+          <Typography variant="h6" component="span">
+            <Typography variant="h5" component="span">
               <strong>{formatKey(key)}:</strong>{' '}
             </Typography>
             {value}
@@ -140,85 +140,6 @@ const CardToolTip = ({ card }) => {
   );
 };
 
-// const SingleCardToolTip = ({ card }) => {
-//   // if (Array.isArray(card)) {
-//   //   return card.map((card) => <CardToolTip card={card} />);
-//   // }
-//   const { theme } = useMode();
-//   const {
-//     name,
-//     desc,
-//     attributes,
-//     set_code,
-//     rarity,
-//     set_price,
-//     id,
-//     tcgplayer_price,
-//   } = card;
-
-//   const price = set_price?.value || 'N/A';
-//   const tcgPrice = tcgplayer_price?.value || 'N/A';
-//   return (
-//     <StyledTooltip arrow title="Card" placement="right-end">
-//       <StyledToolTipBox theme={theme}>
-//         <MDBox
-//           theme={theme}
-//           sx={{
-//             boxShadow: theme.shadows[3],
-//             borderRadius: theme.shape.borderRadius,
-//             border: `1px solid ${theme.palette.divider}`,
-//             w: 'auto',
-//             h: '100%',
-//             bgColor: theme.palette.backgroundC.lightest,
-//             p: theme.spacing(2),
-//             color: theme.palette.text.primary,
-//             alignContent: 'flex-start',
-//             alignItems: 'flex-start',
-//             maxWidth: 220,
-//             position: 'relative',
-//             '&::before': {
-//               content: '""',
-//               display: 'block',
-//               paddingTop: '100%',
-//             },
-//             '& > img': {
-//               position: 'absolute',
-//               top: 0,
-//               left: 0,
-//               w: '100%',
-//               h: '100%',
-//               objectFit: 'cover',
-//             },
-//           }}
-//         >
-//           {attributes &&
-//             Object.entries(attributes).map(([key, value]) => (
-//               <StyledAttributeSpan theme={theme} key={key}>
-//                 <strong>{formatKey(key)}:</strong> {value}
-//               </StyledAttributeSpan>
-//             ))}
-//           {desc && (
-//             <StyledDescriptionSpan theme={theme}>
-//               <strong>Description:</strong> {desc}
-//             </StyledDescriptionSpan>
-//           )}
-//         </MDBox>
-//       </StyledToolTipBox>
-//     </StyledTooltip>
-//   );
-// };
-// const CardToolTip = ({ card }) => {
-//   if (Array.isArray(card)) {
-//     return (
-//       <div>
-//         {card.map((singleCard, index) => (
-//           <SingleCardToolTip key={index} card={singleCard} />
-//         ))}
-//       </div>
-//     );
-//   }
-//   return <SingleCardToolTip card={card} />;
-// };
 CardToolTip.propTypes = {
   card: PropTypes.oneOfType([
     PropTypes.arrayOf(

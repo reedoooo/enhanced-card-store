@@ -10,14 +10,19 @@ const SearchForm = () => {
 
   const searchFields = [
     {
-      name: 'searchTerm',
-      label: 'Search for cards',
+      label: 'Search Cards',
       type: 'text',
+      placeholder: 'Search for cards...',
+      defaultValue: '',
+      rules: {
+        required: false,
+      },
       required: false,
       value: forms?.searchForm?.searchTerm || '',
       onChange: handleChange,
       onFocus: handleFocus,
       onBlur: handleBlur,
+      name: 'searchTerm',
     },
   ];
   return (

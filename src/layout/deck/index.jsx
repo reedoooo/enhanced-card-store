@@ -10,8 +10,6 @@ import useDialogState from '../../context/hooks/useDialogState';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import DeckListItem from './DeckListItem';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
-import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -68,9 +66,14 @@ const DeckBuilder = () => {
               item
               xs={6}
               // lg={7}
-              sx={{ display: 'flex', flexDirection: 'column' }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                px: theme.spacing(2),
+                py: theme.spacing(2),
+              }}
             >
-              \{/* <Grid item xs={6}> */}
+              {/* <Grid item xs={6}> */}
               {allDecks?.map((deck, index) => (
                 <Collapse
                   in={activeTab === index}
