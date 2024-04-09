@@ -34,7 +34,7 @@ const SelectCollectionHeader = ({ openNewDialog }) => {
       <FlexContainer>
         <SimpleSectionHeader
           sectionName="Collection Portfolio"
-          userName={user?.userBasicData?.firstName}
+          userName={user?.username}
           sectionDescription="Last updated:"
           lastUpdated={new Date().toLocaleDateString('en-US', {
             year: 'numeric',

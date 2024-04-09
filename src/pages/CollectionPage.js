@@ -8,11 +8,19 @@ import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import { useLoading } from '../context/hooks/useLoading';
+import LoadingOverlay from '../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 
 const CollectionPage = () => {
-  const { selectedCollection, allCollections, resetCollection } =
-    useSelectedCollection();
-  const { fetchCollections, hasFetchedCollections } = useCollectionManager();
+  const selectionData = useSelectedCollection();
+  if (!selectionData) {
+    return <LoadingOverlay />;
+  }
+  const { selectedCollection, allCollections, resetCollection } = selectionData;
+  const collectionData = useCollectionManager();
+  if (!collectionData) {
+    return <LoadingOverlay />;
+  }
+  const { fetchCollections, hasFetchedCollections } = collectionData;
 
   const { returnDisplay, isModalOpen, modalContent, closeModal } =
     useLoadingAndModal();
