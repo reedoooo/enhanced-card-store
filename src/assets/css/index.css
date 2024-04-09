@@ -16,6 +16,23 @@
   --button-hover-border-color: #34597f; /* A darker blue for border on hover */
   --button-border-color: #6a59ff; /* Initial border color */
   --button-focus-outline-color: #62a4ff; /* Bright blue for focus outline for accessibility */
+  --secondary-glow: conic-gradient(
+    from 10deg at 50% 50%,
+    #eb7494 0deg,
+    #ae77b2 55deg,
+    #97b5da 120deg,
+    #0099ca 160deg,
+    transparent 360deg
+  );
+
+  --third-glow: conic-gradient(
+    from 90deg at 50% 50%,
+    #ff8b7e 0deg,
+    #e24e6b 160deg,
+    #7ed2da 120deg,
+    #8bdce0 55deg,
+    transparent 360deg
+  );
 }
 
 html {

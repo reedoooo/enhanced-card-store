@@ -1,11 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 
 const useSelectedContext = () => {
-  // State to hold the current selected context
   const [selectedContext, setSelectedContext] = useState(null);
   const [isContextSelected, setIsContextSelected] = useState(false);
 
-  // // Method to set a new context
   const setContext = useCallback((newContext) => {
     console.log('Context selected:', newContext);
     setSelectedContext(newContext);

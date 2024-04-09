@@ -216,4 +216,10 @@ const iconData = [
   },
 ];
 
-export default iconData;
+const getIconDataByComponent = (component) => {
+  const match = iconData.find((i) => i.component === component);
+  const returnIcon = match ? match.icon : null;
+  return returnIcon;
+};
+
+export default { iconData, getIconDataByComponent };

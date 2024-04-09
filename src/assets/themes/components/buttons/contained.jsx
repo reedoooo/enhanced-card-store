@@ -1,23 +1,13 @@
-// Material Dashboard 2 React Helper Functions
 import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const {
-  white,
-  text,
-  info,
-  secondary,
-  success,
-  green,
-  backgroundE,
-  backgroundG,
-} = colors;
+const { white, text, info, secondary, success, green, grey } = colors;
 const { size } = typography;
 
 export default {
   base: {
-    backgroundColor: backgroundG.default,
+    backgroundColor: grey.default,
     minHeight: pxToRem(40),
     color: text.main,
     padding: `${pxToRem(10)} ${pxToRem(24)}`,
@@ -58,26 +48,26 @@ export default {
   },
 
   primary: {
-    backgroundColor: backgroundG.default,
+    backgroundColor: grey.default,
 
     '&:hover': {
-      backgroundColor: backgroundG.dark,
+      backgroundColor: grey.dark,
     },
 
     '&:focus:not(:hover)': {
-      backgroundColor: backgroundG.light,
+      backgroundColor: grey.light,
     },
   },
 
   secondary: {
-    backgroundColor: backgroundE.light,
+    backgroundColor: grey.light,
 
     '&:hover': {
-      backgroundColor: backgroundE.light,
+      backgroundColor: grey.light,
     },
 
     '&:focus:not(:hover)': {
-      backgroundColor: backgroundE.lightest,
+      backgroundColor: grey.lightest,
     },
   },
 };

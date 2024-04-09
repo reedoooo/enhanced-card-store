@@ -10,12 +10,7 @@ import {
   Container,
   useMediaQuery,
 } from '@mui/material';
-import {
-  useAuthContext,
-  useCollectionStore,
-  useMode,
-  useUserContext,
-} from '../../context';
+import { useMode } from '../../context';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
@@ -31,13 +26,19 @@ import placeHolder from '../../assets/images/placeholder.jpeg';
 import { DEFAULT_COLLECTION } from '../../context/constants';
 import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import SimpleButton from '../../layout/REUSABLE_COMPONENTS/unique/SimpleButton';
-import uniqueTheme from '../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
+import useManageCookies from '../../context/hooks/useManageCookies';
+import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
+import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 const MainContentSection = () => {
   const { theme } = useMode();
-  const { isLoggedIn } = useAuthContext();
-  const { user } = useUserContext();
+  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { isLoggedIn, authUser, userId } = getCookie([
+    'isLoggedIn',
+    'authUser',
+    'userId',
+  ]);
+  const { user } = useUserData();
   const { hasFetchedCollections } = useCollectionManager();
   const { allCollections, selectedCollection } = useSelectedCollection();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
@@ -115,47 +116,17 @@ const MainContentSection = () => {
                     </Stack>
                   </CardContent>
                   <CardActions>
-                    <SimpleButton
-                      // variant="contained"
-                      color="primary"
-                      customSize="lg"
-                      customColor={theme.palette.chartTheme.greenAccent.light}
-                      customTextColor={theme.palette.chartTheme.primary.lighter}
-                      // isDisabled={false}
-                      // isDefault={false}
-                      theme={uniqueTheme}
+                    <RCButton
+                      color="success"
+                      size="large"
+                      variant="holo"
+                      withContainer={false}
                       onClick={() => {
                         console.log('clicked');
                       }}
                     >
                       Manage Collections
-                    </SimpleButton>
-                    {/* <MDButton
-                      variant="contained"
-                      background={theme.palette.backgroundE.light}
-                      color="primary"
-                      size="medium"
-                      sx={{
-                        color: theme.palette.backgroundA.contrastText,
-                        background: theme.palette.backgroundF.darker,
-                        borderColor: theme.palette.backgroundB.darkest,
-                        borderWidth: 2,
-                        mt: 'auto',
-                        flexGrow: 1,
-                        justifySelf: 'bottom',
-                        bottom: 0,
-                        width: '100%',
-                        '&:hover': {
-                          color: theme.palette.backgroundA.contrastTextC,
-                          fontWeight: 'bold',
-                          background: theme.palette.backgroundF.dark,
-                          borderColor: theme.palette.backgroundB.darkest,
-                          border: `1px solid ${theme.palette.backgroundB.darkest}`,
-                        },
-                      }}
-                    >
-                      Manage Collections
-                    </MDButton> */}
+                    </RCButton>
                     <MDButton variant="outlined" color="primary" size="medium">
                       View Purchase History
                     </MDButton>

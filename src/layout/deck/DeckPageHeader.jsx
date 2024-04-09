@@ -1,12 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Box, Card, Grid } from '@mui/material';
-import { useFormContext, useMode, useUserContext } from '../../context';
+import { Box } from '@mui/material';
+import { useMode } from '../../context';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import SimpleSectionHeader from '../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
-import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
+import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
+import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -20,31 +22,10 @@ const FlexContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-// Adjusting Header container for mobile view
-const HeaderContainer = styled(Box)(({ theme }) => ({
-  flex: 1,
-  maxWidth: '100%', // Allows the header to utilize full width on small screens
-  [theme.breakpoints.down('sm')]: {
-    marginBottom: theme.spacing(2),
-  },
-}));
-
-// Button container adjusted for mobile view
-const ButtonContainer = styled(Box)(({ theme }) => ({
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'flex-end',
-  maxWidth: '100%',
-  [theme.breakpoints.down('sm')]: {
-    justifyContent: 'center',
-    width: '100%',
-  },
-}));
-
 const DeckPageHeader = ({ openAddDeckDialog }) => {
   const { theme } = useMode();
-  const { setCurrentForm } = useFormContext();
-  const { user } = useUserContext();
+  const { setActiveFormSchema } = useFormManagement();
+  const { user } = useUserData();
   if (!user) {
     return <PageHeaderSkeleton />;
   }
@@ -61,7 +42,6 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
       }}
     >
       <FlexContainer>
-        {/* <HeaderContainer> */}
         <SimpleSectionHeader
           sectionName="Deck Builder"
           userName={user?.userBasicData?.firstName}
@@ -72,19 +52,20 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
             day: 'numeric',
           })}
         />
-        {/* </HeaderContainer> */}
-        <SimpleButton
-          theme={uniqueTheme}
-          isPrimary={true}
-          // customSize="md"
+        <RCButton
+          color="success"
+          size="large"
+          variant="holo"
+          // circular={true}
+          withContainer={true}
           onClick={() => {
-            setCurrentForm('addDeckForm');
+            setActiveFormSchema('addDeckForm');
             openAddDeckDialog();
             console.log('openAddDeckDialog');
           }}
         >
           Add New Deck
-        </SimpleButton>
+        </RCButton>
       </FlexContainer>
     </SimpleCard>
   );

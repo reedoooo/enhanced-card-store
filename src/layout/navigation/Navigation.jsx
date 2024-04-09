@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useCartStore, useMode } from '../../context';
+import { useMode } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { useSpring, animated, useSprings } from 'react-spring';
 import RCLogoSection from '../REUSABLE_COMPONENTS/RCLOGOSECTION/RCLogoSection';
@@ -27,22 +27,23 @@ import {
   Sheet,
   Typography,
 } from '@mui/joy';
-import { useCookies } from 'react-cookie';
 import { baseMenuItems } from '../../data/baseMenuItems';
 import rgba from '../../assets/themes/functions/rgba';
+import useManageCookies from '../../context/hooks/useManageCookies';
+import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
 const Navigation = ({ isLoggedIn }) => {
   const { theme } = useMode();
   const navigate = useNavigate();
-  const { totalQuantity } = useCartStore();
+  const { cartCardQuantity } = useCartManager();
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [isOpen, setIsOpen] = useState(false); // Manage open state locally
-  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  const iconColor = isMobileView ? theme.palette.primary.main : 'white';
-  const [cookies] = useCookies('authUser');
-  const username = cookies?.authUser?.username;
-  const menuItems = baseMenuItems({ cartCardQuantity: totalQuantity });
+  const isMedView = useMediaQuery(theme.breakpoints.down('md'));
+  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { authUser } = getCookie(['authUser']);
+  const username = authUser?.username;
+  const menuItems = baseMenuItems({ cartCardQuantity: cartCardQuantity });
   const toggleSidebar = useCallback(() => setIsOpen(!isOpen), [isOpen]);
   const [springs] = useSprings(menuItems.length, (index) => ({
     from: { opacity: 0, transform: 'translateY(-20px)' },
@@ -63,7 +64,6 @@ const Navigation = ({ isLoggedIn }) => {
         sx={{
           py: type === 'top' ? theme.spacing(4) : theme.spacing(2),
           px: 'auto',
-
           flexGrow: 1,
           justifyContent: 'center',
           height: '100%',
@@ -99,7 +99,7 @@ const Navigation = ({ isLoggedIn }) => {
             maxHeight: 64,
             maxWidth: '100%',
             '&:hover': {
-              backgroundColor: rgba(theme.palette.backgroundE.light),
+              backgroundColor: rgba(theme.palette.greenAccent.lighterSeaGreen),
             },
           }}
         >
@@ -108,7 +108,7 @@ const Navigation = ({ isLoggedIn }) => {
             content={
               <>
                 {menuItems[index]?.icon}
-                <Typography level="title-md" sx={{ ml: 1 }}>
+                <Typography level="title-lg" sx={{ ml: 1 }}>
                   {menuItems[index]?.name}
                 </Typography>
               </>
@@ -158,18 +158,27 @@ const Navigation = ({ isLoggedIn }) => {
             />
             <RCLogoSection />
           </Box>
-          {!isMobileView && renderMenuItems('top')}
+          {!isMedView && renderMenuItems('top')}
           <Card
             sx={{
               display: 'flex',
-              gap: 2,
+              // gap: 2,
               alignItems: 'center',
               background: 'white',
               flexDirection: 'row',
+              my: theme.spacing(2),
+              py: theme.spacing(2),
             }}
           >
-            <Avatar variant="soft" sx={{ mr: 1 }} />
-            <Typography level="title-md">{username}</Typography>
+            <Avatar
+              variant="soft"
+              sx={{
+                mr: 1,
+                background: theme.palette.chartTheme.greenAccent.light,
+                color: 'white',
+              }}
+            />
+            <Typography level="title-lg">{username}</Typography>
           </Card>
         </Toolbar>
       </AppBar>
@@ -191,14 +200,9 @@ const Navigation = ({ isLoggedIn }) => {
           },
         }}
         sx={{
-          // borderRadius: 'md',
-          // p: 2,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          // gap: 2,
-          // height: '100%',
-          // overflow: 'auto',
         }}
       >
         <Sheet

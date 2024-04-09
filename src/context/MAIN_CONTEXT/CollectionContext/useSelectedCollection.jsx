@@ -1,77 +1,122 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  DEFAULT_COLLECTION,
-  SELECTED_COLLECTION_ID,
-  DEFAULT_CARDS_COUNT,
-} from '../../constants';
+import { DEFAULT_COLLECTION, SELECTED_COLLECTION_ID } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import jsonData from '../../../data/nivoTestData.json';
 import _set from 'lodash/set';
-import useTimeRange from '../../../components/forms/selectors/useTimeRange';
-import { calculateStatistics, calculateStatsForCollection } from './helpers';
-import { a } from 'react-spring';
-
+const defaultCollections = {
+  allIds: [SELECTED_COLLECTION_ID],
+  byId: {
+    [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
+  },
+  selectedId: SELECTED_COLLECTION_ID,
+  prevSelectedId: SELECTED_COLLECTION_ID,
+  showCollections: false,
+};
 function useSelectedCollection() {
-  const { nivoTestData } = jsonData;
   const [collections, setCollections] = useLocalStorage('collections', {
     allIds: [],
     byId: {
       [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
     },
     selectedId: SELECTED_COLLECTION_ID,
+    prevSelectedId: null,
     showCollections: true,
-    nivoTestData: nivoTestData,
   });
+  useEffect(() => {
+    if (!collections || collections?.allIds?.length === 0) {
+      setCollections(defaultCollections);
+    }
+  }, []);
+  useEffect(() => {
+    if (!collections || collections?.allIds?.length === 0) {
+      // Prepare to update the defaultCollections with selectedChartData
+      const updatedById = { ...defaultCollections.byId };
+      Object.keys(updatedById).forEach((id) => {
+        const collection = updatedById[id];
+        // Ensure the collection has averagedChartData and a .24hr key
+        if (
+          collection.averagedChartData &&
+          collection.averagedChartData['24hr']
+        ) {
+          // Directly update the selectedChartData to match averagedChartData.24hr
+          updatedById[id].selectedChartData =
+            collection.averagedChartData['24hr'];
+          console.log(
+            'UPDATED SELECTED CHART DATA',
+            collection.averagedChartData['24hr']
+          );
+        }
+      });
+      setCollections({ ...defaultCollections, byId: updatedById });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      collections.allIds.includes(SELECTED_COLLECTION_ID) &&
+      collections.allIds.length > 1
+    ) {
+      setCollections((prev) => {
+        const updatedAllIds = prev.allIds.filter(
+          (id) => id !== SELECTED_COLLECTION_ID
+        );
+        const updatedById = { ...prev.byId };
+        delete updatedById[SELECTED_COLLECTION_ID];
+
+        return {
+          ...prev,
+          allIds: updatedAllIds,
+          byId: updatedById,
+          // Update selectedId to the first collection if the selected collection is removed
+          selectedId:
+            prev.selectedId === SELECTED_COLLECTION_ID
+              ? updatedAllIds[0]
+              : prev.selectedId,
+        };
+      });
+    }
+  }, [collections.allIds, collections.byId, setCollections]);
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [customError, setCustomError] = useState(null);
   const prevSelectedCollectionIdRef = useRef(null);
-  // const { selectedTimeRange } = useTimeRange();
-  if (!Array.isArray(collections.allIds) || !collections.allIds.length) {
-    return null;
-  }
   const [selectedStat, setSelectedStat] = useState('');
-  // const validCollections =
-  //   Array.isArray(collections.allIds) && collections.allIds.length > 0;
-  // const statsByCollectionId = useMemo(
-  //   () =>
-  //     validCollections
-  //       ? collections.byId?.reduce((acc, collection) => {
-  //           acc[collection?._id] = calculateStatsForCollection(
-  //             collection,
-  //             selectedTimeRange
-  //           );
-  //           return acc;
-  //         }, {})
-  //       : {},
-  //   [collections.byId, selectedTimeRange]
-  //   // [collections.allIds, selectedTimeRange]
-  // );
-  const createMarkers = (selectedCollection) => {
-    if (!selectedCollection || !selectedCollection.collectionStatistics)
-      return [];
+  useEffect(() => {
+    prevSelectedCollectionIdRef.current = selectedCollectionId;
+  }, [selectedCollectionId]);
+
+  const getSelectedCollection = useMemo(() => {
+    const selectedCollection = collections.byId[collections.selectedId];
+    if (!selectedCollection) {
+      setCustomError('Selected collection not found.');
+      return collections.byId[collections.allIds[0]];
+    }
+    return selectedCollection;
+  }, [collections.byId, collections.selectedId]);
+
+  const createMarkers = (selected) => {
+    if (!selected || !selected.collectionStatistics) return [];
 
     const { highPoint, lowPoint, avgPrice, percentageChange } =
-      selectedCollection.collectionStatistics;
+      selected.collectionStatistics;
     return [
       {
         axis: 'y',
         value: percentageChange,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: `${selectedCollection.name} High`,
+        legend: `${selected.name} High`,
         legendOrientation: 'vertical',
       },
       {
         axis: 'y',
         value: lowPoint,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: `${selectedCollection.name} Low`,
+        legend: `${selected.name} Low`,
         legendOrientation: 'vertical',
       },
       {
         axis: 'y',
         value: avgPrice,
         lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
-        legend: `${selectedCollection.name} Avg`,
+        legend: `${selected.name} Avg`,
         legendOrientation: 'vertical',
       },
     ];
@@ -80,38 +125,27 @@ function useSelectedCollection() {
     if (!collections.selectedId) return [];
     return createMarkers(collections.byId[collections.selectedId]);
   }, [collections.allIds]); // Add dependencies as necessary, e.g., someSelectedCollectionId
-  useEffect(() => {
-    prevSelectedCollectionIdRef.current = selectedCollectionId;
-  }, [selectedCollectionId]);
-  const getSelectedCollection = useMemo(
-    () => collections.byId[collections.selectedId] || DEFAULT_COLLECTION,
-    [collections.byId, collections.selectedId]
-  );
   const handleSelectCollection = useCallback(
     (collection) => {
       console.log('SELECTED COLLECTION ID', collection?._id);
-      // setSelectedCollectionId(collection?._id);
       setCustomError(null);
-
       if (!collections.byId[collection?._id]) {
         setCustomError('Invalid collection selected');
         return;
       }
+      // setSelectedCollectionId(collection?._id);
       setCollections((prev) => ({
         ...prev,
         selectedId: collection?._id,
         showCollections: !prev.showCollections,
-        // showCollections: true,
       }));
-      // if (prevSelectedCollectionIdRef.current !== collection?._id) {
-      //   toggleShowCollections();
-      // }
       setCustomError(null);
     },
     [collections.byId, setCollections, setSelectedCollectionId]
   );
   const updateCollectionField = useCallback(
     (collectionId, fieldPath, value) => {
+      console.log('UPDATE COLLECTION FIELD', collectionId, fieldPath, value);
       setCollections((prev) =>
         _set({ ...prev }, `byId.${collectionId}.${fieldPath}`, value)
       );
@@ -126,23 +160,80 @@ function useSelectedCollection() {
     }));
     setCustomError(null);
   }, [setCollections]);
+  const refreshCollections = useCallback(
+    (updatedCollections) => {
+      // Directly use the updatedCollections parameter to update the state
+      setCollections((prev) => {
+        // Assuming updatedCollections is an array of collection objects with _id properties
+        const updatedById = updatedCollections.reduce(
+          (acc, collection) => {
+            acc[collection._id] = collection;
+            return acc;
+          },
+          { ...prev.byId }
+        );
+        console.log('UPDATED COLLECTIONS', updatedById);
+        const updatedAllIds = updatedCollections.map(
+          (collection) => collection._id
+        );
+        console.log('UPDATED ALL IDS', updatedAllIds);
+        return {
+          ...prev,
+          allIds: updatedAllIds,
+          byId: updatedById,
+          selectedId: collections.selectedId || prev.allIds[0],
+        };
+      });
+    },
+    [setCollections]
+  );
   const updateCollectionsData = useCallback(
     (newCollections) => {
       console.log('updateCollectionsData', newCollections);
       setCollections((prev) => {
         const updatedById = { ...prev.byId };
         newCollections?.forEach((collection) => {
+          // Check if the current collection's selectedChartData is empty, null, or undefined
+          if (
+            !collection.selectedChartData ||
+            Object.keys(collection.selectedChartData).length === 0
+          ) {
+            // Ensure there's an 'averagedChartData' and it has a '24hr' key before attempting to update
+            if (
+              collection.averagedChartData &&
+              collection.averagedChartData['24hr'] !== undefined
+            ) {
+              // Directly update selectedChartData to match averagedChartData['24hr']
+              collection.selectedChartData =
+                collection.averagedChartData['24hr'];
+            } else {
+              // Handle cases where 'averagedChartData['24hr']' might not be available
+              console.warn(
+                `Collection ${collection._id} does not have 'averagedChartData["24hr"]'.`
+              );
+            }
+          }
+
+          // Update the collection in the 'updatedById' object
           updatedById[collection._id] = collection;
         });
+
+        // FILTER UNDEFINED VALUES and ensure keys are valid
+        const updatedAllIds = Object.keys(updatedById).filter(
+          (key) => updatedById[key] !== undefined
+        );
+
+        console.log('UPDATED COLLECTIONS', updatedById);
         return {
           ...prev,
           byId: updatedById,
-          allIds: Object.keys(updatedById),
+          allIds: updatedAllIds,
         };
       });
     },
     [setCollections]
   );
+
   const addNewCollection = useCallback(
     (newCollection) => {
       // const newId = new Date().getTime().toString(); // Simple unique ID generation
@@ -153,14 +244,29 @@ function useSelectedCollection() {
   const removeCollection = useCallback(
     (collectionId) => {
       setCollections((prev) => {
-        const { [collectionId]: _, ...remainingById } = prev.byId;
-        return {
+        console.log('REMOVING COLLECTION', collectionId);
+        const updatedById = { ...prev.byId };
+        delete updatedById[collectionId]; // Remove the collection
+        const updatedAllIds = prev.allIds.filter((id) => id !== collectionId);
+        console.log('UPDATED COLLECTIONS', updatedById);
+
+        // Directly update local storage with the modified state
+        const updatedCollections = {
           ...prev,
-          allIds: prev.allIds.filter((id) => id !== collectionId),
-          byId: remainingById,
+          byId: updatedById,
+          allIds: updatedAllIds,
+          // Ensure selectedId is updated appropriately
           selectedId: prev.selectedId === collectionId ? null : prev.selectedId,
         };
+
+        // Since useLocalStorage hook might already synchronize the state with local storage,
+        // the following line ensures local storage is explicitly updated.
+        // This step may be redundant depending on the implementation of useLocalStorage.
+        localStorage.setItem('collections', JSON.stringify(updatedCollections));
+
+        return updatedCollections;
       });
+      // No need to call refreshCollections if local storage is updated here
     },
     [setCollections]
   );
@@ -171,45 +277,48 @@ function useSelectedCollection() {
       console.log('Collections data updated:', collections);
     }
     prevCollectionsRef.current = collections;
-  }, [collections]); // Dependency array ensures this runs only when collections change
+  }, [collections.allIds, collections.byId[collections.selectedId]]);
 
   return {
-    selectedCollectionId: collections.selectedId,
-    selectedCollection: getSelectedCollection,
-    allCollections: Object.values(collections.byId),
+    selectedCollectionId:
+      collections.selectedId || prevSelectedCollectionIdRef.current,
+    selectedCollection: getSelectedCollection || {},
+    allIds: collections?.allIds || [],
+    allCollections: Object.values(collections?.byId),
     showCollections: !!collections.showCollections,
-    nivoTestData: nivoTestData,
+    byId: collections?.byId || {},
+
+    selectedStat,
+    setSelectedStat,
+    markers,
     handleSelectCollection,
+    // selectedCollection: getSelectedCollection,
     handleBackToCollections: resetCollection,
     updateCollectionField,
     resetCollection,
     updateCollectionsData,
     customError,
-    // toggleShowCollections,
+    refreshCollections,
     addNewCollection,
     removeCollection,
     setCustomError,
-    prevSelectedCollectionId: prevSelectedCollectionIdRef.current,
-    // stats:
-    //   calculateStatistics(
-    //     { data: null },
-    //     selectedTimeRange,
-    //     Object.values(collections.byId)
-    //   ) || {},
-
-    // allStats: [statsByCollectionId],
-    // statsByCollectionId: statsByCollectionId[collections?.selectedId] || {},
-
-    selectedStat,
-    markers,
-    setSelectedStat,
-    // totalValue,
-    // topFiveCards,
-    // calculateTotalPriceOfAllCollections,
-    // calculatePriceChanges,
-    // getTopCard,
-    // getTopCollection,
   };
 }
 
 export default useSelectedCollection;
+// const validCollections =
+//   Array.isArray(collections.allIds) && collections.allIds.length > 0;
+// const statsByCollectionId = useMemo(
+//   () =>
+//     validCollections
+//       ? collections.byId?.reduce((acc, collection) => {
+//           acc[collection?._id] = calculateStatsForCollection(
+//             collection,
+//             selectedTimeRange
+//           );
+//           return acc;
+//         }, {})
+//       : {},
+//   [collections.byId, selectedTimeRange]
+//   // [collections.allIds, selectedTimeRange]
+// );

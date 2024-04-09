@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
-import CollectionForm from '../forms/CollectionForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -11,11 +10,18 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-// import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
+import { formFields } from '../forms/formsConfig';
+import RCDynamicForm from '../forms/Factory/RCDynamicForm';
+import useInitialFormData from '../forms/hooks/useInitialFormData';
 
 const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
   const { theme } = useMode();
-  const actionType = isNew ? 'add' : 'update';
+  const formKey = isNew ? 'addCollectionForm' : 'updateCollectionForm';
+  const initialFormData = useInitialFormData(
+    isNew,
+    formFields[formKey],
+    collectionData
+  );
 
   return (
     <StyledDialog
@@ -51,7 +57,7 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
               border: 'none',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: theme.palette.secondary.main }}>
+            <Avatar sx={{ m: 1, bgcolor: theme.palette.grey.lighter2 }}>
               <LockOutlinedIcon />
             </Avatar>
             <MDTypography component="h1" variant="h4">
@@ -63,10 +69,16 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
       <Divider />
 
       <StyledDialogContent theme={theme} elevation={20}>
-        <CollectionForm
+        <RCDynamicForm
+          formKey={formKey}
+          inputs={formFields[formKey]}
+          initialData={initialFormData}
+          // Conditionally pass initial data if it's an update operation
+        />
+        {/* <CollectionForm
           collectionData={!isNew ? collectionData : undefined}
           actionType={actionType}
-        />
+        /> */}
       </StyledDialogContent>
     </StyledDialog>
   );

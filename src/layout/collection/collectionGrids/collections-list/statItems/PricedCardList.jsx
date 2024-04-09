@@ -6,6 +6,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../../../data/topCards';
 import styled from 'styled-components';
 import { useMemo } from 'react';
+import { useCompileCardData } from '../../../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import { Divider } from '@mui/joy';
 
 const PricedCardList = () => {
   const { theme } = useMode();
@@ -14,59 +16,59 @@ const PricedCardList = () => {
   const lightGrey = colors.grey.lightest;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
-  const { cardsWithQuantities } = useAppContext();
-  // const topFiveCards = useMemo(() => {
-  //   return cardsWithQuantities?.sort((a, b) => b.price - a.price).slice(0, 5);
-  // }, [cardsWithQuantities]);
-  const topFiveCards = useMemo(() => {
-    const uniqueCards = new Map();
-    cardsWithQuantities.forEach((card) => {
-      if (!uniqueCards.has(card.id)) {
-        uniqueCards.set(card.id, card);
-      }
-    });
-
-    const uniqueCardsArray = Array.from(uniqueCards.values());
-
-    return uniqueCardsArray.sort((a, b) => b.price - a.price).slice(0, 5);
-  }, [cardsWithQuantities]);
+  const { collectionMetaData } = useCompileCardData();
   const { data, columns } = useMemo(
-    () => prepareTableData(topFiveCards),
-    [topFiveCards]
+    () => prepareTableData(collectionMetaData?.topFiveCards),
+    [collectionMetaData?.topFiveCards]
   );
 
   return (
-    <MDBox sx={{ width: '100%' }}>
+    <MDBox
+      sx={{
+        width: '100%',
+        height: '100%',
+        flexGrow: 1,
+        // p: 2,
+        maxHeight: 270,
+        border: 'none',
+      }}
+    >
       <Box
         sx={{
           background: primary,
-          borderRadius: theme.spacing(4),
+          // borderRadius: theme.spacing(4),
+          borderRadius: theme.shape.borderRadius,
           minHeight: '270px',
           // minHeight: '100%',
         }}
       >
-        <MDBox>
+        <MDBox sx={{ border: 'none' }}>
           <Card
             sx={{
+              width: '100%',
+              justifyContent: 'center',
               // borderRadius: theme.spacing(4),
               p: theme.spacing(2),
-              background: theme.palette.chartTheme.grey.darkest,
+              background: grey,
               border: theme.palette.chartTheme.greenAccent.dark,
+              borderRadius: theme.shape.borderRadius,
             }}
           >
             <BoxHeader
               title="Top 5 Priced Cards"
               subtitle="none"
-              sideText={`$${topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
+              sideText={`$${collectionMetaData?.topFiveCards?.reduce((acc, card) => acc + card.price, 0)}`}
               colorVariant={greenAccent}
               useSX={true}
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
               sx={{
                 color: greenAccent,
+                borderRadius: theme.shape.borderRadius,
               }}
             />
           </Card>
+          <Divider color={greenAccent} size="2rem" />
         </MDBox>
         <Box
           sx={{

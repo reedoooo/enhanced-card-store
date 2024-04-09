@@ -10,18 +10,59 @@ import {
   Slide,
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
-import searchData from '../../../context/UTILITIES_CONTEXT/FormContext/search.json';
-import {
-  useConfiguratorContext,
-  useFormContext,
-  useMode,
-} from '../../../context';
+import searchData from '../../../data/search.json';
+import { useConfiguratorContext, useMode } from '../../../context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
-import { formSchemas } from '../../../context/UTILITIES_CONTEXT/FormContext/schemas';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import MDBox from '../MDBOX';
 import MDButton from '../MDBUTTON';
+import { formFields } from '../../../components/forms/formsConfig';
+import { TextField, InputLabel } from '@mui/material';
+import { StyledFormControl } from '../../../pages/pageStyles/StyledComponents';
+
+const SearchSettingsForm = ({
+  searchSettings,
+  handleSearch,
+  handleSearchBy,
+  handleSortBy,
+}) => {
+  const { theme } = useMode();
+  return (
+    <>
+      <TextField
+        fullWidth
+        label="Search"
+        variant="outlined"
+        value={searchSettings.search}
+        onChange={handleSearch}
+        placeholder="Search"
+      />
+      <StyledFormControl fullWidth theme={theme}>
+        <InputLabel>Search by</InputLabel>
+        <Select
+          value={searchSettings.searchBy}
+          onChange={handleSearchBy}
+          label="Search by"
+        >
+          <MenuItem value="title">Title</MenuItem>
+          <MenuItem value="genres">Genre</MenuItem>
+        </Select>
+      </StyledFormControl>
+      <StyledFormControl fullWidth>
+        <InputLabel>Sort by</InputLabel>
+        <Select
+          value={searchSettings.sortBy}
+          onChange={handleSortBy}
+          label="Sort by"
+        >
+          <MenuItem value="release_date">Release date</MenuItem>
+          <MenuItem value="vote_average">Rating</MenuItem>
+        </Select>
+      </StyledFormControl>
+    </>
+  );
+};
 
 const FilterSelector = ({ control, name, label, options }) => {
   const { theme } = useMode();
@@ -53,7 +94,7 @@ const Configurator = () => {
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
   const { theme } = useMode();
   const { control, handleSubmit } = useForm({
-    resolver: zodResolver(formSchemas.searchSettings),
+    resolver: zodResolver(formFields['searchSettingsForm']),
     defaultValues: searchData.initialState,
   });
 

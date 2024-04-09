@@ -1,9 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { Box, Grid, Typography, Skeleton, useMediaQuery } from '@mui/material';
-// import PieChart from './statItems/PieChart';
 import TotalPriceStatBox from './statItems/TotalPriceStatBox';
-// import ValuDistributionCircle from './statItems/ValuDistributionCircle';
-// import PricedCardList from './statItems/PricedCardList';
 import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { useAppContext, useMode } from '../../../../context';
@@ -12,79 +9,31 @@ import PricedCardList from './statItems/PricedCardList';
 import MDBox from '../../../REUSABLE_COMPONENTS/MDBOX';
 import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
 import FlexBetween from '../../../REUSABLE_COMPONENTS/FlexBetween';
-
-const SkeletonPieChart = ({ theme }) => (
-  <MDBox
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      minHeight: '270px',
-      bgcolor: theme.palette.background.default,
-      borderRadius: theme.shape.borderRadius,
-    }}
-  >
-    <Typography variant="h5" sx={{ mb: 2 }}>
-      Collection Value Distribution
-    </Typography>
-    <Skeleton
-      variant="circular"
-      width={200}
-      height={200}
-      sx={{
-        bgcolor: theme.palette.chartTheme.primary.main,
-      }}
-    />
-  </MDBox>
-);
+import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import { Divider } from '@mui/joy';
+import { SkeletonPieChart } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
+import useBreakpoint from '../../../../context/hooks/useBreakPoint';
 
 const StatBoxes = () => {
-  const { theme } = useMode();
   return (
-    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
+    <>
       <TotalCardsCollectedStatBox />
+      <Divider />
       <TotalPriceStatBox />
-    </MDBox>
+    </>
   );
 };
 const DistCircle = () => {
-  const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
-  const { allCollections } = useAppContext();
-  if (!allCollections || allCollections.length === 0) {
-    return (
-      <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
-        <SkeletonPieChart theme={theme} />
-      </MDBox>
-    );
-  }
-  return (
-    <MDBox
-      sx={{ width: '100%', minHeight: '100%', flexGrow: 1, maxHeight: 270 }}
-    >
-      <ValuDistributionCircle collections={allCollections} />
-    </MDBox>
-  );
+  return <ValuDistributionCircle />;
 };
 
 const PriceList = () => {
-  const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  return (
-    <MDBox sx={{ width: '100%', minHeight: '100%', flexGrow: 1 }}>
-      <PricedCardList />
-    </MDBox>
-  );
+  return <PricedCardList />;
 };
 const StatBoard = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const { isMobile } = useBreakpoint();
   return (
     <SimpleCard
       theme={uniqueTheme}
@@ -94,7 +43,6 @@ const StatBoard = () => {
     >
       <Grid
         container
-        // spacing={2}
         sx={{
           alignItems: 'flex-start',
           ...(isMobile
@@ -122,7 +70,17 @@ const StatBoard = () => {
               sx={{ width: '100%', minHeight: '100%', maxHeight: 270 }}
             >
               <FlexBetween mt="0.25rem" gap="1.5rem" pr="1rem">
-                {component}
+                <MDBox
+                  sx={{
+                    width: '100%',
+                    minHeight: '100%',
+                    flexGrow: 1,
+                    maxHeight: 270,
+                    border: 'none',
+                  }}
+                >
+                  {component}
+                </MDBox>
               </FlexBetween>
             </Grid>
           )

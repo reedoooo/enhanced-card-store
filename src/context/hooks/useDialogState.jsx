@@ -7,6 +7,7 @@ const useDialogState = (
     isEditDeckDialogOpen: false,
     isAddCollectionDialogOpen: false,
     isEditCollectionDialogOpen: false,
+    isAuthDialogOpen: false,
   }
 ) => {
   const [state, setState] = useState(initialState);

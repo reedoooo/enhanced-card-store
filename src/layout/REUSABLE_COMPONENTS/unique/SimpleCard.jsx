@@ -37,6 +37,22 @@ const getFormHeaderStyle = (theme, isFormHeader) => ({
   width: '80%',
 });
 
+const getSelectorStyles = (themeSettings, isSelectorRow) => ({
+  background: isSelectorRow ? themeSettings.palette.dark.state : undefined,
+  // color: isSelectorRow ? themeSettings.colorPrimary : undefined,
+  // maxWidth: 'lg',
+  padding: themeSettings.spacing(3), // Updated to use theme's spacing method if available
+  borderRadius: '24px',
+  boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
+  mb: themeSettings.spacing(3),
+  mt: themeSettings.spacing(5),
+  pt: themeSettings.spacing(5),
+  mx: 'auto',
+  px: 'auto',
+  justifyContent: 'center',
+  // width: '80%',
+});
+
 const getSearchFormHeaderStyle = (theme, isSearchFormHeader) => ({
   background: isSearchFormHeader ? theme.colorCardBackground : undefined,
   color: isSearchFormHeader ? theme.colorPrimary : undefined,
@@ -119,6 +135,7 @@ const SimpleCard = ({
   hasTitle,
   isPrimary,
   isAccent,
+  isSelectorRow,
   isTableOrChart,
   noBottomMargin,
   children,
@@ -143,6 +160,7 @@ const SimpleCard = ({
     borderRadius: theme.borderRadius,
     background: theme.colorCardBackground,
     color: theme.colorText,
+    ...(isSelectorRow && getSelectorStyles(themeSettings, true)),
     ...(isHeroDisplay && getHeroDisplayStyles(theme, true)),
     ...(isSearchFormHeader && getSearchFormHeaderStyle(theme, true)),
     ...(isFormHeader && getFormHeaderStyle(theme, true)),
@@ -166,15 +184,19 @@ const SimpleCard = ({
       {!cardTitle && children}
       {isHeroDisplay && (
         <CardContent
+          elevation={3}
           sx={{
             height: '100%',
-            // width: '100%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            // flexGrow: 1,
             background: 'transparent',
+            borderRadius: themeSettings.shape.borderRadius,
+            // m: '0.5rem',
+            // p: '0.5rem',
+            // boxShadow: themeSettings.boxShadow.xxl,
+            // boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
           }}
         >
           <MDBox
@@ -183,6 +205,9 @@ const SimpleCard = ({
               justifyContent: 'center',
               alignItems: 'center',
               width: 'auto', // Adjust as needed
+              borderRadius: themeSettings.shape.borderRadius,
+              // m: '0.5rem',
+              boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
             }}
           >
             <IconButton
@@ -242,7 +267,6 @@ const SimpleCard = ({
                     maxHeight: '100%',
                   }}
                 />
-                {/* No need for additional style */}
               </IconButton>
             </AspectRatio>
             <Typography

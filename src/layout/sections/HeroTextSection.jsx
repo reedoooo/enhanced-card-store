@@ -11,6 +11,7 @@ const HeroTextSection = ({ shouldShow }) => {
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'row',
+        // height: isMobileView ? 'calc(100vh - 64px)' : null,
         background: 'transparent',
         alignItems: isMobileView ? 'flex-start' : 'center',
         padding: 1,
@@ -38,7 +39,7 @@ const HeroTextSection = ({ shouldShow }) => {
             variant={isMobileView ? 'h3' : 'h2'}
             sx={{
               fontWeight: 'bold',
-              color: theme.palette.primary.main,
+              color: theme.palette.success.secondary,
               my: isMobileView ? '1rem' : 'auto',
             }}
           >

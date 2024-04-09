@@ -42,7 +42,7 @@ const heroCardData = [
 
 const HeroIconSection = ({ shouldShow }) => {
   const { theme } = useMode();
-  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMidView = useMediaQuery(theme.breakpoints.down('md'));
   return (
     <MDBox
       sx={{
@@ -52,17 +52,18 @@ const HeroIconSection = ({ shouldShow }) => {
         padding: 1,
         width: '100%',
         zIndex: 5,
-        height: isMobileView ? 'calc(100vh - 64px)' : null,
-        maxHeight: isMobileView ? 'calc(100vh - 64px)' : 200,
+        height: isMidView ? 'calc(100vh - 64px)' : null,
+        maxHeight: isMidView ? 'calc(100vh - 64px)' : 200,
         overFlow: 'hidden', // Hide overflow to maintain the card's dimensions
         background: 'transparent',
-        my: isMobileView ? null : 1,
+        my: isMidView ? null : 1,
+        borderColor: 'transparent',
         // minHeight: isMobileView ? 'calc(100vh - 64px)' : '30vh',
-        alignItems: isMobileView ? 'flex-end' : 'center',
-        position: isMobileView ? 'absolute' : 'relative',
+        alignItems: isMidView ? 'flex-end' : 'center',
+        position: isMidView ? 'absolute' : 'relative',
         // borderRadius: 'none',
         // mt: isMobileView ? null : '2rem',
-        borderColor: 'transparent',
+        // borderColor: 'transparent',
       }}
     >
       <Zoom in={shouldShow}>
@@ -77,10 +78,10 @@ const HeroIconSection = ({ shouldShow }) => {
             flexDirection: 'row',
             display: 'flex',
             borderColor: 'transparent',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             alignItems: 'center',
-            mx: isMobileView ? null : 'auto',
-            pt: isMobileView ? '1rem' : 'auto',
+            mx: isMidView ? null : 'auto',
+            py: isMidView ? '1rem' : 'auto',
             // my: isMobileView ? null : 'auto',
             // py: '1.5rem',
             background: 'transparent',
@@ -94,30 +95,24 @@ const HeroIconSection = ({ shouldShow }) => {
               sx={{
                 flex: 1, // Allow each item to grow and shrink as needed
                 maxHeight: 200, // Max height for the AspectRatio container
+                maxWidth: 200, // Max width for the AspectRatio container
                 border: 'none',
                 background: 'transparent',
-                m: isMobileView ? null : 1,
+                borderRadius: theme.shape.borderRadiusLarge,
+                m: isMidView ? '0.5rem' : 'auto',
               }}
               ratio="1" // Maintain a 1:1 aspect ratio
-              // sx={{
-              //   flexBasis: '100%',
-              //   overflow: 'auto',
-              //   height: 'auto',
-              //   minBlockSize: '100px',
-              // }}
             >
               <MDBox
                 key={card.id}
                 sx={{
                   border: 'none',
-                  // mt: isMobileView ? '1rem' : '10%',
-                  // pt: isMobileView ? '1rem' : '10%',
                   background: 'transparent',
                   borderColor: 'transparent',
+                  borderRadius: theme.shape.borderRadius,
+
                   overFlow: 'hidden', // Hide overflow to maintain the card's dimensions
-                  maxHeight: 200,
-                  // mx: isMobileView ? null : 'auto',
-                  // my: isMobileView ? null : 'auto',
+                  // maxHeight: 200,
                 }}
               >
                 <SimpleCard

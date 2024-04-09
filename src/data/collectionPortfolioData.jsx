@@ -3,6 +3,7 @@ import Icon from '@mui/material/Icon';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import React from 'react';
 import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import { roundToNearestTenth } from '../context/Helpers';
 const Name = ({ name }) => (
   <MDTypography
     component="a"
@@ -54,10 +55,6 @@ const Action = ({ value }) => (
 );
 export default function prepareTableData(selectedCards) {
   if (!selectedCards) return <LoadingIndicator />;
-
-  // Helper function to round total price to the nearest tenth
-  const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-
   // Define column structure for react-table
   const columns = React.useMemo(
     () => [

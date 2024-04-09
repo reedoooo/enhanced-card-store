@@ -22,15 +22,16 @@ import {
 } from '@mui/material';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import Transitions from '../Transitions';
 import MainCard from '../MainCard';
+import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
   const { theme } = useMode();
-  const { user } = useAuthContext();
+  const { user } = useUserData();
   const navigate = useNavigate();
   const [sdm, setSdm] = useState(true);
   const [value, setValue] = useState('');
@@ -81,14 +82,14 @@ const ProfileSection = () => {
           alignItems: 'center',
           borderRadius: '27px',
           transition: 'all .2s ease-in-out',
-          borderColor: theme.palette.backgroundA.light,
-          backgroundColor: theme.palette.backgroundA.light,
+          borderColor: theme.palette.greenAccent.lightest,
+          backgroundColor: theme.palette.greenAccent.lightest,
           '&[aria-controls="menu-list-grow"], &:hover': {
-            borderColor: theme.palette.backgroundA.dark,
-            background: `${theme.palette.backgroundA.dark}!important`,
-            color: theme.palette.backgroundA.light,
+            borderColor: theme.palette.greenAccent.light,
+            background: `${theme.palette.greenAccent.light}!important`,
+            color: theme.palette.greenAccent.lightest,
             '& svg': {
-              stroke: theme.palette.backgroundA.light,
+              stroke: theme.palette.greenAccent.lightest,
             },
           },
           '& .MuiChip-label': {
@@ -113,7 +114,7 @@ const ProfileSection = () => {
         //   <IconSettings
         //     stroke={1.5}
         //     size="1.5rem"
-        //     color={theme.palette.backgroundA.dark}
+        //     color={theme.palette.greenAccent.light}
         //   />
         // }
         variant="outlined"
@@ -200,7 +201,7 @@ const ProfileSection = () => {
                       <Divider />
                       <Card
                         sx={{
-                          bgcolor: theme.palette.primary.light,
+                          bgcolor: theme.palette.grey.blueGrey,
                           my: 2,
                         }}
                       >
@@ -263,7 +264,7 @@ const ProfileSection = () => {
                           width: '100%',
                           maxWidth: 350,
                           minWidth: 300,
-                          backgroundColor: theme.palette.backgroundA.dark,
+                          backgroundColor: theme.palette.greenAccent.light,
                           borderRadius: '10px',
                           [theme.breakpoints.down('md')]: {
                             minWidth: '100%',
@@ -323,7 +324,7 @@ const ProfileSection = () => {
                                     size="small"
                                     sx={{
                                       bgcolor: theme.palette.warning.dark,
-                                      color: theme.palette.backgroundA.light,
+                                      color: theme.palette.greenAccent.lightest,
                                     }}
                                   />
                                 </Grid>

@@ -11,27 +11,13 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const green = colors.greenAccent.default;
   const greenliht = colors.greenAccent.light;
   const grey = colors.grey.default;
-  const IconWrapper = ({ children }) => (
-    <Box
-      sx={{
-        borderRadius: '50%',
-        width: 40,
-        height: 40,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: greenliht,
-      }}
-    >
-      {children}
-    </Box>
-  );
   return (
     <MDBox
       sx={{
         width: '100%',
         p: '20px',
-        borderRadius: theme.spacing(4),
+        borderRadius: theme.shape.borderRadius,
+        border: 'none',
         maxHeight: '135px',
       }}
     >
@@ -43,11 +29,9 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
           borderRadius: theme.spacing(4),
         }}
       >
-        {/* <Box> */}
-        {/* <Card> */}
         <MDBox
           sx={{
-            borderRadius: 'none',
+            border: 'none',
           }}
         >
           <CardContent

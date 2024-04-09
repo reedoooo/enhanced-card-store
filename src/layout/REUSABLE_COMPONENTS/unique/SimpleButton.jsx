@@ -28,7 +28,7 @@ const SimpleButton = ({
   const { theme: themeSettings } = useMode();
   const calculateStyles = (size) => {
     switch (size) {
-      case 'sm':
+      case 'small':
         return {
           width: '75px',
           // p: '1rem',
@@ -36,11 +36,17 @@ const SimpleButton = ({
           // m: '0.5rem',
           fontSize: '0.875rem',
         };
-      case 'md':
+      case 'medium':
         return {
           width: '100px',
           padding: '0.75rem 1rem',
           fontSize: '1rem',
+        };
+      case 'large':
+        return {
+          width: '125px',
+          padding: '1rem 1.5rem',
+          fontSize: '1.25rem',
         };
       default:
         return {
@@ -91,7 +97,6 @@ const SimpleButton = ({
       cursor: 'not-allowed',
     }),
   };
-
   const buttonHoverStyle = {
     position: 'absolute',
     zIndex: 1,
@@ -119,7 +124,6 @@ const SimpleButton = ({
       background: rgba(theme.colorDisabledBackground || 'white', 0.15),
     }),
   };
-
   const buttonTextStyle = {
     position: 'relative',
     zIndex: 2,

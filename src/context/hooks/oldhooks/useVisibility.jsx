@@ -4,7 +4,6 @@ export const useVisibility = () => {
   const [isCollectionVisible, setCollectionVisibility] = useState(false);
   const [dialogStates, setDialogStates] = useState({
     isAddCollectionDialogOpen: false,
-    isSelectionErrorDialogOpen: false,
   });
 
   const toggleCollectionVisibility = useCallback(() => {

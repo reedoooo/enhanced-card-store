@@ -2,7 +2,7 @@
 import { createNewPriceEntry } from './Helpers';
 import jsonData from '../data/nivoTestData.json';
 const { nivoTestData } = jsonData;
-import user from './user';
+import user from '../data/user';
 
 // import { lightTheme, indigoTheme } from '../assets/themes/colors';
 // ! DEFAULT VALUES FOR CARD OBJECTS
@@ -114,7 +114,6 @@ const defaultCollectionStatistics = {
     },
   },
 };
-
 // const defaultPriceEntry = {
 //   num: 0,
 //   timestamp: new Date(),
@@ -220,7 +219,6 @@ const createDefaultCard = () => ({
 // Example usage
 const defaultCard = createDefaultCard();
 console.log(defaultCard);
-
 const defaultCollection = {
   name: '',
   description: '',
@@ -294,6 +292,7 @@ const defaultCollection = {
   averagedChartData: new Map(),
   muiChartData: [],
   cards: [],
+  _id: '',
   addDefaultCard: function () {
     const newCard = createDefaultCard();
     this.cards.push(newCard);
@@ -309,6 +308,7 @@ const defaultCollection = {
     Array.from({ length: numberOfCards }).forEach(() => this.addDefaultCard());
   },
 };
+console.log(defaultCollection);
 
 // ! DEFAULT VALUES FOR DECK OBJECTS
 const defaultDeck = {
@@ -856,7 +856,6 @@ const defaultFormContextValues = {
   setIsFormValid: () => {},
   setForms: () => {},
   setFormErrors: () => {},
-  setCurrentForm: () => {},
   handleChange: () => {},
   handleSubmit: () => {},
   onSubmit: () => {},
@@ -866,7 +865,6 @@ const defaultFormContextValues = {
   register: () => {},
   registerForm: () => {},
   setFormType: () => {},
-  setCurrentFormType: () => {},
   setValueAtPath: () => {},
   setError: () => {},
   toggleAuthForm: () => {},

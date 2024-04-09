@@ -267,24 +267,18 @@ export default styled(Button)(({ ownerState }) => {
   };
 
   const customContainedStyles = {
-    backgroundColor: palette.backgroundF.dark,
-    // background:
-    // backgroundColor: theme.palette.backgroundE.light,
-    // color: theme.palette.primary.main,
-    borderColor: palette.backgroundB.dark,
-    // color: theme.palette.primary.main,
+    backgroundColor: palette.greenAccent.greenBlue,
+    borderColor: palette.grey.simpleGrey,
     borderWidth: 2,
     flexGrow: 1,
     justifySelf: 'bottom',
     bottom: 0,
     '&:hover': {
       fontWeight: 'bold',
-      background: palette.backgroundF.dark,
-      border: `1px solid ${palette.backgroundF.darkest}`,
-      // border: `1px solid ${theme.palette.backgroundB.darkest}`,
+      background: palette.greenAccent.greenBlue,
+      border: `1px solid ${palette.greenAccent.ceruleanBlue}`,
     },
     transition: 'opacity 0.3s ease, transform 0.3s ease',
-    // Add any other styles you want to apply specifically to this variant
   };
 
   const customContained = () => {

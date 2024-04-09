@@ -16,17 +16,16 @@ import PaymentForm from './PaymentForm';
 import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useUserContext } from '../../../context';
+import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
+      {`Copyright © ReedThaHuman ${new Date().getFullYear()}`}
+      <Link color="inherit" href="www.reedthahuman.com">
+        ReedThaHuman Industries
+      </Link>
       {new Date().getFullYear()}
-      {'.'}
     </Typography>
   );
 }
@@ -47,17 +46,15 @@ function getStepContent(step) {
   }
 }
 
-export default function Checkout() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const { user } = useUserContext();
+export default function Checkout({ activeStep, setActiveStep }) {
+  // const [activeStep, setActiveStep] = React.useState(0);
+  const { user } = useUserData();
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
-
   const handleBack = () => {
     setActiveStep(activeStep - 1);
   };
-
   return (
     <Elements stripe={stripePromise}>
       <React.Fragment>

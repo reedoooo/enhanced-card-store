@@ -18,8 +18,8 @@ const BoxHeader = ({
   const { theme } = useMode();
   return (
     <FlexBetween
-      color={theme.palette.backgroundB.default}
-      margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
+      color={theme.palette.grey.simpleGrey}
+      // margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
       paddingTop={useSX ? paddingVariant : 0}
       sx={useSX ? sx : {}}
     >
@@ -27,21 +27,28 @@ const BoxHeader = ({
         {icon}
         <Box width="100%">
           <Typography
+            theme={theme}
             variant={useSX ? titleVariant : 'h4'}
             mb="-0.1rem"
-            color={useSX ? colorVariant : theme.palette.backgroundE.dark}
+            ml="0.5rem"
+            color={
+              useSX ? colorVariant : theme.palette.greenAccent.pureGreenBlue
+            }
           >
             {title}
           </Typography>
           {subtitle !== 'none' && (
-            <Typography variant="h6">{subtitle}</Typography>
+            <Typography variant="h6" ml="0.5rem" theme={theme}>
+              {subtitle}
+            </Typography>
           )}
         </Box>
       </FlexBetween>
       <Typography
+        theme={theme}
         variant="h5"
         fontWeight="700"
-        color={theme.palette.backgroundE.dark}
+        color={theme.palette.greenAccent.pureGreenBlue}
         sx={useSX ? sx : {}}
       >
         {sideText}

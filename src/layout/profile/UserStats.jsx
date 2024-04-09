@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { useDeckStore } from '../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useCartStore } from '../../context/MAIN_CONTEXT/CartContext/CartContext';
-import { useCollectionStore } from '../../context/MAIN_CONTEXT/CollectionContext/CollectionContext';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
+import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
 
 const UserStats = () => {
-  const { allDecks } = useDeckStore();
-  const { allCollections } = useCollectionStore();
-  const { cartData } = useCartStore();
+  const { allDecks } = useSelectedDeck();
+  const { allCollections } = useSelectedCollection();
+  const { cart } = useCartManager();
   // console.log('allDecks', allDecks);
   return (
     <Box mt={3}>
@@ -19,7 +19,7 @@ const UserStats = () => {
         Number of Collections: {allCollections?.length}
       </Typography>
       <Typography variant="body1">
-        Number of Cards in Cart: {cartData?.cart?.length}
+        Number of Cards in Cart: {cart?.items?.length}
       </Typography>
       {/* Add other statistics as needed */}
     </Box>

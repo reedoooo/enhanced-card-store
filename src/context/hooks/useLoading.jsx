@@ -1,45 +1,11 @@
 import { useCallback, useState } from 'react';
-const GENERAL_LOADING_IDS = new Set([
-  'isLoading',
-  'isDataLoading',
-  'isFormDataLoading',
-  'isPageLoading',
-  'isSearchLoading',
-]); // Define general loading IDs
 const GENERAL_LOADING_STATES = {
   isLoading: 'isLoading',
   isDataLoading: 'isDataLoading',
   isFormDataLoading: 'isFormDataLoading',
   isPageLoading: 'isPageLoading',
   ifIsSearchLoading: 'isSearchLoading',
-}; // Define general loading states
-const ADDITIONAL_LOADING_STATES = {
-  loadingTimeoutExpired: 'loadingTimeoutExpired',
-  error: 'error',
-}; // Define additional loading states
-const DEFAULT_VALUES = {
-  loadingStatus: {
-    isLoading: false,
-    isDataLoading: false,
-    isFormDataLoading: false,
-    isPageLoading: false,
-    isSearchLoading: false,
-    error: null,
-    loadingTimeoutExpired: false,
-    loadingType: '',
-  },
-  error: null,
-  // setActivelyLoading: () => {},
-  // returnDisplay: () => null,
-  // setLoading: () => {},
-  // setError: () => {},
-  // setPageError: () => {},
-  // setIsLoading: () => {},
-  // setIsDataLoading: () => {},
-  // setIsFormDataLoading: () => {},
-  // setIsPageLoading: () => {},
-  // setLoadingTimeoutExpired: () => {},
-}; // Define default values
+};
 
 /**
  * A hook to manage loading states within components.

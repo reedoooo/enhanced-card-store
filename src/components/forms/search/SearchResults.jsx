@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import useGridItems from '../../../context/hooks/useGridItems';
 import usePagination from '../../../context/hooks/usePagination';
-import LoadingIndicator from '../../../layout/LoadingIndicator';
+import LoadingIndicator from '../../../layout/REUSABLE_COMPONENTS/system-utils/LoadingIndicator';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import PaginationComponent from './PaginationComponent';
 
@@ -26,7 +26,15 @@ const SearchResults = ({
   if (isLoading) return <LoadingIndicator />;
   return (
     <React.Fragment>
-      <MDBox>
+      <MDBox
+        sx={{
+          m: '1rem',
+          p: '1rem',
+          pr: 0,
+          // mr: 0,
+          justifyContent: 'center',
+        }}
+      >
         <Grid
           container
           justifyContent="center"
@@ -34,12 +42,13 @@ const SearchResults = ({
           sx={{
             display: 'flex',
             flexDirection: 'row',
+            justifyContent: 'center',
           }}
         >
           {renderItems}
         </Grid>
         <Grid container justifyContent="center">
-          <Grid item xs={12}>
+          <Grid item xs={12} justifyContent="center">
             <PaginationComponent
               pageOptions={searchData}
               pageCount={pageCount}

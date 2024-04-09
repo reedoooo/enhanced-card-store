@@ -4,16 +4,16 @@ import DashboardLayout from '../REUSABLE_COMPONENTS/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
-import CollectionPortfolioHeader from './sub-components/CollectionPortfolioHeader';
 import SelectCollectionList from './collectionGrids/collections-list/SelectCollectionList';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useDialogState from '../../context/hooks/useDialogState';
-import SelectCollectionHeader from './collectionGrids/collections-list/SelectCollectionHeader';
+import SelectCollectionHeader from './SelectCollectionHeader';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
 import StatBoard from './collectionGrids/collections-list/StatBoard';
 import { Tab, Tabs } from '@mui/material';
 import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
 import ChartGridLayout from './collectionGrids/ChartGridLayout';
+import CollectionPortfolioHeader from './CollectionPortfolioHeader';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();

@@ -18,7 +18,7 @@ const TotalCardsCollectedStatBox = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: theme.spacing(4),
+        borderRadius: theme.shape.borderRadius,
         height: '100%',
         minHeight: '135px',
       }}

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -17,93 +17,85 @@ import SimpleCard from '../../../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../../../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { CollectionListItemSkeleton } from '../../../REUSABLE_COMPONENTS/SkeletonVariants';
 import { useMode } from '../../../../context';
-
+import LoadingOverlay from '../../../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useBreakpoint from '../../../../context/hooks/useBreakPoint';
+import useCollectionManager from '../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
+import useDialogState from '../../../../context/hooks/useDialogState';
+import * as math from 'mathjs';
 const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
+  const { isMobile } = useBreakpoint(); // Detect mobile screen
   const { theme } = useMode();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screen
+  const selectionData = useSelectedCollection();
+  const collectionData = useCollectionManager();
 
-  const {
-    allCollections,
-    allIds,
-    handleSelectCollection,
-    toggleShowCollections,
-  } = useSelectedCollection();
-  const [collectionList, setCollectionList] = useState([]);
-  const numCollections = allIds?.length || 0;
-  const nonSkeletonCount = useRef(0);
+  if (!collectionData || !selectionData) {
+    return <LoadingOverlay />;
+  }
+  const { selectedCollection, allCollections, allIds, refreshCollections } =
+    selectionData;
+  const { deleteCollection } = collectionData;
+  const handleDelete = useCallback(
+    async (collectionId) => {
+      if (!collectionId) return;
 
-  useEffect(() => {
-    const minItems = 5;
-    const numRequired =
-      minItems - numCollections > 0 ? minItems - numCollections : 0;
-    nonSkeletonCount.current = numCollections;
-
-    const allSkeletonCollections = [...Array(numRequired).keys()].map(
-      (index) => (
-        <CollectionListItemSkeleton
-          key={`skeleton-${index}`}
-          count={1}
-          index={index}
-        />
-      )
+      try {
+        await deleteCollection(collectionId);
+        const updatedCollections = allCollections.filter(
+          (col) => col._id !== collectionId
+        );
+        refreshCollections(updatedCollections); // Assuming refreshCollections now directly accepts an updated array
+      } catch (error) {
+        console.error('Failed to delete collection:', error);
+      }
+    },
+    [deleteCollection, allIds, refreshCollections]
+  );
+  const collectionList = allCollections.map((collection, index) => (
+    <CollectionListItem
+      key={`${collection._id}-collection-${index}`}
+      collection={collection}
+      handleSelectAndShowCollection={handleSelectAndShowCollection}
+      handleDelete={() => handleDelete(collection._id)}
+    />
+  ));
+  const minItems = 5;
+  for (let i = collectionList.length; i < minItems; i++) {
+    collectionList.push(
+      <CollectionListItemSkeleton key={`skeleton-${i}-${Math.random()}`} />
     );
-    const combinedCollections = allCollections
-      .map((collection, index) => (
-        <Collapse key={collection?._id || `collection-${index}`}>
-          <Card
-            onClick={() => {
-              handleSelectAndShowCollection(collection);
-            }}
-            sx={{
-              ...(isMobile && {
-                boxShadow: 'none', // Remove shadow
-                '&:hover': {
-                  boxShadow: 'none',
-                },
-              }),
-            }}
-          >
-            <CollectionListItem
-              collection={collection}
-              // openEditDialog={openNewDialog}
-            />
-          </Card>
-        </Collapse>
-      ))
-      .concat(allSkeletonCollections);
-
-    setCollectionList(combinedCollections);
-  }, [allIds?.length, isMobile]); // Dependency on allIds.length instead of allIds and allCollections
+  }
 
   return (
-    <SimpleCard
-      theme={uniqueTheme}
-      hasTitle={false}
-      isPrimary={false}
-      noBottomMargin={true}
-      sx={{
-        ...(isMobile && {
-          boxShadow: 'none', // Optionally adjust the SimpleCard's style for mobile
-        }),
-      }}
-    >
-      <List sx={{ justifyContent: 'center', alignItems: 'center', mx: 'auto' }}>
-        <TransitionGroup>
-          {collectionList?.map((item, index) =>
-            React.isValidElement(item) ? (
-              item
-            ) : (
-              <Skeleton key={`skeleton-${index}`} count={1} />
-            )
-          )}
-        </TransitionGroup>
-      </List>
-    </SimpleCard>
+    <>
+      <SimpleCard
+        theme={uniqueTheme}
+        hasTitle={false}
+        isPrimary={false}
+        noBottomMargin={true}
+        sx={{
+          ...(isMobile && {
+            boxShadow: 'none', // Optionally adjust the SimpleCard's style for mobile
+          }),
+        }}
+      >
+        <List
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            mx: 'auto',
+            px: '1rem',
+            backgroundColor: theme.palette.grey.black,
+          }}
+        >
+          <TransitionGroup>{collectionList}</TransitionGroup>
+        </List>
+      </SimpleCard>
+    </>
   );
 };
 
 SelectCollectionList.propTypes = {
-  // openNewDialog: PropTypes.func.isRequired,
   handleSelectAndShowCollection: PropTypes.func.isRequired,
 };
 

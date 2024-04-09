@@ -23,15 +23,33 @@ const OptionsComponent = ({
   const schemaName = 'collectionSearchForm';
   const buttonLabel = 'Search';
   const startIcon = <AddCircleOutlineIcon />;
-  const collectionSearchFields = [
-    {
-      name: 'searchTerm',
-      label: 'Search',
-      type: 'text',
+  const collectionSearchFields = {
+    label: 'Search',
+    type: 'text',
+    placeholder: 'Search for cards...',
+    defaultValue: '',
+    rules: {
       required: true,
-      value: search,
     },
-  ];
+    startIcon: <AddCircleOutlineIcon />,
+    required: true,
+    value: search,
+    buttonLabel: 'Search',
+  };
+  // const collectionSearchFields = {
+  //   searchTerm: {
+  //     label: 'Search',
+  //     type: 'text',
+  //     placeholder: 'Search for cards...',
+  //     defaultValue: '',
+  //     rules: {
+  //       required: true,
+  //     },
+  //     icon: <AddCircleOutlineIcon />,
+  //     required: true,
+  //     value: search,
+  //   },
+  // };
   const {
     formMethods,
     onSubmit,
@@ -62,22 +80,22 @@ const OptionsComponent = ({
         color: theme.palette.text.primary,
         '& .MuiTextField-root': {
           '& fieldset': {
-            borderColor: theme.palette.primary.main, // subtle accent on text field borders
+            borderColor: theme.palette.success.secondary, // subtle accent on text field borders
           },
           '&:hover fieldset': {
-            borderColor: theme.palette.primary.dark, // darker on hover for emphasis
+            borderColor: theme.palette.grey.black, // darker on hover for emphasis
           },
           '& .Mui-focused fieldset': {
-            borderColor: theme.palette.primary.main, // maintain accent on focus
+            borderColor: theme.palette.success.secondary, // maintain accent on focus
           },
         },
         '& .MuiAutocomplete-root': {
           '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: theme.palette.primary.main, // accent on autocomplete focus
+            borderColor: theme.palette.success.secondary, // accent on autocomplete focus
           },
         },
         '& .MuiSvgIcon-root': {
-          color: theme.palette.primary.main, // icon color
+          color: theme.palette.success.secondary, // icon color
         },
       }}
     >
@@ -106,7 +124,7 @@ const OptionsComponent = ({
                         color: theme.palette.text.primary, // input text color
                       },
                       '.MuiInputLabel-root': {
-                        color: theme.palette.primary.light, // label color for a subtle accent
+                        color: theme.palette.grey.blueGrey, // label color for a subtle accent
                       },
                     }}
                   />
@@ -126,7 +144,7 @@ const OptionsComponent = ({
                 label="Rows per page"
                 variant="outlined"
                 InputLabelProps={{
-                  style: { color: theme.palette.primary.light }, // subtle accent on the label
+                  style: { color: theme.palette.grey.blueGrey }, // subtle accent on the label
                 }}
               />
             )}

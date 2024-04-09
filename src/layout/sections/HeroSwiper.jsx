@@ -96,7 +96,7 @@ const HeroSwiper = ({
             `<span class="${className}">${cards[index].name}</span>`,
         }}
         style={{
-          minWidth: '150vw',
+          minWidth: isMobileView ? '100vw' : '150vw',
           width: '100%',
           alignItems: isMobileView ? 'center' : 'flex-start',
           position: isMobileView ? 'absolute' : 'absolute',
@@ -118,9 +118,10 @@ const HeroSwiper = ({
               flexDirection: 'column',
               alignItems: 'center',
               width: '100%',
+              minWidth: isMobileView ? '300px' : '16vw',
               height: isMobileView ? 'calc(100vh - 8%)' : '100%',
-              transform: index === activeCardIndex ? 'scale(2.2)' : 'scale(1)',
-              transition: 'transform 0.9s',
+              transform: index === activeCardIndex ? 'scale(4.2)' : 'scale(1)',
+              transition: 'transform 2s',
               border: 'none',
               boxShadow: 'none',
             }}
@@ -144,7 +145,7 @@ const HeroSwiper = ({
               style={{
                 maxWidth: '100%',
                 objectFit: 'contain',
-                width: 'auto',
+                // width: 'auto',
                 borderRadius: 0,
                 height: 'auto',
                 transition: 'transform 0.9s',

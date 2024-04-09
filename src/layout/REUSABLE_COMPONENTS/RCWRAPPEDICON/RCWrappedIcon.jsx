@@ -1,14 +1,21 @@
 import { forwardRef } from 'react';
 import RCWrappedIconRoot from './RCWrappedIconRoot';
 import { useMode } from '../../../context';
+import MDBox from '../MDBOX';
 
 const RCWrappedIcon = forwardRef(({ color, size, children, ...rest }, ref) => {
   const { theme } = useMode();
 
   return (
-    <RCWrappedIconRoot {...rest} ref={ref} color={color}>
-      {children}
-    </RCWrappedIconRoot>
+    <MDBox
+      sx={{
+        border: 'none',
+      }}
+    >
+      <RCWrappedIconRoot {...rest} ref={ref} color={color}>
+        {children}
+      </RCWrappedIconRoot>
+    </MDBox>
   );
 });
 

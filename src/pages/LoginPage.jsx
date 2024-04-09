@@ -8,10 +8,8 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LoginForm from '../assets/currentlyUnused/LoginForm';
-import { useAuthContext, useMode } from '../context';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import { useMode } from '../context';
+import useManageCookies from '../context/hooks/useManageCookies';
 
 function Copyright(props) {
   return (
@@ -34,27 +32,9 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-
   const { theme } = useMode();
-  const { isLoggedIn } = useAuthContext();
-  const [cookies, setCookies, removeCookies] = useCookies(['authUser']);
-  const previousIsLoggedIn = React.useRef(isLoggedIn);
-
-  React.useEffect(() => {
-    // Check if isLoggedIn status has changed
-    if (isLoggedIn && !previousIsLoggedIn.current) {
-      // User just logged in
-      navigate('/');
-    } else if (!isLoggedIn && previousIsLoggedIn.current) {
-      // User just logged out
-      navigate('/login');
-    }
-    // Update the ref to the current isLoggedIn status
-    previousIsLoggedIn.current = isLoggedIn;
-  }, [isLoggedIn, navigate]);
-
-  if (isLoggedIn) return null; // Don't render anything if already logged in
+  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -87,13 +67,13 @@ export default function LoginPage() {
               alignItems: 'center',
             }}
           >
-            <Avatar sx={{ m: 1, background: theme.palette.backgroundA.dark }}>
+            <Avatar sx={{ m: 1, background: theme.palette.greenAccent.light }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <LoginForm />
+            {/* <LoginForm /> */}
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

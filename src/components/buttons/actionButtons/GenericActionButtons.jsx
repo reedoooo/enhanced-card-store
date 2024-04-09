@@ -2,15 +2,14 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { getContextIcon } from '../../../layout/REUSABLE_COMPONENTS/icons/index';
-import { useDeckStore } from '../../../context/MAIN_CONTEXT/DeckContext/DeckContext';
-import { useCartStore } from '../../../context/MAIN_CONTEXT/CartContext/CartContext';
 import useCollectionManager from '../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import ActionButton from './ActionButton';
 import { useSnackbar } from 'notistack';
 import GlassyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/GlassyIcon';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import useDeckManager from '../../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
+import { useCartManager } from '../../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import LoadingOverlay from '../../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -30,10 +29,11 @@ const GenericActionButtons = ({
   datatable = false,
 }) => {
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
-  const { addOneToCollection, removeOneFromCollection } =
-    useCollectionManager();
+  const memoizedReturnValues = useCollectionManager(); // Add this line to use useCollectionManager
+  if (!memoizedReturnValues) return <LoadingOverlay />; // Add this line to use useCollectionManager
+  const { addOneToCollection, removeOneFromCollection } = memoizedReturnValues; // Modify this line to use useCollectionManager
   const { addOneToDeck, removeOneFromDeck } = useDeckManager();
-  const { addOneToCart, removeOneFromCart, cartData } = useCartStore();
+  const { addOneToCart, removeOneFromCart } = useCartManager();
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
@@ -148,7 +148,6 @@ const ActionButtons = ({
           </MDTypography>
         </MDBox>
       )}
-
       <Box
         sx={{
           display: 'flex',

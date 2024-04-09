@@ -21,6 +21,7 @@ import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { useSelectedContext, useModalContext, useMode } from '../../context';
 import { useSnackbar } from 'notistack';
 import FlexBetween from '../../layout/REUSABLE_COMPONENTS/FlexBetween';
+import useBreakpoint from '../../context/hooks/useBreakPoint';
 
 const GenericCardDialog = ({
   open = false,
@@ -33,12 +34,10 @@ const GenericCardDialog = ({
 }) => {
   const { theme } = useMode();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useBreakpoint();
 
   const { closeModal } = useModalContext();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
-  const [imageUrl, setImageUrl] = useState(card?.card_images[0]?.image_url);
-
   const handleAction = useCallback(
     (message, variant) => {
       enqueueSnackbar(message, { variant });
@@ -102,12 +101,12 @@ const GenericCardDialog = ({
       </FlexBetween>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <CardMediaSection card={card} imgUrl={imageUrl} />
+          <CardMediaSection card={card} imgUrl={card?.image} />
         </Grid>
         <Grid item xs={12} sm={6}>
           <CardDetailsContainer
-            title="Description"
-            value={card?.desc}
+            className={'card-details-container-dialog'}
+            card={card}
             titles={['Description', 'Price', 'Rarity', 'Card Sets']}
           />
           <Card sx={{ mt: 2 }}>
@@ -125,6 +124,7 @@ const GenericCardDialog = ({
               <GenericActionButtons
                 key={mappedContext}
                 card={card}
+                cardClasses="base-card-no-quantity"
                 context={mappedContext}
                 originalContext={context}
                 onClick={() => handleContextSelect(mappedContext)}

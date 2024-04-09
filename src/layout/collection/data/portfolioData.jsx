@@ -2,6 +2,7 @@ import React from 'react';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import GenericActionButtons from '../../../components/buttons/actionButtons/GenericActionButtons';
 import { useSnackbar } from 'notistack';
+import { roundToNearestTenth } from '../../../context/Helpers';
 
 // Note: No changes needed for these components
 const Name = ({ name }) => (
@@ -53,9 +54,6 @@ const Quantity = ({ quantity }) => (
 );
 
 export default function preparePortfolioTableData(selectedCards) {
-  const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
-  // const { enqueueSnackbar } = useSnackbar();
-
   const columns = [
     {
       field: 'name',
@@ -83,62 +81,17 @@ export default function preparePortfolioTableData(selectedCards) {
       flex: 1,
       renderCell: (params) => <Quantity quantity={params.value} />,
     },
-    // {
-    //   field: 'action',
-    //   headerName: 'Action',
-    //   flex: 1,
-    //   renderCell: (params) => (
-    //     <GenericActionButtons
-    //       card={params.value}
-    //       variant="data-table"
-    //       context={'Collection'}
-    //       onClick={() => console.log('clicked')}
-    //       onSuccess={() =>
-    //         enqueueSnackbar('Action successful', {
-    //           variant: 'success',
-    //         })
-    //       }
-    //       onFailure={(error) =>
-    //         enqueueSnackbar('Action failed', {
-    //           variant: 'error',
-    //         })
-    //       }
-    //       page={'Collection'}
-    //       cardSize={'small'}
-    //     />
-    //   ),
-    // },
     {
       field: 'action',
       headerName: 'Action',
       renderCell: (params) => (
         <GenericActionButtons
-          card={params}
+          card={params.value}
           datatable={true}
           context={'Collection'}
           onClick={() => console.log('clicked')}
           onSuccess={() => console.log('success')}
           onFailure={() => console.log('failure')}
-          // onSuccess={() =>
-          //   enqueueSnackbar(
-          //     {
-          //       title: 'Action successful',
-          //       message: `Card added to ${params?.name || ''} successfully.`,
-          //     },
-          //     'success',
-          //     null
-          //   )
-          // }
-          // onFailure={(error) =>
-          //   enqueueSnackbar(
-          //     {
-          //       title: 'Action failed',
-          //       message: `Failed to add card to ${params?.name || ''}.`,
-          //     },
-          //     'error',
-          //     error
-          //   )
-          // }
           page={'Collection'}
           cardSize={'small'}
           variant="data-table"
