@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCartManager } from '../../MAIN_CONTEXT/CartContext/useCartManager';
 import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useSelectedDeck from '../../MAIN_CONTEXT/DeckContext/useSelectedDeck';
@@ -7,7 +7,8 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 
 export const useCompileCardData = () => {
   const { selectedDeck, allDecks } = useSelectedDeck();
-  const { selectedCollection, allCollections } = useSelectedCollection();
+  const { selectedCollection, allCollections, updateCollectionField } =
+    useSelectedCollection();
   const { cart } = useCartManager();
   const { selectedContext } = useSelectedContext();
   const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
@@ -19,11 +20,29 @@ export const useCompileCardData = () => {
     []
   );
   const [allUserCards, setAllUserCards] = useLocalStorage('allUserCards', []);
+  const [selectedTimeRange, setSelectedTimeRange] = useState('24hr');
+  const [chartData, setChartData] = useState(
+    selectedCollection.averagedChartData[selectedTimeRange]
+  );
+  // useEffect(() => {
+  //   const newData = selectedCollection?.averagedChartData[selectedTimeRange];
+  //   console.log(newData);
+  //   if (newData) {
+  //     console.log('NEW DATA FOR CHART', newData);
+  //     setChartData(newData);
+  //     updateCollectionField(
+  //       selectedCollection._id,
+  //       'selectedChartData',
+  //       newData
+  //     );
+  //   }
+  // }, []);
   const compileCardsWithQuantities = useCallback(() => {
     if (!allCollections && !allDecks && !cart) return [];
 
     const cards = [...(cart?.items || [])];
     allCollections.forEach((collection) => {
+      if (!collection.cards) return;
       cards.push(...collection.cards);
     });
     allDecks.forEach((deck) => {
@@ -117,8 +136,14 @@ export const useCompileCardData = () => {
     compileCardsWithQuantities,
     isCardInContext,
     compileCollectionMetaData,
-    cardsWithQuantities,
     collectionMetaData,
+    cardsWithQuantities,
+    setCardsWithQuantities,
     allUserCards,
+    setAllUserCards,
+    selectedTimeRange,
+    setSelectedTimeRange,
+    chartData,
+    setChartData,
   };
 };

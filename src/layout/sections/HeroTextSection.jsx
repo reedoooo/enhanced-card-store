@@ -11,6 +11,7 @@ const HeroTextSection = ({ shouldShow }) => {
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'row',
+        // height: isMobileView ? 'calc(100vh - 64px)' : null,
         background: 'transparent',
         alignItems: isMobileView ? 'flex-start' : 'center',
         padding: 1,

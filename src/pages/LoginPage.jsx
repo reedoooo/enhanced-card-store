@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginForm from '../assets/currentlyUnused/LoginForm';
 import { useMode } from '../context';
-import { Navigate, useNavigate } from 'react-router-dom';
 import useManageCookies from '../context/hooks/useManageCookies';
 
 function Copyright(props) {
@@ -34,27 +33,9 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-
   const { theme } = useMode();
   const { addCookies, getCookie, deleteCookies } = useManageCookies();
   const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
-  const previousIsLoggedIn = React.useRef(isLoggedIn);
-
-  // React.useEffect(() => {
-  //   // Check if isLoggedIn status has changed
-  //   if (isLoggedIn && !previousIsLoggedIn.current) {
-  //     // User just logged in
-  //     navigate('/');
-  //   } else if (!isLoggedIn && previousIsLoggedIn.current) {
-  //     // User just logged out
-  //     navigate('/login');
-  //   }
-  //   // Update the ref to the current isLoggedIn status
-  //   previousIsLoggedIn.current = isLoggedIn;
-  // }, [isLoggedIn, navigate]);
-
-  // if (isLoggedIn) return null; // Don't render anything if already logged in
 
   return (
     <ThemeProvider theme={defaultTheme}>

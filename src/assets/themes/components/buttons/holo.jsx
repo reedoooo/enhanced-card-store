@@ -31,7 +31,7 @@ export default {
   small: {
     minHeight: pxToRem(32),
     padding: `${pxToRem(6)} ${pxToRem(16)} `,
-    fontSize: size.xs,
+    fontSize: size.sm,
     '& .material-icon, .material-icons-round, svg': {
       fontSize: `${pxToRem(12)} !important`,
     },
@@ -40,7 +40,7 @@ export default {
   medium: {
     minHeight: pxToRem(40),
     padding: `${pxToRem(10)} ${pxToRem(22)}`,
-    fontSize: size.sm,
+    fontSize: size.md,
     '& .material-icon, .material-icons-round, svg': {
       fontSize: `${pxToRem(22)} !important`,
     },
@@ -49,7 +49,7 @@ export default {
   large: {
     minHeight: pxToRem(47),
     padding: `${pxToRem(16)} ${pxToRem(36)}`,
-    fontSize: size.md,
+    fontSize: size.lg,
 
     '& .material-icon, .material-icons-round, svg': {
       fontSize: `${pxToRem(26)} !important`,

@@ -89,29 +89,6 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
           >
             Manage Collections
           </RCButton>
-          {/* <SimpleButton
-            // color="primary"
-            customSize="medium"
-            isPrimary={true}
-            customColor={theme.palette.chartTheme.greenAccent.light}
-            customTextColor={theme.palette.chartTheme.primary.lighter}
-            theme={uniqueTheme}
-            onClick={() => onOpenModal(tier.title)}
-            sx={{
-              flexGrow: 1,
-              justifySelf: 'bottom',
-              bottom: 0,
-              width: '100%',
-              mt: 'auto',
-              borderColor: theme.palette.chartTheme.greenAccent.darker,
-              borderWidth: 2,
-              '&:hover': {
-                borderColor: theme.palette.chartTheme.greenAccent.dark,
-              },
-            }}
-          >
-            Manage {tier.title}
-          </SimpleButton> */}
         </CardActions>
       </FeatureCard>
     </AnimatedBox>

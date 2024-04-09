@@ -19,36 +19,13 @@ const HelmetMetadata = () => (
     {/* Basic */}
     <title>Enhanced Cardstore</title>
     <meta name="description" content="Description of your site or page" />
-    <link
-      rel="canonical"
-      href="http://reedvogt.com/projects/enhanced-card-store"
-    />
-    <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    />
-
-    {/* SEO */}
     <meta name="keywords" content="YuGiOh, cards, collection, deckbuilder" />
-
     {/* Social Media */}
     <meta property="og:title" content="Title Here" />
     <meta property="og:description" content="Description Here" />
     <meta property="og:image" content="http://mysite.com/path/to/image.jpg" />
     <meta property="og:url" content="http://mysite.com" />
     <meta name="twitter:card" content="summary_large_image" />
-
-    {/* Responsive and mobile */}
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
-
-    {/* Additional links and styles */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossOrigin="true"
-    />
   </Helmet>
 );
 

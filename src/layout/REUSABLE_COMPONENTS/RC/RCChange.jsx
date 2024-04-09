@@ -12,6 +12,7 @@ const useStyles = (theme) => ({
   container: {
     width: '100%',
     p: '20px',
+    // my: '20px',
     borderRadius: theme.spacing(4),
   },
   flexBox: {
@@ -19,14 +20,15 @@ const useStyles = (theme) => ({
     justifyContent: 'space-between',
   },
   percentageText: {
-    variant: 'h6',
+    variant: 'h4',
     fontWeight: 'medium',
     color: theme.palette.chartTheme.grey.default,
   },
   rangeText: {
-    variant: 'h5',
+    variant: 'h3',
     color: theme.palette.chartTheme.greenAccent.default,
     mt: '2px',
+    fontWeight: 'bold',
   },
 });
 
@@ -47,7 +49,7 @@ const RCChange = ({ progress, increase, change, rangeLevel }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.5rem',
+              fontSize: '2.5rem',
             }}
           >
             {increase ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}

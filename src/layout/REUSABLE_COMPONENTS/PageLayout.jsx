@@ -9,6 +9,7 @@ function PageLayout({ background, backCol, children }) {
   const { theme } = useMode();
   return (
     <MDBox
+      // className="gradient-background"
       width="100vw"
       height="100%"
       minHeight="100vh"

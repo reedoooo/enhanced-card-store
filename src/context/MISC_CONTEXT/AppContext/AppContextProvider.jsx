@@ -18,6 +18,10 @@ export const AppContextProvider = ({ children }) => {
     collectionMetaData,
     cardsWithQuantities,
     compileCollectionMetaData,
+    selectedTimeRange,
+    setSelectedTimeRange,
+    chartData,
+    setChartData,
   } = useCompileCardData();
   useEffect(() => {
     compileCollectionMetaData();
@@ -31,6 +35,10 @@ export const AppContextProvider = ({ children }) => {
       checkIfCardIsInContext: isCardInContext,
       collectionMetaData,
       cardsWithQuantities,
+      selectedTimeRange,
+      setSelectedTimeRange,
+      chartData,
+      setChartData,
     }),
     [
       isCardInContext,

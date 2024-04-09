@@ -338,7 +338,7 @@ export default styled(Button)(({ ownerState }) => {
       borderRadius: theme.borderRadius,
       transitionProperty: 'color, background, box-shadow',
       transitionDuration: '0.35s',
-      fontSize: pxToRem(14),
+      // fontSize: pxToRem(14),
       background: `${backgroundValue} !important`, // Use !important to override any later conflicting styles
       color: `${colorValue} !important`, // Use !important to override any later conflicting styles
 

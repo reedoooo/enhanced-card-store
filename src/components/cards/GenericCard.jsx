@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { CardActions, Typography } from '@mui/material';
+import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholder from '../../assets/images/placeholder.jpeg';
@@ -21,7 +21,7 @@ import {
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { usePopover } from '../../context/hooks/usePopover';
 import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/LoadingOverlay';
+import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 const getQuantity = ({
@@ -56,28 +56,6 @@ const getQuantity = ({
 };
 
 const GenericCard = React.forwardRef((props, ref) => {
-  const { card, context, page } = props;
-  const effectiveContext =
-    typeof context === 'object' ? context.pageContext : context;
-  const { theme } = useMode();
-  const cardRef = useRef(null);
-  const [cardSize, setCardSize] = useState('md'); // Default to 'sm'
-  useEffect(() => {
-    const measureCard = () => {
-      const width = cardRef.current?.offsetWidth;
-      if (width) {
-        if (width < 143) setCardSize('xs');
-        else if (width >= 143 && width < 204) setCardSize('sm');
-        else if (width >= 204 && width < 219) setCardSize('md');
-        else if (width >= 219) setCardSize('lg');
-      }
-    };
-    measureCard();
-    window.addEventListener('resize', measureCard);
-    return () => {
-      window.removeEventListener('resize', measureCard);
-    };
-  }, []);
   const { cart } = useCartManager();
   const collectiondata = useSelectedContext();
   if (!collectiondata) return <LoadingOverlay />;
@@ -89,6 +67,28 @@ const GenericCard = React.forwardRef((props, ref) => {
     useModalContext();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
+  const { card, context, page, quantityIndex, isDeckCard } = props;
+  const effectiveContext =
+    typeof context === 'object' ? context.pageContext : context;
+  const { theme } = useMode();
+  const cardRef = useRef(null);
+  const [cardSize, setCardSize] = useState('md');
+  useEffect(() => {
+    const measureCard = () => {
+      const width = cardRef.current?.offsetWidth;
+      if (width) {
+        if (width < 120) setCardSize('xs');
+        else if (width >= 120 && width < 204) setCardSize('sm');
+        else if (width >= 204 && width < 219) setCardSize('md');
+        else if (width >= 219) setCardSize('lg');
+      }
+    };
+    measureCard();
+    window.addEventListener('resize', measureCard);
+    return () => {
+      window.removeEventListener('resize', measureCard);
+    };
+  }, []);
 
   const handleClick = useCallback(() => {
     openModalWithCard(card);
@@ -116,8 +116,8 @@ const GenericCard = React.forwardRef((props, ref) => {
   const name = card?.name;
   const imgUrl = card?.card_images?.[0]?.image_url || placeholder;
   const price = `Price: ${
-    card?.latestPrice?.num ||
     card?.price ||
+    card?.latestPrice?.num ||
     card?.card_prices?.[0]?.tcgplayer_price ||
     'N/A'
   }`;
@@ -130,7 +130,7 @@ const GenericCard = React.forwardRef((props, ref) => {
     allDecks: allDecks,
   });
   let cardContent = null;
-  if (cardSize !== 'xs') {
+  if (cardSize !== 'xs' && !isDeckCard) {
     cardContent = (
       <StyledCardContent theme={theme}>
         <MDTypography variant="body1" gutterBottom fontWeight="medium">
@@ -160,7 +160,19 @@ const GenericCard = React.forwardRef((props, ref) => {
   }
 
   return (
-    <StyledCard ref={cardRef} theme={theme}>
+    <Card
+      ref={cardRef}
+      // theme={theme}
+      className={`base-card ${props.cardClasses}`}
+      // sx={{
+      //   position: 'initial',
+      //   top: 0,
+      //   left: `${quantityIndex * 10}%`, // Offset each card by 10% of the card's width
+      //   width: '100%', // Assuming card takes full width of its container
+      //   height: '100%', // Adjust based on your card's height
+      //   ml: isDeckCard ? `-${(100 % Math.max(3, quantityIndex)) * 90}%` : 0,
+      // }}
+    >
       <AspectRatioBox ref={cardRef} theme={theme}>
         <CardMediaSection
           isRequired={true}
@@ -180,7 +192,8 @@ const GenericCard = React.forwardRef((props, ref) => {
       <CardActions
         sx={{
           justifyContent: 'center',
-          display: cardSize !== 'xs' ? 'flex' : 'none',
+          display: cardSize !== 'xs' && !isDeckCard ? 'flex' : 'none',
+          // hidden: isDeckCard ? true : false,
         }}
       >
         <GenericActionButtons
@@ -211,10 +224,25 @@ const GenericCard = React.forwardRef((props, ref) => {
           cardSize={cardSize}
         />
       </CardActions>
-    </StyledCard>
+    </Card>
   );
 });
 
 GenericCard.displayName = 'GenericCard';
 
 export default GenericCard;
+{
+  /* <StyledCard */
+}
+//   ref={cardRef}
+//   theme={theme}
+//   className={`base-card base-card-hover ${props.cardClasses}`}
+//   sx={{
+//     position: 'initial',
+//     top: 0,
+//     left: `${quantityIndex * 10}%`, // Offset each card by 10% of the card's width
+//     width: '100%', // Assuming card takes full width of its container
+//     height: '100%', // Adjust based on your card's height
+//     ml: isDeckCard ? `-${(100 % Math.max(3, quantityIndex)) * 90}%` : 0,
+//   }}
+// >

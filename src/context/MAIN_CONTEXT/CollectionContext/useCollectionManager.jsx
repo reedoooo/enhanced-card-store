@@ -41,6 +41,7 @@ const useCollectionManager = () => {
     setCustomError,
     refreshCollections,
     updateCollectionsData,
+    removeCollection,
   } = collectionData;
   const [error, setError] = useState(null);
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
@@ -103,6 +104,9 @@ const useCollectionManager = () => {
         console.log('URL', path);
         await fetchWrapper(path, method, data, actionName);
         options.afterAction?.();
+        console.log('ACTION ', actionName);
+        console.log('STATUS: ', status);
+        console.log('DATA: ', data);
         fetchCollections(); // Refresh collections after any action
       } catch (error) {
         handleError(error, actionName);
@@ -118,6 +122,7 @@ const useCollectionManager = () => {
       handleError,
       setCustomError,
       selectedCollection,
+      selectedCollectionId,
     ]
   );
 
@@ -139,20 +144,16 @@ const useCollectionManager = () => {
         'DELETE',
         { collectionId: collectionId },
         'deleteCollection',
+
         {
-          beforeAction: () => {
+          beforeAction: async () => {
             console.log('BEFORE ACTION', collectionId);
+            removeCollection(collectionId);
           },
-          // afterAction: () => {
-          //   console.log(`Collection ${collectionId} deleted successfully.`);
-          //   removeCollection(collectionId, data);
-          //   refreshCollections(); // Refresh collections after any action
-          // },
           afterAction: async () => {
             console.log(`Collection ${collectionId} deleted successfully.`);
             // Fetch the latest collections after deletion
             try {
-              // removeCollection(collectionId, data);
               // const updatedCollections = await fetchWrapper(
               //   createApiUrl('allCollections'),
               //   'GET'

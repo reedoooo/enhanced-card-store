@@ -17,6 +17,7 @@ import {
   redAccent,
   blueAccent,
   customDarkTheme,
+  myGradients,
 } from './customColorPalettes';
 const colors = {
   chartTheme: chartTheme,

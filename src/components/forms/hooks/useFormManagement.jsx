@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-
-export const useFormManagement = (initialFormKey) => {
+export const useFormManagement = (initialFormKey, formSchemas) => {
   const [activeForm, setActiveForm] = useState(initialFormKey);
 
   const setActiveFormSchema = useCallback(

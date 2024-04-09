@@ -29,7 +29,13 @@ const SearchItem = memo(({ card, context, page, index }) => {
           },
         }}
       >
-        <GenericCard card={card} page={page} index={index} context={context} />
+        <GenericCard
+          card={card}
+          page={page}
+          index={index}
+          context={context}
+          cardClasses="search-card base-card-no-quantity"
+        />
       </Container>
     </Box>
   );

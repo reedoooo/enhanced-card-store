@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useFormContext, useMode } from '../context';
+import { useMode } from '../context';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import {
@@ -21,36 +21,21 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import RCSwitch from '../components/forms/reusable/RCSwitch';
+import RCSwitch from '../components/forms/Factory/RCSwitch';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import AuthForm from '../components/forms/AuthForm';
 import useDialogState from '../context/hooks/useDialogState';
 import useManageCookies from '../context/hooks/useManageCookies';
-import useAuthManager from '../context/MAIN_CONTEXT/AuthContext/useAuthManager';
 import { useFormManagement } from '../components/forms/hooks/useFormManagement';
 import { formFields } from '../components/forms/formsConfig';
 import RCDynamicForm from '../components/forms/Factory/RCDynamicForm';
 function LoginDialog() {
   const { theme } = useMode();
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { isLoggedIn } = getCookie(['isLoggedIn']);
-  const { logout } = useAuthManager();
   const dialogName = 'isAuthDialogOpen'; // Define a name for the dialog
-  const { openDialog, closeDialog, dialogState } = useDialogState(); // Adjusted to useDialog
-  const [checked, setChecked] = useState(false);
-  const { setActiveFormSchema, toggleActiveForm, currentSchemaKey } =
-    useFormManagement('loginForm');
-
-  // const { formMethods, onSubmit, setFormSchema, currentSchemaKey } =
-  //   useFormContext();
-  // HANDLE: Open the register dialog and close the login dialog
-  // const handleToggle = () => {
-  //   setFormSchema(
-  //     currentSchemaKey === 'loginForm' ? 'signupForm' : 'loginForm'
-  //   );
-  //   setChecked(!checked);
-  // };
+  const { closeDialog } = useDialogState(); // Adjusted to useDialog
+  const { toggleActiveForm, currentSchemaKey } = useFormManagement('loginForm');
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
   const signupMode = currentSchemaKey === 'signupForm';
   return (
@@ -121,6 +106,14 @@ function LoginDialog() {
         <RCDynamicForm
           formKey={currentSchemaKey}
           inputs={formFields[currentSchemaKey]}
+          userInterfaceOptions={{
+            submitButton: true,
+            submitButtonLabel: signupMode ? 'Sign Up' : 'Login',
+            deleteButton: false,
+            startIcon: signupMode ? <PersonAddIcon /> : <LoginIcon />,
+          }}
+          intialData={{}}
+          // initialData={formFields[currentSchemaKey]}
         />
         {/* <AuthForm formType={currentSchemaKey} /> */}
         <FormControlLabel

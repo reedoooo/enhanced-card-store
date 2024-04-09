@@ -13,7 +13,6 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-// For additionButtons (which use non-rounded versions):
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
@@ -24,7 +23,48 @@ import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManage
 import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/LoadingOverlay';
+import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// ------------------------------- FORM KEYS -----------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+const formKeys = {
+  loginForm: 'loginForm',
+  signupForm: 'signupForm',
+  addDeckForm: 'addDeckForm',
+  updateDeckForm: 'updateDeckForm',
+  addCollectionForm: 'addCollectionForm',
+  updateCollectionForm: 'updateCollectionForm',
+  updateUserDataForm: 'updateUserDataForm',
+  statRangeForm: 'statRangeForm',
+  searchForm: 'searchForm',
+  collectionSearchForm: 'collectionSearchForm',
+  timeRangeForm: 'timeRangeSelector',
+  searchSettingsForm: 'searchSettingsSelector',
+  rememberMeForm: 'rememberMeForm',
+  authSwitchForm: 'authSwitch',
+};
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// ------------------------------- FORM FIELD KEYS -----------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+const formFieldKeys = {
+  username: 'username',
+  password: 'password',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  name: 'name',
+  description: 'description',
+  searchTerm: 'searchTerm',
+  statisticsRange: 'statisticsRange',
+  themeRange: 'themeRange',
+  timeRange: 'timeRange',
+  authSwitch: 'authSwitch',
+};
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ---------------------------- FORM FIELD HANDLERS ----------------------------
@@ -35,12 +75,13 @@ const getFormFieldHandlers = () => {
   const { handleRequest, setSearchSettings, searchSettings } =
     useCardStoreHook();
   const collectionmanagedata = useCollectionManager();
-  if (!collectionmanagedata) {
+  const selectionData = useSelectedCollection();
+  if (!collectionmanagedata || !selectionData) {
     return <LoadingOverlay />;
   }
   const { createNewCollection, updateCollection } = collectionmanagedata;
+  const { selectedCollection, updateCollectionField } = selectionData;
   const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
-  // const { setTimeRange } = useTimeRange();
 
   const formHandlers = {
     loginForm: (formData) => {
@@ -51,7 +92,7 @@ const getFormFieldHandlers = () => {
       console.log('Signup Form Data:', formData);
       signup(formData);
     },
-    updateUserDataForm: (formData) => {
+    updateUserForm: (formData) => {
       console.log('Update User Data Form Data:', formData);
     },
     addCollectionForm: (formData, additionalData) => {
@@ -81,11 +122,28 @@ const getFormFieldHandlers = () => {
     collectionSearchForm: (formData, additionalData) => {
       console.log('Collection Search Form Data:', formData, additionalData);
     },
-    // timeRangeSelector: (formData, additionalData) => {
-    // console.log('Time Range Selector Form Data:', formData, additionalData);
-    // setTimeRange(formData, additionalData);
-    // },
-    searchSettingsSelector: (formData, additionalData) => {
+    statRangeForm: (formData, additionalData) => {
+      console.log('Stat Range Form Data:', formData, additionalData);
+      setSearchSettings(formData, additionalData);
+    },
+    themeRangeForm: (formData, additionalData) => {
+      console.log('Theme Range Form Data:', formData, additionalData);
+      setSearchSettings(formData, additionalData);
+    },
+    timeRangeForm: (formData) => {
+      console.log('Time Range Selector Form Data:', formData);
+      // updateCollectionField(
+      //   selectedCollection._id,
+      //   'selectedChartDataKey',
+      //   formData
+      // );
+      // updateCollectionField(
+      //   selectedCollection._id,
+      //   'selectedChartData',
+      //   selectedCollection.averagedChartData[formData]
+      // );
+    },
+    searchSettingsForm: (formData, additionalData) => {
       console.log(
         'Search Settings Selector Form Data:',
         formData,
@@ -113,8 +171,9 @@ const getFormFieldHandlers = () => {
 const loginFormFields = {
   username: {
     label: 'Username',
+    name: 'username',
     type: 'text',
-    placeHolder: 'Enter username',
+    placeHolder: 'Username',
     defaultValue: '',
     rules: {
       required: true,
@@ -124,8 +183,9 @@ const loginFormFields = {
   },
   password: {
     label: 'Password',
-    type: 'text',
-    placeHolder: 'Enter password',
+    name: 'password',
+    type: 'password',
+    placeHolder: 'Password',
     defaultValue: '',
     rules: {
       required: true,
@@ -137,8 +197,9 @@ const loginFormFields = {
 const signupFormFields = {
   firstName: {
     label: 'First Name',
+    name: 'firstName',
     type: 'text',
-    placeHolder: 'Enter first name',
+    placeHolder: 'first name',
     defaultValue: '',
     rules: {
       required: true,
@@ -148,8 +209,9 @@ const signupFormFields = {
   },
   lastName: {
     label: 'Last Name',
+    name: 'lastName',
     type: 'text',
-    placeHolder: 'Enter last name',
+    placeHolder: 'last name',
     defaultValue: '',
     rules: {
       required: true,
@@ -159,8 +221,9 @@ const signupFormFields = {
   },
   email: {
     label: 'Email',
+    name: 'email',
     type: 'email',
-    placeHolder: 'Enter email',
+    placeHolder: 'email',
     defaultValue: '',
     rules: {
       required: true,
@@ -198,34 +261,35 @@ const addDeckFormFields = {
     rows: 4,
     icon: <DescriptionRoundedIcon />,
     required: false,
+    field: 'description',
   },
 };
 const updateDeckFormFields = {
+  ...addDeckFormFields,
   tags: {
     label: 'Tags',
     type: 'chips',
-    placeHolder: 'Enter tags',
-    defaultValue: [],
-    values: [],
+    placeholder: 'Enter tags', // Renamed from placeHolder to placeholder for consistency
+    // Assuming defaultValue should define the initial chips/tags.
+    // Since your RCInput expects an array of strings for chips, initialize it as such.
+    defaultValue: ['tag'], // This represents initial chips/tags, empty if none.
     rules: {
-      required: true,
+      required: false,
     },
-    // chipData: tags, // Assuming `tags` is defined elsewhere
-    icon: <DescriptionRoundedIcon />,
-    // onAddChip: handleAddTag, // Assuming `handleAddTag` is defined elsewhere
-    // onDeleteChip: handleDeleteTag, // Assuming `handleDeleteTag` is defined elsewhere
-    required: false,
-    // value: tags.join(', '), // Assuming `tags` is defined elsewhere
+    icon: <DescriptionRoundedIcon />, // If you're displaying this icon somewhere in your form
+    required: false, // Adjust based on whether tags are actually required or not
+    // field: 'tags',
   },
   color: {
     label: 'Color',
     type: 'select',
-    placeHolder: 'Select color',
-    defaultValue: 'green',
+    defaultValue: { value: 'blue', label: 'Blue' },
     rules: {
-      required: true,
+      required: false,
     },
     required: false,
+    icon: <DescriptionRoundedIcon />, // If you're displaying this icon somewhere in your form
+    // field: 'color',
     options: [
       { value: 'red', label: 'Red' },
       { value: 'blue', label: 'Blue' },
@@ -237,7 +301,6 @@ const updateDeckFormFields = {
       { value: 'teal', label: 'Teal' },
     ],
   },
-  ...addDeckFormFields,
 };
 const deckFormFields = updateDeckFormFields;
 const collectionFormFields = {
@@ -292,36 +355,75 @@ const collectionSearchFormFields = {
     label: 'Search',
     type: 'text',
     placeholder: 'Search for cards...',
+    field: 'searchTerm',
     defaultValue: '',
     rules: {
       required: false,
     },
     icon: <AddCircleOutlineIcon />,
     required: false,
-    value: '',
   },
 };
 const statRangeFormFields = {
-  highPoint: { label: 'High Point' },
-  lowPoint: { label: 'Low Point' },
-  twentyFourHourAverage: { label: '24 Hour Average' },
-  average: { label: 'Average' },
-  volume: { label: 'Volume' },
-  volatility: { label: 'Volatility' },
-};
-const themeRangeFormFields = {
-  light: { label: 'Light Theme' },
-  dark: { label: 'Dark Theme' },
-  system: { label: 'System Theme' },
+  statRange: {
+    name: 'statRange',
+    label: 'Statistics Range',
+    type: 'select',
+    placeholder: 'Select statistics range', // Optional for a select, used if you have a default empty option
+    defaultValue: 'highPoint',
+    // onSelectChange: (value) => {
+    //   console.log(value);
+    // },
+    rules: {
+      required: 'Statistics range is required', // Assuming you want to enforce a selection
+    },
+    options: [
+      { value: 'highPoint', label: 'High Point' },
+      { value: 'lowPoint', label: 'Low Point' },
+      { value: 'average', label: 'Average' },
+      { value: 'volume', label: 'Volume' },
+      { value: 'volatility', label: 'Volatility' },
+    ],
+  },
 };
 const timeRangeFormFields = {
-  '24hr': { label: 'Today' },
-  '7d': { label: 'This Week' },
-  '30d': { label: 'This Month' },
-  '90d': { label: 'Last Three Months' },
-  '180d': { label: 'Last Six Months' },
-  '270d': { label: 'Last Nine Months' },
-  '365d': { label: 'All Time' },
+  timeRange: {
+    name: 'timeRange',
+    label: 'Time Range',
+    type: 'select',
+    placeholder: 'Select time range', // Optional for a select, used if you have a default empty option
+    defaultValue: '24hr',
+    defaultLabel: 'Today',
+    rules: {
+      required: 'Time range is required',
+    },
+    options: [
+      { value: '24hr', label: 'Today' },
+      { value: '7d', label: 'This Week' },
+      { value: '30d', label: 'This Month' },
+      { value: '90d', label: 'Last Three Months' },
+      { value: '180d', label: 'Last Six Months' },
+      { value: '270d', label: 'Last Nine Months' },
+      { value: '365d', label: 'Last Year' },
+    ],
+  },
+};
+const themeRangeFormFields = {
+  themeRange: {
+    name: 'themeRange',
+    label: 'Theme Range',
+    type: 'select',
+    placeholder: 'Select theme range', // Optional for a select, used if you have a default empty option
+    defaultValue: 'light',
+    rules: {
+      required: 'Theme selection is required',
+    },
+    options: [
+      { value: 'light', label: 'Light Theme' },
+      { value: 'dark', label: 'Dark Theme' },
+      { value: 'system', label: 'System Default' },
+    ],
+  },
 };
 const authSwitchFormFields = {
   authSwitch: {
@@ -357,74 +459,143 @@ const formFields = {
 // -------------------------- ZOD VALIDATION SCHEMAS ---------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-
-const loginSchema = z.object({
+const loginFormSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
 });
-const signupSchema = z.object({
-  firstName: z.string().min(1, 'First Name is required'),
-  lastName: z.string().min(1, 'Last Name is required'),
-  email: z.string().email('Invalid email format'),
+
+const signupFormSchema = loginFormSchema.extend({
+  firstName: z
+    .string()
+    .min(1, 'First Name is required')
+    .default('Input First Name'),
+  lastName: z
+    .string()
+    .min(1, 'Last Name is required')
+    .default('Input Last Name'),
+  email: z
+    .string()
+    .email('Invalid email format')
+    .min(1, 'Email is required')
+    .default('Input Email'),
 });
-const authFormSchema = signupSchema.merge(loginSchema);
-const addDeckSchema = z.object({
-  name: z.string().min(1, 'Deck Name is required'),
-  description: z.string().min(1, 'Description is required').optional(),
+const addDeckFormSchema = z.object({
+  name: z.string().min(1, 'Deck name is required').default(''),
+  description: z.string().optional().default(''),
 });
-const updateDeckSchema = z.object({
-  tags: z.array(z.string()).optional(), // Assuming tags can be optional
-  color: z.enum([
-    'red',
-    'blue',
-    'green',
-    'yellow',
-    'purple',
-    'pink',
-    'orange',
-    'teal',
-  ]),
+const updateDeckFormSchema = addDeckFormSchema.extend({
+  tags: z.array(z.string()).optional().default(['default']),
+  color: z
+    .enum([
+      'red',
+      'blue',
+      'green',
+      'yellow',
+      'purple',
+      'pink',
+      'orange',
+      'teal',
+    ])
+    .optional()
+    .default('blue'),
 });
-const deckFormSchema = addDeckSchema.merge(updateDeckSchema);
 const collectionFormSchema = z.object({
-  name: z.string().min(1, 'Collection Name is required'),
-  description: z.string().min(1, 'Collection Description is required'),
+  name: z.string().optional().default(''),
+  description: z.string().optional().default(''),
 });
 const searchFormSchema = z.object({
-  searchTerm: z.string().optional(),
+  searchTerm: z.string().optional().default(''),
 });
-const statisticsSchema = z.object({
-  selectedStatistic: z
-    .enum([
-      'highPoint',
-      'lowPoint',
-      'twentyFourHourAverage',
-      'average',
-      'volume',
-      'volatility',
-    ])
-    .optional(),
+// const statRangeFormSchema = z.object({
+//   stateRange: z
+//     .array(
+//       z.object({
+//         value: z.string().optional().default(''),
+//         label: z.string().optional().default(''),
+//       })
+//     )
+//     .default('highPoint'),
+// });
+// const timeRangeFormSchema = z.object({
+//   timeRange: z
+//     .array(
+//       z.object({
+//         value: z.string().optional().default(''),
+//         label: z.string().optional().default(''),
+//       })
+//     )
+//     .default('24hr'),
+// });
+// const themeRangeFormSchema = z.object({
+//   themeRange: z
+//     .array(
+//       z.object({
+//         value: z.string().optional().default(''),
+//         label: z.string().optional().default(''),
+//       })
+//     )
+//     .default('light'),
+// });
+const authSwitchFormSchema = z.object({
+  authSwitch: z.boolean(), // Since it's a switch, it's either true or false
 });
-const themeFormSchema = z.object({
-  theme: z.enum(['light', 'dark', 'system']).optional(),
+const statRangeFormSchema = z.object({
+  timeRange: z
+    .enum(['highpoint', 'lowpoint', 'average', 'volume', 'volatility'])
+    .default('highpoint'),
 });
 const timeRangeFormSchema = z.object({
   timeRange: z
     .enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d'])
-    .optional(),
+    .default('24hr'),
 });
+const themeRangeFormSchema = z.object({
+  timeRange: z.enum(['light', 'dark', 'system']).default('light'),
+});
+// const timeRangeFormSchema = z.enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d']).optional();
+// tags: [
+//   {
+//     label: 'Tags',
+//     type: 'chips',
+//     placeHolder: 'Enter tags',
+//     defaultValue: '',
+//     rules: {
+//       required: true,
+//     },
+//     icon: <DescriptionRoundedIcon />,
+//     field: 'tags',
+//     required: true,
+//   },
+// ],
+// color: [
+//   {
+//     label: 'Color',
+//     type: 'color',
+//     placeHolder: 'Enter color',
+//     defaultValue: '',
+//     rules: {
+//       required: true,
+//     },
+//     icon: <DescriptionRoundedIcon />,
+//     field: 'color',
+//     required: true,
+//   },
+// ],
 const zodSchemas = {
-  loginSchema,
-  signupSchema,
-  authFormSchema,
-  addDeckSchema,
-  updateDeckSchema,
-  deckFormSchema,
-  collectionFormSchema,
-  searchFormSchema,
-  statisticsSchema,
-  themeFormSchema,
-  timeRangeFormSchema,
+  statRangeForm: statRangeFormSchema,
+  themeRangeForm: themeRangeFormSchema,
+  timeRangeForm: timeRangeFormSchema,
+  loginForm: loginFormSchema,
+  signupForm: signupFormSchema,
+  authForm: signupFormSchema,
+  addDeckForm: addDeckFormSchema,
+  updateDeckForm: updateDeckFormSchema,
+  addCollectionForm: collectionFormSchema,
+  updateCollectionForm: collectionFormSchema,
+  searchForm: searchFormSchema,
+  // deckForm: updateDeckFormSchema,
+  // collectionForm: collectionFormSchema,
+  authSwitchForm: authSwitchFormSchema,
 };
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -432,17 +603,17 @@ const zodSchemas = {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 const validationFunctions = {
-  login: (data) => loginSchema.safeParse(data),
-  signup: (data) => signupSchema.safeParse(data),
-  authForm: (data) => authFormSchema.safeParse(data),
-  addDeck: (data) => addDeckSchema.safeParse(data),
-  updateDeck: (data) => updateDeckSchema.safeParse(data),
-  deckForm: (data) => deckFormSchema.safeParse(data),
-  collectionForm: (data) => collectionFormSchema.safeParse(data),
+  login: (data) => loginFormSchema.safeParse(data),
+  signup: (data) => signupFormSchema.safeParse(data),
+  authForm: (data) => signupFormSchema.safeParse(data),
+  addDeck: (data) => addDeckFormSchema.safeParse(data),
+  updateDeck: (data) => updateDeckFormSchema.safeParse(data),
+  addCollection: (data) => collectionFormSchema.safeParse(data),
+  updateCollection: (data) => collectionFormSchema.safeParse(data),
   searchForm: (data) => searchFormSchema.safeParse(data),
-  statistics: (data) => statisticsSchema.safeParse(data),
-  themeForm: (data) => themeFormSchema.safeParse(data),
-  timeRangeForm: (data) => timeRangeFormSchema.safeParse(data),
+  // deckForm: (data) => updateDeckFormSchema.safeParse(data),
+  // collectionForm: (data) => collectionFormSchema.safeParse(data),
+  statistics: (data) => statRangeFormSchema.safeParse(data),
 };
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -500,9 +671,11 @@ const configOptions = {
   ],
 };
 export {
+  formKeys,
+  formFieldKeys,
   formFields,
   zodSchemas,
-  getFormFieldHandlers,
   configOptions,
   validationFunctions,
+  getFormFieldHandlers,
 };

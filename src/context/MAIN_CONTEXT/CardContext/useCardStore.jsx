@@ -5,6 +5,7 @@ import useLogger from '../../hooks/useLogger';
 import useLocalStorage from '../../hooks/useLocalStorage'; // Ensure this is the correct path to your hook
 import { useLoading } from '../../hooks/useLoading';
 import useManageCookies from '../../hooks/useManageCookies';
+import { formFields } from '../../../components/forms/formsConfig';
 
 function debounce(func, wait) {
   let timeout;
@@ -21,7 +22,6 @@ function debounce(func, wait) {
 export const useCardStoreHook = () => {
   const { getCookie } = useManageCookies();
   const { userId } = getCookie(['userId']);
-  const { resetForm } = useFormContext(); // Assuming this is where you get your resetForm function
   const logger = useLogger('CardProvider');
   const [previousSearchData, setPreviousSearchData] = useLocalStorage(
     'previousSearchData',
@@ -39,17 +39,16 @@ export const useCardStoreHook = () => {
   );
   useEffect(() => {
     if (initialLoad) {
-      logger.logEvent('INITIAL SEARCH VALUES', { searchData });
       setPreviousSearchData(searchData);
       setInitialLoad(false); // Set initialLoad to false after the first render
     }
   }, [searchData, userId]);
-  useEffect(() => {
-    logger.logEvent('ALL SEARCH DATA', {
-      current: searchData,
-      // previous: previousSearchData,
-    });
-  }, [searchData]);
+  // useEffect(() => {
+  //   logger.logEvent('ALL SEARCH DATA', {
+  //     current: searchData,
+  //     // previous: previousSearchData,
+  //   });
+  // }, [searchData]);
   const clearSearchData = () => {
     setSearchData([]);
     setIsDataValid(false);
@@ -69,9 +68,6 @@ export const useCardStoreHook = () => {
           `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
           requestBody
         );
-
-        // const data = handleApiResponse(response, 'handleRequest');
-
         if (response?.data?.data?.length > 0) {
           logger.logEvent('Data Fetched Successfully', {
             dataLength: response?.data.data.length,
@@ -81,12 +77,10 @@ export const useCardStoreHook = () => {
           setSearchData(limitedData); // Directly set the new searchData
         } else {
           clearSearchData();
-          resetForm();
         }
       } catch (err) {
         logger.logEvent('Error fetching card data', err);
         clearSearchData();
-        resetForm();
       } finally {
         stopLoading('isSearchLoading'); // Set loading to false once the request is complete
       }
@@ -111,11 +105,11 @@ export const useCardStoreHook = () => {
     }
   }
 
-  useEffect(() => {
-    if (!initialLoad) {
-      logger.logEvent('UPDATED SEARCH VALUES', { searchData });
-    }
-  }, [searchData]);
+  // useEffect(() => {
+  //   if (!initialLoad) {
+  //     logger.logEvent('UPDATED SEARCH VALUES', { searchData });
+  //   }
+  // }, [searchData]);
   return {
     searchData,
     searchSettings,

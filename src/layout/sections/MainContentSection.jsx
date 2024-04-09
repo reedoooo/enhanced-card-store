@@ -116,25 +116,6 @@ const MainContentSection = () => {
                     </Stack>
                   </CardContent>
                   <CardActions>
-                    {/* <SimpleButton
-                      color='success'
-                      size='large'
-                      variant='holo'
-                      withContainer={false}
-                      // variant="contained"
-                      // color="primary"
-                      // customSize="large"
-                      // customColor={theme.palette.greenAccent.light}
-                      // customTextColor={theme.palette.grey.blueGrey}
-                      // isDisabled={false}
-                      // isDefault={false}
-                      theme={uniqueTheme}
-                      onClick={() => {
-                        console.log('clicked');
-                      }}
-                    >
-                      Manage Collections
-                    </SimpleButton> */}
                     <RCButton
                       color="success"
                       size="large"

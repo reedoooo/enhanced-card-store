@@ -8,7 +8,6 @@ const useDialogState = (
     isAddCollectionDialogOpen: false,
     isEditCollectionDialogOpen: false,
     isAuthDialogOpen: false,
-    isSelectionErrorDialogOpen: false,
   }
 ) => {
   const [state, setState] = useState(initialState);

@@ -7,9 +7,7 @@ import PageLayout from './layout/REUSABLE_COMPONENTS/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import LoadingOverlay from './layout/REUSABLE_COMPONENTS/LoadingOverlay.jsx';
-import SelectionErrorDialog from './components/dialogs/SelectionErrorDialog.jsx';
-import useDialogState from './context/hooks/useDialogState.jsx';
+import LoadingOverlay from './layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay.jsx';
 import useManageCookies from './context/hooks/useManageCookies.jsx';
 import { ROUTE_CONFIG } from './data/route-config.jsx';
 
@@ -18,10 +16,9 @@ const LazyRoute = ({ componentName, ...rest }) => {
   return <Component {...rest} />;
 };
 const Main = () => {
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
-  const { dialogState, openDialog, closeDialog } = useDialogState();
   return (
     <PageLayout
       sx={{
@@ -54,11 +51,6 @@ const Main = () => {
         </CSSTransition>
       </TransitionGroup>
       <LoginDialog />
-      <SelectionErrorDialog
-        open={dialogState.isSelectionErrorDialogOpen}
-        onClose={() => closeDialog('isSelectionErrorDialogOpen')}
-        // selectedValue={selectedCollection?.name}
-      />
     </PageLayout>
   );
 };

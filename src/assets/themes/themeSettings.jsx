@@ -33,6 +33,7 @@ export const themeSettings = (mode) => {
     shape: {
       borderRadius: 4,
       borderRadiusLarge: 8,
+      borderRadiusExtraLarge: 16,
     },
     zIndex: {
       appBar: 1200,

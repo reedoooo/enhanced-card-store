@@ -1,39 +1,9 @@
 import hexToRgba from '../functions/hexToRgba';
 import rgba from '../functions/rgba';
 const colorTextForDark = rgba('white', 0.96);
-const rarity = {
-  common: '#C0C0C0', // Silver
-  uncommon: '#B8860B', // DarkGoldenRod
-  rare: '#FFD700', // Gold
-  super: '#00BFFF', // DeepSkyBlue
-  ultra: '#FF6347', // Tomato
-  secret: '#800080', // Purple
-  ghost: '#F8F8FF', // GhostWhite
-  starlight: '#F0E68C', // Khaki
-  prismatic: '#E6E6FA', // Lavender
-  collector: '#DAA520', // GoldenRod
-  shortPrint: '#778899', // LightSlateGrey
-  parallel: '#BA55D3', // MediumOrchid
-  qcr: '#FF4500', // OrangeRed
-  // Add more rarities as needed
-};
-const rarityOverlay = {
-  common: hexToRgba(rarity.common, 0.5),
-  uncommon: hexToRgba(rarity.uncommon, 0.5),
-  rare: hexToRgba(rarity.rare, 0.5),
-  super: hexToRgba(rarity.super, 0.5),
-  ultra: hexToRgba(rarity.ultra, 0.5),
-  secret: hexToRgba(rarity.secret, 0.5),
-  ghost: hexToRgba(rarity.ghost, 0.5),
-  starlight: hexToRgba(rarity.starlight, 0.5),
-  prismatic: hexToRgba(rarity.prismatic, 0.5),
-  collector: hexToRgba(rarity.collector, 0.5),
-  shortPrint: hexToRgba(rarity.shortPrint, 0.5),
-  parallel: hexToRgba(rarity.parallel, 0.5),
-  qcr: hexToRgba(rarity.qcr, 0.5),
-  // Add more rarities as needed
-};
-
+// -------------------------------------------
+// --------------- MAIN COLORS ---------------
+// -------------------------------------------
 const error = {
   light: '#e57373',
   main: '#f44336',
@@ -71,20 +41,6 @@ const info = {
   focus: '#64b5f6',
   contrastText: '#fff',
 };
-const text = {
-  // main: '#212121',
-  main: '#3d3d3d', // '#424242',
-  focus: '#212121',
-  dark: '#424242',
-  primary: '#212121',
-  secondary: '#f5f5f5',
-  tertiary: '#ffffff',
-};
-const divider = 'white';
-const action = {
-  hover: '#424242',
-  disabled: '#eeeeee',
-};
 const grey = {
   lighterSimpleGrey: '#777',
   simpleGrey: '#333',
@@ -104,28 +60,6 @@ const grey = {
   evenLighter: '#c2c2c2',
   contrastText: '#e0e0e0',
   main: '#e0e0e0',
-};
-const primary = {
-  darkest: '#040509',
-  darker: '#040509',
-  dark: '#040509',
-  default: '#f2f0f0',
-  light: '#141b2d',
-  lighter: '#1F2A40',
-  lightest: '#727681',
-  evenLighter: '#8c8c8c',
-  contrastText: '#e0e0e0',
-  secondary: '#f2f0f0',
-  main: '#141b2d',
-  focus: '#141b2d',
-  hoverContrastText: colorTextForDark,
-};
-const secondary = {
-  main: '#8c8c8c',
-  focus: '#8f93a9',
-  hoverContrastText: colorTextForDark,
-  contrastText: '#e0e0e0',
-  secondary: '#8c8c8c',
 };
 const greenAccent = {
   crystalGreen: hexToRgba('#4cceac', 0.6),
@@ -178,6 +112,43 @@ const blueAccent = {
   main: '#6870fa',
   focus: rgba('#6870fa' || 'white', 0.15),
   hoverContrastText: colorTextForDark,
+};
+const myGradients = {
+  primary: {
+    main: '#0172AF',
+    state: '#74FEBD',
+    value: 'linear-gradient(180deg, #0172AF 0%, #74FEBD 100%)',
+  },
+  secondary: {
+    main: '#FF8473',
+    state: '#FFF9d2',
+    value: 'linear-gradient(180deg, #FF8473 0%, #FFF9d2 100%)',
+  },
+};
+// -------------------------------------------
+// --------------- RANDOM COLORS -------------
+// -------------------------------------------
+const primary = {
+  darkest: '#040509',
+  darker: '#040509',
+  dark: '#040509',
+  default: '#f2f0f0',
+  light: '#141b2d',
+  lighter: '#1F2A40',
+  lightest: '#727681',
+  evenLighter: '#8c8c8c',
+  contrastText: '#e0e0e0',
+  secondary: '#f2f0f0',
+  main: '#141b2d',
+  focus: '#141b2d',
+  hoverContrastText: colorTextForDark,
+};
+const secondary = {
+  main: '#8c8c8c',
+  focus: '#8f93a9',
+  hoverContrastText: colorTextForDark,
+  contrastText: '#e0e0e0',
+  secondary: '#8c8c8c',
 };
 const chartTheme = {
   primary,
@@ -253,6 +224,52 @@ const customDarkTheme = {
     },
   },
 };
+const rarity = {
+  common: '#C0C0C0', // Silver
+  uncommon: '#B8860B', // DarkGoldenRod
+  rare: '#FFD700', // Gold
+  super: '#00BFFF', // DeepSkyBlue
+  ultra: '#FF6347', // Tomato
+  secret: '#800080', // Purple
+  ghost: '#F8F8FF', // GhostWhite
+  starlight: '#F0E68C', // Khaki
+  prismatic: '#E6E6FA', // Lavender
+  collector: '#DAA520', // GoldenRod
+  shortPrint: '#778899', // LightSlateGrey
+  parallel: '#BA55D3', // MediumOrchid
+  qcr: '#FF4500', // OrangeRed
+  // Add more rarities as needed
+};
+const rarityOverlay = {
+  common: hexToRgba(rarity.common, 0.5),
+  uncommon: hexToRgba(rarity.uncommon, 0.5),
+  rare: hexToRgba(rarity.rare, 0.5),
+  super: hexToRgba(rarity.super, 0.5),
+  ultra: hexToRgba(rarity.ultra, 0.5),
+  secret: hexToRgba(rarity.secret, 0.5),
+  ghost: hexToRgba(rarity.ghost, 0.5),
+  starlight: hexToRgba(rarity.starlight, 0.5),
+  prismatic: hexToRgba(rarity.prismatic, 0.5),
+  collector: hexToRgba(rarity.collector, 0.5),
+  shortPrint: hexToRgba(rarity.shortPrint, 0.5),
+  parallel: hexToRgba(rarity.parallel, 0.5),
+  qcr: hexToRgba(rarity.qcr, 0.5),
+  // Add more rarities as needed
+};
+const text = {
+  // main: '#212121',
+  main: '#3d3d3d', // '#424242',
+  focus: '#212121',
+  dark: '#424242',
+  primary: '#212121',
+  secondary: '#f5f5f5',
+  tertiary: '#ffffff',
+};
+const divider = 'white';
+const action = {
+  hover: '#424242',
+  disabled: '#eeeeee',
+};
 export {
   chartTheme,
   rarityOverlay,
@@ -271,6 +288,7 @@ export {
   greenAccent,
   redAccent,
   blueAccent,
+  myGradients,
 };
 // const backgroundA = {
 //   darkest: '#2e7c67', // '#70d8bd',

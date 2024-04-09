@@ -184,15 +184,19 @@ const SimpleCard = ({
       {!cardTitle && children}
       {isHeroDisplay && (
         <CardContent
+          elevation={3}
           sx={{
             height: '100%',
-            // width: '100%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            // flexGrow: 1,
             background: 'transparent',
+            borderRadius: themeSettings.shape.borderRadius,
+            // m: '0.5rem',
+            // p: '0.5rem',
+            // boxShadow: themeSettings.boxShadow.xxl,
+            // boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
           }}
         >
           <MDBox
@@ -201,6 +205,9 @@ const SimpleCard = ({
               justifyContent: 'center',
               alignItems: 'center',
               width: 'auto', // Adjust as needed
+              borderRadius: themeSettings.shape.borderRadius,
+              // m: '0.5rem',
+              boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)', // Custom shadow with blur
             }}
           >
             <IconButton
@@ -260,7 +267,6 @@ const SimpleCard = ({
                     maxHeight: '100%',
                   }}
                 />
-                {/* No need for additional style */}
               </IconButton>
             </AspectRatio>
             <Typography

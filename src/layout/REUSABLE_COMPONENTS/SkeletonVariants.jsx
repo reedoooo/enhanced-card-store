@@ -9,6 +9,7 @@ import {
   Grid,
   Collapse,
   CardActionArea,
+  Typography,
 } from '@mui/material';
 import useSkeletonLoader from './useSkeletonLoader';
 import MDBox from './MDBOX';
@@ -201,6 +202,33 @@ const SkeletonCartItem = () => (
   </Box>
 );
 
+const SkeletonPieChart = ({ theme }) => (
+  <MDBox
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      minHeight: '270px',
+      bgcolor: theme.palette.background.default,
+      borderRadius: theme.shape.borderRadius,
+    }}
+  >
+    <Typography variant="h5" sx={{ mb: 2 }}>
+      Collection Value Distribution
+    </Typography>
+    <Skeleton
+      variant="circular"
+      width={200}
+      height={200}
+      sx={{
+        bgcolor: theme.palette.chartTheme.primary.main,
+      }}
+    />
+  </MDBox>
+);
+
 export {
   LoadingCardSkeleton,
   HeroSectionSkeleton,
@@ -210,4 +238,5 @@ export {
   CollectionListItemSkeleton,
   DeckListItemSkeleton,
   SkeletonCartItem,
+  SkeletonPieChart,
 };

@@ -20,32 +20,6 @@ export const CollectionProvider = ({ children }) => {
     'authUser',
     'userId',
   ]);
-  // const {
-  //   selectedCollection,
-  //   allCollections,
-  //   showCollections,
-  //   selectedCollectionId,
-  // } = useSelectedCollection();
-  // const {
-  //   fetchCollections,
-  //   createNewCollection,
-  //   deleteCollection,
-  //   updateCollection,
-  //   addCardsToCollection,
-  //   removeCardsFromCollection,
-  //   selectedCollectionError,
-  //   error,
-  //   hasFetchedCollections,
-  //   handleError,
-  //   setSelectedCollectionError,
-  // } = useCollectionManager();
-
-  // useEffect(() => {
-  //   // Check if collections need to be fetched for the logged-in user
-  //   if (!hasFetchedCollections && isLoggedIn && userId) {
-  //     fetchCollections();
-  //   }
-  // }, []);
 
   const contextValue = useMemo(
     () => ({

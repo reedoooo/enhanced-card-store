@@ -1,28 +1,101 @@
-import { FormLabel, Box, InputAdornment } from '@mui/material';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { Box, InputAdornment } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { RCFieldError } from './RCFieldError';
 import RCInput from './RCInput';
 import { Controller } from 'react-hook-form';
-import useRCFormHook from './useRCFormHook';
+import useRCFormHook from '../hooks/useRCFormHook';
 import ReusableLoadingButton from '../../buttons/other/ReusableLoadingButton';
 import {
   FormBox,
   FormFieldBox,
 } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useMode } from '../../../context';
+import { useCardStore, useMode } from '../../../context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { zodSchemas, getFormFieldHandlers } from '../formsConfig';
+import {
+  zodSchemas,
+  getFormFieldHandlers,
+  getSpecificFormHandler,
+  formKeys,
+  formFieldKeys,
+  formFields,
+  validationFunctions,
+} from '../formsConfig';
 import { useFormSubmission } from '../hooks/useFormSubmission';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useBreakpoint from '../../../context/hooks/useBreakPoint';
 
-const RCDynamicForm = ({ formKey, inputs, options, initialData }) => {
+const RCDynamicForm = ({
+  formKey,
+  inputs = {},
+  userInterfaceOptions = {},
+  initialData,
+  updatedData,
+}) => {
+  if (!inputs || typeof inputs !== 'object') {
+    console.error('Invalid inputs provided to RCDynamicForm:', inputs);
+    return null; // Or some fallback UI
+  }
   const { theme } = useMode();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useBreakpoint();
+  const methods = useRCFormHook(formKey);
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useRCFormHook(formKey, zodSchemas, initialData);
+    watch,
+    getValues,
+    formState: { errors, isSubmitting, dirtyFields, isDirty, isValid },
+    reset,
+  } = methods;
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    console.log('MOUNTED', isMounted);
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+  const [formData, setFormData] = useState(initialData);
+  useEffect(() => {
+    setFormData(updatedData || initialData);
+    reset(updatedData || initialData); // Reset form with new initial data
+  }, [updatedData, initialData, reset]);
   const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
+  const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
+  // useEffect(() => {
+  //   const subscription = methods.watch((value, { name, type }) => {
+  //     if (name === 'timeRange') {
+  //       console.log(`selectedCollection: ${selectedCollection}`);
+  //       const timeRangeValue = value.timeRange;
+  //       updateCollectionField(
+  //         selectedCollection._id,
+  //         'selectedChartDataKey',
+  //         timeRangeValue
+  //       );
+  //       updateCollectionField(
+  //         selectedCollection._id,
+  //         'selectedChartData',
+  //         selectedCollection.averagedChartData[timeRangeValue]
+  //       );
+  //       console.log(
+  //         `Updated chart data for range: ${timeRangeValue}`,
+  //         selectedCollection.selectedChartData
+  //       );
+  //     }
+  //     if (name === 'searchTerm') {
+  //       console.log(`SEARCH TERM: ${value.searchTerm}`);
+  //       handleRequest(value.searchTerm);
+  //     }
+  //     if (name === 'tags') {
+  //       console.log(`TAGS: ${value.tags}`);
+  //       submitTags(value.tags);
+  //       updateDeckField(selectedDeck._id, 'tags', value.tags);
+  //     }
+  //   });
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [methods.watch, updateCollectionField, handleRequest, submitTags]);
   return (
     <FormBox
       component="form"
@@ -30,77 +103,149 @@ const RCDynamicForm = ({ formKey, inputs, options, initialData }) => {
       theme={theme}
       sx={{
         ...(isMobile && {
-          padding: theme.spacing(3), // Reduce padding on mobile
+          padding: theme.spacing(3),
         }),
       }}
     >
-      {Object.entries(inputs).map(([fieldName, fieldProps]) => (
+      {Object.entries(inputs).map(([fieldName, fieldConfig]) => (
         <FormFieldBox key={fieldName} theme={theme}>
-          {/* <section key={fieldName}> */}
-          {/* <FormLabel>{fieldProps.label}</FormLabel> */}
           <Controller
             name={fieldName}
             control={control}
-            rules={fieldProps.rules}
-            // defaultValue={fieldProps.defaultValue}
-            render={({ field }) => (
+            rules={fieldConfig.rules}
+            render={({ field, fieldState: { error } }) => (
               <RCInput
                 {...field}
-                type={fieldProps.type}
-                label={fieldProps.label}
+                options={fieldConfig.options || []} // Ensure options are passed for select inputs
+                type={fieldConfig.type}
+                label={fieldConfig.label}
+                placeholder={fieldConfig.placeholder}
+                error={!!error}
+                helperText={error ? <RCFieldError name={fieldName} /> : null}
+                initialValue={fieldConfig.initialValue}
+                // helperText={error ? error.message : null}
+                // onSelectChange={
+
+                // }
                 InputProps={
-                  fieldProps.icon
+                  (fieldConfig.icon
                     ? {
                         endAdornment: (
                           <InputAdornment position="end" fontSize={'1.25rem'}>
-                            {fieldProps.icon}
+                            {fieldConfig.icon}
                           </InputAdornment>
                         ),
                       }
-                    : null
+                    : null) || undefined
                 }
               />
             )}
           />
           {errors[fieldName] && (
-            <RCFieldError>{errors[fieldName].message}</RCFieldError>
+            <RCFieldError>{errors[fieldName]?.message}</RCFieldError>
           )}
-          {/* </section> */}
         </FormFieldBox>
       ))}
-      <ReusableLoadingButton
-        type="submit"
-        loading={isSubmitting}
-        label={'Submit'}
-        startIcon={
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            {<AddCircleOutlineIcon />}
-          </Box>
-        }
-        fullWidth
-        sx={{
-          ...(isMobile && {
-            fontSize: '0.75rem', // Adjust button font size for mobile
-          }),
-        }}
-      />
 
-      {options &&
-        options?.map((button, index) => (
-          <ReusableLoadingButton
-            key={index}
-            onClick={button.onClick}
-            loading={isSubmitting}
-            label={button.label}
-            startIcon={button.startIcon}
-            // color={button.color}
-            variant="warning"
-            fullWidth
-            sx={{ mt: 2, background: theme.palette.error.main }}
-          />
-        ))}
+      {optionsForUi && optionsForUi.submitButton && (
+        <ReusableLoadingButton
+          type="submit"
+          loading={isSubmitting}
+          label={optionsForUi.submitButtonLabel}
+          startIcon={
+            optionsForUi.startIcon ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                {optionsForUi.startIcon}
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                {<AddCircleOutlineIcon />}
+              </Box>
+            )
+          }
+          fullWidth
+          sx={{
+            ...(isMobile && {
+              fontSize: '0.75rem', // Adjust button font size for mobile
+            }),
+          }}
+        />
+      )}
+      {optionsForUi && optionsForUi.deleteButton && (
+        <ReusableLoadingButton
+          key={optionsForUi.deleteButtonLabel}
+          // onClick={button.onClick}
+          loading={isSubmitting}
+          label={optionsForUi.deleteButtonLabel}
+          startIcon={
+            optionsForUi.startIcon ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                {optionsForUi.startIcon}
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                {<AddCircleOutlineIcon />}
+              </Box>
+            )
+          }
+          // color={button.color}
+          variant="warning"
+          fullWidth
+          sx={{ mt: 2, background: theme.palette.error.main }}
+        />
+      )}
     </FormBox>
   );
 };
 
 export default RCDynamicForm;
+// const [tags, setTags] = useState([]);
+// const submitTags = useCallback((newTags) => {
+//   const validation = zodSchemas['tags'].safeParse(newTags);
+//   if (validation.success) {
+//     setTags(newTags);
+//     console.log('Tags updated:', newTags); // Or any other logic
+//   } else {
+//     console.error('Validation failed:', validation.error);
+//   }
+// }, []);
+// useEffect(() => {
+//   setFormData(updatedData || initialData);
+//   reset(updatedData || initialData);
+// }, [updatedData, initialData, reset]);
+
+// useEffect(() => {
+//   const subscription = methods.watch((value, { name, type }) => {
+//     if (name === 'timeRange') {
+//       console.log(`selectedCollection: ${selectedCollection}`);
+//       const timeRangeValue = value.timeRange;
+//       updateCollectionField(
+//         selectedCollection._id,
+//         'selectedChartDataKey',
+//         timeRangeValue
+//       );
+//       updateCollectionField(
+//         selectedCollection._id,
+//         'selectedChartData',
+//         selectedCollection.averagedChartData[timeRangeValue]
+//       );
+//       console.log(
+//         `Updated chart data for range: ${timeRangeValue}`,
+//         selectedCollection.selectedChartData
+//       );
+//     }
+//     if (name === 'searchTerm') {
+//       console.log(`SEARCH TERM: ${value.searchTerm}`);
+//       handleRequest(value.searchTerm);
+//     }
+//     if (name === 'tags') {
+//       console.log(`TAGS: ${value.tags}`);
+//       submitTags(value.tags);
+//       updateDeckField(selectedDeck._id, 'tags', value.tags);
+//     }
+//   });
+//   return () => {
+//     subscription.unsubscribe();
+//   };
+// }, [methods.watch, updateCollectionField, handleRequest, submitTags]);
+// const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};

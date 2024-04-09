@@ -11,61 +11,43 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
-import useCollectionManager from '../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import useDialogState from '../../../../context/hooks/useDialogState';
 import { useMode } from '../../../../context';
 import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
 import RCChange from '../../../REUSABLE_COMPONENTS/RC/RCChange';
 import RCInfoItem from '../../../REUSABLE_COMPONENTS/RCInfoItem';
 import { roundToNearestTenth } from '../../../../context/Helpers';
-import LoadingOverlay from '../../../REUSABLE_COMPONENTS/LoadingOverlay';
+import LoadingOverlay from '../../../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import RCButton from '../../../REUSABLE_COMPONENTS/RCBUTTON';
 import { Divider } from '@mui/joy';
+import useBreakpoint from '../../../../context/hooks/useBreakPoint';
 
 const CollectionListItem = memo(
-  ({ collection, handleSelectAndShowCollection }) => {
+  ({ collection, handleSelectAndShowCollection, handleDelete }) => {
     const { theme } = useMode();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const { handleSelectCollection } = useSelectedCollection();
-    const { deleteCollection } = useCollectionManager();
+    const { isMobile } = useBreakpoint();
     const { dialogState, openDialog, closeDialog } = useDialogState();
     if (!collection) {
-      // Handle the scenario where collectionData is null
-      // Maybe set some default state or perform error handling
       return <LoadingOverlay />;
     }
     const percentageChange =
       collection?.collectionStatistics?.percentageChange || 0;
 
-    const handleDelete = useCallback(
-      async (event) => {
-        event.stopPropagation(); // Prevent triggering the selection when clicking delete
-        await deleteCollection(collection?._id);
-      },
-      [deleteCollection, collection?._id]
-    );
-
     const handleEdit = useCallback(
       (event) => {
-        event.stopPropagation(); // Prevent triggering the selection when clicking edit
-        // handleSelectCollection(collection);
+        event.stopPropagation();
         openDialog('isEditCollectionDialogOpen');
       },
       [openDialog]
     );
 
-    const handleSelection = useCallback(() => {
-      handleSelectCollection(collection);
-      handleSelectAndShowCollection(collection);
-    }, [handleSelectCollection, collection]);
     return (
       <Collapse in={true} timeout={1000}>
         <Card
-          // onClick={() => {
-          //   handleSelectAndShowCollection(collection);
-          // }}
           sx={{
+            borderRadius: theme.shape.borderRadius,
+            my: '0.5rem',
             ...(isMobile && {
               boxShadow: 'none', // Remove shadow
               '&:hover': {
@@ -74,7 +56,6 @@ const CollectionListItem = memo(
             }),
           }}
         >
-          {' '}
           <MDBox
             sx={{
               display: 'flex',
@@ -173,25 +154,6 @@ const CollectionListItem = memo(
                 >
                   Edit
                 </RCButton>
-                {/* <SimpleButton
-                  onClick={handleDelete}
-                  theme={uniqueTheme}
-                  isPrimary={true}
-                  customSize="small"
-                  noContainer={true}
-                  isError={true}
-                >
-                  Delete
-                </SimpleButton>
-                <SimpleButton
-                  onClick={handleEdit}
-                  theme={uniqueTheme}
-                  isPrimary={true}
-                  customSize="small"
-                  noContainer={true}
-                >
-                  Edit
-                </SimpleButton> */}
               </MDBox>
             </CardContent>
           </MDBox>

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
-import DeckForm from '../forms/DeckForm'; // Adjusted import
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -11,11 +10,12 @@ import {
   StyledDialog,
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import MDAvatar from '../../assets/currentlyUnused/MDAVATAR';
+import { formFields } from '../forms/formsConfig';
+import RCDynamicForm from '../forms/Factory/RCDynamicForm';
 
 const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();
-  const actionType = isNew ? 'add' : 'update';
+  const formKey = isNew ? 'addDeckForm' : 'updateDeckForm';
 
   return (
     <StyledDialog
@@ -63,10 +63,16 @@ const DeckDialog = ({ open, onClose, isNew, deckData }) => {
       <Divider />
 
       <StyledDialogContent theme={theme} elevation={20}>
-        <DeckForm
+        <RCDynamicForm
+          formKey={formKey}
+          inputs={formFields[formKey]}
+          initialData={!isNew && deckData ? deckData : formFields[formKey]}
+          // Conditionally pass initial data if it's an update operation
+        />
+        {/* <DeckForm
           deckData={!isNew ? deckData : undefined}
           actionType={actionType}
-        />
+        /> */}
       </StyledDialogContent>
     </StyledDialog>
   );

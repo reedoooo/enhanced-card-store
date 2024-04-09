@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
 import { useMode } from '../../context';
@@ -11,14 +11,16 @@ import {
   StyledDialogContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { formFields } from '../forms/formsConfig';
-import { useFormManagement } from '../forms/hooks/useFormManagement';
 import RCDynamicForm from '../forms/Factory/RCDynamicForm';
+import useInitialFormData from '../forms/hooks/useInitialFormData';
 
 const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
   const { theme } = useMode();
-  const actionType = isNew ? 'add' : 'update';
-  const { currentSchemaKey, setActiveFormSchema } = useFormManagement(
-    actionType === 'add' ? 'addCollectionForm' : 'updateCollectionForm'
+  const formKey = isNew ? 'addCollectionForm' : 'updateCollectionForm';
+  const initialFormData = useInitialFormData(
+    isNew,
+    formFields[formKey],
+    collectionData
   );
 
   return (
@@ -68,13 +70,10 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
 
       <StyledDialogContent theme={theme} elevation={20}>
         <RCDynamicForm
-          formKey={currentSchemaKey}
-          inputs={formFields[currentSchemaKey]}
-          initialData={
-            !isNew && collectionData
-              ? collectionData
-              : formFields[currentSchemaKey]
-          } // Conditionally pass initial data if it's an update operation
+          formKey={formKey}
+          inputs={formFields[formKey]}
+          initialData={initialFormData}
+          // Conditionally pass initial data if it's an update operation
         />
         {/* <CollectionForm
           collectionData={!isNew ? collectionData : undefined}

@@ -70,6 +70,15 @@ const useSelectedDeck = () => {
     () => decks.byId[decks?.selectedId],
     [decks.byId, decks.selectedId]
   );
+  const updateDeckField = useCallback(
+    (deckId, fieldPath, value) => {
+      console.log('UPDATE DECK FIELD', deckId, fieldPath, value);
+      setDecks((prev) =>
+        _set({ ...prev }, `byId.${deckId}.${fieldPath}`, value)
+      );
+    },
+    [setDecks]
+  );
   const updateDeck = useCallback(
     (updatedDeck, deckId = decks.selectedId) => {
       setDecks((prev) => ({
@@ -171,7 +180,7 @@ const useSelectedDeck = () => {
     allDecks: Object.values(decks.byId),
     showDecks: !!decks.showDecks,
     deckUpdated, // You can use this value in your components to trigger re-renders
-
+    updateDeckField,
     updateDeck,
     updateMultipleDecks,
     handleSelectDeck,

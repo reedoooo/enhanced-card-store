@@ -16,6 +16,8 @@ const DeckBuilder = () => {
   const { selectedDeck, allDecks, handleSelectDeck } = useSelectedDeck();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0); // Now this will be dynamic based on allDecks
+  const safeAllDecks = allDecks || [];
+
   const handleChangeTab = (event, newValue) => {
     setActiveTab(newValue); // Update the active tab state
     const selectedDeck = allDecks[newValue]; // Get the deck corresponding to the new tab index
@@ -33,7 +35,6 @@ const DeckBuilder = () => {
               />
             </DashboardBox>
           </Grid>
-          {/* Tabs and Search Component in the same row */}
           <Grid
             container
             item
@@ -49,7 +50,7 @@ const DeckBuilder = () => {
                 variant="scrollable"
                 scrollButtons="auto"
               >
-                {allDecks?.map((deck, index) => (
+                {safeAllDecks?.map((deck, index) => (
                   <Tab
                     label={deck.name}
                     value={index}
@@ -73,14 +74,20 @@ const DeckBuilder = () => {
                 py: theme.spacing(2),
               }}
             >
-              {/* <Grid item xs={6}> */}
-              {allDecks?.map((deck, index) => (
+              {safeAllDecks?.map((deck, index) => (
                 <Collapse
                   in={activeTab === index}
                   key={deck._id || `deck-collapse-${index}`}
                 >
                   <DeckListItem
-                    deck={allDecks[activeTab]}
+                    deck={deck}
+                    deckData={{
+                      name: deck.name || '',
+                      description: deck.description || '',
+                      tags: [...deck.tags] || [],
+                      color: deck.color || '',
+                    }}
+                    cards={deck.cards}
                     isEditPanelOpen={selectedDeck?._id === deck._id}
                     handleSelectAndShowDeck={(deck) => {
                       handleSelectDeck(deck);
@@ -88,7 +95,6 @@ const DeckBuilder = () => {
                         allDecks.findIndex((d) => d._id === deck._id)
                       ); // Find and set the active tab index based on deck selection.
                     }}
-                    cards={deck.cards}
                   />
                 </Collapse>
               ))}
@@ -96,13 +102,6 @@ const DeckBuilder = () => {
           </Grid>
         </Grid>
       </DashboardLayout>
-
-      {/* <DeckDialog
-        open={dialogState.isEditDeckDialogOpen}
-        onClose={() => closeDialog('isEditDeckDialogOpen')}
-        deckData={selectedDeck}
-        isNew={false}
-      /> */}
       <DeckDialog
         open={dialogState.isAddDeckDialogOpen}
         onClose={() => closeDialog('isAddDeckDialogOpen')}

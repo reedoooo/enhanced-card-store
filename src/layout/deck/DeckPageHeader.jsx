@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
-import { useFormContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import SimpleSectionHeader from '../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -23,7 +24,7 @@ const FlexContainer = styled(Box)(({ theme }) => ({
 
 const DeckPageHeader = ({ openAddDeckDialog }) => {
   const { theme } = useMode();
-  const { setCurrentForm } = useFormContext();
+  const { setActiveFormSchema } = useFormManagement();
   const { user } = useUserData();
   if (!user) {
     return <PageHeaderSkeleton />;
@@ -51,24 +52,14 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
             day: 'numeric',
           })}
         />
-        {/* <SimpleButton
-          theme={uniqueTheme}
-          isPrimary={true}
-          onClick={() => {
-            setCurrentForm('addDeckForm');
-            openAddDeckDialog();
-            console.log('openAddDeckDialog');
-          }}
-        >
-          Add New Deck
-        </SimpleButton> */}
         <RCButton
           color="success"
           size="large"
           variant="holo"
+          // circular={true}
           withContainer={true}
           onClick={() => {
-            setCurrentForm('addDeckForm');
+            setActiveFormSchema('addDeckForm');
             openAddDeckDialog();
             console.log('openAddDeckDialog');
           }}

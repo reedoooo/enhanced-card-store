@@ -31,6 +31,19 @@ export const calculateTotalPrice = (collection) => {
   // Assuming collection is an object where each key-value pair is cardId-price
   return Object.values(collection).reduce((total, price) => total + price, 0);
 };
+/**
+ * Access the values of an object by its keys.
+ * @param {Object} obj - The object to access.
+ * @param {Array} keys - The keys to access.
+ * @returns {Array} The values of the keys.
+ * * @example accessValues({ a: 1, b: 2, c: 3 }, ['a', 'c']) => [1, 3]
+ **/
+export const accessMapValues = (schema) => {
+  return Object.keys(schema.shape).reduce((acc, key) => {
+    acc[key] = '';
+    return acc;
+  }, {});
+};
 export const getCardQuantity = (collectionId, allCollections) => {
   // Assuming allCollections is an array of collection objects
   const collection = allCollections.find((coll) => coll._id === collectionId);

@@ -10,13 +10,7 @@ import HeroSection from '../layout/sections/HeroSection';
 import FeatureCardsSection from '../layout/sections/FeatureCardsSection';
 
 const HomePage = () => {
-  const {
-    allFeatureData,
-    showDetailsModal,
-    detailsModalShow,
-    isModalOpen,
-    modalContent,
-  } = useModalContext();
+  const { detailsModalShow, isModalOpen, modalContent } = useModalContext();
   const splashRef = useRef(null);
 
   useEffect(() => {

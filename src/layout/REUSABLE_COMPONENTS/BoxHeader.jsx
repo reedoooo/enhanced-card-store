@@ -27,6 +27,7 @@ const BoxHeader = ({
         {icon}
         <Box width="100%">
           <Typography
+            theme={theme}
             variant={useSX ? titleVariant : 'h4'}
             mb="-0.1rem"
             ml="0.5rem"
@@ -37,13 +38,14 @@ const BoxHeader = ({
             {title}
           </Typography>
           {subtitle !== 'none' && (
-            <Typography variant="h6" ml="0.5rem">
+            <Typography variant="h6" ml="0.5rem" theme={theme}>
               {subtitle}
             </Typography>
           )}
         </Box>
       </FlexBetween>
       <Typography
+        theme={theme}
         variant="h5"
         fontWeight="700"
         color={theme.palette.greenAccent.pureGreenBlue}

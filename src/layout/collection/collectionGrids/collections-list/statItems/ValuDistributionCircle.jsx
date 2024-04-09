@@ -105,21 +105,15 @@ const ValuDistributionCircle = () => {
             <BoxHeader
               title="Collection Value Distribution"
               icon={
-                <MDBox
+                <RCWrappedIcon
+                  // color="success"
+                  color={greyDark}
                   sx={{
-                    border: 'none',
+                    background: theme.palette.success.main,
                   }}
                 >
-                  <RCWrappedIcon
-                    // color="success"
-                    color={greyDark}
-                    sx={{
-                      background: theme.palette.success.main,
-                    }}
-                  >
-                    <Icon>show_chart</Icon>
-                  </RCWrappedIcon>
-                </MDBox>
+                  <Icon>show_chart</Icon>
+                </RCWrappedIcon>
               }
               subtitle="none"
               sideText=""

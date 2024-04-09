@@ -27,6 +27,30 @@ function useSelectedCollection() {
     }
   }, []);
   useEffect(() => {
+    if (!collections || collections?.allIds?.length === 0) {
+      // Prepare to update the defaultCollections with selectedChartData
+      const updatedById = { ...defaultCollections.byId };
+      Object.keys(updatedById).forEach((id) => {
+        const collection = updatedById[id];
+        // Ensure the collection has averagedChartData and a .24hr key
+        if (
+          collection.averagedChartData &&
+          collection.averagedChartData['24hr']
+        ) {
+          // Directly update the selectedChartData to match averagedChartData.24hr
+          updatedById[id].selectedChartData =
+            collection.averagedChartData['24hr'];
+          console.log(
+            'UPDATED SELECTED CHART DATA',
+            collection.averagedChartData['24hr']
+          );
+        }
+      });
+      setCollections({ ...defaultCollections, byId: updatedById });
+    }
+  }, []);
+
+  useEffect(() => {
     if (
       collections.allIds.includes(SELECTED_COLLECTION_ID) &&
       collections.allIds.length > 1
@@ -57,9 +81,7 @@ function useSelectedCollection() {
   const [selectedStat, setSelectedStat] = useState('');
   useEffect(() => {
     prevSelectedCollectionIdRef.current = selectedCollectionId;
-    // collections.prevSelectedId = selectedCollectionId;
   }, [selectedCollectionId]);
-  // Assuming collections.byId is an object containing all collections keyed by their IDs
 
   const getSelectedCollection = useMemo(() => {
     const selectedCollection = collections.byId[collections.selectedId];
@@ -123,6 +145,7 @@ function useSelectedCollection() {
   );
   const updateCollectionField = useCallback(
     (collectionId, fieldPath, value) => {
+      console.log('UPDATE COLLECTION FIELD', collectionId, fieldPath, value);
       setCollections((prev) =>
         _set({ ...prev }, `byId.${collectionId}.${fieldPath}`, value)
       );
@@ -170,31 +193,47 @@ function useSelectedCollection() {
       setCollections((prev) => {
         const updatedById = { ...prev.byId };
         newCollections?.forEach((collection) => {
+          // Check if the current collection's selectedChartData is empty, null, or undefined
+          if (
+            !collection.selectedChartData ||
+            Object.keys(collection.selectedChartData).length === 0
+          ) {
+            // Ensure there's an 'averagedChartData' and it has a '24hr' key before attempting to update
+            if (
+              collection.averagedChartData &&
+              collection.averagedChartData['24hr'] !== undefined
+            ) {
+              // Directly update selectedChartData to match averagedChartData['24hr']
+              collection.selectedChartData =
+                collection.averagedChartData['24hr'];
+            } else {
+              // Handle cases where 'averagedChartData['24hr']' might not be available
+              console.warn(
+                `Collection ${collection._id} does not have 'averagedChartData["24hr"]'.`
+              );
+            }
+          }
+
+          // Update the collection in the 'updatedById' object
           updatedById[collection._id] = collection;
         });
-        // FILTER UNDEFINED VALUES
+
+        // FILTER UNDEFINED VALUES and ensure keys are valid
         const updatedAllIds = Object.keys(updatedById).filter(
           (key) => updatedById[key] !== undefined
         );
-        console.log('UPDATED COLLECTIONS', updatedById);
-        console.log('UPDATED ALL IDS', updatedAllIds);
-        console.log('UPDATED ALL IDS', Object.keys(updatedById));
 
-        // return {
-        //   ...prev,
-        //   allIds: updatedAllIds,
-        //   byId: updatedById,
-        //   // selectedId: collections.selectedId || prev.allIds[0],
-        // };
+        console.log('UPDATED COLLECTIONS', updatedById);
         return {
           ...prev,
           byId: updatedById,
-          allIds: Object.keys(updatedById),
+          allIds: updatedAllIds,
         };
       });
     },
-    [setCollections, collections.selectedId]
+    [setCollections]
   );
+
   const addNewCollection = useCallback(
     (newCollection) => {
       // const newId = new Date().getTime().toString(); // Simple unique ID generation
@@ -203,25 +242,35 @@ function useSelectedCollection() {
     [updateCollectionsData]
   );
   const removeCollection = useCallback(
-    (collectionId, remainingCollectionIds) => {
+    (collectionId) => {
       setCollections((prev) => {
-        console.log('REMOVE COLLECTION', collectionId, remainingCollectionIds);
+        console.log('REMOVING COLLECTION', collectionId);
         const updatedById = { ...prev.byId };
         delete updatedById[collectionId]; // Remove the collection
         const updatedAllIds = prev.allIds.filter((id) => id !== collectionId);
+        console.log('UPDATED COLLECTIONS', updatedById);
 
-        return {
+        // Directly update local storage with the modified state
+        const updatedCollections = {
           ...prev,
           byId: updatedById,
           allIds: updatedAllIds,
-          // Ensure selectedId is null if the deleted collection was selected
+          // Ensure selectedId is updated appropriately
           selectedId: prev.selectedId === collectionId ? null : prev.selectedId,
         };
+
+        // Since useLocalStorage hook might already synchronize the state with local storage,
+        // the following line ensures local storage is explicitly updated.
+        // This step may be redundant depending on the implementation of useLocalStorage.
+        localStorage.setItem('collections', JSON.stringify(updatedCollections));
+
+        return updatedCollections;
       });
-      // refreshCollections(); // Optionally, refresh collections if they are fetched from an external source
+      // No need to call refreshCollections if local storage is updated here
     },
-    [setCollections, refreshCollections]
+    [setCollections]
   );
+
   const prevCollectionsRef = useRef();
   useEffect(() => {
     if (prevCollectionsRef.current) {

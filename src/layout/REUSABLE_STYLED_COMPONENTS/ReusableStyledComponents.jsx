@@ -50,7 +50,8 @@ export const StyledContainerBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.greenAccent.crystalGreen,
+  background: 'white',
+  // background: theme.palette.greenAccent.crystalGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -310,18 +311,12 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   minWidth: '100px',
-  // minWidth: '120px', // Adjusted for better responsiveness
   maxWidth: '100%',
-  // mx: 3,
-  // width: 'auto',
   maxHeight: '100%', // Adjusted for better height management
-  // height: 'auto',
   flexGrow: 1,
   backgroundColor: theme.palette.greenAccent.contrastText,
   borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[5],
   justifyContent: 'center',
-  // margin: 'auto',
   transition: 'transform 0.3s ease-in-out',
   '&:hover': {
     transform: 'scale(1.03)',

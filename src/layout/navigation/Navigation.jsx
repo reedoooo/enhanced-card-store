@@ -64,7 +64,6 @@ const Navigation = ({ isLoggedIn }) => {
         sx={{
           py: type === 'top' ? theme.spacing(4) : theme.spacing(2),
           px: 'auto',
-
           flexGrow: 1,
           justifyContent: 'center',
           height: '100%',
@@ -109,7 +108,7 @@ const Navigation = ({ isLoggedIn }) => {
             content={
               <>
                 {menuItems[index]?.icon}
-                <Typography level="title-md" sx={{ ml: 1 }}>
+                <Typography level="title-lg" sx={{ ml: 1 }}>
                   {menuItems[index]?.name}
                 </Typography>
               </>
@@ -163,10 +162,12 @@ const Navigation = ({ isLoggedIn }) => {
           <Card
             sx={{
               display: 'flex',
-              gap: 2,
+              // gap: 2,
               alignItems: 'center',
               background: 'white',
               flexDirection: 'row',
+              my: theme.spacing(2),
+              py: theme.spacing(2),
             }}
           >
             <Avatar
@@ -177,7 +178,7 @@ const Navigation = ({ isLoggedIn }) => {
                 color: 'white',
               }}
             />
-            <Typography level="title-md">{username}</Typography>
+            <Typography level="title-lg">{username}</Typography>
           </Card>
         </Toolbar>
       </AppBar>
