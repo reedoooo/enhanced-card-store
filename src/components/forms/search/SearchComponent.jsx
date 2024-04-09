@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import SearchResults from './SearchResults';
 import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
-import SearchForm from '../../../assets/currentlyUnused/SearchForm';
 import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useMode } from '../../../context';

@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LoginForm from '../assets/currentlyUnused/LoginForm';
 import { useMode } from '../context';
 import useManageCookies from '../context/hooks/useManageCookies';
 
@@ -74,7 +73,7 @@ export default function LoginPage() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <LoginForm />
+            {/* <LoginForm /> */}
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
