@@ -64,6 +64,7 @@ const useGridItems = ({
                   page={pageContext}
                   context={pageContext}
                   cardClasses="base-card-no-quantity"
+                  // selectedEntity={selectedEntity}
                   // context={`${pageContext}`}
                 />
                 {type === 'deck' && (

@@ -45,9 +45,10 @@ export const useCompileCardData = () => {
       if (!collection.cards) return;
       cards.push(...collection.cards);
     });
-    allDecks.forEach((deck) => {
-      cards.push(...deck.cards);
-    });
+    allDecks.length > 1 &&
+      allDecks?.forEach((deck) => {
+        cards.push(...deck.cards);
+      });
     console.log('COMPILING ALL CARDS WITH QUANTITIES', cards);
     setAllUserCards(cards);
     const cardQuantities = cards?.reduce((acc, card) => {
@@ -73,6 +74,22 @@ export const useCompileCardData = () => {
   const compileCollectionMetaData = useCallback(() => {
     if (!allCollections || allCollections?.length === 0) return;
     const cards = compileCardsWithQuantities();
+    let collectionCards = [];
+    let totalValue = 0;
+    allCollections.forEach((collection) => {
+      const collectionPrice = parseFloat(collection?.totalPrice);
+      if (isNaN(collectionPrice)) return;
+      // collectionCards.push({
+      //   id: collection._id,
+      //   name: collection.name,
+      //   price: collectionPrice,
+      // });
+      totalValue += collectionPrice;
+    });
+    allCollections.forEach((collection) => {
+      if (!collection.cards) return;
+      collectionCards.push(...collection.cards);
+    });
     const uniqueCards = new Map();
     cards.forEach((card) => {
       if (!uniqueCards.has(card.id)) {
@@ -85,19 +102,10 @@ export const useCompileCardData = () => {
       .sort((a, b) => b.price - a.price)
       .slice(0, 5);
     const metaData = {
-      totalValue: allCollections?.reduce(
-        (total, collection) => total + collection?.totalPrice,
-        0
-      ),
-      numCardsCollected: allCollections?.reduce((total, collection) => {
-        const collectionTotal = collection?.cards?.reduce(
-          (collectionTotal, card) => {
-            // Use the quantity property of each card, defaulting to 1 if not available
-            return collectionTotal + (card?.quantity || 1);
-          },
-          0
-        );
-        return total + collectionTotal;
+      totalValue: totalValue,
+      numCardsCollected: collectionCards?.reduce((total, card) => {
+        return total + card.quantity;
+        // return total + collection.cards.reduce((total, card) => total + card.quantity, 0);
       }, 0),
       numCollections: allCollections?.length || 0,
       topFiveCards: topFiveCardsInCollection,

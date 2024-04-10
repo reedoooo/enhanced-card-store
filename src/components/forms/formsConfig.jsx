@@ -101,7 +101,7 @@ const getFormFieldHandlers = () => {
     },
     updateCollectionForm: (formData, additionalData) => {
       console.log('Update Collection Form Data:', formData, additionalData);
-      updateCollection(additionalData, formData);
+      updateCollection(formData, additionalData);
     },
     updateDeckForm: (formData, additionalData) => {
       console.log('Update Deck Form Data:', formData, additionalData);
@@ -113,7 +113,7 @@ const getFormFieldHandlers = () => {
     },
     deleteDeckForm: (formData, additionalData) => {
       console.log('Delete Deck Form Data:', formData, additionalData);
-      deleteDeck(formData, additionalData);
+      deleteDeck(formData);
     },
     searchForm: (formData, additionalData) => {
       console.log('Search Form Data:', formData, additionalData);
@@ -283,7 +283,7 @@ const updateDeckFormFields = {
   color: {
     label: 'Color',
     type: 'select',
-    defaultValue: { value: 'blue', label: 'Blue' },
+    defaultValue: 'blue',
     rules: {
       required: false,
     },
@@ -496,7 +496,6 @@ const updateDeckFormSchema = addDeckFormSchema.extend({
       'orange',
       'teal',
     ])
-    .optional()
     .default('blue'),
 });
 const collectionFormSchema = z.object({
@@ -506,36 +505,6 @@ const collectionFormSchema = z.object({
 const searchFormSchema = z.object({
   searchTerm: z.string().optional().default(''),
 });
-// const statRangeFormSchema = z.object({
-//   stateRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('highPoint'),
-// });
-// const timeRangeFormSchema = z.object({
-//   timeRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('24hr'),
-// });
-// const themeRangeFormSchema = z.object({
-//   themeRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('light'),
-// });
 const authSwitchFormSchema = z.object({
   authSwitch: z.boolean(), // Since it's a switch, it's either true or false
 });

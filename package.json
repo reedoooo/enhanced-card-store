@@ -31,6 +31,7 @@
     "image-downloader": "^4.3.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
+    "lodash.set": "^4.3.2",
     "material-ui-image": "^3.3.2",
     "mathjs": "^12.4.1",
     "moment": "^2.29.4",

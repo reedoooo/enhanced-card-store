@@ -11,14 +11,12 @@ import useDeckManager from '../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import useSelectedDeck from '../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 
 const DeckBuilderPage = () => {
-  const { isPageLoading } = useLoading();
   const { closeModal, returnDisplay, isModalOpen, modalContent } =
     useLoadingAndModal();
-  const { hasFetchedDecks, fetchDecks } = useDeckManager();
-  const { allDecks } = useSelectedDeck();
-  useEffect(() => {
-    fetchDecks();
-  }, []);
+  // const { hasFetchedDecks, fetchDecks } = useDeckManager();
+  // useEffect(() => {
+  //   fetchDecks();
+  // }, []);
   // useEffect(() => {
   //   if (!hasFetchedDecks && allDecks.length <= 1) {
   //     fetchDecks();
@@ -27,7 +25,6 @@ const DeckBuilderPage = () => {
 
   return (
     <PageLayout>
-      {isPageLoading && returnDisplay()}
       <DeckBuilder />
       {isModalOpen && (
         <GenericCardDialog

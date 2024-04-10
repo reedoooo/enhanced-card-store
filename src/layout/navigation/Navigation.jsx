@@ -217,7 +217,40 @@ const Navigation = ({ isLoggedIn }) => {
             overflow: 'auto',
           }}
         >
-          <DialogTitle>Filters</DialogTitle>
+          <Card
+            sx={{
+              display: 'flex',
+              // gap: 2,
+              alignItems: 'center',
+              background: 'black',
+              flexDirection: 'row',
+              my: theme.spacing(2),
+              py: theme.spacing(2),
+            }}
+          >
+            <RCLogoSection />
+          </Card>
+          <Card
+            sx={{
+              display: 'flex',
+              // gap: 2,
+              alignItems: 'center',
+              background: 'white',
+              flexDirection: 'row',
+              my: theme.spacing(2),
+              py: theme.spacing(2),
+            }}
+          >
+            <Avatar
+              variant="soft"
+              sx={{
+                mr: 1,
+                background: theme.palette.chartTheme.greenAccent.light,
+                color: 'white',
+              }}
+            />
+            <Typography level="title-lg">{username}</Typography>
+          </Card>
           <ModalClose />
           <Divider sx={{ mt: '1rem' }} />
           <List>{renderMenuItems('side')}</List>

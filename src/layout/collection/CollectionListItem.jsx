@@ -1,27 +1,23 @@
 import React, { memo, useCallback } from 'react';
 import {
-  Box,
   Card,
   CardActionArea,
   CardContent,
   Collapse,
   Grid,
-  Tooltip,
-  useMediaQuery,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import MDBox from '../../../../layout/REUSABLE_COMPONENTS/MDBOX';
-import useDialogState from '../../../../context/hooks/useDialogState';
-import { useMode } from '../../../../context';
-import CollectionDialog from '../../../../components/dialogs/CollectionDialog';
-import RCChange from '../../../REUSABLE_COMPONENTS/RC/RCChange';
-import RCInfoItem from '../../../REUSABLE_COMPONENTS/RCInfoItem';
-import { roundToNearestTenth } from '../../../../context/Helpers';
-import LoadingOverlay from '../../../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import RCButton from '../../../REUSABLE_COMPONENTS/RCBUTTON';
+import useDialogState from '../../context/hooks/useDialogState';
+import { useMode } from '../../context';
+import CollectionDialog from '../../components/dialogs/CollectionDialog';
+import RCChange from '../REUSABLE_COMPONENTS/RC/RCChange';
+import RCInfoItem from '../REUSABLE_COMPONENTS/RCInfoItem';
+import { roundToNearestTenth } from '../../context/Helpers';
+import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import { Divider } from '@mui/joy';
-import useBreakpoint from '../../../../context/hooks/useBreakPoint';
+import useBreakpoint from '../../context/hooks/useBreakPoint';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 
 const CollectionListItem = memo(
   ({ collection, handleSelectAndShowCollection, handleDelete }) => {

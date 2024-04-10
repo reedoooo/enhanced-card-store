@@ -22,7 +22,7 @@ import {
   validationFunctions,
 } from '../formsConfig';
 import { useFormSubmission } from '../hooks/useFormSubmission';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
 
 const RCDynamicForm = ({
@@ -48,6 +48,7 @@ const RCDynamicForm = ({
     reset,
   } = methods;
   const [isMounted, setIsMounted] = useState(false);
+  const { handleRequest } = useCardStore();
   useEffect(() => {
     console.log('MOUNTED', isMounted);
     setIsMounted(true);
@@ -62,40 +63,17 @@ const RCDynamicForm = ({
   }, [updatedData, initialData, reset]);
   const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
   const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
-  // useEffect(() => {
-  //   const subscription = methods.watch((value, { name, type }) => {
-  //     if (name === 'timeRange') {
-  //       console.log(`selectedCollection: ${selectedCollection}`);
-  //       const timeRangeValue = value.timeRange;
-  //       updateCollectionField(
-  //         selectedCollection._id,
-  //         'selectedChartDataKey',
-  //         timeRangeValue
-  //       );
-  //       updateCollectionField(
-  //         selectedCollection._id,
-  //         'selectedChartData',
-  //         selectedCollection.averagedChartData[timeRangeValue]
-  //       );
-  //       console.log(
-  //         `Updated chart data for range: ${timeRangeValue}`,
-  //         selectedCollection.selectedChartData
-  //       );
-  //     }
-  //     if (name === 'searchTerm') {
-  //       console.log(`SEARCH TERM: ${value.searchTerm}`);
-  //       handleRequest(value.searchTerm);
-  //     }
-  //     if (name === 'tags') {
-  //       console.log(`TAGS: ${value.tags}`);
-  //       submitTags(value.tags);
-  //       updateDeckField(selectedDeck._id, 'tags', value.tags);
-  //     }
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [methods.watch, updateCollectionField, handleRequest, submitTags]);
+  useEffect(() => {
+    const subscription = methods.watch((value, { name, type }) => {
+      if (name === 'searchTerm') {
+        console.log(`SEARCH TERM: ${value.searchTerm}`);
+        handleRequest(value.searchTerm);
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [methods.watch, handleRequest]);
   return (
     <FormBox
       component="form"
@@ -174,7 +152,7 @@ const RCDynamicForm = ({
       {optionsForUi && optionsForUi.deleteButton && (
         <ReusableLoadingButton
           key={optionsForUi.deleteButtonLabel}
-          // onClick={button.onClick}
+          onClick={optionsForUi.deleteActions}
           loading={isSubmitting}
           label={optionsForUi.deleteButtonLabel}
           startIcon={
@@ -198,7 +176,7 @@ const RCDynamicForm = ({
   );
 };
 
-export default RCDynamicForm;
+export default React.memo(RCDynamicForm);
 // const [tags, setTags] = useState([]);
 // const submitTags = useCallback((newTags) => {
 //   const validation = zodSchemas['tags'].safeParse(newTags);

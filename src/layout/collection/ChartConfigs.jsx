@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
-import { useAppContext, useMode } from '../../../../context';
+import { useAppContext, useMode } from '../../context';
 import { useEffect, useMemo, useState } from 'react';
-import NivoContainer from '../../../REUSABLE_COMPONENTS/NivoContainer';
+import NivoContainer from '../REUSABLE_COMPONENTS/NivoContainer';
 import { BasicTooltip } from '@nivo/tooltip';
-import { useEventHandlers } from '../../../../context/hooks/useEventHandlers';
+import { useEventHandlers } from '../../context/hooks/useEventHandlers';
 import MyResponsiveLine from './MyPortfolioLineChart';
-import { ChartArea } from '../../../../pages/pageStyles/StyledComponents';
+import { ChartArea } from '../../pages/pageStyles/StyledComponents';
 import { useForm, useWatch } from 'react-hook-form';
-import useSelectedCollection from '../../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useRCFormHook from '../../../../components/forms/hooks/useRCFormHook';
-import { useCompileCardData } from '../../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import LoadingOverlay from '../../../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useRCFormHook from '../../components/forms/hooks/useRCFormHook';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { i } from 'mathjs';
 const formatDateBasedOnRange = (range) => {
   const formatMap = {
@@ -40,7 +40,7 @@ const TooltipLayer = ({ points }) => (
   </>
 );
 import PropTypes from 'prop-types';
-import { useValidateData } from '../../../../context/hooks/useValidateInnerData';
+import { useValidateData } from '../../context/hooks/useValidateInnerData';
 
 // Example data shape
 const fetchedDataType = PropTypes.shape({
@@ -59,19 +59,23 @@ export const ChartConfiguration = ({ markers }) => {
   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
   const { selectedTimeRange } = useCompileCardData(); // Default to '24hr' if not set
   const { selectedCollection, updateCollectionField } = useSelectedCollection();
+  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
   if (!selectedCollection) {
     return <LoadingOverlay />;
   }
-  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
+  if (selectedCollection?.selectedChartData?.data?.length === 0) {
+    return <LoadingOverlay />;
+  }
+
   const chartData = useMemo(
     () =>
-      selectedCollection?.selectedChartData
-        ? selectedCollection.selectedChartData
-        : selectedCollection?.averagedChartData[selectedTimeRange],
+      selectedCollection?.selectedChartData &&
+      // eslint-disable-next-line valid-typeof
+      typeof selectedCollection?.selectedChartData
+        ? selectedCollection?.selectedChartData
+        : selectedCollection?.averagedChartData['24hr'],
     [selectedCollection, selectedTimeRange]
   );
-  useValidateData(chartData, fetchedDataType);
-
   const validMarkers = useMemo(
     () => markers?.filter((marker) => marker.value !== undefined),
     [markers]
@@ -100,20 +104,17 @@ export const ChartConfiguration = ({ markers }) => {
     >
       <NivoContainer height={500}>
         <MyResponsiveLine
-          // key={chartDataKey}
-          data={[chartData]}
+          data={[chartData] || chartData}
           handleMouseLeave={handleMouseLeave}
           handleMouseMove={handleMouseMove}
           TooltipLayer={TooltipLayer}
           tickValues={tickValues}
           validMarkers={validMarkers}
           xFormat={xformat}
-          // colors={{ greenAccent, redAccent, grey } = colors}
           redAccent={redAccent}
           greenAccent={greenAccent}
           grey={grey}
           text={theme.palette.text.primary}
-          // {...chartProps}
         />
       </NivoContainer>
     </ChartArea>

@@ -1,21 +1,16 @@
-import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from '../../assets/images/placeholder.jpeg';
-import { HeroSectionSkeleton } from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
-import { Box, Card, CardContent, Zoom } from '@mui/material';
+import { Card, CardContent, Zoom } from '@mui/material';
 import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
 import {
   ResponsiveContainer,
   CartesianGrid,
-  AreaChart,
-  BarChart,
-  Bar,
   LineChart,
   XAxis,
   YAxis,
   Legend,
   Line,
   Tooltip,
-  Area,
 } from 'recharts';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/BoxHeader';
@@ -23,7 +18,6 @@ import { useMode } from '../../context';
 import { useMemo } from 'react';
 const HeroChartSection = ({ randomCards, activeCardIndex, shouldShow }) => {
   const { theme } = useMode();
-  const { breakpoints } = theme;
   const chartData = useMemo(() => {
     return randomCards[activeCardIndex]?.averagedChartData?.['30d']?.data || [];
   }, [randomCards, activeCardIndex]);
@@ -31,10 +25,8 @@ const HeroChartSection = ({ randomCards, activeCardIndex, shouldShow }) => {
     <FlexBetween
       sx={{
         width: '100%',
-        // Allow this component to expand, filling the available space,
-        // but limit its maximum height
-        maxHeight: 'calc(1000% - 64px)', // Adjust for padding/margins as necessary
-        overflow: 'auto', // Allow scrolling within the component if content exceeds its height
+        maxHeight: 'calc(1000% - 64px)',
+        overflow: 'auto',
       }}
     >
       <Zoom in={shouldShow}>

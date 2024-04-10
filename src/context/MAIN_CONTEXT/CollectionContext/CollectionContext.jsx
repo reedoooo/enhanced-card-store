@@ -14,7 +14,7 @@ export const CollectionContext = createContext(
 );
 
 export const CollectionProvider = ({ children }) => {
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { isLoggedIn, authUser, userId } = getCookie([
     'isLoggedIn',
     'authUser',

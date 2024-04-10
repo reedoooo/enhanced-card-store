@@ -22,12 +22,8 @@ const defaultExportValue = {
 };
 const useCollectionManager = () => {
   const { fetchWrapper, status, data } = useFetchWrapper();
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
-  const { isLoggedIn, authUser, userId } = getCookie([
-    'isLoggedIn',
-    'authUser',
-    'userId',
-  ]);
+  const { getCookie } = useManageCookies();
+  const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const logger = useLogger('useCollectionManager');
   const collectionData = useSelectedCollection();
   if (!collectionData) {
@@ -125,7 +121,6 @@ const useCollectionManager = () => {
       selectedCollectionId,
     ]
   );
-
   const createNewCollection = useCallback(async (datas) => {
     const newCollection = {
       name: datas.name,
@@ -135,8 +130,6 @@ const useCollectionManager = () => {
     const path = createApiUrl('create');
     performAction(path, 'POST', newCollection, 'createNewCollection');
   }, []);
-
-  // performAction(createApiUrl('create'), 'POST', datas, 'createNewCollection');
   const deleteCollection = useCallback(
     async (collectionId) => {
       performAction(
@@ -144,7 +137,6 @@ const useCollectionManager = () => {
         'DELETE',
         { collectionId: collectionId },
         'deleteCollection',
-
         {
           beforeAction: async () => {
             console.log('BEFORE ACTION', collectionId);
@@ -168,7 +160,6 @@ const useCollectionManager = () => {
     },
     [performAction, createApiUrl, fetchWrapper, handleError]
   );
-
   const updateCollection = useCallback(
     async (collectionId, updatedData) => {
       performAction(
@@ -182,6 +173,7 @@ const useCollectionManager = () => {
   );
   const addCardsToCollection = useCallback(
     (newCards, collection) => {
+      console.log('ADD CARDS TO COLLECTION', newCards, collection);
       if (selectedCollectionId === 'selectedCollectionId')
         return console.log('Collection ID has not been set');
       // CHECK FOR EXISTING CARD IN COLLECTION (newcards[0])

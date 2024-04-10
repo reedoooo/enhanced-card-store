@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_COLLECTION, SELECTED_COLLECTION_ID } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import { defaultValues } from '../../simplified_constants';
+
 import _set from 'lodash/set';
-const defaultCollections = {
-  allIds: [SELECTED_COLLECTION_ID],
-  byId: {
-    [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
-  },
-  selectedId: SELECTED_COLLECTION_ID,
-  prevSelectedId: SELECTED_COLLECTION_ID,
-  showCollections: false,
-};
+// const defaultCollections = {
+//   allIds: [SELECTED_COLLECTION_ID],
+//   byId: {
+//     [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
+//   },
+//   selectedId: SELECTED_COLLECTION_ID,
+//   prevSelectedId: SELECTED_COLLECTION_ID,
+//   showCollections: false,
+// };
 function useSelectedCollection() {
   const [collections, setCollections] = useLocalStorage('collections', {
     allIds: [],
@@ -23,21 +25,18 @@ function useSelectedCollection() {
   });
   useEffect(() => {
     if (!collections || collections?.allIds?.length === 0) {
-      setCollections(defaultCollections);
+      setCollections(defaultValues.defaultCollections);
     }
   }, []);
   useEffect(() => {
     if (!collections || collections?.allIds?.length === 0) {
-      // Prepare to update the defaultCollections with selectedChartData
-      const updatedById = { ...defaultCollections.byId };
+      const updatedById = { ...defaultValues.defaultCollections.byId };
       Object.keys(updatedById).forEach((id) => {
         const collection = updatedById[id];
-        // Ensure the collection has averagedChartData and a .24hr key
         if (
           collection.averagedChartData &&
           collection.averagedChartData['24hr']
         ) {
-          // Directly update the selectedChartData to match averagedChartData.24hr
           updatedById[id].selectedChartData =
             collection.averagedChartData['24hr'];
           console.log(
@@ -46,7 +45,10 @@ function useSelectedCollection() {
           );
         }
       });
-      setCollections({ ...defaultCollections, byId: updatedById });
+      setCollections({
+        ...defaultValues.defaultCollections,
+        byId: updatedById,
+      });
     }
   }, []);
 
@@ -82,7 +84,6 @@ function useSelectedCollection() {
   useEffect(() => {
     prevSelectedCollectionIdRef.current = selectedCollectionId;
   }, [selectedCollectionId]);
-
   const getSelectedCollection = useMemo(() => {
     const selectedCollection = collections.byId[collections.selectedId];
     if (!selectedCollection) {
@@ -193,36 +194,27 @@ function useSelectedCollection() {
       setCollections((prev) => {
         const updatedById = { ...prev.byId };
         newCollections?.forEach((collection) => {
-          // Check if the current collection's selectedChartData is empty, null, or undefined
           if (
             !collection.selectedChartData ||
             Object.keys(collection.selectedChartData).length === 0
           ) {
-            // Ensure there's an 'averagedChartData' and it has a '24hr' key before attempting to update
             if (
               collection.averagedChartData &&
               collection.averagedChartData['24hr'] !== undefined
             ) {
-              // Directly update selectedChartData to match averagedChartData['24hr']
               collection.selectedChartData =
                 collection.averagedChartData['24hr'];
             } else {
-              // Handle cases where 'averagedChartData['24hr']' might not be available
               console.warn(
                 `Collection ${collection._id} does not have 'averagedChartData["24hr"]'.`
               );
             }
           }
-
-          // Update the collection in the 'updatedById' object
           updatedById[collection._id] = collection;
         });
-
-        // FILTER UNDEFINED VALUES and ensure keys are valid
         const updatedAllIds = Object.keys(updatedById).filter(
           (key) => updatedById[key] !== undefined
         );
-
         console.log('UPDATED COLLECTIONS', updatedById);
         return {
           ...prev,
@@ -233,7 +225,6 @@ function useSelectedCollection() {
     },
     [setCollections]
   );
-
   const addNewCollection = useCallback(
     (newCollection) => {
       // const newId = new Date().getTime().toString(); // Simple unique ID generation

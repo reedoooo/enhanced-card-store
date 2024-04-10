@@ -6,24 +6,19 @@ import useManageCookies from '../../hooks/useManageCookies';
 
 const useDeckManager = () => {
   const { fetchWrapper, status } = useFetchWrapper();
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
-  const { isLoggedIn, authUser, userId } = getCookie([
-    'isLoggedIn',
-    'authUser',
-    'userId',
-  ]);
+  const { getCookie } = useManageCookies();
+  const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const logger = useLogger('useDeckManager');
   const {
-    selectedDeck,
-    allDecks,
     selectedDeckId,
-    updateMultipleDecks,
-    handleSelectDeck,
-    addCardToSelectedDeck,
-    deckUpdated,
+    addOrUpdateDeck,
+    // updateDeckField,
+    updateSelectedDeck,
+    removeCardFromSelectedDeck,
+    removeDeck,
     setCustomError: setSelectedDeckError,
+    refreshDecks,
   } = useSelectedDeck();
-  // const [decks] = useLocalStorage('decks', []);
   const [error, setError] = useState(null);
   const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const handleError = useCallback(
@@ -36,225 +31,111 @@ const useDeckManager = () => {
   );
   const baseUrl = `${process.env.REACT_APP_SERVER}/api/users/${userId}/decks`;
   const createApiUrl = useCallback((path) => `${baseUrl}/${path}`, [baseUrl]);
-  const fetchDecks = useCallback(async () => {
-    if (!userId || !isLoggedIn || status === 'loading') return;
-    try {
-      const responseData = await fetchWrapper(
-        createApiUrl('allDecks'),
-        'GET',
-        null,
-        'fetchDecks'
-      );
-      updateMultipleDecks(responseData?.data);
-      setHasFetchedDecks(true);
-    } catch (error) {
-      handleError(error, 'fetchDecks');
-    }
-  }, [
-    userId,
-    isLoggedIn,
-    status,
-    fetchWrapper,
-    createApiUrl,
-    updateMultipleDecks,
-    handleError,
-    handleSelectDeck,
-  ]);
-
-  const performAction = useCallback(
-    async (path, method, data, actionName, options = {}) => {
+  const performFetchAndUpdate = useCallback(
+    async (urlSuffix, method, deckData = null, actionName) => {
       if (!userId || !isLoggedIn || status === 'loading') {
         setError('User is not logged in or request is in loading state.');
         return;
       }
-      if (!selectedDeck) {
-        setSelectedDeckError('No deck selected');
-        return;
-      }
-      options.beforeAction?.();
-      console.log(
-        'PERFORM ACTION',
-        path,
-        method,
-        data,
-        actionName,
-        options.paramTypes
-      );
 
+      const url = createApiUrl(urlSuffix);
       try {
-        await fetchWrapper(path, method, data, actionName);
-        options.afterAction?.();
-        fetchDecks(); // Refresh decks after any action
+        const response = await fetchWrapper(url, method, deckData, actionName);
+        if (response.data) {
+          if (method === 'GET') {
+            response.data.forEach((deck) => addOrUpdateDeck(deck));
+          } else if (
+            actionName === 'addCardsToDeck' ||
+            actionName === 'removeCardsFromDeck'
+          ) {
+            console.log('CARD RESPONSE', response.data?.data?.cards);
+            updateSelectedDeck(
+              response.data?.data?._id,
+              'cards',
+              response.data?.data?.cards
+            );
+
+            let updatedTotalQuantity = response.data?.data?.totalQuantity;
+            // let updatedTotalPrice = response.data?.data?.totalPrice;
+            if (actionName === 'addCardsToDeck') {
+              // updatedTotalQuantity++;
+              // updatedTotalPrice += response.data?.data?.price;
+            } else if (actionName === 'removeCardsFromDeck') {
+              updatedTotalQuantity--;
+              // updatedTotalPrice -= response.data?.data?.price;
+            }
+            updateSelectedDeck(
+              response.data?.data?._id,
+              'totalQuantity',
+              updatedTotalQuantity
+            );
+            // addOrUpdateDeck(response.data?.data);
+          } else if (actionName === 'deleteDeck') {
+            removeDeck(response.data?.data);
+          }
+          console.log(`${actionName} succeeded.`);
+          // refreshDecks();
+        }
       } catch (error) {
         handleError(error, actionName);
       }
     },
-    [
-      userId,
-      isLoggedIn,
-      status,
-      fetchWrapper,
-      createApiUrl,
-      fetchDecks,
-      handleError,
-      setSelectedDeckError,
-      selectedDeck,
-    ]
+    [userId, isLoggedIn, status, fetchWrapper, addOrUpdateDeck, handleError]
   );
+  const fetchDecks = () =>
+    performFetchAndUpdate('allDecks', 'GET', null, 'fetchDecks');
 
-  const createNewDeck = (data) =>
-    performAction(createApiUrl('create'), 'POST', data, 'createNewDeck');
-  const deleteDeck = (deckId) =>
-    performAction(createApiUrl(`${deckId}/delete`), 'DELETE', {}, 'deleteDeck');
-  const updateDeck = (deckId, updatedData) =>
-    performAction(
-      createApiUrl(`${deckId}/update`),
+  const createNewDeck = (deckData) =>
+    performFetchAndUpdate('create', 'POST', deckData, 'createNewDeck');
+
+  const updateDeckDetails = (deckId, deckData) =>
+    performFetchAndUpdate(
+      `${deckId}/deckDetails`,
       'PUT',
-      updatedData,
-      'updateDeck'
+      deckData,
+      'updateDeckDetails'
     );
-  const updateDeckDetails = useCallback(
-    async (deckId, updatedInfo) => {
-      const loadingID = 'updateDeckDetails';
-      setError(null);
-      const { name, description, tags, color } = updatedInfo;
 
-      // Find and update the specific deck
-      let updatedDeck = {};
-      updateDeck((prevDecks) => {
-        return prevDecks.map((deck) => {
-          if (deck._id === deckId) {
-            updatedDeck = { ...deck, name, description, tags, color };
-            return updatedDeck;
-          }
-          return deck;
-        });
-      });
+  const deleteDeckAction = (deckId) => {
+    // removeDeck(deckId); // Optimistically remove the deck first for instant UI feedback
+    performFetchAndUpdate(`${deckId}/delete`, 'DELETE', {}, 'deleteDeck');
+  };
 
-      try {
-        const deckEndpoint = createApiUrl(`/${deckId}/deckDetails`);
-        await fetchWrapper(
-          deckEndpoint,
-          'PUT',
-          { name, description, tags, color },
-          loadingID
-        );
-      } catch (error) {
-        setError(error);
-        console.error('Error updating deck details:', error);
-      }
-
-      return updatedDeck; // Return updated deck for any further operations
-    },
-    [createApiUrl, fetchWrapper, updateDeck, userId]
-  );
-  const addCardsToDeck = useCallback(
-    (newCards, deck) => {
-      if (selectedDeck?._id === 'selectedDeckId')
-        return console.log('Deck ID has not been set');
-
-      // CHECK FOR EXISTING CARD IN DECK (newCards[0])
-      const existingCard = deck?.cards?.find(
-        (card) => card.id === newCards[0].id
-      );
-      console.log('DECK', selectedDeck);
-      console.log('NEWW CARDS', newCards);
-
-      const options = {
-        beforeAction: () => {
-          if (existingCard) {
-            console.log('Card already exists in deck');
-            return;
-          }
-        },
-        afterAction: () => {
-          if (existingCard) {
-            addCardToSelectedDeck(newCards); // This method should handle the logic internally
-
-            console.log('Card already exists in deck');
-            return;
-          }
-        },
-        paramTypes: {
-          deckId: selectedDeckId,
-        },
-      };
-
-      if (existingCard) {
-        // UPDATE EXISTING CARD
-        const cardParams = { cards: [newCards] };
-        const fullParams = { ...cardParams, type: 'increment' };
-        performAction(
-          createApiUrl(`${selectedDeckId}/cards/update`),
-          'PUT',
-          fullParams,
-          'addCardsToDeck',
-          options
-        );
-      } else {
-        // ADD NEW CARD
-        const cardParams = { cards: newCards };
-        const fullParams = { ...cardParams, type: 'addNew' };
-        // addCardToSelectedDeck(newCards);
-
-        performAction(
-          createApiUrl(`${selectedDeckId}/cards/add`),
-          'POST',
-          fullParams,
-          'addCardsToDeck',
-          options
-        );
-        // updateSelectedDeck(cardParams);
-      }
-    },
-    [
-      performAction,
-      createApiUrl,
-      selectedDeck,
-      selectedDeckId,
-      selectedDeck?._id,
-    ]
-  );
-
-  const removeCardsFromDeck = useCallback(
-    (cards, cardIds, deckId) => {
-      if (!deckId) {
-        console.error(
-          'No deck selected or deck ID is missing.',
-          cards,
-          cardIds,
-          deckId
-        );
-        return;
-      }
-      const arrayOfCards = [cards];
-      const arrayOfCardIds = [cardIds];
-      const existingCard = deckId?.cards?.find((card) => card.id === cardIds);
-      const removeType = existingCard?.quantity > 1 ? 'decrement' : 'delete';
-
-      performAction(
-        createApiUrl(`${deckId}/cards/remove`),
-        'PUT',
-        { cards: arrayOfCards, cardIds: arrayOfCardIds, type: removeType },
-        'removeCardsFromDeck',
-        { paramTypes: ['object', 'array'] }
-      );
-    },
-    [performAction, createApiUrl]
-  );
-
+  const addCardsToDeck = (newCards, deckId) => {
+    // INCREASE QTY OF CARDS IN DECK BY 1
+    // newCards.quantity = newCards.quantity + 1;
+    console.log('ADDCARDSTODECK PARAMS: ', newCards, deckId);
+    console.log('ADDCARDSTODECK PARAMS: ', newCards, selectedDeckId);
+    // addCardToSelectedDeck(newCards, deckId);
+    performFetchAndUpdate(
+      `${selectedDeckId}/cards/add`,
+      'POST',
+      { cards: newCards, type: 'addNew' },
+      'addCardsToDeck'
+    );
+    fetchDecks();
+  };
+  const removeCardsFromDeck = (cards, deck) => {
+    console.log('REMOVING CARDS FROM DECK', cards, deck);
+    removeCardFromSelectedDeck(cards, deck);
+    performFetchAndUpdate(
+      `${deck?._id}/cards/remove`,
+      'PUT',
+      { cards: cards, type: 'decrement' },
+      'removeCardsFromDeck'
+    );
+  };
   return {
     fetchDecks,
     createNewDeck,
-    deleteDeck,
-    updateDeck,
+    deleteDeck: deleteDeckAction,
+    // updateDeck,
     hasFetchedDecks,
     handleError,
     addCardsToDeck,
     removeCardsFromDeck,
     addOneToDeck: (cards, deck) => addCardsToDeck(cards, deck),
-    removeOneFromDeck: (cards, cardIds, deck) =>
-      removeCardsFromDeck(cards, cardIds, deck),
+    removeOneFromDeck: (cards, deck) => removeCardsFromDeck(cards, deck),
     updateDeckDetails,
   };
 };

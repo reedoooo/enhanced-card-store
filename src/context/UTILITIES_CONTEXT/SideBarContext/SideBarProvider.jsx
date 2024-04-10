@@ -10,14 +10,9 @@ import useAuthManager from '../../MAIN_CONTEXT/AuthContext/useAuthManager';
 const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
-  const { isLoggedIn, authUser, userId } = getCookie([
-    'isLoggedIn',
-    'authUser',
-    'userId',
-  ]);
+  const { getCookie } = useManageCookies();
+  const { isLoggedIn } = getCookie(['isLoggedIn']);
   const { login, logout } = useAuthManager();
-  // TOPBAR
   const [visibleItems, setVisibleItems] = useState([]);
   const baseMenuItems = [
     { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },

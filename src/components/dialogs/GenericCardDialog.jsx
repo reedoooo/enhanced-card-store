@@ -124,6 +124,7 @@ const GenericCardDialog = ({
               <GenericActionButtons
                 key={mappedContext}
                 card={card}
+                selectedEntity={context}
                 cardClasses="base-card-no-quantity"
                 context={mappedContext}
                 originalContext={context}

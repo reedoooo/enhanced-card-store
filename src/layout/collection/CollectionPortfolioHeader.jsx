@@ -35,26 +35,11 @@ const HeaderItem = ({ icon, label, value, delay }) => {
     </Grid>
   );
 };
-const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
+const CollectionPortfolioHeader = ({ onBack, collection }) => {
   const { theme } = useMode();
-  // const headerIcons = [
-  //   CollectionsIcon,
-  //   AttachMoneyIcon,
-  //   FormatListNumberedIcon,
-  //   TrendingUpIcon,
-  // ];
-  useEffect(() => {
-    console.log('collection', collection);
-  }, [collection]);
-
-  if (
-    !collection ||
-    collection === DEFAULT_COLLECTION
-    // allCollections.length === 0
-  ) {
+  if (!collection || collection === DEFAULT_COLLECTION) {
     return <PageHeaderSkeleton />;
   }
-
   const items = collectionPortfolioHeaderItems(collection);
   return (
     <DashboardBox
@@ -85,10 +70,9 @@ const CollectionPortfolioHeader = ({ onBack, collection, allCollections }) => {
             icon={item.icon}
             label={item.label}
             value={item.value}
-            delay={index * 500} // Delay each item's animation onset progressively
+            delay={index * 500}
           />
         ))}
-        {/* </TransitionGroup> */}
       </Grid>
     </DashboardBox>
   );

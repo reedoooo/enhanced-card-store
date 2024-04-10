@@ -12,11 +12,16 @@ import {
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { formFields } from '../forms/formsConfig';
 import RCDynamicForm from '../forms/Factory/RCDynamicForm';
+import useInitialFormData from '../forms/hooks/useInitialFormData';
 
 const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();
   const formKey = isNew ? 'addDeckForm' : 'updateDeckForm';
-
+  const initialFormData = useInitialFormData(
+    isNew,
+    formFields[formKey],
+    deckData
+  );
   return (
     <StyledDialog
       className="dialog-login"
@@ -66,7 +71,13 @@ const DeckDialog = ({ open, onClose, isNew, deckData }) => {
         <RCDynamicForm
           formKey={formKey}
           inputs={formFields[formKey]}
-          initialData={!isNew && deckData ? deckData : formFields[formKey]}
+          initialData={initialFormData}
+          userInterfaceOptions={{
+            submitButton: true,
+            submitButtonLabel: 'Add Deck',
+            deleteButton: false,
+            startIcon: <LockOutlinedIcon />,
+          }}
           // Conditionally pass initial data if it's an update operation
         />
         {/* <DeckForm

@@ -10,6 +10,8 @@ import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
 import useDeckManager from '../../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import { useCartManager } from '../../../context/MAIN_CONTEXT/CartContext/useCartManager';
 import LoadingOverlay from '../../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useSelectedDeck from '../../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -20,6 +22,7 @@ const buttonSizeMap = {
 
 const GenericActionButtons = ({
   card,
+  // selectedEntity,
   context = 'Collection',
   onClick,
   onSuccess,
@@ -30,6 +33,9 @@ const GenericActionButtons = ({
 }) => {
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const memoizedReturnValues = useCollectionManager(); // Add this line to use useCollectionManager
+  const memoizedSelectionVals1 = useSelectedCollection(); // Add this line to use useCollectionManager
+  const memoizedSelectionVals2 = useSelectedDeck(); // Add this line to use useCollectionManager
+  const memoizedSelectionVals3 = useCartManager(); // Add this line to use useCollectionManager
   if (!memoizedReturnValues) return <LoadingOverlay />; // Add this line to use useCollectionManager
   const { addOneToCollection, removeOneFromCollection } = memoizedReturnValues; // Modify this line to use useCollectionManager
   const { addOneToDeck, removeOneFromDeck } = useDeckManager();
@@ -37,6 +43,22 @@ const GenericActionButtons = ({
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
+  const [selectedEntity, setSelectedEntity] = useState({});
+  useEffect(() => {
+    if (context === 'Collection') {
+      setSelectedEntity(memoizedSelectionVals1.selectedCollection);
+    } else if (context === 'Deck') {
+      setSelectedEntity(memoizedSelectionVals2.selectedDeckId);
+    } else if (context === 'Cart') {
+      setSelectedEntity(memoizedSelectionVals3.cart);
+    }
+  }, [
+    memoizedSelectionVals1.selectedCollection,
+    memoizedSelectionVals2.selectedDeckId,
+    memoizedSelectionVals2.allDecks,
+    memoizedSelectionVals3.cart,
+    context,
+  ]);
   useEffect(() => {
     setButtonSize(buttonSizeMap[cardSize] || 'medium');
   }, [cardSize]);
@@ -56,6 +78,25 @@ const GenericActionButtons = ({
     }),
     [removeOneFromCollection, removeOneFromDeck, removeOneFromCart]
   );
+  // const handleAction = useCallback(
+  //   async (action, cardData, currentContext) => {
+  //     if (!cardData) {
+  //       console.error('No card data provided.');
+  //       enqueueSnackbar('Action failed.', { variant: 'error' });
+  //       return;
+  //     }
+  //     console.log(
+  //       `Action: ${action}, Card: ${cardData?.name}, Context: ${currentContext}, ENTITY: ${selectedEntity}`
+  //     );
+  //     // Dynamic action handling
+  //     if (action === 'add' && addActions[currentContext]) {
+  //       addActions[currentContext](cardData);
+  //     } else if (action === 'remove' && removeActions[currentContext]) {
+  //       removeActions[currentContext](cardData);
+  //     }
+  //   },
+  //   [card, context, addActions, removeActions]
+  // );
   const handleAction = useCallback(
     async (action, cardData, currentContext) => {
       if (!cardData) {
@@ -64,24 +105,23 @@ const GenericActionButtons = ({
         return;
       }
       console.log(
-        `Action: ${action}, Card: ${cardData?.name}, Context: ${currentContext}`
+        `Action: ${action}, Card: ${card?.name}, Context: ${currentContext}, ENTITY: ${selectedEntity}`
       );
-      // Dynamic action handling
-      if (action === 'add' && addActions[currentContext]) {
-        addActions[currentContext](cardData);
-      } else if (action === 'remove' && removeActions[currentContext]) {
-        removeActions[currentContext](cardData);
-      }
+      const actionMap = action === 'add' ? addActions : removeActions;
+      actionMap[currentContext]?.(card, selectedEntity);
     },
-    [card, context, addActions, removeActions]
+    [addActions, removeActions, enqueueSnackbar, selectedEntity]
   );
+
   return (
     <ActionButtons
       buttonSize={buttonSize}
       card={card}
+      selectedEntity={selectedEntity}
       context={context}
       page={page}
-      handleCardAction={() => handleAction('add', card, context)}
+      handleAction={handleAction}
+      // handleCardAction={() => handleAction('add', card, selectedEntity)}
       datatable={datatable}
       variant={datatable ? 'data-table' : 'card'}
     />
@@ -93,9 +133,10 @@ const ActionButtons = ({
   card,
   context,
   page,
-  handleCardAction,
+  handleAction,
   variant,
   datatable,
+  selectedEntity,
 }) => {
   const labelValue =
     typeof context === 'string' ? context : context?.pageContext;
@@ -160,18 +201,24 @@ const ActionButtons = ({
         <ActionButton
           action="add"
           buttonSize={buttonSize}
-          handleCardAction={handleCardAction}
+          handleCardAction={() =>
+            handleAction('add', card, context, selectedEntity)
+          }
           labelValue={'add'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={variant}
           actionType="add"
+          selectedEntity={selectedEntity}
         />
         <ActionButton
           action="remove"
           buttonSize={buttonSize}
-          handleCardAction={handleCardAction}
+          handleCardAction={() =>
+            handleAction('remove', card, context, selectedEntity)
+          }
           labelValue={'remove'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={variant}
           actionType="remove"
+          selectedEntity={selectedEntity}
         />
       </Box>
     </Box>
