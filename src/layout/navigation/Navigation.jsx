@@ -40,7 +40,7 @@ const Navigation = ({ isLoggedIn }) => {
     /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [isOpen, setIsOpen] = useState(false); // Manage open state locally
   const isMedView = useMediaQuery(theme.breakpoints.down('md'));
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { authUser } = getCookie(['authUser']);
   const username = authUser?.username;
   const menuItems = baseMenuItems({ cartCardQuantity: cartCardQuantity });

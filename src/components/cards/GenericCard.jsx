@@ -206,6 +206,7 @@ const GenericCard = React.forwardRef((props, ref) => {
           //       : selectedDeck
           // }
           context={effectiveContext}
+          // selectedEnt={selectedEntity}
           onClick={() => handleContextSelect(effectiveContext)}
           onSuccess={() =>
             enqueueSnackbar(

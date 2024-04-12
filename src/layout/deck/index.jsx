@@ -14,25 +14,17 @@ import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import prepareDeckData from './deckData';
-// const defaultDecks = {
-//   allIds: [SELECTED_DECK_ID],
-//   byId: {
-//     [SELECTED_DECK_ID]: DEFAULT_DECK,
-//   },
-//   selectedId: SELECTED_DECK_ID,
-//   prevSelectedId: SELECTED_DECK_ID,
-//   showDecks: true,
-// };
+
 const DeckBuilder = () => {
   const { theme } = useMode();
   const { hasFetchedDecks, fetchDecks, deleteDeck } = useDeckManager();
   const {
     selectedDeckId,
     selectedDeck,
-    allDecks,
-    allIds,
     lastUpdated,
+    allDecks,
     deckUpdated,
+    decks,
     handleSelectDeck,
     refreshDecks,
   } = useSelectedDeck();
@@ -45,72 +37,68 @@ const DeckBuilder = () => {
   }, [openDialog, setActiveFormSchema]);
   const [activeTab, setActiveTab] = useState(0);
   const [safeDeckList, setSafeDeckList] = useState([]);
+  useEffect(() => {
+    if (!hasFetchedDecks) {
+      fetchDecks();
+    }
+  }, [hasFetchedDecks]);
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newData = JSON.parse(localStorage.getItem('decks') || '{}');
 
+      if (newData !== decks && newData.lastUpdated !== decks.lastUpdated) {
+        const newAllDecks = Object.values(newData.byId);
+        // if (newAllDecks !== allDecks) {
+        setSafeDeckList(newAllDecks);
+        // }
+        refreshDecks();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
   useEffect(() => {
-    fetchDecks().then(() => {
-      setSafeDeckList(allDecks);
-      refreshDecks();
+    setActiveTab((prevActiveTab) => {
+      // Ensure that the activeTab value does not exceed the length of the safeDeckList array
+      const newIndex = Math.min(prevActiveTab, safeDeckList.length - 1);
+      return newIndex >= 0 ? newIndex : 0; // Ensure that the index is always non-negative
     });
-    // refreshDecks();
-  }, [hasFetchedDecks, lastUpdated]);
-  // useEffect(() => {
-  //   if (!hasFetchedDecks) {
-  //     fetchDecks();
-  //   }
-  // }, [hasFetchedDecks]);
-  useEffect(() => {
-    setActiveTab((prevActiveTab) =>
-      Math.min(prevActiveTab, allDecks.length - 1)
-    );
-  }, [allDecks]);
+  }, [safeDeckList.length]); // Update activeTab when the length of safeDeckList changes
+
   const handleChangeTab = useCallback(
     (event, newValue) => {
       setActiveTab(newValue);
-      console.log('ALL DECKS AT VAL', allDecks[newValue]);
-      const selectedDeckInAllIds = allIds?.find(
-        (id) => id === allDecks[newValue]._id
-      );
-      console.log('SELECTED DECK IN ALL IDS', selectedDeckInAllIds);
-      const selectedDeckInAllDecks = allDecks[newValue];
-      handleSelectDeck(selectedDeckInAllDecks); // Update to use deck ID for selection
+      handleSelectDeck(safeDeckList[newValue]);
     },
-    [allDecks, allIds, handleSelectDeck]
+    [safeDeckList, handleSelectDeck]
   );
   const handleDelete = useCallback(
     async (deck) => {
       if (!deck) return;
       try {
         await deleteDeck(deck._id);
-        const updatedDecks = allDecks.filter((col) => col._id !== deck._id);
+        const updatedDecks = safeDeckList.filter((col) => col._id !== deck._id);
         console.log('UPDATED DECKS', updatedDecks);
         // refreshDecks(updatedCollections); // Assuming refreshCollections now directly accepts an updated array
       } catch (error) {
         console.error('Failed to delete collection:', error);
       }
     },
-    [deleteDeck, allIds]
+    [deleteDeck]
   );
 
   const { user } = useUserData();
   const deckList = safeDeckList?.map((deck, index) => (
     <Collapse in={activeTab === index} key={deck._id}>
-      {/* // <Collapse in={activeTab === index} key={`${deck._id}-deck-${index}`}> */}
       <DeckListItem
-        key={deck._id}
+        // key={deck._id}
         deck={deck}
+        selectedDeckId={selectedDeckId}
         handleDelete={() => handleDelete(deck)}
-        // deckData={{
-        //   name: deck.name || '',
-        //   description: deck.description || '',
-        //   tags: [...deck.tags] || [],
-        //   color: deck.color || '',
-        // }}
         isEditPanelOpen={selectedDeckId === deck._id}
-        handleSelectAndShowDeck={handleSelectDeck} // Adjusted to ensure proper re-render
-        // handleSelectAndShowDeck={(deck) => {
-        //   handleSelectDeck(deck);
-        //   setActiveTab(allDecks.findIndex((d) => d._id === deck._id)); // Find and set the active tab index based on deck selection.
-        // }}
+        activeItem={activeTab === index}
+        handleSelectAndShowDeck={() => handleSelectDeck(deck)}
       />
     </Collapse>
   ));

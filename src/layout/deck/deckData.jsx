@@ -1,33 +1,28 @@
 import { roundToNearestTenth } from '../../context/Helpers';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 
-export default function prepareDeckData(deckId) {
-  const { allDecks, allIds, selectedDeckId } = useSelectedDeck();
-  const currentDeck = allDecks.find((d) => d._id === deckId);
+export default function prepareDeckData(deck) {
   const genData = {
-    name: currentDeck?.name,
-    description: currentDeck?.description,
-    tags: currentDeck?.tags,
-    color: currentDeck?.color,
+    name: deck?.name,
+    description: deck?.description,
+    tags: deck?.tags,
+    color: deck?.color,
   };
-  const cards = currentDeck?.cards?.map((card) => ({
+  const cards = deck?.cards?.map((card) => ({
     ...card,
     quantity: roundToNearestTenth(card?.quantity),
   }));
   const infoItems = [
-    { label: 'Name', value: currentDeck?.name },
+    { label: 'Name', value: deck?.name },
     {
       label: 'Value',
-      value: `$${roundToNearestTenth(currentDeck?.totalPrice)}`,
+      value: `$${roundToNearestTenth(deck?.totalPrice)}`,
     },
-    { label: 'Cards', value: `${currentDeck?.totalQuantity}` },
+    { label: 'Cards', value: `${deck?.totalQuantity}` },
   ];
   return {
     genData,
     cards,
     infoItems,
-    allDecks: allDecks,
-    ids: allIds,
-    selectedDeckId,
   };
 }

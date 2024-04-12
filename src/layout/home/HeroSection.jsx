@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary, useMode, useStatisticsStore } from '../../context';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from '../../assets/images/placeholder.jpeg';
-import { HeroSectionSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
+import { HeroSectionSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import { Card, useMediaQuery } from '@mui/material';
 import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';

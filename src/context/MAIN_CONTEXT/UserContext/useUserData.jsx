@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie';
 import useManageCookies from '../../hooks/useManageCookies';
 
 function useUserData() {
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { userId, isLoggedIn, authUser } = getCookie([
     'userId',
     'isLoggedIn',

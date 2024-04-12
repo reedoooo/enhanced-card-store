@@ -269,16 +269,13 @@ const updateDeckFormFields = {
   tags: {
     label: 'Tags',
     type: 'chips',
-    placeholder: 'Enter tags', // Renamed from placeHolder to placeholder for consistency
-    // Assuming defaultValue should define the initial chips/tags.
-    // Since your RCInput expects an array of strings for chips, initialize it as such.
-    defaultValue: ['tag'], // This represents initial chips/tags, empty if none.
+    placeholder: 'Enter a tag',
+    defaultValue: [{ value: 'tag1', label: 'tag1' }],
     rules: {
-      required: false,
+      required: true,
     },
     icon: <DescriptionRoundedIcon />, // If you're displaying this icon somewhere in your form
     required: false, // Adjust based on whether tags are actually required or not
-    // field: 'tags',
   },
   color: {
     label: 'Color',
@@ -371,6 +368,8 @@ const statRangeFormFields = {
     type: 'select',
     placeholder: 'Select statistics range', // Optional for a select, used if you have a default empty option
     defaultValue: 'highPoint',
+    selected: 'highPoint',
+
     // onSelectChange: (value) => {
     //   console.log(value);
     // },
@@ -394,6 +393,7 @@ const timeRangeFormFields = {
     placeholder: 'Select time range', // Optional for a select, used if you have a default empty option
     defaultValue: '24hr',
     defaultLabel: 'Today',
+    selected: '24hr',
     rules: {
       required: 'Time range is required',
     },
@@ -415,6 +415,7 @@ const themeRangeFormFields = {
     type: 'select',
     placeholder: 'Select theme range', // Optional for a select, used if you have a default empty option
     defaultValue: 'light',
+    selected: 'light',
     rules: {
       required: 'Theme selection is required',
     },
@@ -484,7 +485,14 @@ const addDeckFormSchema = z.object({
   description: z.string().optional().default(''),
 });
 const updateDeckFormSchema = addDeckFormSchema.extend({
-  tags: z.array(z.string()).optional().default(['default']),
+  tags: z
+    .array(
+      z.object({
+        key: z.number().default(0),
+        label: z.string().min(1, { message: "Tag can't be empty" }).default(''),
+      })
+    )
+    .default([]),
   color: z
     .enum([
       'red',

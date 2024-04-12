@@ -11,7 +11,7 @@ import { DEFAULT_COLLECTION } from '../../context/constants';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from '../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
-import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
+import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import { collectionPortfolioHeaderItems } from '../../data/collectionPortfolioHeaderItems';
 
 const HeaderItem = ({ icon, label, value, delay }) => {

@@ -6,6 +6,10 @@ import {
   MediaContainer,
   MediaPopover,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import Checkbox from '@mui/material/Checkbox';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+
 const CardMediaSection = forwardRef(
   (
     {
@@ -28,15 +32,17 @@ const CardMediaSection = forwardRef(
         setAnchorEl(null);
       }
     }, [isHovered, ref]);
+    const label = { inputProps: { 'aria-label': 'Bookmark card' } };
+
     return (
       <MediaContainer
         ref={ref}
+        style={{ position: 'relative' }} // Ensure this container has relative positioning
         {...(isRequired && {
           onMouseEnter: () => handleInteraction?.(!isModalOpen ? true : false), // Use optional chaining
           onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
           onClick: () => {
             handleClick?.();
-            // handleOverlayChange('newOverlayValue'); // Your existing logic
           },
         })}
       >
@@ -46,7 +52,17 @@ const CardMediaSection = forwardRef(
           image={imgUrl}
           loading="lazy"
         />
-
+        <Checkbox
+          {...label}
+          icon={<BookmarkBorderIcon />}
+          checkedIcon={<BookmarkIcon />}
+          style={{
+            position: 'absolute',
+            top: 0, // Align to the top
+            right: 0, // Align to the right
+            margin: '8px', // Adjust spacing as needed
+          }}
+        />
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}

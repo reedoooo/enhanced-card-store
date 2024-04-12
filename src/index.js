@@ -2,6 +2,8 @@ import React, { StrictMode, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
+// import LogRocket from 'logrocket';
+// LogRocket.init('8iqglq/card-store');
 import * as serviceWorker from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //

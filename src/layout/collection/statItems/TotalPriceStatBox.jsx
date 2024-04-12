@@ -24,12 +24,12 @@ const TotalPriceStatBox = () => {
       }}
     >
       <StatBox
-        title={`${roundToNearestTenth(collectionMetaData?.totalValue) || 0}`}
+        title={`$${roundToNearestTenth(collectionMetaData?.totalValue) || 0}`}
         subtitle="Portfolio Total Value"
         progress="0.50"
         increase="+21%"
         wrapIcon={false}
-        icon={<MonetizationOnIcon sx={{ color: grey, fontSize: '26px' }} />}
+        icon={<MonetizationOnIcon sx={{ color: grey, fontSize: '40px' }} />}
       />
     </Box>
   );

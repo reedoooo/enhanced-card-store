@@ -22,7 +22,7 @@ const buttonSizeMap = {
 
 const GenericActionButtons = ({
   card,
-  // selectedEntity,
+  // selectedEnt,
   context = 'Collection',
   onClick,
   onSuccess,
@@ -48,6 +48,7 @@ const GenericActionButtons = ({
     if (context === 'Collection') {
       setSelectedEntity(memoizedSelectionVals1.selectedCollection);
     } else if (context === 'Deck') {
+      // console.log('ENT', memoizedSelectionVals2.selectedDeck);
       setSelectedEntity(memoizedSelectionVals2.selectedDeckId);
     } else if (context === 'Cart') {
       setSelectedEntity(memoizedSelectionVals3.cart);
@@ -78,25 +79,7 @@ const GenericActionButtons = ({
     }),
     [removeOneFromCollection, removeOneFromDeck, removeOneFromCart]
   );
-  // const handleAction = useCallback(
-  //   async (action, cardData, currentContext) => {
-  //     if (!cardData) {
-  //       console.error('No card data provided.');
-  //       enqueueSnackbar('Action failed.', { variant: 'error' });
-  //       return;
-  //     }
-  //     console.log(
-  //       `Action: ${action}, Card: ${cardData?.name}, Context: ${currentContext}, ENTITY: ${selectedEntity}`
-  //     );
-  //     // Dynamic action handling
-  //     if (action === 'add' && addActions[currentContext]) {
-  //       addActions[currentContext](cardData);
-  //     } else if (action === 'remove' && removeActions[currentContext]) {
-  //       removeActions[currentContext](cardData);
-  //     }
-  //   },
-  //   [card, context, addActions, removeActions]
-  // );
+
   const handleAction = useCallback(
     async (action, cardData, currentContext) => {
       if (!cardData) {
@@ -114,47 +97,17 @@ const GenericActionButtons = ({
   );
 
   return (
-    <ActionButtons
-      buttonSize={buttonSize}
-      card={card}
-      selectedEntity={selectedEntity}
-      context={context}
-      page={page}
-      handleAction={handleAction}
-      // handleCardAction={() => handleAction('add', card, selectedEntity)}
-      datatable={datatable}
-      variant={datatable ? 'data-table' : 'card'}
-    />
-  );
-};
-
-const ActionButtons = ({
-  buttonSize,
-  card,
-  context,
-  page,
-  handleAction,
-  variant,
-  datatable,
-  selectedEntity,
-}) => {
-  const labelValue =
-    typeof context === 'string' ? context : context?.pageContext;
-  const stackDirection = buttonSize === 'extraSmall' ? 'column' : 'row';
-  const currentContextIcon = getContextIcon(labelValue);
-
-  return (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: stackDirection,
+        flexDirection: buttonSize === 'extraSmall' ? 'column' : 'row',
         alignItems: 'center',
         gap: 1,
         width: '100%',
         height: '100%',
       }}
     >
-      {variant !== 'data-table' && (
+      {datatable !== 'data-table' && (
         <MDBox
           sx={{
             display: 'flex',
@@ -182,7 +135,7 @@ const ActionButtons = ({
         >
           <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
             <GlassyIcon
-              Icon={currentContextIcon}
+              Icon={getContextIcon(context)}
               iconColor="#FFFFFF"
               size={160}
             />
@@ -194,7 +147,7 @@ const ActionButtons = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: variant === 'data-table' ? 0 : 1,
+          gap: datatable ? 0 : 1,
           width: '80%',
         }}
       >
@@ -205,7 +158,7 @@ const ActionButtons = ({
             handleAction('add', card, context, selectedEntity)
           }
           labelValue={'add'} // Assuming 'context' is intended to be used as 'labelValue'
-          variant={variant}
+          variant={datatable ? 'data-table' : 'card'}
           actionType="add"
           selectedEntity={selectedEntity}
         />
@@ -216,7 +169,7 @@ const ActionButtons = ({
             handleAction('remove', card, context, selectedEntity)
           }
           labelValue={'remove'} // Assuming 'context' is intended to be used as 'labelValue'
-          variant={variant}
+          variant={datatable ? 'data-table' : 'card'}
           actionType="remove"
           selectedEntity={selectedEntity}
         />

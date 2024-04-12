@@ -17,6 +17,7 @@ import PageHeader from '../REUSABLE_COMPONENTS/PageHeader';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -96,6 +97,7 @@ const CollectionPortfolio = () => {
     allCollections,
     handleSelectCollection,
   } = useSelectedCollection();
+  const { chartData, setChartData } = useCompileCardData();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
   const tabs = [<Tab label="Collections" value={0} key={'collections-tab'} />];
@@ -107,12 +109,27 @@ const CollectionPortfolio = () => {
       setActiveTab(newValue);
     }
   };
+  // const handleSelectAndShowCollection = useCallback(
+  //   (collection) => {
+  //     handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
+  //     setActiveTab(1); // Switch to Portfolio View tab
+  //   },
+  //   [handleSelectCollection]
+  // );
   const handleSelectAndShowCollection = useCallback(
     (collection) => {
-      handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
+      handleSelectCollection(collection); // Sets the selectedCollectionId and selectedCollection
+      if (collection.averagedChartData) {
+        const selectedChartDataKey = Object.keys(
+          collection.averagedChartData
+        )[0]; // Get the first key as default
+        const selectedChartDataValue =
+          collection.averagedChartData[selectedChartDataKey];
+        setChartData(selectedChartDataValue); // Update the selectedChartData
+      }
       setActiveTab(1); // Switch to Portfolio View tab
     },
-    [handleSelectCollection]
+    [handleSelectCollection, setChartData]
   );
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
@@ -148,7 +165,7 @@ const CollectionPortfolio = () => {
           handleBackToCollections={() => {
             setActiveTab(0); // Switch back to collections tab when going back
           }}
-          allCollections={allCollections}
+          // allCollections={allCollections}
         />
       )}
       {dialogState.isAddCollectionDialogOpen && (

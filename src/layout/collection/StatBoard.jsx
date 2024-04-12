@@ -10,7 +10,7 @@ import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
 import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
 import { Divider } from '@mui/joy';
-import { SkeletonPieChart } from '../REUSABLE_COMPONENTS/SkeletonVariants';
+import { SkeletonPieChart } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 
 const StatBoxes = () => {

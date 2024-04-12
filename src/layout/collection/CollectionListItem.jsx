@@ -39,132 +39,130 @@ const CollectionListItem = memo(
     );
 
     return (
-      <Collapse in={true} timeout={1000}>
-        <Card
+      <Card
+        sx={{
+          borderRadius: theme.shape.borderRadius,
+          my: '0.5rem',
+          ...(isMobile && {
+            boxShadow: 'none', // Remove shadow
+            '&:hover': {
+              boxShadow: 'none',
+            },
+          }),
+        }}
+      >
+        <MDBox
           sx={{
-            borderRadius: theme.shape.borderRadius,
-            my: '0.5rem',
-            ...(isMobile && {
-              boxShadow: 'none', // Remove shadow
-              '&:hover': {
-                boxShadow: 'none',
-              },
-            }),
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            height: '100%',
+            ...(isMobile &&
+              {
+                // flexDirection: 'column', // Stack elements vertically on mobile
+              }),
           }}
         >
-          <MDBox
+          <CardActionArea
+            onClick={() => {
+              handleSelectAndShowCollection(collection);
+            }}
             sx={{
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'center',
-              height: '100%',
-              ...(isMobile &&
-                {
-                  // flexDirection: 'column', // Stack elements vertically on mobile
-                }),
+              p: 'none !!important',
+              flexGrow: 1,
+              ...(isMobile && {
+                flexDirection: 'column', // Adjust layout for mobile
+              }),
             }}
           >
-            <CardActionArea
-              onClick={() => {
-                handleSelectAndShowCollection(collection);
-              }}
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                p: 'none !!important',
-                flexGrow: 1,
-                ...(isMobile && {
-                  flexDirection: 'column', // Adjust layout for mobile
-                }),
-              }}
-            >
-              <Grid container alignItems="center" justify="center" spacing={2}>
-                <RCInfoItem
-                  label="Name"
-                  value={collection?.name}
-                  theme={theme}
-                  gridSizes={{ xs: 12, sm: 6, md: 3 }}
+            <Grid container alignItems="center" justify="center" spacing={2}>
+              <RCInfoItem
+                label="Name"
+                value={collection?.name}
+                theme={theme}
+                gridSizes={{ xs: 12, sm: 6, md: 3 }}
+              />
+              <RCInfoItem
+                label="Value"
+                value={`$${roundToNearestTenth(collection?.totalPrice)}`}
+                theme={theme}
+                gridSizes={{ xs: 12, sm: 6, md: 3 }}
+              />
+              <RCInfoItem
+                label="Cards"
+                value={collection?.totalQuantity}
+                theme={theme}
+                gridSizes={{ xs: 12, sm: 6, md: 3 }}
+              />
+              <Grid item xs={12} sm={6} md={3}>
+                <RCChange
+                  progress={100} // Default value; replace with actual data if available
+                  increase={percentageChange > 0}
+                  change={percentageChange}
+                  rangeLevel="24hr" // Default value; replace with actual data if available
                 />
-                <RCInfoItem
-                  label="Value"
-                  value={`$${roundToNearestTenth(collection?.totalPrice)}`}
-                  theme={theme}
-                  gridSizes={{ xs: 12, sm: 6, md: 3 }}
-                />
-                <RCInfoItem
-                  label="Cards"
-                  value={collection?.totalQuantity}
-                  theme={theme}
-                  gridSizes={{ xs: 12, sm: 6, md: 3 }}
-                />
-                <Grid item xs={12} sm={6} md={3}>
-                  <RCChange
-                    progress={100} // Default value; replace with actual data if available
-                    increase={percentageChange > 0}
-                    change={percentageChange}
-                    rangeLevel="24hr" // Default value; replace with actual data if available
-                  />
-                </Grid>
               </Grid>
-            </CardActionArea>
-            <CardContent
+            </Grid>
+          </CardActionArea>
+          <CardContent
+            sx={{
+              width: '20%',
+              maxWidth: 200,
+              flexGrow: 1,
+              pb: `${0} !important`,
+              alignItems: 'center',
+              ...(isMobile && {
+                flexDirection: 'column', // Adjust layout for mobile
+              }),
+            }}
+          >
+            <MDBox
               sx={{
-                width: '20%',
-                maxWidth: 200,
-                flexGrow: 1,
-                pb: `${0} !important`,
+                border: 'none',
                 alignItems: 'center',
-                ...(isMobile && {
-                  flexDirection: 'column', // Adjust layout for mobile
-                }),
+                my: 'auto',
               }}
             >
-              <MDBox
-                sx={{
-                  border: 'none',
-                  alignItems: 'center',
-                  my: 'auto',
-                }}
+              <RCButton
+                color="error"
+                size="small"
+                variant="holo"
+                withContainer={false}
+                onClick={handleDelete}
               >
-                <RCButton
-                  color="error"
-                  size="small"
-                  variant="holo"
-                  withContainer={false}
-                  onClick={handleDelete}
-                >
-                  Delete
-                </RCButton>
-                <Divider
-                  sx={{
-                    my: '0.5rem',
-                  }}
-                />
-                <RCButton
-                  color="success"
-                  size="small"
-                  variant="holo"
-                  withContainer={false}
-                  onClick={handleEdit}
-                >
-                  Edit
-                </RCButton>
-              </MDBox>
-            </CardContent>
-          </MDBox>
-          <CollectionDialog
-            open={dialogState.isEditCollectionDialogOpen}
-            onClose={() => closeDialog('isEditCollectionDialogOpen')}
-            collectionData={{
-              _id: collection?._id,
-              name: collection?.name,
-              description: collection?.description,
-            }}
-            isNew={false}
-          />
-        </Card>
-      </Collapse>
+                Delete
+              </RCButton>
+              <Divider
+                sx={{
+                  my: '0.5rem',
+                }}
+              />
+              <RCButton
+                color="success"
+                size="small"
+                variant="holo"
+                withContainer={false}
+                onClick={handleEdit}
+              >
+                Edit
+              </RCButton>
+            </MDBox>
+          </CardContent>
+        </MDBox>
+        <CollectionDialog
+          open={dialogState.isEditCollectionDialogOpen}
+          onClose={() => closeDialog('isEditCollectionDialogOpen')}
+          collectionData={{
+            _id: collection?._id,
+            name: collection?.name,
+            description: collection?.description,
+          }}
+          isNew={false}
+        />
+      </Card>
     );
   }
 );
@@ -173,6 +171,8 @@ CollectionListItem.displayName = 'CollectionListItem';
 
 CollectionListItem.propTypes = {
   collection: PropTypes.object.isRequired,
+  handleSelectAndShowCollection: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 };
 
 export default CollectionListItem;

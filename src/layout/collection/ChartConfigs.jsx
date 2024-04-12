@@ -26,91 +26,50 @@ const formatDateBasedOnRange = (range) => {
 
   return formatMap[range] || formatMap.default;
 };
-const TooltipLayer = ({ points }) => (
-  <>
-    {points?.map((point) => (
-      <BasicTooltip
-        key={point.id}
-        id={point.id}
-        value={point.data.yFormatted}
-        color="#000000"
-        enableChip
-      />
-    ))}
-  </>
-);
-import PropTypes from 'prop-types';
-import { useValidateData } from '../../context/hooks/useValidateInnerData';
-
-// Example data shape
-const fetchedDataType = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      x: PropTypes.string.isRequired,
-      y: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-});
-
-export const ChartConfiguration = ({ markers }) => {
+export const ChartConfiguration = () => {
   const { theme } = useMode();
   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
-  const { selectedTimeRange } = useCompileCardData(); // Default to '24hr' if not set
-  const { selectedCollection, updateCollectionField } = useSelectedCollection();
-  const { handleMouseMove, handleMouseLeave } = useEventHandlers();
+  const { selectedTimeRange = '24hr' } = useCompileCardData();
+  const { selectedCollection, createMarkers } = useSelectedCollection();
+
+  // Early return if collection is not selected
   if (!selectedCollection) {
     return <LoadingOverlay />;
   }
-  if (selectedCollection?.selectedChartData?.data?.length === 0) {
+
+  // Calculate memoized values for chart data and markers
+  const memoChartData = useMemo(() => {
+    const { selectedChartData, averagedChartData, selectedChartDataKey } =
+      selectedCollection;
+    return averagedChartData[selectedChartDataKey];
+  }, [selectedCollection]);
+
+  const validMarkers = useMemo(() => {
+    const markers = createMarkers(selectedCollection);
+    return markers.filter((marker) => marker.id && marker.value !== undefined);
+  }, [createMarkers, selectedCollection]);
+
+  const tickValues = useMemo(() => {
+    const { ticks } = formatDateBasedOnRange(selectedTimeRange);
+    return ticks.split(' ').map((tick) => new Date(tick).getTime());
+  }, [selectedTimeRange]);
+
+  useEffect(() => {
+    console.log('Chart data:', memoChartData);
+  }, [memoChartData]);
+
+  if (!memoChartData) {
     return <LoadingOverlay />;
   }
 
-  const chartData = useMemo(
-    () =>
-      selectedCollection?.selectedChartData &&
-      // eslint-disable-next-line valid-typeof
-      typeof selectedCollection?.selectedChartData
-        ? selectedCollection?.selectedChartData
-        : selectedCollection?.averagedChartData['24hr'],
-    [selectedCollection, selectedTimeRange]
-  );
-  const validMarkers = useMemo(
-    () => markers?.filter((marker) => marker.value !== undefined),
-    [markers]
-  );
-  const tickValues = useMemo(() => {
-    const { format, ticks } = formatDateBasedOnRange(selectedTimeRange);
-    return ticks.split(' ').map((tick) => new Date(tick).getTime());
-  }, [selectedTimeRange.value]);
-  const xformat = useMemo(() => {
-    const format = chartData?.id === '24hr' ? '%H:%M' : '%b %d';
-    return format;
-  }, [chartData?.id]);
-  useEffect(() => {
-    console.log('NIVO SELECTED DATA ', chartData);
-    console.log('NIVO SELECTED TIME RANGE ', selectedTimeRange);
-  }, [chartData]);
-  if (!chartData) {
-    return <LoadingOverlay />;
-  }
   return (
-    <ChartArea
-      theme={theme}
-      sx={{
-        minHeight: '500px',
-      }}
-    >
+    <ChartArea theme={theme} sx={{ minHeight: '500px' }}>
       <NivoContainer height={500}>
         <MyResponsiveLine
-          data={[chartData] || chartData}
-          handleMouseLeave={handleMouseLeave}
-          handleMouseMove={handleMouseMove}
-          TooltipLayer={TooltipLayer}
+          data={[memoChartData]}
           tickValues={tickValues}
           validMarkers={validMarkers}
-          xFormat={xformat}
+          xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
           redAccent={redAccent}
           greenAccent={greenAccent}
           grey={grey}
@@ -120,6 +79,100 @@ export const ChartConfiguration = ({ markers }) => {
     </ChartArea>
   );
 };
+// const TooltipLayer = ({ points }) => (
+//   <>
+//     {points?.map((point) => (
+//       <BasicTooltip
+//         key={point.id}
+//         id={point.id}
+//         value={point.data.yFormatted}
+//         color="#000000"
+//         enableChip
+//       />
+//     ))}
+//   </>
+// );
+// import PropTypes from 'prop-types';
+
+// export const ChartConfiguration = () => {
+//   const { theme } = useMode();
+//   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
+//   const { selectedTimeRange = '24hr' } = useCompileCardData();
+//   // , chartData } = useCompileCardData(); // Default to '24hr' if not set
+//   const { selectedCollection, updateCollectionField, createMarkers } =
+//     useSelectedCollection();
+//   // const { handleMouseMove, handleMouseLeave } = useEventHandlers();
+//   if (!selectedCollection) {
+//     return <LoadingOverlay />;
+//   }
+//   if (selectedCollection?.selectedChartData?.data?.length === 0) {
+//     return <LoadingOverlay />;
+//   }
+//   const memoTimeRange = useMemo(
+//     () =>
+//       !selectedCollection?.selectedChartData ||
+//       !selectedCollection?.selectedChartData?.data?.length
+//         ? selectedTimeRange
+//         : selectedCollection.selectedChartDataKey,
+//     [selectedCollection?.selectedChartData, selectedTimeRange]
+//   );
+//   const memoChartData = useMemo(
+//     () =>
+//       !selectedCollection?.selectedChartData
+//         ? selectedCollection?.averagedChartData[memoTimeRange]
+//         : selectedCollection?.selectedChartData,
+//     [
+//       selectedCollection?.selectedChartDataKey,
+//       selectedCollection?.averagedChartData,
+//       memoTimeRange,
+//     ]
+//   );
+//   const validMarkers = useMemo(() => {
+//     const markers = createMarkers(selectedCollection);
+//     return markers?.filter((marker) => marker.value !== undefined), markers;
+//   }, [createMarkers, selectedCollection]);
+//   const tickValues = useMemo(() => {
+//     const { format, ticks } = formatDateBasedOnRange(selectedTimeRange);
+//     return ticks?.split(' ')?.map((tick) => new Date(tick)?.getTime());
+//   }, [selectedTimeRange]);
+//   const xformat = useMemo(() => {
+//     const format = memoChartData?.id === '24hr' ? '%H:%M' : '%b %d';
+//     return format;
+//   }, [memoChartData?.id]);
+//   useEffect(() => {
+//     console.log('NIVO SELECTED DATA ', memoChartData);
+//     console.log('NIVO SELECTED TIME RANGE ', selectedTimeRange);
+//   }, [memoChartData]);
+//   if (!memoChartData) {
+//     return <LoadingOverlay />;
+//   }
+//   return (
+//     <ChartArea
+//       theme={theme}
+//       sx={{
+//         minHeight: '500px',
+//       }}
+//     >
+//       <NivoContainer height={500}>
+//         <MyResponsiveLine
+//           data={[memoChartData]}
+//           // data={Object.values(selectedCollection?.averagedChartData)}
+//           selectedData={selectedCollection?.selectedChartDataKey}
+//           // handleMouseLeave={handleMouseLeave}
+//           // handleMouseMove={handleMouseMove}
+//           // TooltipLayer={TooltipLayer}
+//           tickValues={tickValues}
+//           validMarkers={validMarkers}
+//           xFormat={xformat}
+//           redAccent={redAccent}
+//           greenAccent={greenAccent}
+//           grey={grey}
+//           text={theme.palette.text.primary}
+//         />
+//       </NivoContainer>
+//     </ChartArea>
+//   );
+// };
 
 // ChartConfiguration.propTypes = {
 // markers: PropTypes.arrayOf(

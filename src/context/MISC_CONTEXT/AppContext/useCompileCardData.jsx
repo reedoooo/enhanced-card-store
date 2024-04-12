@@ -21,9 +21,12 @@ export const useCompileCardData = () => {
   );
   const [allUserCards, setAllUserCards] = useLocalStorage('allUserCards', []);
   const [selectedTimeRange, setSelectedTimeRange] = useState('24hr');
-  const [chartData, setChartData] = useState(
-    selectedCollection.averagedChartData[selectedTimeRange]
-  );
+  const [selectedStat, setSelectedStat] = useState('highpoint');
+  const [selectedTheme, setSelectedTheme] = useState('light');
+  const [chartData, setChartData] = useState({});
+  // const [chartData, setChartData] = useState(
+  //   selectedCollection.averagedChartData[selectedTimeRange]
+  // );
   // useEffect(() => {
   //   const newData = selectedCollection?.averagedChartData[selectedTimeRange];
   //   console.log(newData);
@@ -151,6 +154,11 @@ export const useCompileCardData = () => {
     setAllUserCards,
     selectedTimeRange,
     setSelectedTimeRange,
+    selectedStat,
+    setSelectedStat,
+    selectedTheme,
+    setSelectedTheme,
+    selectedContext,
     chartData,
     setChartData,
   };

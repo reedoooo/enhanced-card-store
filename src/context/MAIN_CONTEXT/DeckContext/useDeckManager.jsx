@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import useLogger from '../../hooks/useLogger';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
 import useSelectedDeck from './useSelectedDeck';
@@ -14,9 +14,9 @@ const useDeckManager = () => {
     addOrUpdateDeck,
     // updateDeckField,
     updateSelectedDeck,
-    removeCardFromSelectedDeck,
+    addAllDecks,
     removeDeck,
-    setCustomError: setSelectedDeckError,
+    // setCustomError: setSelectedDeckError,
     refreshDecks,
   } = useSelectedDeck();
   const [error, setError] = useState(null);
@@ -43,47 +43,45 @@ const useDeckManager = () => {
         const response = await fetchWrapper(url, method, deckData, actionName);
         if (response.data) {
           if (method === 'GET') {
-            response.data.forEach((deck) => addOrUpdateDeck(deck));
+            addAllDecks(response.data);
           } else if (
             actionName === 'addCardsToDeck' ||
             actionName === 'removeCardsFromDeck'
           ) {
-            console.log('CARD RESPONSE', response.data?.data?.cards);
-            updateSelectedDeck(
-              response.data?.data?._id,
-              'cards',
-              response.data?.data?.cards
-            );
-
-            let updatedTotalQuantity = response.data?.data?.totalQuantity;
-            // let updatedTotalPrice = response.data?.data?.totalPrice;
-            if (actionName === 'addCardsToDeck') {
-              // updatedTotalQuantity++;
-              // updatedTotalPrice += response.data?.data?.price;
-            } else if (actionName === 'removeCardsFromDeck') {
-              updatedTotalQuantity--;
-              // updatedTotalPrice -= response.data?.data?.price;
-            }
-            updateSelectedDeck(
-              response.data?.data?._id,
-              'totalQuantity',
-              updatedTotalQuantity
-            );
-            // addOrUpdateDeck(response.data?.data);
+            console.log('ADD/REMOVE CARD RESPONSE', response.data?.data);
+            addOrUpdateDeck(response.data?.data);
+            // updateSelectedDeck(
+            //   response.data?.data?._id,
+            //   'cards',
+            //   response.data?.data?.cards
+            // );
           } else if (actionName === 'deleteDeck') {
             removeDeck(response.data?.data);
           }
+          refreshDecks();
           console.log(`${actionName} succeeded.`);
-          // refreshDecks();
         }
       } catch (error) {
         handleError(error, actionName);
       }
     },
-    [userId, isLoggedIn, status, fetchWrapper, addOrUpdateDeck, handleError]
+    [
+      userId,
+      isLoggedIn,
+      status,
+      fetchWrapper,
+      handleError,
+      selectedDeckId,
+      addAllDecks,
+      updateSelectedDeck,
+      removeDeck,
+      refreshDecks,
+    ]
   );
-  const fetchDecks = () =>
+  const fetchDecks = useCallback(() => {
     performFetchAndUpdate('allDecks', 'GET', null, 'fetchDecks');
+    setHasFetchedDecks(true);
+  }, [performFetchAndUpdate]);
 
   const createNewDeck = (deckData) =>
     performFetchAndUpdate('create', 'POST', deckData, 'createNewDeck');
@@ -108,7 +106,7 @@ const useDeckManager = () => {
     console.log('ADDCARDSTODECK PARAMS: ', newCards, selectedDeckId);
     // addCardToSelectedDeck(newCards, deckId);
     performFetchAndUpdate(
-      `${selectedDeckId}/cards/add`,
+      `${deckId}/cards/add`,
       'POST',
       { cards: newCards, type: 'addNew' },
       'addCardsToDeck'
@@ -117,7 +115,7 @@ const useDeckManager = () => {
   };
   const removeCardsFromDeck = (cards, deck) => {
     console.log('REMOVING CARDS FROM DECK', cards, deck);
-    removeCardFromSelectedDeck(cards, deck);
+    // removeCardFromSelectedDeck(cards, deck);
     performFetchAndUpdate(
       `${deck?._id}/cards/remove`,
       'PUT',

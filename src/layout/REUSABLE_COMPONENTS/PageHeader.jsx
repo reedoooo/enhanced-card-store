@@ -5,7 +5,7 @@ import { useMode } from '../../context';
 import SimpleCard from './unique/SimpleCard';
 import SimpleSectionHeader from './unique/SimpleSectionHeader';
 import uniqueTheme from './unique/uniqueTheme';
-import { PageHeaderSkeleton } from './SkeletonVariants';
+import { PageHeaderSkeleton } from './system-utils/SkeletonVariants';
 import RCButton from './RCBUTTON';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';

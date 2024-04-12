@@ -16,7 +16,7 @@ const defaultCart = {
 };
 
 export const useCartManager = () => {
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { userId, isLoggedIn } = getCookie(['userId', 'isLoggedIn']);
   const [cart, setCart] = useLocalStorage('cart', defaultCart);
   const [hasFetched, setHasFetched] = useState(false);
@@ -44,7 +44,7 @@ export const useCartManager = () => {
         null,
         'fetchUserCart'
       );
-      updateCartLocally(response.data);
+      updateCartLocally(response?.data);
       setHasFetched(true);
     } catch (error) {
       logger.logError('Error fetching user cart', error);
@@ -60,7 +60,7 @@ export const useCartManager = () => {
           cartData,
           'createUserCart'
         );
-        updateCartLocally(response.data);
+        updateCartLocally(response?.data);
       } catch (error) {
         logger.logError(`Error ${operation} user cart`, error);
       }
@@ -111,7 +111,7 @@ export const useCartManager = () => {
           }.cartUpdates,
           'addCardsToCart'
         );
-        updateCartLocally(response.data);
+        updateCartLocally(response?.data);
       }
     },
     [createApiUrl, fetchWrapper, updateCartLocally, logger]
@@ -146,7 +146,7 @@ export const useCartManager = () => {
             { cards: cardsToRemove },
             'removeCardsFromCart'
           );
-          updateCartLocally(response.data);
+          updateCartLocally(response?.data);
         }
 
         if (cardsToDecrement.length > 0) {
@@ -164,7 +164,7 @@ export const useCartManager = () => {
             },
             'removeCardsFromCart'
           );
-          updateCartLocally(response.data);
+          updateCartLocally(response?.data);
         }
       } catch (error) {
         logger.logEvent('removeCardsFromCart error', error);
@@ -182,8 +182,9 @@ export const useCartManager = () => {
 
   // Calculate totals, quantities using useMemo for performance
   const totalCost = useMemo(
-    () => cart.items.reduce((acc, item) => acc + item.price * item.quantity, 0),
-    [cart.items]
+    () =>
+      cart?.items?.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [cart?.items]
   );
 
   return {

@@ -28,7 +28,7 @@ function useAuthManager() {
       handleSetUser(authData); // Adjust according to your implementation
       navigate('/home');
     },
-    [addCookies, handleSetUser, navigate]
+    [handleSetUser, navigate]
   );
 
   const clearAuthCookies = useCallback(() => {

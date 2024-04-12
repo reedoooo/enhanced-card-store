@@ -12,7 +12,7 @@ export const ColorModeContext = createContext({
 });
 
 export const ColorModeProvider = ({ children }) => {
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { addCookies, getCookie } = useManageCookies();
   const { initialMode } = getCookie(['colorMode']) || 'dark';
   const [mode, setMode] = useState(initialMode);
 
@@ -29,7 +29,7 @@ export const ColorModeProvider = ({ children }) => {
         addCookies(['colorMode'], [newMode], { path: '/' });
       },
     }),
-    [mode, addCookies]
+    [mode]
   );
 
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);

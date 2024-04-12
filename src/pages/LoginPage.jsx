@@ -33,7 +33,7 @@ const defaultTheme = createTheme();
 
 export default function LoginPage() {
   const { theme } = useMode();
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
 
   return (

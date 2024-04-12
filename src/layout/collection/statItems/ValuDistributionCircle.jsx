@@ -122,7 +122,7 @@ const ValuDistributionCircle = () => {
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
               sx={{
-                color: lightest,
+                color: colors.greenAccent.default,
                 borderRadius: theme.shape.borderRadius,
               }}
             />

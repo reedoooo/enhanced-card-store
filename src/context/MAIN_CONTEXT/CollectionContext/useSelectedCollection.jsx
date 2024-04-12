@@ -4,15 +4,6 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 import { defaultValues } from '../../simplified_constants';
 
 import _set from 'lodash/set';
-// const defaultCollections = {
-//   allIds: [SELECTED_COLLECTION_ID],
-//   byId: {
-//     [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
-//   },
-//   selectedId: SELECTED_COLLECTION_ID,
-//   prevSelectedId: SELECTED_COLLECTION_ID,
-//   showCollections: false,
-// };
 function useSelectedCollection() {
   const [collections, setCollections] = useLocalStorage('collections', {
     allIds: [],
@@ -51,7 +42,6 @@ function useSelectedCollection() {
       });
     }
   }, []);
-
   useEffect(() => {
     if (
       collections.allIds.includes(SELECTED_COLLECTION_ID) &&
@@ -166,7 +156,7 @@ function useSelectedCollection() {
       // Directly use the updatedCollections parameter to update the state
       setCollections((prev) => {
         // Assuming updatedCollections is an array of collection objects with _id properties
-        const updatedById = updatedCollections.reduce(
+        const updatedById = updatedCollections?.reduce(
           (acc, collection) => {
             acc[collection._id] = collection;
             return acc;
@@ -189,42 +179,112 @@ function useSelectedCollection() {
     [setCollections]
   );
   const updateCollectionsData = useCallback(
-    (newCollections) => {
-      console.log('updateCollectionsData', newCollections);
+    (newCollections, action, deletedCollectionId) => {
+      console.log('updateCollectionsData', newCollections, action);
       setCollections((prev) => {
+        // Copy the current state to avoid mutations
+        let updatedAllIds = [...prev.allIds];
         const updatedById = { ...prev.byId };
-        newCollections?.forEach((collection) => {
-          if (
-            !collection.selectedChartData ||
-            Object.keys(collection.selectedChartData).length === 0
-          ) {
-            if (
-              collection.averagedChartData &&
-              collection.averagedChartData['24hr'] !== undefined
-            ) {
-              collection.selectedChartData =
-                collection.averagedChartData['24hr'];
-            } else {
-              console.warn(
-                `Collection ${collection._id} does not have 'averagedChartData["24hr"]'.`
-              );
+
+        // Handle the deletion of a collection
+        if (action === 'deleteCollection' && deletedCollectionId) {
+          // Remove the deleted collection from the state
+          delete updatedById[deletedCollectionId];
+          updatedAllIds = updatedAllIds.filter(
+            (id) => id !== deletedCollectionId
+          );
+
+          // Update the selectedId if it was the deleted collection
+          const updatedSelectedId =
+            prev.selectedId === deletedCollectionId
+              ? updatedAllIds.length > 0
+                ? updatedAllIds[0]
+                : null // Choose another collection or null
+              : prev.selectedId;
+
+          // Update the state with the changes
+          const updatedState = {
+            ...prev,
+            allIds: updatedAllIds,
+            byId: updatedById,
+            selectedId: updatedSelectedId,
+          };
+
+          // Synchronize the updated state with local storage
+          localStorage.setItem('collections', JSON.stringify(updatedState));
+
+          return updatedState;
+        } else {
+          // For actions other than deletion, handle them as needed
+          newCollections.forEach((collection) => {
+            updatedById[collection._id] = collection;
+            if (!updatedAllIds.includes(collection._id)) {
+              updatedAllIds.push(collection._id);
             }
-          }
-          updatedById[collection._id] = collection;
-        });
-        const updatedAllIds = Object.keys(updatedById).filter(
-          (key) => updatedById[key] !== undefined
-        );
-        console.log('UPDATED COLLECTIONS', updatedById);
-        return {
-          ...prev,
-          byId: updatedById,
-          allIds: updatedAllIds,
-        };
+          });
+
+          const updatedState = {
+            ...prev,
+            byId: updatedById,
+            allIds: updatedAllIds,
+          };
+          localStorage.setItem('collections', JSON.stringify(updatedState));
+          return updatedState;
+        }
       });
     },
     [setCollections]
   );
+
+  // const updateCollectionsData = useCallback(
+  //   (newCollections, action) => {
+  //     console.log('updateCollectionsData', newCollections);
+  //     setCollections((prev) => {
+  //       const updatedById = { ...prev.byId };
+  //       newCollections?.forEach((collection) => {
+  //         if (
+  //           !collection.selectedChartData ||
+  //           Object.keys(collection.selectedChartData).length === 0
+  //         ) {
+  //           if (
+  //             collection.averagedChartData &&
+  //             collection.averagedChartData['24hr'] !== undefined
+  //           ) {
+  //             collection.selectedChartData =
+  //               collection.averagedChartData['24hr'];
+  //           } else {
+  //             console.warn(
+  //               `Collection ${collection._id} does not have 'averagedChartData["24hr"]'.`
+  //             );
+  //           }
+  //         }
+  //         updatedById[collection._id] = collection;
+  //       });
+  //       const updatedAllIds = Object.keys(updatedById).filter(
+  //         (key) => updatedById[key] !== undefined
+  //       );
+  //       if (action === 'deleteCollection') {
+  //         const updatedSelectedId =
+  //           prev.selectedId === newCollections[0]._id
+  //             ? updatedAllIds[0]
+  //             : prev.selectedId;
+  //         return {
+  //           ...prev,
+  //           allIds: updatedAllIds,
+  //           byId: updatedById,
+  //           selectedId: updatedSelectedId,
+  //         };
+  //       }
+  //       console.log('UPDATED COLLECTIONS', updatedById);
+  //       return {
+  //         ...prev,
+  //         byId: updatedById,
+  //         allIds: updatedAllIds,
+  //       };
+  //     });
+  //   },
+  //   [setCollections]
+  // );
   const addNewCollection = useCallback(
     (newCollection) => {
       // const newId = new Date().getTime().toString(); // Simple unique ID generation
@@ -239,6 +299,7 @@ function useSelectedCollection() {
         const updatedById = { ...prev.byId };
         delete updatedById[collectionId]; // Remove the collection
         const updatedAllIds = prev.allIds.filter((id) => id !== collectionId);
+        delete updatedAllIds[updatedAllIds.indexOf(collectionId)];
         console.log('UPDATED COLLECTIONS', updatedById);
 
         // Directly update local storage with the modified state
@@ -261,6 +322,72 @@ function useSelectedCollection() {
     },
     [setCollections]
   );
+  const removeCardFromCollection = useCallback(
+    (collectionId, cardId, shouldDecrement = false) => {
+      setCollections((prev) => {
+        const updatedCollections = { ...prev };
+        // Assuming each collection has an array of card objects with properties '_id' and 'quantity'
+        const collection = updatedCollections.byId[collectionId];
+        if (!collection || !collection.cards) {
+          console.error(
+            `Collection ${collectionId} not found or it has no cards.`
+          );
+          return prev;
+        }
+
+        const cardIndex = collection?.cards?.findIndex(
+          (card) => card._id === cardId
+        );
+        if (cardIndex === -1) {
+          console.error(
+            `Card ${cardId} not found in collection ${collectionId}.`
+          );
+          return prev;
+        }
+
+        if (shouldDecrement && collection.cards[cardIndex].quantity > 1) {
+          // Decrement the quantity if it's more than 1
+          collection.cards[cardIndex].quantity -= 1;
+          console.log(
+            `Decremented quantity of card ${cardId} in collection ${collectionId}.`
+          );
+        } else {
+          // Remove the card if quantity is 1 or if shouldDecrement is false
+          collection.cards.splice(cardIndex, 1);
+          console.log(
+            `Removed card ${cardId} from collection ${collectionId}.`
+          );
+        }
+
+        return {
+          ...prev,
+          byId: {
+            ...prev.byId,
+            [collectionId]: collection,
+          },
+        };
+      });
+    },
+    [setCollections]
+  );
+
+  const handleRemoveCard = useCallback(
+    (cardId, collectionId, newQuantity) => {
+      const currentCollection = collections?.byId[collectionId];
+      const card = currentCollection?.cards?.find((card) => card.id === cardId);
+      console.log('handleRemoveCard', cardId, collectionId, newQuantity);
+      console.log('handleRemoveCard', card);
+      if (card) {
+        console.log('REMOVING CARD', cardId);
+        removeCardFromCollection(
+          selectedCollectionId,
+          cardId,
+          card.quantity > 1
+        );
+      }
+    },
+    [collections.byId, removeCardFromCollection]
+  );
 
   const prevCollectionsRef = useRef();
   useEffect(() => {
@@ -278,15 +405,18 @@ function useSelectedCollection() {
     allCollections: Object.values(collections?.byId),
     showCollections: !!collections.showCollections,
     byId: collections?.byId || {},
+    removeCardFromCollection,
 
     selectedStat,
     setSelectedStat,
+    createMarkers,
     markers,
     handleSelectCollection,
     // selectedCollection: getSelectedCollection,
     handleBackToCollections: resetCollection,
     updateCollectionField,
     resetCollection,
+    handleRemoveCard,
     updateCollectionsData,
     customError,
     refreshCollections,

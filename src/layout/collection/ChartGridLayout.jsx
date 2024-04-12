@@ -108,23 +108,30 @@ const FormSelectorRow = React.memo(({ isXs }) => {
         spacing={2}
         sx={{ width: '100%', flexDirection: isXs ? 'column' : 'row' }}
       >
-        {formKeys?.map((formKey) => (
-          <Grid
-            item
-            xs={12}
-            sm={4}
-            md={4}
-            lg={4}
-            sx={{ width: '100%', flexGrow: 1 }}
-            key={formKey}
-          >
+        <Grid
+          item
+          // xs={12}
+          // sm={4}
+          // md={4}
+          // lg={4}
+          sx={{
+            width: '100%',
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+          // key={formKey}
+        >
+          {' '}
+          {formKeys?.map((formKey) => (
             <RCDynamicForm
+              key={formKey}
               formKey={formKey}
               inputs={formFields[formKey]}
               userInterfaceOptions={{}}
             />
-          </Grid>
-        ))}
+          ))}
+        </Grid>
       </Grid>
     </SimpleCard>
   );
@@ -135,7 +142,7 @@ const ChartAreaComponent = React.memo(({ theme }) => {
   return renderCardContainer(
     <Suspense fallback={<LoadingOverlay />}>
       <ResponsiveContainer width="100%" height="100%">
-        <ChartConfiguration theme={theme} markers={markers} />
+        <ChartConfiguration />
       </ResponsiveContainer>
     </Suspense>
   );

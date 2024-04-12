@@ -13,15 +13,15 @@ import useSelectedDeck from '../context/MAIN_CONTEXT/DeckContext/useSelectedDeck
 const DeckBuilderPage = () => {
   const { closeModal, returnDisplay, isModalOpen, modalContent } =
     useLoadingAndModal();
-  // const { hasFetchedDecks, fetchDecks } = useDeckManager();
+  const { hasFetchedDecks, fetchDecks } = useDeckManager();
   // useEffect(() => {
   //   fetchDecks();
   // }, []);
-  // useEffect(() => {
-  //   if (!hasFetchedDecks && allDecks.length <= 1) {
-  //     fetchDecks();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!hasFetchedDecks) {
+      fetchDecks();
+    }
+  }, []);
 
   return (
     <PageLayout>
