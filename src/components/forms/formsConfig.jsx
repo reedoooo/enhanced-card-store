@@ -101,7 +101,7 @@ const getFormFieldHandlers = () => {
     },
     updateCollectionForm: (formData, additionalData) => {
       console.log('Update Collection Form Data:', formData, additionalData);
-      updateCollection(additionalData, formData);
+      updateCollection(formData, additionalData);
     },
     updateDeckForm: (formData, additionalData) => {
       console.log('Update Deck Form Data:', formData, additionalData);
@@ -113,7 +113,7 @@ const getFormFieldHandlers = () => {
     },
     deleteDeckForm: (formData, additionalData) => {
       console.log('Delete Deck Form Data:', formData, additionalData);
-      deleteDeck(formData, additionalData);
+      deleteDeck(formData);
     },
     searchForm: (formData, additionalData) => {
       console.log('Search Form Data:', formData, additionalData);
@@ -269,21 +269,18 @@ const updateDeckFormFields = {
   tags: {
     label: 'Tags',
     type: 'chips',
-    placeholder: 'Enter tags', // Renamed from placeHolder to placeholder for consistency
-    // Assuming defaultValue should define the initial chips/tags.
-    // Since your RCInput expects an array of strings for chips, initialize it as such.
-    defaultValue: ['tag'], // This represents initial chips/tags, empty if none.
+    placeholder: 'Enter a tag',
+    defaultValue: [{ value: 'tag1', label: 'tag1' }],
     rules: {
-      required: false,
+      required: true,
     },
     icon: <DescriptionRoundedIcon />, // If you're displaying this icon somewhere in your form
     required: false, // Adjust based on whether tags are actually required or not
-    // field: 'tags',
   },
   color: {
     label: 'Color',
     type: 'select',
-    defaultValue: { value: 'blue', label: 'Blue' },
+    defaultValue: 'blue',
     rules: {
       required: false,
     },
@@ -371,6 +368,8 @@ const statRangeFormFields = {
     type: 'select',
     placeholder: 'Select statistics range', // Optional for a select, used if you have a default empty option
     defaultValue: 'highPoint',
+    selected: 'highPoint',
+
     // onSelectChange: (value) => {
     //   console.log(value);
     // },
@@ -394,6 +393,7 @@ const timeRangeFormFields = {
     placeholder: 'Select time range', // Optional for a select, used if you have a default empty option
     defaultValue: '24hr',
     defaultLabel: 'Today',
+    selected: '24hr',
     rules: {
       required: 'Time range is required',
     },
@@ -415,6 +415,7 @@ const themeRangeFormFields = {
     type: 'select',
     placeholder: 'Select theme range', // Optional for a select, used if you have a default empty option
     defaultValue: 'light',
+    selected: 'light',
     rules: {
       required: 'Theme selection is required',
     },
@@ -484,7 +485,14 @@ const addDeckFormSchema = z.object({
   description: z.string().optional().default(''),
 });
 const updateDeckFormSchema = addDeckFormSchema.extend({
-  tags: z.array(z.string()).optional().default(['default']),
+  tags: z
+    .array(
+      z.object({
+        key: z.number().default(0),
+        label: z.string().min(1, { message: "Tag can't be empty" }).default(''),
+      })
+    )
+    .default([]),
   color: z
     .enum([
       'red',
@@ -496,7 +504,6 @@ const updateDeckFormSchema = addDeckFormSchema.extend({
       'orange',
       'teal',
     ])
-    .optional()
     .default('blue'),
 });
 const collectionFormSchema = z.object({
@@ -506,36 +513,6 @@ const collectionFormSchema = z.object({
 const searchFormSchema = z.object({
   searchTerm: z.string().optional().default(''),
 });
-// const statRangeFormSchema = z.object({
-//   stateRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('highPoint'),
-// });
-// const timeRangeFormSchema = z.object({
-//   timeRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('24hr'),
-// });
-// const themeRangeFormSchema = z.object({
-//   themeRange: z
-//     .array(
-//       z.object({
-//         value: z.string().optional().default(''),
-//         label: z.string().optional().default(''),
-//       })
-//     )
-//     .default('light'),
-// });
 const authSwitchFormSchema = z.object({
   authSwitch: z.boolean(), // Since it's a switch, it's either true or false
 });

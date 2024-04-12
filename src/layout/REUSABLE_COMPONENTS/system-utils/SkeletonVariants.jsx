@@ -12,12 +12,12 @@ import {
   Typography,
 } from '@mui/material';
 import useSkeletonLoader from './useSkeletonLoader';
-import MDBox from './MDBOX';
-import { useMode } from '../../context';
+import MDBox from '../MDBOX';
+import { useMode } from '../../../context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
-} from '../../pages/pageStyles/StyledComponents';
+} from '../../../pages/pageStyles/StyledComponents';
 
 const LoadingCardSkeleton = () => {
   return (

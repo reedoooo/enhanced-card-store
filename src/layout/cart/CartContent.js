@@ -41,19 +41,26 @@ const CartContent = ({ activeStep }) => {
         },
       }}
     >
-      <Typography
-        variant="h4"
+      {/* <Container
         sx={{
-          fontWeight: 'bold',
+          marginTop: '1rem',
           marginBottom: '1rem',
-          color: theme.palette.text.primary,
-          [theme.breakpoints.down('sm')]: {
-            fontSize: '1.75rem',
-          },
         }}
       >
-        Your Cart
-      </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: theme.palette.text.primary,
+            [theme.breakpoints.down('sm')]: {
+              fontSize: '1.75rem',
+            },
+          }}
+        >
+          Your Cart
+        </Typography>
+      </Container> */}
       <Container
         sx={{
           marginTop: '1rem',
@@ -64,8 +71,8 @@ const CartContent = ({ activeStep }) => {
           <Grid
             item
             xs={12}
-            sm={5}
-            lg={4}
+            sm={12}
+            lg={12}
             sx={{
               display: { xs: 'none', md: 'flex' },
               flexDirection: 'column',
@@ -78,7 +85,21 @@ const CartContent = ({ activeStep }) => {
               gap: 4,
             }}
           >
-            <Box
+            {' '}
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                color: theme.palette.text.primary,
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '1.75rem',
+                },
+              }}
+            >
+              Your Cart
+            </Typography>
+            {/* <Box
               sx={{
                 display: 'flex',
                 alignItems: 'end',
@@ -100,7 +121,7 @@ const CartContent = ({ activeStep }) => {
                   alt="Sitemark's logo"
                 />
               </Button>
-            </Box>
+            </Box> */}
             <Box
               sx={{
                 display: 'flex',

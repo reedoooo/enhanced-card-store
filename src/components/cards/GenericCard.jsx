@@ -198,7 +198,15 @@ const GenericCard = React.forwardRef((props, ref) => {
       >
         <GenericActionButtons
           card={card}
+          // selectedEntity={
+          //   effectiveContext === 'Cart'
+          //     ? cart
+          //     : effectiveContext === 'Collection'
+          //       ? selectedCollection
+          //       : selectedDeck
+          // }
           context={effectiveContext}
+          // selectedEnt={selectedEntity}
           onClick={() => handleContextSelect(effectiveContext)}
           onSuccess={() =>
             enqueueSnackbar(

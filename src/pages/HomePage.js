@@ -3,11 +3,11 @@ import { CardHeader, Grid, Box, useMediaQuery } from '@mui/material';
 import { useModalContext } from '../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import DetailsModal from '../components/dialogs/DetailsModal';
-import SplashPage2 from '../layout/REUSABLE_COMPONENTS/SplashPage2';
+import SplashPage2 from '../layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
 // import MainContentSection from './sections/MainContentSection';
-import HeroSection from '../layout/sections/HeroSection';
-import FeatureCardsSection from '../layout/sections/FeatureCardsSection';
+import HeroSection from '../layout/home/HeroSection';
+import FeatureCardsSection from '../layout/home/FeatureCardsSection';
 
 const HomePage = () => {
   const { detailsModalShow, isModalOpen, modalContent } = useModalContext();

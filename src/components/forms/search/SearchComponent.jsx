@@ -25,7 +25,7 @@ import RCDynamicForm from '../Factory/RCDynamicForm';
 import { formFields } from '../formsConfig';
 import SearchIcon from '@mui/icons-material/Search';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
-
+// import SearchForm from './SearchForm';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
@@ -117,7 +117,7 @@ const SearchComponent = (pageContext) => {
                 deleteButton: false,
                 startIcon: <SearchIcon />,
               }}
-              initialData={initialData}
+              // initialData={initialData}
             />
 
             {/* <SearchForm

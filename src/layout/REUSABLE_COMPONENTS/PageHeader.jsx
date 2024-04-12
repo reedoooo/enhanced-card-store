@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
 import { useMode } from '../../context';
-import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
-import SimpleSectionHeader from '../REUSABLE_COMPONENTS/unique/SimpleSectionHeader';
-import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/SkeletonVariants';
-import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
+import SimpleCard from './unique/SimpleCard';
+import SimpleSectionHeader from './unique/SimpleSectionHeader';
+import uniqueTheme from './unique/uniqueTheme';
+import { PageHeaderSkeleton } from './system-utils/SkeletonVariants';
+import RCButton from './RCBUTTON';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 
@@ -22,8 +22,16 @@ const FlexContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const DeckPageHeader = ({ openAddDeckDialog }) => {
-  const { theme } = useMode();
+// Making the component reusable by passing props
+const PageHeader = ({
+  handleOpenDialog, // Changed to a more generic name
+  headerName = 'Page Name', // Default value if none provided
+  userName,
+  description = 'Description here', // Default description
+  lastUpdated,
+  buttonText = 'Add New Item', // Default button text
+  formName = 'formSchemaName', // Default form name
+}) => {
   const { setActiveFormSchema } = useFormManagement();
   const { user } = useUserData();
   if (!user) {
@@ -43,32 +51,30 @@ const DeckPageHeader = ({ openAddDeckDialog }) => {
     >
       <FlexContainer>
         <SimpleSectionHeader
-          sectionName="Deck Builder"
-          userName={user?.userBasicData?.firstName}
-          sectionDescription="Last updated:"
-          lastUpdated={new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          sectionName={headerName}
+          userName={userName || user?.username}
+          sectionDescription={description}
+          lastUpdated={
+            lastUpdated ||
+            new Date().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          }
         />
         <RCButton
           color="success"
           size="large"
           variant="holo"
-          // circular={true}
           withContainer={true}
-          onClick={() => {
-            setActiveFormSchema('addDeckForm');
-            openAddDeckDialog();
-            console.log('openAddDeckDialog');
-          }}
+          onClick={handleOpenDialog}
         >
-          Add New Deck
+          {buttonText}
         </RCButton>
       </FlexContainer>
     </SimpleCard>
   );
 };
 
-export default DeckPageHeader;
+export default PageHeader;

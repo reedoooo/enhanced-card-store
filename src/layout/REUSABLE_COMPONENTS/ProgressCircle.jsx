@@ -4,7 +4,7 @@ import { Box, useTheme } from '@mui/material';
 import PropTypes from 'prop-types';
 import RCToolTip from './RCTOOLTIP/RCToolTip';
 import { useMode } from '../../context';
-import useSkeletonLoader from './useSkeletonLoader';
+import useSkeletonLoader from './system-utils/useSkeletonLoader';
 
 const ProgressCircleSkeleton = ({ size = 120 }) => {
   const theme = useTheme();

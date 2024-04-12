@@ -11,17 +11,17 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useMode } from '../../context';
-import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
-import MDButton from '../../layout/REUSABLE_COMPONENTS/MDBUTTON';
+import MDButton from '../REUSABLE_COMPONENTS/MDBUTTON';
 import SingleCardAnimation from '../../assets/animations/SingleCardAnimation';
 import CardChart from '../../layout/CardChart';
 import useCardCronJob from '../../layout/useCardCronJob';
 import {
   StyledContainerBox,
   StyledPaper,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import placeHolder from '../../assets/images/placeholder.jpeg';
 import { DEFAULT_COLLECTION } from '../../context/constants';
 import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
@@ -32,12 +32,8 @@ import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 
 const MainContentSection = () => {
   const { theme } = useMode();
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
-  const { isLoggedIn, authUser, userId } = getCookie([
-    'isLoggedIn',
-    'authUser',
-    'userId',
-  ]);
+  const { getCookie } = useManageCookies();
+  const { isLoggedIn } = getCookie(['isLoggedIn']);
   const { user } = useUserData();
   const { hasFetchedCollections } = useCollectionManager();
   const { allCollections, selectedCollection } = useSelectedCollection();

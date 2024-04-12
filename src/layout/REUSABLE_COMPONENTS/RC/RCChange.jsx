@@ -10,9 +10,10 @@ import { useMode } from '../../../context';
 
 const useStyles = (theme) => ({
   container: {
-    width: '100%',
+    width: '25%%',
     p: '20px',
     // my: '20px',
+    // background: theme.palette.chartTheme.grey.dark,
     borderRadius: theme.spacing(4),
   },
   flexBox: {
@@ -21,7 +22,8 @@ const useStyles = (theme) => ({
   },
   percentageText: {
     variant: 'h4',
-    fontWeight: 'medium',
+    fontWeight: 'bold',
+    // fontFamily: 'Poppins',
     color: theme.palette.chartTheme.grey.default,
   },
   rangeText: {

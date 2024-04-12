@@ -1,8 +1,7 @@
 /* eslint-disable max-len */
 import React, { useMemo } from 'react';
 import { Box, Card, Icon, Typography } from '@mui/material';
-import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
-import { useAppContext, useMode } from '../../../../../context';
+import { useMode, useAppContext } from '../../../context';
 import {
   PieChart,
   Pie,
@@ -11,9 +10,10 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import BoxHeader from '../../../../REUSABLE_COMPONENTS/BoxHeader';
-import { useCompileCardData } from '../../../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import RCWrappedIcon from '../../../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
+import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
@@ -122,7 +122,7 @@ const ValuDistributionCircle = () => {
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
               sx={{
-                color: lightest,
+                color: colors.greenAccent.default,
                 borderRadius: theme.shape.borderRadius,
               }}
             />
@@ -135,16 +135,13 @@ const ValuDistributionCircle = () => {
               cx="50%"
               cy="50%"
               labelLine={false}
-              // outerRadius={80}
               fill="#8884d8"
               dataKey="value"
               nameKey="name"
-              // textAnchor="middle"
               color={contrastText}
               innerRadius={18}
               outerRadius="80%"
-              // paddingAngle={2}
-              label={renderCustomLabel} // Using the custom label function
+              label={renderCustomLabel}
             >
               {collectionMetaData?.pieChartData?.map((entry, index) => (
                 <Cell
@@ -153,9 +150,7 @@ const ValuDistributionCircle = () => {
                 />
               ))}
             </Pie>
-            <Tooltip
-              contentStyle={{ color: 'white' }} // Custom styling for the tooltip content
-            />
+            <Tooltip contentStyle={{ color: 'white' }} />
             <Legend
               verticalAlign="bottom"
               height={36}

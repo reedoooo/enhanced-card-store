@@ -22,12 +22,8 @@ const defaultExportValue = {
 };
 const useCollectionManager = () => {
   const { fetchWrapper, status, data } = useFetchWrapper();
-  const { addCookie, getCookie, deleteCookie } = useManageCookies();
-  const { isLoggedIn, authUser, userId } = getCookie([
-    'isLoggedIn',
-    'authUser',
-    'userId',
-  ]);
+  const { getCookie } = useManageCookies();
+  const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const logger = useLogger('useCollectionManager');
   const collectionData = useSelectedCollection();
   if (!collectionData) {
@@ -41,7 +37,9 @@ const useCollectionManager = () => {
     setCustomError,
     refreshCollections,
     updateCollectionsData,
+    handleRemoveCard,
     removeCollection,
+    removeCardFromCollection,
   } = collectionData;
   const [error, setError] = useState(null);
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
@@ -55,29 +53,32 @@ const useCollectionManager = () => {
   );
   const baseUrl = `${process.env.REACT_APP_SERVER}/api/users/${userId}/collections`;
   const createApiUrl = useCallback((path) => `${baseUrl}/${path}`, [baseUrl]);
-  const fetchCollections = useCallback(async () => {
-    if (!userId || !isLoggedIn || status === 'loading') return;
-    try {
-      const responseData = await fetchWrapper(
-        createApiUrl('allCollections'),
-        'GET',
-        null,
-        'fetchCollections'
-      );
-      updateCollectionsData(responseData?.data);
-      setHasFetchedCollections(true);
-    } catch (error) {
-      handleError(error, 'fetchCollections');
-    }
-  }, [
-    userId,
-    isLoggedIn,
-    status,
-    fetchWrapper,
-    createApiUrl,
-    updateCollectionsData,
-    handleError,
-  ]);
+  const fetchCollections = useCallback(
+    async (actionName, deletedId) => {
+      if (!userId || !isLoggedIn || status === 'loading') return;
+      try {
+        const responseData = await fetchWrapper(
+          createApiUrl('allCollections'),
+          'GET',
+          null,
+          'fetchCollections'
+        );
+        updateCollectionsData(responseData?.data, actionName, deletedId);
+        setHasFetchedCollections(true);
+      } catch (error) {
+        handleError(error, 'fetchCollections');
+      }
+    },
+    [
+      userId,
+      isLoggedIn,
+      status,
+      fetchWrapper,
+      createApiUrl,
+      updateCollectionsData,
+      handleError,
+    ]
+  );
   const performAction = useCallback(
     async (path, method, data, actionName, options = {}) => {
       if (!userId || !isLoggedIn || status === 'loading') {
@@ -102,12 +103,33 @@ const useCollectionManager = () => {
 
       try {
         console.log('URL', path);
-        await fetchWrapper(path, method, data, actionName);
-        options.afterAction?.();
         console.log('ACTION ', actionName);
         console.log('STATUS: ', status);
         console.log('DATA: ', data);
-        fetchCollections(); // Refresh collections after any action
+
+        const response = await fetchWrapper(path, method, data, actionName);
+        options.afterAction?.();
+        if (
+          actionName !== 'decrementCardQuantity' &&
+          actionName !== 'deleteCardFromCollection' &&
+          actionName !== 'deleteCollection'
+        ) {
+          await fetchCollections(); // Refresh collections after any action
+          console.log('RESPONSE: ', response);
+          // refreshCollections(response?.data);
+        } else if (actionName === 'deleteCollection') {
+          console.log('RESPONSE: ', response);
+          removeCollection(response?.data?.data);
+          // await fetchCollections(actionName, response?.data?.data); // Refresh collections after any action
+        } else {
+          console.log('REMOVED CARDS FROM COLLECTION', response?.data);
+          handleRemoveCard(
+            response?.data?.cardId,
+            response?.data?.collectionId,
+            response?.data?.newQuantity
+          );
+          await fetchCollections(); // Refresh collections after any action
+        }
       } catch (error) {
         handleError(error, actionName);
       }
@@ -125,30 +147,21 @@ const useCollectionManager = () => {
       selectedCollectionId,
     ]
   );
-
   const createNewCollection = useCallback(async (datas) => {
-    const newCollection = {
-      name: datas.name,
-      description: datas.description,
-    };
-
     const path = createApiUrl('create');
-    performAction(path, 'POST', newCollection, 'createNewCollection');
+    performAction(path, 'POST', datas, 'createNewCollection');
   }, []);
-
-  // performAction(createApiUrl('create'), 'POST', datas, 'createNewCollection');
   const deleteCollection = useCallback(
     async (collectionId) => {
       performAction(
         createApiUrl(`${collectionId}/delete`),
         'DELETE',
-        { collectionId: collectionId },
+        {},
         'deleteCollection',
-
         {
           beforeAction: async () => {
             console.log('BEFORE ACTION', collectionId);
-            removeCollection(collectionId);
+            // removeCollection(collectionId);
           },
           afterAction: async () => {
             console.log(`Collection ${collectionId} deleted successfully.`);
@@ -158,7 +171,8 @@ const useCollectionManager = () => {
               //   createApiUrl('allCollections'),
               //   'GET'
               // );
-              // refreshCollections(updatedCollections.data);
+              // refreshCollections();
+              removeCollection(collectionId);
             } catch (error) {
               handleError(error, 'fetching collections after deletion');
             }
@@ -168,7 +182,6 @@ const useCollectionManager = () => {
     },
     [performAction, createApiUrl, fetchWrapper, handleError]
   );
-
   const updateCollection = useCallback(
     async (collectionId, updatedData) => {
       performAction(
@@ -182,62 +195,53 @@ const useCollectionManager = () => {
   );
   const addCardsToCollection = useCallback(
     (newCards, collection) => {
-      if (selectedCollectionId === 'selectedCollectionId')
-        return console.log('Collection ID has not been set');
-      // CHECK FOR EXISTING CARD IN COLLECTION (newcards[0])
-      const existingCard = collection?.cards?.find(
-        (card) => card.id === newCards[0].id
+      console.log('ADD CARDS TO COLLECTION', newCards, collection);
+      performAction(
+        createApiUrl(`${collection?._id}/cards/add`),
+        'POST',
+        { cards: [newCards], type: 'addNew' },
+        'addCardsToCollection'
       );
-      const options = {
-        beforeAction: () => {
-          if (existingCard) {
-            console.log('Card already exists in collection');
-            return;
-          }
-        },
-        afterAction: () => {
-          if (existingCard) {
-            console.log('Card already exists in collection');
-            return;
-          }
-        },
-        paramTypes: {
-          collectionId: selectedCollectionId,
-        },
-      };
-
-      if (existingCard) {
-        // UPDATE EXISTING CARD
-        performAction(
-          createApiUrl(`${selectedCollectionId}/cards/update`),
-          'PUT',
-          { cards: [newCards], type: 'increment' },
-          'addCardsToCollection',
-          options
-        );
-      } else {
-        performAction(
-          createApiUrl(`${selectedCollectionId}/cards/add`),
-          'POST',
-          { cards: newCards, type: 'addNew' },
-          'addCardsToCollection',
-          options
-        );
-      }
     },
     [performAction]
   );
   const removeCardsFromCollection = useCallback(
-    (cards, cardIds, collection) => {
+    (card, collection) => {
+      const actionName =
+        card.quantity > 1
+          ? 'decrementCardQuantity'
+          : 'deleteCardFromCollection';
+      const path = createApiUrl(
+        `${collection._id}/cards/${card._id}/${actionName}`
+      );
+
+      console.log(
+        `Preparing to ${actionName} for card ${card._id} in collection ${collection._id}`
+      );
+
       performAction(
-        createApiUrl(`${selectedCollectionId}/cards/remove`),
-        'PUT',
-        { cards, cardIds },
-        'removeCardsFromCollection',
-        ['object', 'object']
+        path,
+        actionName === 'deleteCardFromCollection' ? 'DELETE' : 'PUT', // DELETE for delete, PUT for decrement
+        {
+          cardId: card._id,
+          type:
+            actionName === 'decrementCardQuantity' ? 'decrement' : undefined,
+        },
+        actionName,
+        {
+          beforeAction: () => {
+            console.log(`Optimistically ${actionName} for card ${card._id}`);
+          },
+          afterAction: () => {
+            console.log(
+              `Successfully ${actionName === 'decrementCardQuantity' ? 'decremented' : 'deleted'} card ${card._id}`
+            );
+            // refreshCollections();
+          },
+        }
       );
     },
-    [performAction]
+    [performAction, createApiUrl, refreshCollections]
   );
   const memoizedReturnValues = useMemo(
     () => ({
@@ -253,8 +257,8 @@ const useCollectionManager = () => {
       updateCollectionsData,
       hasFetchedCollections,
       handleError,
-      removeOneFromCollection: (cards, collection) =>
-        removeCardsFromCollection(cards, collection),
+      removeOneFromCollection: (card, collection) =>
+        removeCardsFromCollection(card, collection),
       addOneToCollection: (cards, collection) =>
         addCardsToCollection(cards, collection),
     }),

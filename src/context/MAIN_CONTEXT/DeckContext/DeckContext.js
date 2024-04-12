@@ -1,5 +1,11 @@
 // /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import {
   BASE_API_URL,
   calculateAndUpdateTotalPrice,
@@ -24,8 +30,6 @@ export const DeckProvider = ({ children }) => {
   const logger = useLogger('DeckProvider');
   const { fetchWrapper } = useFetchWrapper();
   const { startLoading, stopLoading, isLoading } = useLoading();
-
-  // Utilizing useSelectedDeck hook for managing selected deck and its operations
   const {
     selectedDeck,
     allDecks,
@@ -42,6 +46,9 @@ export const DeckProvider = ({ children }) => {
     addOneToDeck,
     removeOneFromDeck,
   } = useDeckManager();
+  useEffect(() => {
+    console.log('SELECTED DECK: ', selectedDeck);
+  }, [selectedDeck]);
 
   const createApiUrl = useCallback(
     (path) => `${BASE_API_URL}/api/users/${userId}/decks${path}`,

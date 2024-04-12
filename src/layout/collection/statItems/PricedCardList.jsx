@@ -1,13 +1,12 @@
-import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
-import BoxHeader from '../../../../REUSABLE_COMPONENTS/BoxHeader';
+import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
+import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
 import { Box, Card, CardContent } from '@mui/material';
-import { useAppContext, useMode } from '../../../../../context';
 import { DataGrid } from '@mui/x-data-grid';
-import prepareTableData from '../../../data/topCards';
-import styled from 'styled-components';
+import prepareTableData from '../data/topCards';
 import { useMemo } from 'react';
-import { useCompileCardData } from '../../../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import { Divider } from '@mui/joy';
+import { useMode } from '../../../context';
 
 const PricedCardList = () => {
   const { theme } = useMode();

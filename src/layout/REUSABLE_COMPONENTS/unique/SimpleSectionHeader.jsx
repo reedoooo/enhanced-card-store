@@ -43,7 +43,6 @@ const SimpleSectionHeader = ({
           justifyContent: isMobileView ? 'space-between' : 'center',
         }}
       >
-        {/* Container for Section Name and Username adjusts direction based on lgDown */}
         <Box
           sx={{
             display: 'flex',
@@ -60,7 +59,6 @@ const SimpleSectionHeader = ({
             level="title-sm"
             color="text"
             fontWeight="bold"
-            // color="var(--joy-palette-success-plainColor)"
             fontFamily="monospace"
             sx={{
               opacity: '50%',
@@ -76,6 +74,8 @@ const SimpleSectionHeader = ({
         <MDBox
           sx={{
             borderColor: theme.palette.success.secondary,
+            borderWidth: '2px',
+
             p: theme.spacing(1),
             // maxWidth: '25%',
             // width: isMobileView ? '100%' : '25%',

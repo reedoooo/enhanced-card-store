@@ -1,204 +1,173 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import {
-  DEFAULT_CARDS_COUNT,
-  DEFAULT_DECK,
-  SELECTED_DECK_ID,
-} from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import _set from 'lodash/set';
-const defaultDecks = {
-  allIds: [SELECTED_DECK_ID],
-  byId: {
-    [SELECTED_DECK_ID]: DEFAULT_DECK,
-  },
-  selectedId: SELECTED_DECK_ID,
-  prevSelectedId: SELECTED_DECK_ID,
-  showDecks: true,
-};
+import set from 'lodash.set';
+import { defaultValues } from '../../simplified_constants';
+import { SELECTED_DECK_ID } from '../../constants';
+import useManageCookies from '../../hooks/useManageCookies';
+// const defaultDecks = {
+//   allIds: [SELECTED_DECK_ID],
+//   byId: { [SELECTED_DECK_ID]: DEFAULT_DECK },
+//   selectedId: SELECTED_DECK_ID,
+//   lastUpdated: new Date(),
+//   showDecks: true,
+// };
 const useSelectedDeck = () => {
-  const [decks, setDecks] = useLocalStorage('decks', defaultDecks);
-  const [deckUpdated, setDeckUpdated] = useState(false); // Track when a deck is updated
-  const [customError, setCustomError] = useState(null);
-
-  useEffect(() => {
-    if (!decks || decks?.allIds?.length === 0) {
-      setDecks(defaultDecks);
-    }
-  }, [decks]);
-  const addCardToSelectedDeck = useCallback(
-    (card) => {
-      if (!decks.selectedId) return;
-      const updatedDeck = {
-        ...decks.byId[decks.selectedId],
-        cards: [...decks.byId[decks.selectedId].cards, card],
-      };
-
-      setDecks((prevDecks) => ({
-        ...prevDecks,
-        byId: {
-          ...prevDecks.byId,
-          [decks.selectedId]: updatedDeck,
-        },
-      }));
-      setDeckUpdated(true); // Signal that a deck has been updated
-    },
-    [decks]
+  const { addCookies } = useManageCookies();
+  const [decks, setDecks] = useLocalStorage(
+    'decks',
+    defaultValues.defaultDecks
   );
-  useEffect(() => {
-    if (decks.allIds.includes(SELECTED_DECK_ID) && decks.allIds.length > 1) {
-      setDecks((prev) => {
-        const updatedAllIds = prev.allIds.filter(
-          (id) => id !== SELECTED_DECK_ID
-        );
-        const updatedById = { ...prev.byId };
-        delete updatedById[SELECTED_DECK_ID];
-
-        return {
-          ...prev,
-          allIds: updatedAllIds,
-          byId: updatedById,
-          // Update selectedId to the first deck if the selected deck is removed
-          selectedId:
-            prev.selectedId === SELECTED_DECK_ID
-              ? updatedAllIds[0]
-              : prev.selectedId,
-        };
+  const [deckUpdated, setDeckUpdated] = useState(false);
+  const refreshDecks = useCallback(() => {
+    setDeckUpdated((prevState) => !prevState); // Toggle to trigger a re-render
+  }, []);
+  // useEffect(() => {
+  //   addCookies(['selectedDeckId'], [decks.selectedId], {
+  //     path: '/selected',
+  //   });
+  // }, []);
+  const modifyDeck = useCallback(
+    (modifyFn) => {
+      setDecks((prevDecks) => {
+        const updatedDecks = modifyFn({ ...prevDecks });
+        return updatedDecks;
       });
-    }
-  }, [decks.allIds, decks.byId, setDecks]);
-  const getSelectedDeck = useMemo(
-    () => decks.byId[decks?.selectedId],
-    [decks.byId, decks.selectedId]
+      refreshDecks();
+    },
+    [setDecks]
   );
   const updateDeckField = useCallback(
     (deckId, fieldPath, value) => {
-      console.log('UPDATE DECK FIELD', deckId, fieldPath, value);
-      setDecks((prev) =>
-        _set({ ...prev }, `byId.${deckId}.${fieldPath}`, value)
+      modifyDeck((currentDecks) =>
+        set(currentDecks, `byId.${deckId}.${fieldPath}`, value)
       );
     },
-    [setDecks]
-  );
-  const updateDeck = useCallback(
-    (updatedDeck, deckId = decks.selectedId) => {
-      setDecks((prev) => ({
-        ...prev,
-        byId: {
-          ...prev.byId,
-          [deckId]: updatedDeck,
-        },
-      }));
-    },
-    [setDecks, decks.selectedId]
-  );
-  const updateMultipleDecks = useCallback(
-    (decksArray) => {
-      setDecks((prev) => {
-        const updatedById = { ...prev.byId };
-        const updatedAllIds = new Set(prev.allIds);
-
-        decksArray.forEach((deck) => {
-          updatedById[deck._id] = deck;
-          updatedAllIds.add(deck._id);
-        });
-
-        return {
-          ...prev,
-          byId: updatedById,
-          allIds: Array.from(updatedAllIds),
-        };
-      });
-    },
-    [setDecks]
+    [modifyDeck]
   );
   const handleSelectDeck = useCallback(
     (deck) => {
-      console.log('SELECTED DECK ID', deck?._id);
-      setCustomError(null);
-      if (!decks.byId[deck?._id]) {
-        setCustomError('Invalid deck selected');
-        return;
-      }
-      setDecks((prev) => ({
-        ...prev,
+      console.log('DECK', deck?.name, 'HAS BEEN SELECTED');
+
+      modifyDeck((currentDecks) => ({
+        ...currentDecks,
         selectedId: deck._id,
-        showDecks: !prev.showDecks,
+        prevSelectedId: currentDecks.selectedId, // Preserve the previously selected ID
+        showDecks: currentDecks.showDecks,
       }));
     },
-    [setDecks, decks.selectedId]
+    [modifyDeck]
   );
-  const addNewDeck = useCallback(
-    (newDeck) => {
-      setDecks((prev) => ({
-        ...prev,
-        byId: {
-          ...prev.byId,
-          [newDeck._id]: newDeck,
-        },
-        allIds: [...prev.allIds, newDeck._id],
-      }));
-    },
-    [setDecks]
-  );
-  const removeDeck = useCallback(
-    (deckId) => {
-      setDecks((prev) => {
-        const { [deckId]: removedDeck, ...remainingById } = prev.byId;
+  const addOrUpdateDeck = useCallback(
+    (deck) => {
+      console.log('ADDING OR UPDATING DECK', deck);
+
+      modifyDeck((currentDecks) => {
+        // Correctly remove the default deck ID from `allIds` if it exists
+        // const updatedAllIds = currentDecks.allIds.filter(
+        //   (id) => id !== SELECTED_DECK_ID
+        // );
+        const updatedAllIds = [...currentDecks.allIds];
+
+        const updatedById = { ...currentDecks.byId };
+        if (deck._id !== SELECTED_DECK_ID) {
+          updatedById[deck._id] = deck;
+
+          if (!updatedAllIds.includes(deck._id)) {
+            updatedAllIds.push(deck._id);
+          }
+        }
+        // Delete the default deck data from `byId`, if it exists
+        // const updatedById = { ...currentDecks.byId };
+        delete updatedById[SELECTED_DECK_ID];
+
+        // Update or add the new deck
+        // updatedById[deck._id] = deck;
+
+        // Update the `allIds` array to include the new deck ID if it's not already present
+        // const isDeckIdPresent = updatedAllIds.includes(deck._id);
+        // if (!isDeckIdPresent) {
+        //   updatedAllIds.push(deck._id);
+        // }
+
         return {
-          ...prev,
-          byId: remainingById,
-          allIds: prev.allIds.filter((id) => id !== deckId),
-          selectedId: prev.selectedId === deckId ? null : prev.selectedId,
+          ...currentDecks,
+          byId: updatedById,
+          allIds: updatedAllIds,
+          lastUpdated: new Date(),
+          // selectedId: deck._id,
+          // prevSelectedId: currentDecks.selectedId,
+          // showDecks: currentDecks.showDecks,
+          // showDecks: !currentDecks.showDecks,
         };
       });
     },
-    [setDecks]
+    [modifyDeck]
   );
-  const prevDecksRef = useRef();
+  const addAllDecks = useCallback(
+    (allDecksFromServer) => {
+      console.log('ADDING ALL DECKS', allDecksFromServer);
+      modifyDeck((currentDecks) => {
+        const updatedById = { ...currentDecks.byId };
+        const updatedAllIds = [...currentDecks.allIds];
 
-  useEffect(() => {
-    if (prevDecksRef.current) {
-      console.log('Decks data updated:', decks);
-    }
-    prevDecksRef.current = decks;
-  }, [
-    decks.allIds[
-      decks.allIds.includes(SELECTED_DECK_ID)
-        ? decks.allIds.indexOf(SELECTED_DECK_ID)
-        : decks.allIds.length - 1
-    ],
-  ]); // decks array ensures this runs only when collections change
-  useEffect(() => {
-    // Reset the deckUpdated state after it's been set to true
-    if (deckUpdated) {
-      setDeckUpdated(false);
-    }
-  }, [deckUpdated]);
+        // const updatedAllIds = currentDecks.allIds.filter(
+        //   (id) => id !== SELECTED_DECK_ID
+        // );
+        allDecksFromServer.forEach((deck) => {
+          updatedById[deck._id] = deck;
+          if (!updatedAllIds.includes(deck._id)) {
+            updatedAllIds.push(deck._id);
+          }
+        });
+        return {
+          ...currentDecks,
+          byId: updatedById,
+          allIds: updatedAllIds,
+          lastUpdated: new Date(),
+          // showDecks: currentDecks.showDecks,
+          // showDecks: !currentDecks.showDecks,
+        };
+      });
+    },
+    [modifyDeck]
+  );
+  const removeDeck = useCallback(
+    (deckId) => {
+      modifyDeck((currentDecks) => {
+        const { [deckId]: _, ...remainingById } = currentDecks.byId;
+        const remainingAllIds = currentDecks.allIds.filter(
+          (id) => id !== deckId
+        );
+        return {
+          ...currentDecks,
+          byId: remainingById,
+          allIds: remainingAllIds,
+        };
+      });
+    },
+    [modifyDeck]
+  );
   return {
+    decks,
     selectedDeckId: decks.selectedId,
-    selectedDeck: getSelectedDeck,
+    selectedDeck: decks.byId[decks.selectedId],
     allDecks: Object.values(decks.byId),
+    allIds: decks.allIds,
+    lastUpdated: decks.lastUpdated,
     showDecks: !!decks.showDecks,
+    // showDecks: !!decks.showDecks,
     deckUpdated, // You can use this value in your components to trigger re-renders
+    addAllDecks,
+    setDeckUpdated,
     updateDeckField,
-    updateDeck,
-    updateMultipleDecks,
+    updateSelectedDeck: updateDeckField,
     handleSelectDeck,
-    addNewDeck,
     removeDeck,
-    addCardToSelectedDeck,
+    addOrUpdateDeck,
+    refreshDecks,
+    // addCardToSelectedDeck: updateDeckField(decks.selectedId, 'cards', card)
+    // removeCardFromSelectedDeck,
   };
 };
 
 export default useSelectedDeck;
-// const addCardToSelectedDeck = useCallback(
-//   (card) => {
-//     if (!decks.selectedId) return;
-//     const updatedDeck = {
-//       ...decks.byId[decks.selectedId],
-//       cards: [...decks.byId[decks.selectedId].cards, card],
-//     };
-//     updateDeck(updatedDeck);
-//   },
-//   [decks.byId, updateDeck, decks.selectedId]
-// );

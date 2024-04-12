@@ -73,6 +73,12 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
           formKey={formKey}
           inputs={formFields[formKey]}
           initialData={initialFormData}
+          userInterfaceOptions={{
+            submitButton: true,
+            submitButtonLabel: 'Add Collection',
+            deleteButton: false,
+            startIcon: <LockOutlinedIcon />,
+          }}
           // Conditionally pass initial data if it's an update operation
         />
         {/* <CollectionForm

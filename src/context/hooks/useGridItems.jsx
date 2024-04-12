@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import GenericCard from '../../components/cards/GenericCard';
-import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/SkeletonVariants';
+import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import useMode from '../UTILITIES_CONTEXT/ColorModeContext/useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import useDeckManager from '../MAIN_CONTEXT/DeckContext/useDeckManager';
@@ -64,6 +64,7 @@ const useGridItems = ({
                   page={pageContext}
                   context={pageContext}
                   cardClasses="base-card-no-quantity"
+                  // selectedEntity={selectedEntity}
                   // context={`${pageContext}`}
                 />
                 {type === 'deck' && (

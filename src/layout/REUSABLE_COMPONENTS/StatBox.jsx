@@ -13,6 +13,7 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const grey = colors.grey.default;
   return (
     <MDBox
+      theme={theme}
       sx={{
         width: '100%',
         p: '20px',
@@ -23,6 +24,7 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
     >
       <Box
         display="flex"
+        alignItems="center" // Align items vertically.
         justifyContent="space-between"
         sx={{
           maxHeight: '135px',
@@ -30,27 +32,34 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
         }}
       >
         <MDBox
+          display="flex"
+          alignItems="center"
           sx={{
             border: 'none',
           }}
         >
-          <CardContent
+          <Box
             sx={{
               borderRadius: '50%',
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: theme.palette.success.main,
-              mt: theme.spacing(1),
-              mr: theme.spacing(1),
+              px: theme.spacing(1),
+              mr: theme.spacing(5),
             }}
           >
             {icon}
-          </CardContent>
+          </Box>
 
-          <Typography variant="h4" fontWeight="bold" sx={{ color: grey }}>
+          <Typography
+            variant="h1"
+            fontWeight="bold"
+            sx={{ color: grey, mt: theme.spacing(3) }}
+            theme={theme}
+          >
             {title}
           </Typography>
           {/* </CardContent> */}
@@ -61,11 +70,21 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
           <ProgressCircle progress={progress} />
         </Box> */}
       </Box>
-      <Box display="flex" justifyContent="space-between" mt="2px">
-        <Typography variant="h5" sx={{ color: green }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        mt="1rem"
+        theme={theme}
+      >
+        <Typography variant="h5" sx={{ color: green }} theme={theme}>
           {subtitle}
         </Typography>
-        <Typography variant="h5" fontStyle="italic" sx={{ color: greenliht }}>
+        <Typography
+          variant="h5"
+          fontStyle="italic"
+          sx={{ color: greenliht }}
+          theme={theme}
+        >
           {increase}
         </Typography>
       </Box>

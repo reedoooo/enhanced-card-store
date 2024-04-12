@@ -32,6 +32,7 @@ const ActionButton = ({
   labelValue,
   actionType,
   card,
+  selectedEntity,
   variant,
 }) => {
   const { theme } = useMode();
@@ -60,11 +61,7 @@ const ActionButton = ({
       // color={actionType === 'add' ? 'success.main' : 'error'}
       size={adjustedButtonSize}
       loading={isLoading(loadingKey)}
-      onClick={
-        actionType === 'add'
-          ? () => handleCardAction('add', card)
-          : () => handleCardAction('remove', card)
-      }
+      onClick={handleCardAction}
       startIcon={actionIcon}
       sx={{
         width: '100%',

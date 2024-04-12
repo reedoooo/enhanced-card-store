@@ -10,7 +10,7 @@ const RCLogoSection = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(config?.defaultPath);
+    navigate('/home');
   };
 
   return (

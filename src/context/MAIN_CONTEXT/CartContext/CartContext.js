@@ -51,8 +51,8 @@ export const CartProvider = ({ children }) => {
       ),
       // getTotalCost,
       getCardQuantity: getCartCardQuantity,
-      addOneToCart: (cardInfo) => addCardsToCart([cardInfo], cart),
-      removeOneFromCart: (cardInfo) =>
+      addOneToCart: (cardInfo, entity) => addCardsToCart([cardInfo], cart),
+      removeOneFromCart: (cardInfo, entity) =>
         removeCardsFromCart([cardInfo], [cardInfo.id], cart),
       // deleteFromCart,
       // fetchCartForUser: fetchUserCart,

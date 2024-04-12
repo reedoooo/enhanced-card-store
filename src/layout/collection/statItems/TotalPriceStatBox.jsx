@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import StatBox from '../../../../REUSABLE_COMPONENTS/StatBox';
-import { useAppContext, useMode } from '../../../../../context';
+import StatBox from '../../REUSABLE_COMPONENTS/StatBox';
+import { useMode, useAppContext } from '../../../context';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { roundToNearestTenth } from '../../../../../context/Helpers';
+import { roundToNearestTenth } from '../../../context/Helpers';
 const TotalPriceStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
@@ -24,12 +24,12 @@ const TotalPriceStatBox = () => {
       }}
     >
       <StatBox
-        title={`${roundToNearestTenth(collectionMetaData?.totalValue) || 0}`}
+        title={`$${roundToNearestTenth(collectionMetaData?.totalValue) || 0}`}
         subtitle="Portfolio Total Value"
         progress="0.50"
         increase="+21%"
         wrapIcon={false}
-        icon={<MonetizationOnIcon sx={{ color: grey, fontSize: '26px' }} />}
+        icon={<MonetizationOnIcon sx={{ color: grey, fontSize: '40px' }} />}
       />
     </Box>
   );

@@ -4,25 +4,61 @@ import DashboardLayout from '../REUSABLE_COMPONENTS/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
-import SelectCollectionList from './collectionGrids/collections-list/SelectCollectionList';
+import SelectCollectionList from './SelectCollectionList';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useDialogState from '../../context/hooks/useDialogState';
-import SelectCollectionHeader from './SelectCollectionHeader';
 import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
-import StatBoard from './collectionGrids/collections-list/StatBoard';
+import StatBoard from './StatBoard';
 import { Tab, Tabs } from '@mui/material';
 import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
-import ChartGridLayout from './collectionGrids/ChartGridLayout';
+import ChartGridLayout from './ChartGridLayout';
 import CollectionPortfolioHeader from './CollectionPortfolioHeader';
+import PageHeader from '../REUSABLE_COMPONENTS/PageHeader';
+import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
+import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
+  const { setActiveFormSchema } = useFormManagement();
+  const { user } = useUserData();
+
+  const handleOpenAddDialog = useCallback(() => {
+    setActiveFormSchema('addCollectionForm');
+    openDialog('isAddCollectionDialogOpen');
+  }, [openDialog, setActiveFormSchema]);
   return (
     <DashboardLayout>
       <MDBox theme={theme}>
         <DashboardBox sx={{ p: theme.spacing(2) }}>
-          <SelectCollectionHeader
-            openNewDialog={() => openDialog('isAddCollectionDialogOpen')}
+          <PageHeader
+            title="Collection Portfolio"
+            description={`Last updated: ${new Date().toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }
+            )}`}
+            buttonText="Add New Collection"
+            headerName="Collection Portfolio"
+            username={user.username}
+            handleOpenDialog={handleOpenAddDialog}
+            actions={
+              <RCButton
+                color="success"
+                size="large"
+                variant="holo"
+                onClick={() => {
+                  setActiveFormSchema('addCollectionForm');
+                  openDialog('isAddCollectionDialogOpen');
+                }}
+              >
+                Add New Collection
+              </RCButton>
+            }
           />
         </DashboardBox>
         <DashboardBox sx={{ px: theme.spacing(2) }}>
@@ -38,29 +74,17 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
     </DashboardLayout>
   );
 };
-
-const PortfolioView = ({
-  selectedCollection,
-  columns,
-  data,
-  handleBackToCollections,
-  allCollections,
-}) => (
+const PortfolioView = ({ selectedCollection, handleBackToCollections }) => (
   <DashboardLayout>
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <CollectionPortfolioHeader
           onBack={handleBackToCollections}
           collection={selectedCollection}
-          allCollections={allCollections}
         />
       </Grid>
       <Grid item xs={12}>
-        <ChartGridLayout
-          selectedCards={selectedCollection?.cards}
-          columns={columns}
-          data={data}
-        />
+        <ChartGridLayout />
       </Grid>
     </Grid>
   </DashboardLayout>
@@ -68,12 +92,12 @@ const PortfolioView = ({
 const CollectionPortfolio = () => {
   const { theme } = useMode();
   const {
-    handleBackToCollections,
     selectedCollectionId,
     selectedCollection,
     allCollections,
     handleSelectCollection,
   } = useSelectedCollection();
+  const { chartData, setChartData } = useCompileCardData();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
   const tabs = [<Tab label="Collections" value={0} key={'collections-tab'} />];
@@ -85,12 +109,27 @@ const CollectionPortfolio = () => {
       setActiveTab(newValue);
     }
   };
+  // const handleSelectAndShowCollection = useCallback(
+  //   (collection) => {
+  //     handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
+  //     setActiveTab(1); // Switch to Portfolio View tab
+  //   },
+  //   [handleSelectCollection]
+  // );
   const handleSelectAndShowCollection = useCallback(
     (collection) => {
-      handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
+      handleSelectCollection(collection); // Sets the selectedCollectionId and selectedCollection
+      if (collection.averagedChartData) {
+        const selectedChartDataKey = Object.keys(
+          collection.averagedChartData
+        )[0]; // Get the first key as default
+        const selectedChartDataValue =
+          collection.averagedChartData[selectedChartDataKey];
+        setChartData(selectedChartDataValue); // Update the selectedChartData
+      }
       setActiveTab(1); // Switch to Portfolio View tab
     },
-    [handleSelectCollection]
+    [handleSelectCollection, setChartData]
   );
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
@@ -126,7 +165,7 @@ const CollectionPortfolio = () => {
           handleBackToCollections={() => {
             setActiveTab(0); // Switch back to collections tab when going back
           }}
-          allCollections={allCollections}
+          // allCollections={allCollections}
         />
       )}
       {dialogState.isAddCollectionDialogOpen && (

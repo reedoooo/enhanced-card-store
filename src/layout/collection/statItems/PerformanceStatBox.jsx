@@ -1,10 +1,7 @@
 import { Box, Typography } from '@mui/material';
-import StatBox from '../../../../REUSABLE_COMPONENTS/StatBox';
-// import useCollectionStats from '../../../../../context/MAIN_CONTEXT/CollectionContext/useCollectionStats';
-import { useAppContext, useMode } from '../../../../../context';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import ProgressCircle from '../../../../REUSABLE_COMPONENTS/ProgressCircle';
-import MDBox from '../../../../REUSABLE_COMPONENTS/MDBOX';
+import StatBox from 'REUSABLE_COMPONENTS/StatBox';
+import { useMode, useAppContext } from '../../../context';
+
 import StackedLineChartRoundedIcon from '@mui/icons-material/StackedLineChartRounded';
 const PerformanceStatBox = () => {
   const { theme } = useMode();

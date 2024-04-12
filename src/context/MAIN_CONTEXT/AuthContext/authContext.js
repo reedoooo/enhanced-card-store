@@ -18,7 +18,7 @@ export const AuthContext = createContext(defaultContextValue.AUTH_CONTEXT);
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const { addCookies, getCookie, deleteCookies } = useManageCookies();
+  const { getCookie } = useManageCookies();
   const { user, handleRemoveUser } = useUserData();
   const { login, logout, signup } = useAuthManager();
   const { accessToken, isLoggedIn, authUser } = getCookie([

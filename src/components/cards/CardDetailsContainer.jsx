@@ -11,6 +11,7 @@ import {
   ListItem,
   Stack,
   Typography,
+  Container,
 } from '@mui/material';
 import {
   FaDragon,
@@ -24,7 +25,6 @@ import { useMode } from '../../context';
 import styled from 'styled-components';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { CardDetailContainer } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 const IconWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -87,7 +87,8 @@ const CardDetailRarity = ({ values, onRarityClick }) => {
   return values?.map((rarity, index) => (
     <Chip
       key={index}
-      label={`${rarity.name}: ${rarity.value}`}
+      // label={`${rarity.name}: ${rarity.value}`}
+      label={`${rarity.value}`}
       onClick={() => onRarityClick(rarity.name)}
       sx={{
         borderWidth: '2px',
@@ -102,7 +103,7 @@ const CardDetailSet = ({ values }) => {
   return values?.map((set, index) => (
     <Chip
       key={index}
-      label={`${set.name}: ${set.value}`}
+      label={`${set.value}`}
       onClick={() => console.log(set.toString())}
       sx={{
         borderWidth: '2px',
@@ -130,27 +131,44 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
     })
   );
 
-  return details?.map((detail, index) => (
-    <Grid item xs={12} sm={12} md={12} lg={6} xl={6} key={index}>
-      <CardDetailTitle title={detail.title} />
-      <Divider />
-      {detail.key === 'desc' && <CardDetailDescription value={card?.desc} />}
-      {detail.key === 'price' && <CardDetailPrice value={card?.price} />}
-      {detail.key === 'rarities' && (
-        <CardDetailRarity values={raritiesArray} onRarityClick={handleAction} />
-      )}
-      {detail.key === 'card_sets' && <CardDetailSet values={cardSetsArray} />}
-      {/* {detail.icon && (
-            <CardDetailIcon
-              icon={
-                iconDetails.forEach(
-                  (iconDetail) => iconDetail.key === detail.key
-                )?.icon
-              }
-            />
-          )} */}
+  return (
+    <Grid container spacing={2} sx={{ maxWidth: '100%' }}>
+      {details?.map((detail, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <Card sx={{ p: theme.spacing(2) }}>
+            <MDBox>
+              <CardDetailTitle title={detail.title} />
+              <Divider />
+              {detail.key === 'desc' && (
+                <CardDetailDescription value={card?.desc} />
+              )}
+              {detail.key === 'price' && (
+                <CardDetailPrice value={card?.price} />
+              )}
+              {detail.key === 'rarities' && (
+                <CardDetailRarity
+                  values={raritiesArray}
+                  onRarityClick={handleAction}
+                />
+              )}
+              {detail.key === 'card_sets' && (
+                <CardDetailSet values={cardSetsArray} />
+              )}
+              {/* {detail.icon && (
+                <CardDetailIcon
+                  icon={
+                    iconDetails.forEach(
+                      (iconDetail) => iconDetail.key === detail.key
+                    )?.icon
+                  }
+                />
+              )} */}
+            </MDBox>
+          </Card>
+        </Grid>
+      ))}
     </Grid>
-  ));
+  );
 };
 
 const RenderInventoryList = () => (
@@ -192,17 +210,10 @@ const CardDetailsContainer = ({
         // background: theme.palette.chartTheme.greenAccent.light,
         justifyContent: 'center',
         borderRadius: theme.shape.borderRadius,
+        maxWidth: '100%',
       }}
     >
-      {isTextSection && (
-        <RenderDetailsSection
-          details={textDetails}
-          card={card}
-          className={className}
-          handleAction={handleAction}
-        />
-      )}
-      {isInventorySection && <RenderInventoryList />}
+      {/* {isInventorySection && <RenderInventoryList />} */}
       {className === 'card-details-container-swiper' && (
         <RenderDetailsSection
           details={textDetails}
