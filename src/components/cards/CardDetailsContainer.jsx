@@ -68,6 +68,14 @@ const inventoryDetails = [
   { title: 'Collection', key: 'collection' },
   { title: 'Cart', key: 'cart' },
 ];
+const CardDetailChip = styled(Chip)(({ theme }) => ({
+  borderWidth: '2px',
+  fontWeight: 700,
+  margin: theme.spacing(0.5),
+  [theme.breakpoints.down('sm')]: {
+    fontSize: theme.typography.pxToRem(12), // Smaller font size on small devices
+  },
+}));
 const CardDetailTitle = ({ title }) => (
   <Typography variant="h5" sx={{ mr: 1 }}>
     {title}:
@@ -84,9 +92,12 @@ const CardDetailPrice = ({ value }) => (
   </MDTypography>
 );
 const CardDetailRarity = ({ values, onRarityClick }) => {
+  const { theme } = useMode();
+
   return values?.map((rarity, index) => (
-    <Chip
+    <CardDetailChip
       key={index}
+      theme={theme}
       // label={`${rarity.name}: ${rarity.value}`}
       label={`${rarity.value}`}
       onClick={() => onRarityClick(rarity.name)}
@@ -100,9 +111,12 @@ const CardDetailRarity = ({ values, onRarityClick }) => {
   ));
 };
 const CardDetailSet = ({ values }) => {
+  const { theme } = useMode();
+
   return values?.map((set, index) => (
-    <Chip
+    <CardDetailChip
       key={index}
+      theme={theme}
       label={`${set.value}`}
       onClick={() => console.log(set.toString())}
       sx={{
@@ -136,8 +150,10 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
       {details?.map((detail, index) => (
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Card sx={{ p: theme.spacing(2) }}>
-            <MDBox>
-              <CardDetailTitle title={detail.title} />
+            <MDBox sx={{ border: 'none' }}>
+              <Typography variant="h6">{detail.title}:</Typography>
+              {detail.key === 'title' && <CardDetailTitle value={card?.name} />}
+
               <Divider />
               {detail.key === 'desc' && (
                 <CardDetailDescription value={card?.desc} />

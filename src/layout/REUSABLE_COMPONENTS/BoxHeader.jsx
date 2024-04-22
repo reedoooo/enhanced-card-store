@@ -25,12 +25,18 @@ const BoxHeader = ({
     >
       <FlexBetween>
         {icon}
-        <Box width="100%">
+        <Box
+          width="100%"
+          justifyContent={'flex-start'}
+          flexGrow={1}
+          flexDirection={'column'}
+        >
           <Typography
             theme={theme}
             variant={useSX ? titleVariant : 'h4'}
             mb="-0.1rem"
             ml="0.5rem"
+            p="0.5rem"
             color={
               useSX ? colorVariant : theme.palette.greenAccent.pureGreenBlue
             }
@@ -38,7 +44,11 @@ const BoxHeader = ({
             {title}
           </Typography>
           {subtitle !== 'none' && (
-            <Typography variant="h6" ml="0.5rem" theme={theme}>
+            <Typography
+              variant="h4"
+              theme={theme}
+              sx={{ fontSize: '1.2rem', ml: '1rem' }}
+            >
               {subtitle}
             </Typography>
           )}

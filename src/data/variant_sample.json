@@ -1,0 +1,14 @@
+{
+  "_id": { "$oid": "65fbf1898277847cffb30ce0" },
+  "set_name": "Metal Raiders",
+  "set_code": "MRD-EN082",
+  "price": { "$numberDecimal": "3.4" },
+  "selected": false,
+  "alt_art_image_url": "",
+  "set": { "$oid": "65fbf1898277847cffb30ce0" },
+  "cardModel": "CardInCollection",
+  "cardId": { "$oid": "65fbf1898277847cffb30cdd" },
+  "createdAt": { "$date": { "$numberLong": "1711010185203" } },
+  "updatedAt": { "$date": { "$numberLong": "1711010185203" } },
+  "__v": { "$numberInt": "0" }
+}

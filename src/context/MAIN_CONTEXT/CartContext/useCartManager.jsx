@@ -108,7 +108,7 @@ export const useCartManager = () => {
             cartUpdates: updatedCards,
             method: 'PUT',
             type: 'increment',
-          }.cartUpdates,
+          },
           'addCardsToCart'
         );
         updateCartLocally(response?.data);
@@ -176,9 +176,9 @@ export const useCartManager = () => {
   // useEffect(() => {
   //   updateCartLocally(defaultCart);
   // }, []);
-  useEffect(() => {
-    fetchUserCart();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserCart();
+  // }, []);
 
   // Calculate totals, quantities using useMemo for performance
   const totalCost = useMemo(

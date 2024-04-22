@@ -114,7 +114,7 @@ const useCollectionManager = () => {
           actionName !== 'deleteCardFromCollection' &&
           actionName !== 'deleteCollection'
         ) {
-          await fetchCollections(); // Refresh collections after any action
+          await fetchCollections(actionName, response?.data?._id); // Refresh collections after any action
           console.log('RESPONSE: ', response);
           // refreshCollections(response?.data);
         } else if (actionName === 'deleteCollection') {
@@ -128,7 +128,7 @@ const useCollectionManager = () => {
             response?.data?.collectionId,
             response?.data?.newQuantity
           );
-          await fetchCollections(); // Refresh collections after any action
+          await fetchCollections(actionName, response?.data?.collectionId); // Refresh collections after any action
         }
       } catch (error) {
         handleError(error, actionName);

@@ -1,0 +1,31 @@
+{
+  "_id": { "$oid": "65d1f50b62d6e0ac413a084f" },
+  "userId": { "$oid": "65b8e155b4885b451a5071c8" },
+  "totalPrice": { "$numberDouble": "4.0600000000000005" },
+  "totalQuantity": { "$numberInt": "9" },
+  "quantity": { "$numberInt": "0" },
+  "cart": [
+    { "$oid": "65f42fa6c6dff9f323ab9dbb" },
+    { "$oid": "65fbfab4b890ca313db03a84" },
+    { "$oid": "66039288678d1dd12689dc02" },
+    { "$oid": "66039729678d1dd1268a10d8" },
+    { "$oid": "6604c033a258220bd710d0a2" }
+  ],
+  "createdAt": { "$date": { "$numberLong": "1708258571618" } },
+  "updatedAt": { "$date": { "$numberLong": "1712817578778" } },
+  "__v": { "$numberInt": "14" },
+  "color": "teal",
+  "tags": [],
+  "items": [
+    { "$oid": "6608931951fc561ac7f91622" },
+    { "$oid": "660894fc51fc561ac7f9167b" },
+    { "$oid": "660895e551fc561ac7f91788" },
+    { "$oid": "660898ef51fc561ac7f91c28" },
+    { "$oid": "6615b92440f164e1a46255f9" },
+    { "$oid": "6615b99340f164e1a4625610" },
+    { "$oid": "661783f1ee980cad85fe68bf" },
+    { "$oid": "66178426ee980cad85fe68e0" },
+    { "$oid": "661785aaee980cad85fe68f7" }
+  ],
+  "selectedTags": ["tags"]
+}

@@ -1,0 +1,52 @@
+{
+  "_id": { "$oid": "65fbeb54ccb316e420e6f44d" },
+  "name": "Abyss-strom",
+  "id": "97697447",
+  "type": "Trap Card",
+  "desc": "Send 1 face-up \"Umi\" you control to the Graveyard; send all Spell and Trap Cards on the field to the Graveyard.",
+  "race": "Normal",
+  "archetype": [],
+  "card_sets": [{ "$oid": "65fbeb54ccb316e420e6f44e" }],
+  "card_images": [
+    {
+      "image_url": "https://images.ygoprodeck.com/images/cards/97697447.jpg",
+      "image_url_small": "https://images.ygoprodeck.com/images/cards_small/97697447.jpg"
+    }
+  ],
+  "card_prices": [
+    {
+      "cardmarket_price": { "$numberDecimal": "0.30" },
+      "tcgplayer_price": { "$numberDecimal": "0.22" },
+      "ebay_price": { "$numberDecimal": "0.99" },
+      "amazon_price": { "$numberDecimal": "0.20" }
+    }
+  ],
+  "price": { "$numberDouble": "0.22" },
+  "quantity": { "$numberInt": "1" },
+  "image": "https://images.ygoprodeck.com/images/cards/97697447.jpg",
+  "totalPrice": { "$numberDouble": "0.22" },
+  "tag": "default",
+  "watchList": false,
+  "latestPrice": {
+    "num": { "$numberDouble": "0.22" },
+    "timestamp": { "$date": { "$numberLong": "1711008597390" } }
+  },
+  "lastSavedPrice": {
+    "num": { "$numberDouble": "0.22" },
+    "timestamp": { "$date": { "$numberLong": "1711008597390" } }
+  },
+  "priceHistory": [
+    {
+      "num": { "$numberDouble": "0.22" },
+      "timestamp": { "$date": { "$numberLong": "1711008597391" } }
+    }
+  ],
+  "dailyPriceHistory": [],
+  "chart_datasets": [{}],
+  "nivoChartData": { "data": [] },
+  "cardVariants": [{ "$oid": "65fbeb54ccb316e420e6f44e" }],
+  "variant": { "$oid": "65fbeb54ccb316e420e6f44e" },
+  "addedAt": { "$date": { "$numberLong": "1711008597389" } },
+  "updatedAt": { "$date": { "$numberLong": "1711008597389" } },
+  "__v": { "$numberInt": "0" }
+}

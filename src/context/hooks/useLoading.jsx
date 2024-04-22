@@ -1,55 +1,212 @@
 import { useCallback, useState } from 'react';
-const GENERAL_LOADING_STATES = {
+const PAGE_LOADING_IDS = {
+  CartPage: 'isCollectionLoading',
+  CollectionPage: 'isDeckLoading',
+  DeckBuilderPage: 'isCardLoading',
+  HomePage: 'HomePageLoading',
+  ProfilerPage: 'isProfilerLoading',
+  StorePage: 'isStoreLoading',
+};
+const FORM_LOADING_IDS = {
+  loginForm: 'loginForm',
+  signupForm: 'signupForm',
+  addDeckForm: 'addDeckForm',
+  updateDeckForm: 'updateDeckForm',
+  addCollectionForm: 'addCollectionForm',
+  updateCollectionForm: 'updateCollectionForm',
+  updateUserDataForm: 'updateUserDataForm',
+  searchForm: 'searchForm',
+  collectionSearchForm: 'collectionSearchForm',
+  timeRangeForm: 'timeRangeForm',
+  themRangeForm: 'themeRangeForm',
+  statRangeForm: 'statRangeForm',
+  searchSettingsForm: 'searchSettingsSelector',
+  rememberMeForm: 'rememberMeForm',
+  authSwitchForm: 'authSwitch',
+};
+const AUTH_LOADING_IDS = {
+  login: 'signin',
+  signup: 'signup',
+  logout: 'signout',
+};
+const DECK_LOADING_IDS = {
+  fetchingDecks: 'fetchDecks',
+  addingDeck: 'createNewDeck',
+  updatingDeck: 'updateDeckDetails',
+  deletingDeck: 'deleteDeck',
+  addingCardsToDeck: 'addCardsToDeck',
+  removingCardsFromDeck: 'removeCardsFromDeck',
+};
+const COLLECTION_LOADING_IDS = {
+  fetchingCollections: 'fetchCollections',
+  addingCollection: 'createNewCollection',
+  updatingCollection: 'updateCollection',
+  deletingCollection: 'deleteCollection',
+  addingCardsToCollection: 'addCardsToCollection',
+  removingCardsFromCollection: 'removeCardsFromCollection',
+};
+const CART_LOADING_IDS = {
+  fetchingCart: 'fetchUserCart',
+  addingCart: 'createUserCart',
+  addingCardsToCart: 'addCardsToCart',
+  removingCardsFromCart: 'removeCardsFromCart',
+};
+const GENERAL_LOADING_IDS = {
   isLoading: 'isLoading',
   isDataLoading: 'isDataLoading',
   isFormDataLoading: 'isFormDataLoading',
   isPageLoading: 'isPageLoading',
   ifIsSearchLoading: 'isSearchLoading',
 };
+const LOADING_IDS = {
+  general: {
+    isLoading: 'isLoading',
+    isDataLoading: 'isDataLoading',
+    isFormDataLoading: 'isFormDataLoading',
+    isPageLoading: 'isPageLoading',
+    ifIsSearchLoading: 'isSearchLoading',
+  },
+  pages: {
+    CartPage: 'isCollectionLoading',
+    CollectionPage: 'isDeckLoading',
+    DeckBuilderPage: 'isCardLoading',
+    HomePage: 'HomePageLoading',
+    ProfilerPage: 'isProfilerLoading',
+    StorePage: 'isStoreLoading',
+  },
+  forms: {
+    loginForm: 'loginForm',
+    signupForm: 'signupForm',
+    addDeckForm: 'addDeckForm',
+    updateDeckForm: 'updateDeckForm',
+    addCollectionForm: 'addCollectionForm',
+    updateCollectionForm: 'updateCollectionForm',
+    updateUserDataForm: 'updateUserDataForm',
+    searchForm: 'searchForm',
+    collectionSearchForm: 'collectionSearchForm',
+    timeRangeForm: 'timeRangeForm',
+    themRangeForm: 'themeRangeForm',
+    statRangeForm: 'statRangeForm',
+    searchSettingsForm: 'searchSettingsSelector',
+    rememberMeForm: 'rememberMeForm',
+    authSwitchForm: 'authSwitch',
+  },
+  auth: {
+    login: 'signin',
+    signup: 'signup',
+    logout: 'signout',
+  },
+  decks: {
+    fetchingDecks: 'fetchDecks',
+    addingDeck: 'createNewDeck',
+    updatingDeck: 'updateDeckDetails',
+    deletingDeck: 'deleteDeck',
+    addingCardsToDeck: 'addCardsToDeck',
+    removingCardsFromDeck: 'removeCardsFromDeck',
+  },
+  collections: {
+    fetchingCollections: 'fetchCollections',
+    addingCollection: 'createNewCollection',
+    updatingCollection: 'updateCollection',
+    deletingCollection: 'deleteCollection',
+    addingCardsToCollection: 'addCardsToCollection',
+    removingCardsFromCollection: 'removeCardsFromCollection',
+  },
+  cart: {
+    fetchingCart: 'fetchUserCart',
+    addingCart: 'createUserCart',
+    addingCardsToCart: 'addCardsToCart',
+    removingCardsFromCart: 'removeCardsFromCart',
+  },
+};
+const allLoadingIds = Object.values(LOADING_IDS).reduce(
+  (acc, category) => ({ ...acc, ...category }),
+  {}
+);
 
-/**
- * A hook to manage loading states within components.
- * It supports tracking multiple loading processes at once.
- */
+const LOADING_IDS_KEYS = Object.keys(LOADING_IDS);
+const LOADING_STATES_VALUES = {
+  general: {
+    [LOADING_IDS.general.isLoading]: true,
+    [LOADING_IDS.general.isDataLoading]: true,
+    [LOADING_IDS.general.isFormDataLoading]: true,
+    [LOADING_IDS.general.isPageLoading]: true,
+    [LOADING_IDS.general.ifIsSearchLoading]: true,
+  },
+  pages: {
+    [LOADING_IDS.pages.CartPage]: true,
+    [LOADING_IDS.pages.CollectionPage]: true,
+    [LOADING_IDS.pages.DeckBuilderPage]: true,
+    [LOADING_IDS.pages.HomePage]: true,
+    [LOADING_IDS.pages.ProfilerPage]: true,
+    [LOADING_IDS.pages.StorePage]: true,
+  },
+  forms: {
+    [LOADING_IDS.forms.loginForm]: true,
+    [LOADING_IDS.forms.signupForm]: true,
+    [LOADING_IDS.forms.addDeckForm]: true,
+    [LOADING_IDS.forms.updateDeckForm]: true,
+    [LOADING_IDS.forms.addCollectionForm]: true,
+    [LOADING_IDS.forms.updateCollectionForm]: true,
+    [LOADING_IDS.forms.updateUserDataForm]: true,
+    [LOADING_IDS.forms.searchForm]: true,
+    [LOADING_IDS.forms.collectionSearchForm]: true,
+    [LOADING_IDS.forms.timeRangeForm]: true,
+    [LOADING_IDS.forms.themRangeForm]: true,
+    [LOADING_IDS.forms.statRangeForm]: true,
+    [LOADING_IDS.forms.searchSettingsForm]: true,
+    [LOADING_IDS.forms.rememberMeForm]: true,
+    [LOADING_IDS.forms.authSwitchForm]: true,
+  },
+  auth: {
+    [LOADING_IDS.auth.login]: true,
+    [LOADING_IDS.auth.signup]: true,
+    [LOADING_IDS.auth.logout]: true,
+  },
+  decks: {
+    [LOADING_IDS.decks.fetchingDecks]: true,
+    [LOADING_IDS.decks.addingDeck]: true,
+    [LOADING_IDS.decks.updatingDeck]: true,
+    [LOADING_IDS.decks.deletingDeck]: true,
+    [LOADING_IDS.decks.addingCardsToDeck]: true,
+    [LOADING_IDS.decks.removingCardsFromDeck]: true,
+  },
+  collections: {
+    [LOADING_IDS.collections.fetchingCollections]: true,
+    [LOADING_IDS.collections.addingCollection]: true,
+    [LOADING_IDS.collections.updatingCollection]: true,
+    [LOADING_IDS.collections.deletingCollection]: true,
+    [LOADING_IDS.collections.addingCardsToCollection]: true,
+    [LOADING_IDS.collections.removingCardsFromCollection]: true,
+  },
+  cart: {
+    [LOADING_IDS.cart.fetchingCart]: true,
+    [LOADING_IDS.cart.addingCart]: true,
+    [LOADING_IDS.cart.addingCardsToCart]: true,
+    [LOADING_IDS.cart.removingCardsFromCart]: true,
+  },
+};
 export const useLoading = () => {
-  const [loadingStates, setLoadingStates] = useState({
-    isLoading: false,
-    isDataLoading: false,
-    isFormDataLoading: false,
-    isPageLoading: false,
-    isSearchLoading: false,
-    error: null,
-    loadingTimeoutExpired: false,
-    loadingType: '',
-  });
+  const [loadingStates, setLoadingStates] = useState({});
+  const [loadingQueue, setLoadingQueue] = useState([]);
   const [apiLoadingStates, setApiLoadingStates] = useState({
     login: false,
   });
-  const [loadingQueue, setLoadingQueue] = useState([]);
   const [error, setError] = useState(null);
-  /**
-   * Starts a loading process.
-   * @param {string} id - A unique identifier for the loading process.
-   */
-  const startLoading = useCallback((id) => {
-    if (Object.keys(GENERAL_LOADING_STATES).includes(id)) {
-      // Corrected check for object keys
-      setLoadingStates((prevStates) => ({ ...prevStates, [id]: true }));
-    } else {
-      setApiLoadingStates((prevStates) => ({ ...prevStates, [id]: true }));
-    }
-    setLoadingQueue((prevQueue) => [...prevQueue, id]);
-  }, []);
-
-  /**
-   * Stops a loading process.
-   * @param {string} id - A unique identifier for the loading process.
-   */
+  const startLoading = useCallback(
+    (id) => {
+      if (allLoadingIds[id]) {
+        setLoadingStates((prev) => ({ ...prev, [id]: true }));
+        setLoadingQueue((prev) => [...prev, id]);
+      }
+    },
+    [allLoadingIds, setLoadingStates, setLoadingQueue]
+  );
   const stopLoading = useCallback(
     (id) => {
-      if (Object.keys(GENERAL_LOADING_STATES).includes(id)) {
-        // Corrected check for object keys
-        setLoadingStates((prevStates) => ({ ...prevStates, [id]: false }));
+      if (loadingStates[id]) {
+        setLoadingStates((prev) => ({ ...prev, [id]: false }));
+        setLoadingQueue((prev) => prev.filter((item) => item !== id));
       } else if (apiLoadingStates[id] !== undefined) {
         setApiLoadingStates((prevStates) => ({ ...prevStates, [id]: false }));
       }
@@ -57,69 +214,28 @@ export const useLoading = () => {
     },
     [apiLoadingStates]
   );
-
-  /**
-   * Checks if a specific loading process is active.
-   * @param {string} id - A unique identifier for the loading process.
-   * @returns {boolean} - The loading state of the specified process.
-   */
-  const isLoading = useCallback(
-    (id) => {
-      return loadingStates[id] || apiLoadingStates[id];
-    },
-    [loadingStates, apiLoadingStates]
+  const isAnyLoading = useCallback(
+    () => Object.values(loadingStates).some((state) => state),
+    [loadingStates]
   );
 
-  /**
-   * Checks if any loading process is active.
-   * @returns {boolean} - True if any loading process is active, false otherwise.
-   */
-  const isAnyLoading = useCallback(() => {
-    return (
-      Object.values(loadingStates).some((state) => state) ||
-      Object.values(apiLoadingStates).some((state) => state)
-    );
-  }, [loadingStates, apiLoadingStates]);
-
-  /**
-   * Uses isAnythingLoading to determine if any loading processes are active, and if they are, returns a queue of loading identifiers.
-   * @returns {string[]} - A queue of loading identifiers.
-   */
-  const getLoadingQueue = useCallback(() => {
-    return loadingQueue;
-  }, [loadingQueue]);
-
-  /**
-   * Clears the loading queue.
-   */
+  const isLoading = useCallback((id) => !!loadingStates[id], [loadingStates]);
   const clearLoading = useCallback(() => {
-    setLoadingStates({
-      isLoading: false,
-      isDataLoading: false,
-      isFormDataLoading: false,
-      isPageLoading: false,
-      loadingTimeoutExpired: false,
-      error: null,
-      loadingType: '',
-    });
-    setApiLoadingStates({});
+    setLoadingStates({});
     setLoadingQueue([]);
-    setError(null);
   }, []);
 
   return {
-    isDataLoading: loadingStates.isDataLoading,
-    isFormDataLoading: loadingStates.isFormDataLoading,
-    isPageLoading: loadingStates.isPageLoading,
-    isSearchLoading: loadingStates.isSearchLoading,
-    loadingTimeoutExpired: loadingStates.loadingTimeoutExpired,
-    loadingQueue: getLoadingQueue(),
-    startLoading,
-    stopLoading,
+    // isPageLoading:
+    // isSearchLoading: loadingStates.isSearchLoading,
+    loadingQueue,
     isLoading,
     isAnyLoading,
-    getLoadingQueue,
-    setError,
+    stopLoading,
     clearLoading,
+    error,
+    setError,
+    apiLoadingStates,
+    startLoading,
   };
 };

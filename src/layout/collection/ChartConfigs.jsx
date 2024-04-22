@@ -41,7 +41,10 @@ export const ChartConfiguration = () => {
   const memoChartData = useMemo(() => {
     const { selectedChartData, averagedChartData, selectedChartDataKey } =
       selectedCollection;
-    return averagedChartData[selectedChartDataKey];
+    // if selectedChartData is an empty object, return the averagedChartData, else return selectedChartData
+    return !selectedChartData.data.length
+      ? averagedChartData[selectedChartDataKey]
+      : selectedChartData;
   }, [selectedCollection]);
 
   const validMarkers = useMemo(() => {
