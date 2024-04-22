@@ -8,11 +8,12 @@ import * as serviceWorker from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
-import { AuthProvider, ColorModeProvider, ErrorBoundary } from './context';
+import { AuthProvider, ColorModeProvider } from './context';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { Helmet } from 'react-helmet';
 import { SnackbarProvider } from 'notistack';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const domNode = document.getElementById('root');
 
@@ -38,7 +39,19 @@ const AppWrapper = () => {
   );
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary
+      FallbackComponent={({ error, resetErrorBoundary }) => {
+        console.error(error);
+        resetErrorBoundary();
+        return null;
+      }}
+      onError={(error) => {
+        console.error(error);
+      }}
+      onReset={(details) => {
+        console.log(details);
+      }}
+    >
       <Router>
         <HelmetMetadata />
         <ColorModeProvider>

@@ -64,6 +64,7 @@ const ChartGridLayout = () => {
             <BoxHeader
               title="Collection Card Chart"
               subtitle="Chart of the collection price performance"
+              titleVariant="body1"
               icon={
                 <MDBox>
                   <RCWrappedIcon
@@ -212,6 +213,7 @@ const CollectionCardList = React.memo(
           <BoxHeader
             title="Collection Card List"
             subtitle="List of all cards in the collection"
+            titleVariant="body1"
             icon={
               <MDBox>
                 <RCWrappedIcon

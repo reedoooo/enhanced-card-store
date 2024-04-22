@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import useFetchWrapper from '../../hooks/useFetchWrapper';
 import useManageCookies from '../../hooks/useManageCookies';
 import useUserData from '../UserContext/useUserData';
@@ -8,10 +8,11 @@ import useUserData from '../UserContext/useUserData';
 function useAuthManager() {
   const navigate = useNavigate();
   const { addCookies, getCookie, deleteCookies } = useManageCookies();
-  const { authUser, isLoggedIn, accessToken } = getCookie([
+  const { authUser, isLoggedIn, accessToken, refreshToken } = getCookie([
     'authUser',
     'isLoggedIn',
     'accessToken',
+    'refreshToken',
   ]);
   const { handleSetUser } = useUserData();
   const { fetchWrapper } = useFetchWrapper();
@@ -19,7 +20,7 @@ function useAuthManager() {
   const setAuthCookies = useCallback(
     (data) => {
       const { accessToken, refreshToken } = data;
-      const authData = jwt_decode(accessToken);
+      const authData = jwtDecode(accessToken);
       addCookies(
         ['accessToken', 'refreshToken', 'isLoggedIn', 'authUser', 'userId'],
         [accessToken, refreshToken, true, authData, authData.userId],
@@ -39,27 +40,30 @@ function useAuthManager() {
       'authUser',
       'isLoggedIn',
     ]);
+    localStorage.clear(); // Clear all local storage data
+
     navigate('/login');
-  }, []);
+  }, [navigate, deleteCookies]);
 
   const decodeAndSetUser = useCallback(
     (accessToken) => {
-      const decoded = jwt_decode(accessToken);
+      const decoded = jwtDecode(accessToken);
       handleSetUser(decoded); // Adjust according to your implementation
     },
     [handleSetUser]
   );
 
   const executeAuthAction = useCallback(
-    async (actionType, url, requestData) => {
+    async (endpoint, requestData) => {
       try {
         const responseData = await fetchWrapper(
-          `${process.env.REACT_APP_SERVER}/api/users/${url}`,
+          `${process.env.REACT_APP_SERVER}/api/users/${endpoint}`,
           'POST',
           requestData,
-          `${url}`
+          `${endpoint}`
         );
         if (!responseData?.data) throw new Error('Invalid response structure');
+        console.log(responseData);
         setAuthCookies(responseData.data);
       } catch (error) {
         console.error('Auth action error:', error);
@@ -71,7 +75,7 @@ function useAuthManager() {
   const login = useCallback(
     async (formData) => {
       const { username, password } = formData;
-      await executeAuthAction('login', 'signin', {
+      await executeAuthAction('signin', {
         userSecurityData: { username, password },
       });
     },
@@ -81,14 +85,19 @@ function useAuthManager() {
   const signup = useCallback(
     async (formData) => {
       const { username, password, firstName, lastName, email } = formData;
-      await executeAuthAction('signup', 'signup', {
+      await executeAuthAction('signup', {
         userSecurityData: { firstName, lastName, username, password, email },
       });
     },
     [executeAuthAction]
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    await executeAuthAction('signout', {
+      userId: authUser.userId,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
     clearAuthCookies();
   }, []);
 

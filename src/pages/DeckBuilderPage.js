@@ -17,11 +17,11 @@ const DeckBuilderPage = () => {
   // useEffect(() => {
   //   fetchDecks();
   // }, []);
-  useEffect(() => {
-    if (!hasFetchedDecks) {
-      fetchDecks();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasFetchedDecks) {
+  //     fetchDecks();
+  //   }
+  // }, []);
 
   return (
     <PageLayout>

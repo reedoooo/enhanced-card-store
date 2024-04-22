@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { formFields, zodSchemas } from '../formsConfig';
 
 const useRCFormHook = (schemaKey, initialData) => {
-  console.log('SCHEMA KEY', schemaKey);
+  // console.log('SCHEMA KEY', schemaKey);
   const schema = zodSchemas[schemaKey];
   const defaultValues = Object.keys(schema.shape).reduce((acc, key) => {
     const fieldDefinition = schema.shape[key];

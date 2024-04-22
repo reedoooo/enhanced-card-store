@@ -46,14 +46,13 @@ export const baseMenuItems = ({ cartCardQuantity }) => [
         color="primary"
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'left',
+          horizontal: 'left', // Ensures badge is aligned to the left
         }}
         sx={{
           '& .MuiBadge-badge': {
-            right: 3,
-            padding: '0.25rem',
-            marginLeft: 0.5,
-            marginTop: 0.25,
+            left: 0, // Positions badge on the left side
+            transform: 'scale(1) translate(-70%, -70%)', // Adjust position relative to the icon
+            marginLeft: '0', // Remove any default margin
           },
         }}
       >
@@ -63,10 +62,10 @@ export const baseMenuItems = ({ cartCardQuantity }) => [
     to: '/cart',
     requiresLogin: true,
   },
-  {
-    name: 'Profile',
-    icon: <ProfileIcon />,
-    to: '/profile',
-    requiresLogin: false,
-  },
+  // {
+  //   name: 'Profile',
+  //   icon: <ProfileIcon />,
+  //   to: '/profile',
+  //   requiresLogin: false,
+  // },
 ];

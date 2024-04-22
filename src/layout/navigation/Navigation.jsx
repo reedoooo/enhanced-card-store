@@ -31,7 +31,12 @@ import { baseMenuItems } from '../../data/baseMenuItems';
 import rgba from '../../assets/themes/functions/rgba';
 import useManageCookies from '../../context/hooks/useManageCookies';
 import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
-const Navigation = ({ isLoggedIn }) => {
+import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ReusableLoadingButton from '../REUSABLE_COMPONENTS/ReusableLoadingButton';
+import { Logout } from '@mui/icons-material';
+import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
+const Navigation = () => {
   const { theme } = useMode();
   const navigate = useNavigate();
   const { cartCardQuantity } = useCartManager();
@@ -41,16 +46,23 @@ const Navigation = ({ isLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false); // Manage open state locally
   const isMedView = useMediaQuery(theme.breakpoints.down('md'));
   const { getCookie } = useManageCookies();
-  const { authUser } = getCookie(['authUser']);
+  const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
   const username = authUser?.username;
+  const { logout } = useAuthManager();
   const menuItems = baseMenuItems({ cartCardQuantity: cartCardQuantity });
   const toggleSidebar = useCallback(() => setIsOpen(!isOpen), [isOpen]);
+  const [logoutClicked, setLogoutClicked] = useState(false);
   const [springs] = useSprings(menuItems.length, (index) => ({
     from: { opacity: 0, transform: 'translateY(-20px)' },
     to: { opacity: 1, transform: 'translateY(0)' },
     delay: index * 100,
   }));
-
+  const handleLogout = useCallback(async () => {
+    setLogoutClicked(true);
+    await logout();
+    navigate('/login');
+    setLogoutClicked(false);
+  }, [logout, navigate]);
   const ContentContainer = ({ type, content, clickAction, itemIndex }) => {
     const handleClick = () => {
       if (clickAction === 'navigate' && itemIndex !== undefined) {
@@ -162,13 +174,14 @@ const Navigation = ({ isLoggedIn }) => {
           <Card
             sx={{
               display: 'flex',
-              // gap: 2,
               alignItems: 'center',
               background: 'white',
               flexDirection: 'row',
               my: theme.spacing(2),
               py: theme.spacing(2),
+              cursor: 'pointer',
             }}
+            onClick={() => navigate('/profile')}
           >
             <Avatar
               variant="soft"
@@ -230,27 +243,55 @@ const Navigation = ({ isLoggedIn }) => {
           >
             <RCLogoSection />
           </Card>
-          <Card
-            sx={{
-              display: 'flex',
-              // gap: 2,
-              alignItems: 'center',
-              background: 'white',
-              flexDirection: 'row',
-              my: theme.spacing(2),
-              py: theme.spacing(2),
-            }}
-          >
-            <Avatar
-              variant="soft"
-              sx={{
-                mr: 1,
-                background: theme.palette.chartTheme.greenAccent.light,
-                color: 'white',
-              }}
-            />
-            <Typography level="title-lg">{username}</Typography>
-          </Card>
+          {isLoggedIn && (
+            <>
+              <Card
+                sx={{
+                  display: 'flex',
+                  // gap: 2,
+                  alignItems: 'center',
+                  background: 'white',
+                  flexDirection: 'row',
+                  // my: theme.spacing(1),
+                  // py: theme.spacing(1),
+                  cursor: 'pointer',
+                }}
+                onClick={() => navigate('/profile')}
+              >
+                <Avatar
+                  variant="soft"
+                  sx={{
+                    mr: 1,
+                    background: theme.palette.chartTheme.greenAccent.light,
+                    color: 'white',
+                    // cursor: 'pointer',
+                  }}
+                  // onClick={() => navigate('/profile')}
+                />
+                <Typography level="title-lg">{username}</Typography>
+              </Card>
+              <ReusableLoadingButton
+                // key={'logout'}
+                onClick={handleLogout}
+                loading={logoutClicked}
+                label={'Logout'}
+                startIcon={
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {<Logout />}
+                  </Box>
+                }
+                // color={button.color}
+                variant="warning"
+                fullWidth
+                sx={{
+                  // my: theme.spacing(1),
+                  // py: theme.spacing(1),
+                  mt: '0 !important',
+                  background: theme.palette.error.main,
+                }}
+              />
+            </>
+          )}
           <ModalClose />
           <Divider sx={{ mt: '1rem' }} />
           <List>{renderMenuItems('side')}</List>

@@ -1,31 +1,49 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import useLogger from './useLogger';
 import useLocalStorage from './useLocalStorage';
 import { useLoading } from './useLoading';
 import { useSnackbar } from 'notistack';
+const FETCH_STATUSES = {
+  IDLE: 'idle',
+  LOADING: 'loading',
+  SUCCESS: 'success',
+  ERROR: 'error',
+};
 const useFetchWrapper = () => {
-  const [status, setStatus] = useState('idle');
+  const [status, setStatus] = useState(FETCH_STATUSES.IDLE);
   const [data, setData] = useState(null);
   const [responseCache, setResponseCache] = useLocalStorage('apiResponses', {});
   const [error, setError] = useState(null);
-  const { logEvent } = useLogger('useFetchWrapper');
+  // const { logEvent } = useLogger('useFetchWrapper');
   const { startLoading, stopLoading, isLoading } = useLoading();
   const { enqueueSnackbar } = useSnackbar();
-  const showNotification = (message, variant) => {
-    enqueueSnackbar(message, {
-      variant: variant,
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'right',
-      },
-    });
-  };
+  const showNotification = useCallback(
+    (message, variant) => {
+      // const showNotification = useCallback(message, variant) => {
+      enqueueSnackbar(message, {
+        variant: variant,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
+    },
+    [enqueueSnackbar]
+  );
+
+  // useEffect to log status changes
+  // useEffect(() => {
+  //   console.log('Status Change', { status });
+  // }, [status]);
   const fetchWrapper = useCallback(
     async (url, method = 'GET', body = null, loadingID) => {
-      setStatus('loading');
-      startLoading(loadingID);
-      showNotification(`Loading ${loadingID}...`, 'info');
+      // setStatus('loading');
+      // startLoading(loadingID);
+      // showNotification(`Loading ${loadingID}...`, 'info');
       try {
+        setStatus(FETCH_STATUSES.LOADING);
+        startLoading(loadingID);
+        showNotification(`Loading ${loadingID}...`, 'info');
         const headers = { 'Content-Type': 'application/json' };
         const options = {
           method,
@@ -45,7 +63,7 @@ const useFetchWrapper = () => {
           throw new Error(`An error occurred: ${response.statusText}`);
         }
 
-        setStatus('success');
+        setStatus(FETCH_STATUSES.SUCCESS);
         setData(responseData);
         setResponseCache((prevCache) => ({
           ...prevCache,
@@ -57,19 +75,29 @@ const useFetchWrapper = () => {
         );
 
         return responseData;
-      } catch (error) {
-        setError(error.toString());
-        setStatus('error');
-        logEvent('fetch error', { url, error: error.toString() });
+      } catch (err) {
+        const errorMessage = err.message || 'An unknown error occurred';
+        setError(errorMessage);
+        setStatus(FETCH_STATUSES.ERROR);
+        console.error(`Error fetching ${loadingID}:`, errorMessage);
         showNotification(
           `Error fetching ${loadingID}: ${error.toString()}`,
           'error'
         );
+        return Promise.reject(err);
       } finally {
         stopLoading(loadingID);
       }
     },
-    [startLoading, stopLoading, logEvent, setResponseCache]
+    [
+      setStatus,
+      // setData,
+      setResponseCache,
+      setError,
+      showNotification,
+      startLoading,
+      stopLoading,
+    ]
   );
 
   return {

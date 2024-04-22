@@ -30,6 +30,9 @@ import useBreakpoint from '../../context/hooks/useBreakPoint';
 import prepareDeckData from './deckData';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import { nanoid } from 'nanoid';
+import { useLoading } from '../../context/hooks/useLoading';
+import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import LoadingIndicator from '../REUSABLE_COMPONENTS/system-utils/LoadingIndicator';
 
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
@@ -60,11 +63,18 @@ const DeckListItem = ({
   handleSelectAndShowDeck,
   isEditPanelOpen,
   handleDelete,
+  handleDeckLoaded,
 }) => {
   const { genData, infoItems } = prepareDeckData(deck);
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const isSelected = selectedDeckId === deck._id;
+
+  // useEffect(() => {
+  //   if (isEditPanelOpen) {
+  //     handleDeckLoaded(deck?._id);
+  //   }
+  // }, [isEditPanelOpen]);
 
   return (
     <Collapse in={true} timeout={1000}>

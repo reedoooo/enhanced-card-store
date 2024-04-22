@@ -1,7 +1,7 @@
 import React from 'react';
 import { LoadingButton } from '@mui/lab';
 import AdjustSharpIcon from '@mui/icons-material/AdjustSharp';
-import { useMode } from '../../../context';
+import { useMode } from '../../context';
 
 const ReusableLoadingButton = ({
   loading,
@@ -54,7 +54,7 @@ const ReusableLoadingButton = ({
       onClick={onClick}
       sx={{
         ...sx,
-        mt: 2, // Adjust spacing as needed
+        // mt: 2, // Adjust spacing as needed
         ...getButtonStyles(variant),
       }}
     >

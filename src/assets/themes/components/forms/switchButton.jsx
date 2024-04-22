@@ -16,6 +16,7 @@ const {
   grey,
   gradients,
   transparent,
+  chartTheme,
 } = colors;
 const { borderWidth } = borders;
 const { md } = boxShadows;
@@ -26,7 +27,7 @@ export default {
   },
   styleOverrides: {
     switchBase: {
-      color: gradients.success.state,
+      color: chartTheme.greenAccent.default,
 
       '&:hover': {
         backgroundColor: transparent.main,
@@ -41,7 +42,7 @@ export default {
 
         '& .MuiSwitch-thumb': {
           borderColor: `${gradients.success.state} !important`,
-          backgroundColor: `${gradients.success.main} !important`,
+          backgroundColor: `${chartTheme.greenAccent.light} !important`,
         },
 
         '& + .MuiSwitch-track': {
@@ -63,7 +64,7 @@ export default {
       },
     },
     thumb: {
-      backgroundColor: success.main,
+      backgroundColor: chartTheme.greenAccent.dark,
       boxShadow: md,
       border: `${borderWidth[1]} solid ${grey.light}`,
     },

@@ -82,7 +82,6 @@ const useDeckManager = () => {
     performFetchAndUpdate('allDecks', 'GET', null, 'fetchDecks');
     setHasFetchedDecks(true);
   }, [performFetchAndUpdate]);
-
   const createNewDeck = (deckData) =>
     performFetchAndUpdate('create', 'POST', deckData, 'createNewDeck');
 
@@ -98,7 +97,6 @@ const useDeckManager = () => {
     // removeDeck(deckId); // Optimistically remove the deck first for instant UI feedback
     performFetchAndUpdate(`${deckId}/delete`, 'DELETE', {}, 'deleteDeck');
   };
-
   const addCardsToDeck = (newCards, deckId) => {
     // INCREASE QTY OF CARDS IN DECK BY 1
     // newCards.quantity = newCards.quantity + 1;
@@ -132,6 +130,7 @@ const useDeckManager = () => {
     handleError,
     addCardsToDeck,
     removeCardsFromDeck,
+    loading: status === 'loading' ? true : false,
     addOneToDeck: (cards, deck) => addCardsToDeck(cards, deck),
     removeOneFromDeck: (cards, deck) => removeCardsFromDeck(cards, deck),
     updateDeckDetails,

@@ -1,0 +1,23 @@
+{
+  "_id": { "$oid": "65b8e155b4885b451a5071c8" },
+  "username": "Hinata_Hyuuga",
+  "userBasicData": { "$oid": "65b8e155b4885b451a5071c7" },
+  "userSecurityData": { "$oid": "65b8e155b4885b451a5071c5" },
+  "createdAt": { "$date": { "$numberLong": "1706615125820" } },
+  "updatedAt": { "$date": { "$numberLong": "1712836344441" } },
+  "__v": { "$numberInt": "87" },
+  "cart": { "$oid": "65d1f50b62d6e0ac413a084f" },
+  "allCollections": [
+    { "$oid": "6604b48da258220bd70e57cc" },
+    { "$oid": "6617436ef72352e45dab4f45" },
+    { "$oid": "66179bf9ee980cad85fe724b" }
+  ],
+  "allDecks": [
+    { "$oid": "65fe311143d3b9d2b1c7ed79" },
+    { "$oid": "6604d76ca258220bd711e2e0" },
+    { "$oid": "661682d2431c231805ec97f3" },
+    { "$oid": "6616999c64c1aaaeaa90cb93" },
+    { "$oid": "66169e9a5c29cfc29418de50" }
+  ],
+  "loginStatus": false
+}
