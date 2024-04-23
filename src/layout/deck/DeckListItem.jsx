@@ -64,6 +64,8 @@ const DeckListItem = ({
   isEditPanelOpen,
   handleDelete,
   handleDeckLoaded,
+  setLoadingState,
+  loadingState,
 }) => {
   const { genData, infoItems } = prepareDeckData(deck);
   const { theme } = useMode();
@@ -172,8 +174,6 @@ const DeckListItem = ({
                   }}
                 />
               </MDBox>
-              {/* </Collapse>
-        <Collapse in={isEditPanelOpen}> */}
               <MDBox
                 sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
               >

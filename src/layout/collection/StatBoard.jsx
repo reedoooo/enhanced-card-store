@@ -1,16 +1,15 @@
 /* eslint-disable react/jsx-key */
-import { Box, Grid, Typography, Skeleton, useMediaQuery } from '@mui/material';
+import { Grid } from '@mui/material';
 import TotalPriceStatBox from './statItems/TotalPriceStatBox';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { useAppContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import ValuDistributionCircle from './statItems/ValuDistributionCircle';
 import PricedCardList from './statItems/PricedCardList';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import TotalCardsCollectedStatBox from './statItems/TotalCardsCollectedStatBox';
-import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
+import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import { Divider } from '@mui/joy';
-import { SkeletonPieChart } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 
 const StatBoxes = () => {
@@ -63,7 +62,7 @@ const StatBoard = () => {
             <Grid
               item
               xs={12}
-              sm={6}
+              sm={4}
               md={4}
               key={index}
               sx={{ width: '100%', minHeight: '100%', maxHeight: 270 }}

@@ -2,7 +2,7 @@ import { Box, Icon, Typography } from '@mui/material';
 import React from 'react';
 import FlexBetween from './FlexBetween';
 import PropTypes from 'prop-types';
-import { useMode } from '../../context';
+import { useMode } from '../../../context';
 
 const BoxHeader = ({
   icon,
@@ -54,15 +54,17 @@ const BoxHeader = ({
           )}
         </Box>
       </FlexBetween>
-      <Typography
-        theme={theme}
-        variant="h5"
-        fontWeight="700"
-        color={theme.palette.greenAccent.pureGreenBlue}
-        sx={useSX ? sx : {}}
-      >
-        {sideText}
-      </Typography>
+      {sideText !== 'none' && (
+        <Typography
+          theme={theme}
+          variant="h5"
+          fontWeight="700"
+          color={theme.palette.greenAccent.pureGreenBlue}
+          sx={useSX ? sx : {}}
+        >
+          {sideText}
+        </Typography>
+      )}
     </FlexBetween>
   );
 };

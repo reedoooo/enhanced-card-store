@@ -103,9 +103,9 @@ const getFormFieldHandlers = () => {
       console.log('Update Collection Form Data:', formData, additionalData);
       updateCollection(formData, additionalData);
     },
-    updateDeckForm: (formData, additionalData) => {
-      console.log('Update Deck Form Data:', formData, additionalData);
-      updateDeckDetails(formData, additionalData);
+    updateDeckForm: (formData) => {
+      console.log('Update Deck Form Data:', formData);
+      updateDeckDetails(formData);
     },
     addDeckForm: (formData, additionalData) => {
       console.log('Add Deck Form Data:', formData, additionalData);

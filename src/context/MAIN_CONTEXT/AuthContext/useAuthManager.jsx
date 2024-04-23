@@ -63,7 +63,12 @@ function useAuthManager() {
           `${endpoint}`
         );
         if (!responseData?.data) throw new Error('Invalid response structure');
-        console.log(responseData);
+        if (endpoint === 'signout') {
+          console.log(responseData?.message);
+        } else {
+          console.log(responseData?.data);
+          setAuthCookies(responseData.data);
+        }
         setAuthCookies(responseData.data);
       } catch (error) {
         console.error('Auth action error:', error);

@@ -3,7 +3,7 @@ import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
 import CartContent from '../layout/cart/CartContent';
 import { useMode } from '../context';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import { useCartManager } from '../context/MAIN_CONTEXT/CartContext/useCartManager';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 

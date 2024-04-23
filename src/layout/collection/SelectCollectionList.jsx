@@ -20,18 +20,53 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
   if (!collectionData || !selectionData) {
     return <LoadingOverlay />;
   }
-  const { allCollections, allIds, refreshCollections } = selectionData;
-  // const [collectionListData, setCollectionListData] = useState(
-  //   allCollections?.map((collection, index) => ({
-  //     key: `${collection._id}-collection-${index}`,
-  //     collection: collection,
-  //     handleSelectAndShowCollection: handleSelectAndShowCollection,
-  //     handleDelete: () => handleDelete(collection._id),
-  //   }))
-  // );
+  const { hasFetchedCollections, fetchCollections } = collectionData;
+  const {
+    allCollections,
+    allIds,
+    refreshCollections,
+    refreshCollections2,
+    collections,
+  } = selectionData;
   const [collectionList, setCollectionList] = useState(allCollections);
+  const [safeCollectionList, setSafeCollectionList] = useState([]);
+  const [error, setError] = useState(null);
+  const collectionsRef = useRef([]);
   useEffect(() => {
     setCollectionList(allCollections);
+    setSafeCollectionList(allCollections);
+  }, []);
+  useEffect(() => {
+    if (!hasFetchedCollections) {
+      fetchCollections();
+      collectionsRef.current = allCollections;
+      setSafeCollectionList(allCollections);
+      console.log('DECKS REF', collectionsRef.current);
+      // fetchDecks();
+    }
+  }, [hasFetchedCollections]);
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newData = JSON.parse(localStorage.getItem('collections') || '{}');
+      if (
+        newData !== collections &&
+        newData.lastUpdated !== collections.lastUpdated
+      ) {
+        // filter out any collections with _id value containing empty strings
+        const newAllCollections = Object.values(newData?.byId).filter(
+          (collection) => collection?._id !== ''
+        );
+        if (!newAllCollections.length) {
+          setError('No decks found in storage.');
+          return;
+        }
+        collectionsRef.current = newAllCollections;
+        setSafeCollectionList(newAllCollections);
+        refreshCollections2();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   const { deleteCollection } = collectionData;
   const handleDelete = useCallback(
@@ -80,35 +115,36 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
   }
 
   return (
-    <>
-      <SimpleCard
-        theme={uniqueTheme}
-        hasTitle={false}
-        isPrimary={false}
-        noBottomMargin={true}
+    <SimpleCard
+      theme={uniqueTheme}
+      hasTitle={false}
+      isPrimary={false}
+      noBottomMargin={true}
+      sx={{
+        ...(isMobile && {
+          boxShadow: 'none', // Optionally adjust the SimpleCard's style for mobile
+        }),
+      }}
+    >
+      <List
         sx={{
-          ...(isMobile && {
-            boxShadow: 'none', // Optionally adjust the SimpleCard's style for mobile
-          }),
+          justifyContent: 'center',
+          alignItems: 'center',
+          mx: 'auto',
+          px: '1rem',
+          backgroundColor: theme.palette.grey.black,
         }}
       >
-        <List
-          sx={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            mx: 'auto',
-            px: '1rem',
-            backgroundColor: theme.palette.grey.black,
-          }}
-        >
-          <TransitionGroup>
-            {collectionList?.map((item, index) =>
+        <TransitionGroup>
+          {safeCollectionList?.map((item, index) =>
+            renderCollectionItem(item, index)
+          )}
+          {/* {collectionList?.map((item, index) =>
               renderCollectionItem(item, index)
-            )}
-          </TransitionGroup>
-        </List>
-      </SimpleCard>
-    </>
+            )} */}
+        </TransitionGroup>
+      </List>
+    </SimpleCard>
   );
 };
 

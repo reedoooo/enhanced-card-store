@@ -94,7 +94,7 @@ const CardDetailPrice = ({ value }) => (
 const CardDetailRarity = ({ values, onRarityClick }) => {
   const { theme } = useMode();
 
-  return values?.map((rarity, index) => (
+  return values?.map((rarity, index) => {
     <CardDetailChip
       key={index}
       theme={theme}
@@ -107,8 +107,8 @@ const CardDetailRarity = ({ values, onRarityClick }) => {
         margin: '5px',
       }}
       variant="outlined"
-    />
-  ));
+    />;
+  });
 };
 const CardDetailSet = ({ values }) => {
   const { theme } = useMode();
@@ -148,12 +148,15 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   return (
     <Grid container spacing={2} sx={{ maxWidth: '100%' }}>
       {details?.map((detail, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
-          <Card sx={{ p: theme.spacing(2) }}>
-            <MDBox sx={{ border: 'none' }}>
-              <Typography variant="h6">{detail.title}:</Typography>
-              {detail.key === 'title' && <CardDetailTitle value={card?.name} />}
-
+        <Grid item xs={12} sm={12} md={4} lg={6} key={index}>
+          <Card sx={{ p: theme.spacing(1) }}>
+            <CardHeader
+              title={<Typography variant="h6">{detail.title}:</Typography>}
+            />
+            <CardContent>
+              {/* <MDBox sx={{ border: 'none' }}> */}
+              {/* <Typography variant="h6">{detail.title}:</Typography> */}
+              {/* {detail.key === 'title' && <CardDetailTitle value={card?.name} />} */}
               <Divider />
               {detail.key === 'desc' && (
                 <CardDetailDescription value={card?.desc} />
@@ -162,13 +165,17 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                 <CardDetailPrice value={card?.price} />
               )}
               {detail.key === 'rarities' && (
-                <CardDetailRarity
-                  values={raritiesArray}
-                  onRarityClick={handleAction}
-                />
+                <Stack direction="row" justifyContent="center" flexWrap="wrap">
+                  <CardDetailRarity
+                    values={raritiesArray}
+                    onRarityClick={handleAction}
+                  />
+                </Stack>
               )}
               {detail.key === 'card_sets' && (
-                <CardDetailSet values={cardSetsArray} />
+                <Stack direction="row" justifyContent="center" flexWrap="wrap">
+                  <CardDetailSet values={cardSetsArray} />
+                </Stack>
               )}
               {/* {detail.icon && (
                 <CardDetailIcon
@@ -179,7 +186,8 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                   }
                 />
               )} */}
-            </MDBox>
+              {/* </MDBox> */}
+            </CardContent>
           </Card>
         </Grid>
       ))}
@@ -221,7 +229,7 @@ const CardDetailsContainer = ({
   return (
     <Grid
       container
-      spacing={2}
+      // spacing={2}
       sx={{
         // background: theme.palette.chartTheme.greenAccent.light,
         justifyContent: 'center',

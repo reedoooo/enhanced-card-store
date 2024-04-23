@@ -1,79 +1,60 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DEFAULT_COLLECTION, SELECTED_COLLECTION_ID } from '../../constants';
+import { SELECTED_COLLECTION_ID } from '../../constants';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { defaultValues } from '../../simplified_constants';
-
 import _set from 'lodash/set';
 function useSelectedCollection() {
-  const [collections, setCollections] = useLocalStorage('collections', {
-    allIds: [],
-    byId: {
-      [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
-    },
-    selectedId: SELECTED_COLLECTION_ID,
-    prevSelectedId: null,
-    showCollections: true,
-  });
+  const [collections, setCollections] = useLocalStorage(
+    'collections',
+    defaultValues.defaultCollections
+  );
   useEffect(() => {
-    if (!collections || collections?.allIds?.length === 0) {
-      setCollections(defaultValues.defaultCollections);
-    }
-  }, []);
-  useEffect(() => {
-    if (!collections || collections?.allIds?.length === 0) {
+    // Check if the collections need initialization or if the default collection should be filtered out
+    if (
+      !collections ||
+      collections.allIds.length === 0 ||
+      collections.allIds.includes(SELECTED_COLLECTION_ID)
+    ) {
       const updatedById = { ...defaultValues.defaultCollections.byId };
       Object.keys(updatedById).forEach((id) => {
         const collection = updatedById[id];
+        // Check and assign chart data if available
         if (
           collection.averagedChartData &&
           collection.averagedChartData['24hr']
         ) {
           updatedById[id].selectedChartData =
             collection.averagedChartData['24hr'];
-          console.log(
-            'UPDATED SELECTED CHART DATA',
-            collection.averagedChartData['24hr']
-          );
         }
       });
+
+      // Remove the default selected ID if it's not supposed to be part of the initial setup
+      if (updatedById[SELECTED_COLLECTION_ID]) {
+        delete updatedById[SELECTED_COLLECTION_ID];
+      }
+
+      // Filter out the SELECTED_COLLECTION_ID from allIds if it's currently included
+      const updatedAllIds = collections.allIds.filter(
+        (id) => id !== SELECTED_COLLECTION_ID
+      );
+
       setCollections({
         ...defaultValues.defaultCollections,
         byId: updatedById,
+        allIds: updatedAllIds,
+        // Ensure the selectedId is updated appropriately, default to the first valid ID or null
+        selectedId: updatedAllIds.length > 0 ? updatedAllIds[0] : null,
       });
     }
   }, []);
-  useEffect(() => {
-    if (
-      collections.allIds.includes(SELECTED_COLLECTION_ID) &&
-      collections.allIds.length > 1
-    ) {
-      setCollections((prev) => {
-        const updatedAllIds = prev.allIds.filter(
-          (id) => id !== SELECTED_COLLECTION_ID
-        );
-        const updatedById = { ...prev.byId };
-        delete updatedById[SELECTED_COLLECTION_ID];
-
-        return {
-          ...prev,
-          allIds: updatedAllIds,
-          byId: updatedById,
-          // Update selectedId to the first collection if the selected collection is removed
-          selectedId:
-            prev.selectedId === SELECTED_COLLECTION_ID
-              ? updatedAllIds[0]
-              : prev.selectedId,
-        };
-      });
-    }
-  }, [collections.allIds, collections.byId, setCollections]);
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [customError, setCustomError] = useState(null);
   const prevSelectedCollectionIdRef = useRef(null);
   const [selectedStat, setSelectedStat] = useState('');
-  useEffect(() => {
-    prevSelectedCollectionIdRef.current = selectedCollectionId;
-  }, [selectedCollectionId]);
+  const [collectionUpdated, setCollectionUpdated] = useState(false);
+  // useEffect(() => {
+  //   prevSelectedCollectionIdRef.current = selectedCollectionId;
+  // }, [selectedCollectionId]);
   const getSelectedCollection = useMemo(() => {
     const selectedCollection = collections.byId[collections.selectedId];
     if (!selectedCollection) {
@@ -178,6 +159,9 @@ function useSelectedCollection() {
     },
     [setCollections]
   );
+  const refreshCollections2 = useCallback(() => {
+    setCollectionUpdated((prevState) => !prevState); // Toggle to trigger a re-render
+  }, []);
   const updateCollectionsData = useCallback(
     (newCollections, action, deletedCollectionId) => {
       console.log('updateCollectionsData', newCollections, action);
@@ -402,11 +386,13 @@ function useSelectedCollection() {
       collections.selectedId || prevSelectedCollectionIdRef.current,
     selectedCollection: getSelectedCollection || {},
     allIds: collections?.allIds || [],
-    allCollections: Object.values(collections?.byId),
+    allCollections: Object.values(collections?.byId).filter(
+      (collection) => collection?._id !== ''
+    ),
     showCollections: !!collections.showCollections,
     byId: collections?.byId || {},
     removeCardFromCollection,
-
+    collections,
     selectedStat,
     setSelectedStat,
     createMarkers,
@@ -419,6 +405,7 @@ function useSelectedCollection() {
     handleRemoveCard,
     updateCollectionsData,
     customError,
+    refreshCollections2,
     refreshCollections,
     addNewCollection,
     removeCollection,

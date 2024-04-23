@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
-import ProgressCircle from '../ProgressCircle';
+import ProgressCircle from '../system-utils/ProgressCircle';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';

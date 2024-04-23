@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
-import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import placeholder from '../../assets/images/placeholder.jpeg';
 import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useMode } from '../../context';
@@ -24,6 +23,7 @@ import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartMa
 import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
+import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
 const getQuantity = ({
   card,
   cart,

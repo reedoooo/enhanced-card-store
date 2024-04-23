@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './layout/navigation/PrivateRoute.jsx';
 import LoginDialog from './pages/LoginDialog.jsx';
 import { useConfiguratorContext, useMode } from './context';
-import PageLayout from './layout/REUSABLE_COMPONENTS/PageLayout.jsx';
+import PageLayout from './layout/REUSABLE_COMPONENTS/layout-utils/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';

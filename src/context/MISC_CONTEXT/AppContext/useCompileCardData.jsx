@@ -82,15 +82,7 @@ export const useCompileCardData = () => {
     allCollections.forEach((collection) => {
       const collectionPrice = parseFloat(collection?.totalPrice);
       if (isNaN(collectionPrice)) return;
-      // collectionCards.push({
-      //   id: collection._id,
-      //   name: collection.name,
-      //   price: collectionPrice,
-      // });
       totalValue += collectionPrice;
-    });
-    allCollections.forEach((collection) => {
-      if (!collection.cards) return;
       collectionCards.push(...collection.cards);
     });
     const uniqueCards = new Map();
@@ -104,6 +96,7 @@ export const useCompileCardData = () => {
     const topFiveCardsInCollection = uniqueCardsArray
       .sort((a, b) => b.price - a.price)
       .slice(0, 5);
+    console.log('TOP FIVE CARDS', topFiveCardsInCollection);
     const metaData = {
       totalValue: totalValue,
       numCardsCollected: collectionCards?.reduce((total, card) => {

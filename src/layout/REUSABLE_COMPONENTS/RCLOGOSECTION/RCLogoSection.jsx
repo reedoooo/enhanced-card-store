@@ -16,7 +16,7 @@ const RCLogoSection = () => {
   return (
     <ButtonBase
       disableRipple
-      component={Link}
+      // component={Link}
       to={config.defaultPath}
       onClick={handleClick}
       sx={{

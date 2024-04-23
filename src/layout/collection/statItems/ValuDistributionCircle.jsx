@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
+import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
@@ -72,6 +72,7 @@ const ValuDistributionCircle = () => {
         // p: 2,
         maxHeight: 270,
         border: 'none',
+        borderRadius: theme.shape.borderRadius,
       }}
     >
       <Box
@@ -123,7 +124,7 @@ const ValuDistributionCircle = () => {
               paddingVariant={theme.spacing(2)}
               sx={{
                 color: colors.greenAccent.default,
-                borderRadius: theme.shape.borderRadius,
+                borderRadius: theme.shape.borderRadiusLarge,
               }}
             />
           </Card>

@@ -16,12 +16,12 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CardMediaSection from '../cards/CardMediaSection';
-import GenericActionButtons from '../buttons/actionButtons/GenericActionButtons';
 import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { useSelectedContext, useModalContext, useMode } from '../../context';
 import { useSnackbar } from 'notistack';
-import FlexBetween from '../../layout/REUSABLE_COMPONENTS/FlexBetween';
+import FlexBetween from '../../layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
+import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
 
 const GenericCardDialog = ({
   open = false,

@@ -1,7 +1,7 @@
 import { LoadingButton } from '@mui/lab';
-import { useMode } from '../../../context';
-import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { useLoading } from '../../../context/hooks/useLoading';
+import { useMode } from '../src/context';
+import MDTypography from '../src/layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { useLoading } from '../src/context/hooks/useLoading';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
 
@@ -38,14 +38,6 @@ const ActionButton = ({
   const { theme } = useMode();
   const { isLoading } = useLoading();
   const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
-
-  const { buttonLabel, buttonVariant } = getLabelAndVariant(
-    adjustedButtonSize,
-    labelValue,
-    actionType
-  );
-
-  // Select icon based on action type
   const actionIcon =
     actionType === 'add' ? (
       <AddCircleOutlineOutlined />

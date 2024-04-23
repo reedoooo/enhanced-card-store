@@ -12,7 +12,6 @@ import useManageCookies from '../../hooks/useManageCookies';
 //   showDecks: true,
 // };
 const useSelectedDeck = () => {
-  const { addCookies } = useManageCookies();
   const [decks, setDecks] = useLocalStorage(
     'decks',
     defaultValues.defaultDecks
@@ -50,7 +49,7 @@ const useSelectedDeck = () => {
 
       modifyDeck((currentDecks) => ({
         ...currentDecks,
-        selectedId: deck._id,
+        selectedId: deck?._id,
         prevSelectedId: currentDecks.selectedId, // Preserve the previously selected ID
         showDecks: currentDecks.showDecks,
       }));
@@ -69,11 +68,11 @@ const useSelectedDeck = () => {
         const updatedAllIds = [...currentDecks.allIds];
 
         const updatedById = { ...currentDecks.byId };
-        if (deck._id !== SELECTED_DECK_ID) {
-          updatedById[deck._id] = deck;
+        if (deck?._id !== SELECTED_DECK_ID) {
+          updatedById[deck?._id] = deck;
 
-          if (!updatedAllIds.includes(deck._id)) {
-            updatedAllIds.push(deck._id);
+          if (!updatedAllIds.includes(deck?._id)) {
+            updatedAllIds.push(deck?._id);
           }
         }
         // Delete the default deck data from `byId`, if it exists
@@ -114,9 +113,9 @@ const useSelectedDeck = () => {
         //   (id) => id !== SELECTED_DECK_ID
         // );
         allDecksFromServer.forEach((deck) => {
-          updatedById[deck._id] = deck;
-          if (!updatedAllIds.includes(deck._id)) {
-            updatedAllIds.push(deck._id);
+          updatedById[deck?._id] = deck;
+          if (!updatedAllIds.includes(deck?._id)) {
+            updatedAllIds.push(deck?._id);
           }
         });
         return {

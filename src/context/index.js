@@ -10,7 +10,6 @@ export { useAppContext } from './MISC_CONTEXT/AppContext/AppContextProvider';
 export { useAuthContext } from './MAIN_CONTEXT/AuthContext/authContext';
 export { useMode } from './UTILITIES_CONTEXT/ColorModeContext/useMode';
 export { useConfiguratorContext } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';
-export { useDataContext } from './DataContextProvider';
 
 // Contexts
 export { default as ErrorBoundary } from '../layout/REUSABLE_COMPONENTS/system-utils/ErrorBoundary';
@@ -25,4 +24,3 @@ export { ModalProvider } from './UTILITIES_CONTEXT/ModalContext/ModalContext';
 export { ColorModeProvider } from './UTILITIES_CONTEXT/ColorModeContext/ColorModeProvider';
 export { SidebarProvider } from './UTILITIES_CONTEXT/SideBarContext/SideBarProvider';
 export { ConfiguratorProvider } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';
-export { DataProvider } from './DataContextProvider';

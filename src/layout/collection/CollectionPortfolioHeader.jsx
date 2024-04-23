@@ -10,7 +10,7 @@ import { useMode } from '../../context';
 import { DEFAULT_COLLECTION } from '../../context/constants';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from '../REUSABLE_COMPONENTS/unique/IconStatWrapper';
-import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
+import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import { collectionPortfolioHeaderItems } from '../../data/collectionPortfolioHeaderItems';
 

@@ -3,8 +3,7 @@ import { Box, Grid } from '@mui/material';
 import CollectionPortfolio from '../layout/collection';
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
-import HeroBanner from './pageStyles/HeroBanner';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import { useLoading } from '../context/hooks/useLoading';
@@ -21,11 +20,8 @@ const CollectionPage = () => {
     return <LoadingOverlay />;
   }
   const { fetchCollections, hasFetchedCollections } = collectionData;
-
   const { returnDisplay, isModalOpen, modalContent, closeModal } =
     useLoadingAndModal();
-  const { isPageLoading } = useLoading();
-
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
@@ -34,21 +30,7 @@ const CollectionPage = () => {
 
   return (
     <PageLayout backCol={true}>
-      <Grid
-        item
-        xs={12}
-        sx={
-          {
-            // backgroundColor: '#3D3D3D',
-          }
-        }
-      >
-        {!selectedCollection && (
-          <HeroBanner
-            title="Your Collection's Home"
-            subtitle="Welcome to your collection! ..."
-          />
-        )}
+      <Grid item xs={12}>
         <CollectionPortfolio allCollections={allCollections} />
         {isModalOpen && (
           <GenericCardDialog
