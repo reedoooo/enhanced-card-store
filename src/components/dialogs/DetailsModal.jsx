@@ -78,7 +78,7 @@ const DetailsModal = ({ open, onClose }) => {
           variant="body1"
           sx={{ mb: 4, borderBottom: 1, borderColor: 'grey.600', pb: 2 }}
         >
-          {featureData?.description}
+          {featureData?.descriptionB}
         </Typography>
         <ImageList
           cols={2}

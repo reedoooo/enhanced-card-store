@@ -11,14 +11,6 @@ const DeckBuilderPage = () => {
   return (
     <PageLayout>
       <DeckBuilder />
-      {/* {dialogState.isCardDialogOpen && (
-        <GenericCardDialog
-          open={dialogState.isCardDialogOpen}
-          context={'Deck'}
-          onClose={() => closeDialog('isCardDialogOpen')}
-          card={data}
-        />
-      )} */}
     </PageLayout>
   );
 };

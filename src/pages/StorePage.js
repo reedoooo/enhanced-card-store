@@ -80,11 +80,6 @@ const HeroBanner = ({ title, subtitle }) => {
 };
 
 const StorePage = () => {
-  const { closeDialog, dialogState, data, cardDialogState, open } =
-    useDialogState();
-  // useEffect(() => {
-  //   console.log(cardDialogState);
-  // }, []);
   return (
     <PageLayout>
       <MDBox
@@ -100,14 +95,6 @@ const StorePage = () => {
           subtitle="Search for cards and add them to your cart."
         />
         <StoreSearch />
-        {/* {dialogState.isCardDialogOpen && (
-          <GenericCardDialog
-            open={dialogState.isCardDialogOpen}
-            context={'Cart'}
-            card={data}
-            onClose={() => closeDialog('isCardDialogOpen')}
-          />
-        )} */}
       </MDBox>
     </PageLayout>
   );

@@ -32,14 +32,6 @@ const HomePage = () => {
   );
   const renderDialogs = () => (
     <>
-      {/* {dialogState.isCardDialogOpen && (
-        <GenericCardDialog
-          open={dialogState.isCardDialogOpen}
-          onClose={() => closeDialog('isCardDialogOpen')}
-          context={'Home'}
-          card={data}
-        />
-      )} */}
       {dialogState.isDetailsDialogOpen && (
         <DetailsModal
           open={dialogState.isDetailsDialogOpen}

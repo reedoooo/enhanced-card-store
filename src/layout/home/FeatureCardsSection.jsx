@@ -19,10 +19,25 @@ import {
   CardUnorderedList,
   FeatureCard,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import DetailsModal from '../../components/dialogs/DetailsModal';
 const AnimatedBox = animated(Box);
 
-export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
+export const AnimatedFeatureCard = ({ cardData }) => {
   const { theme } = useMode();
+  const { dialogState, openDialog, closeDialog } = useDialogState();
+  const handleOpenModal = (itemTitle) => {
+    const selectedItem = featureCardData.find(
+      (item) => item.title === itemTitle
+    );
+    if (selectedItem) {
+      openDialog('isDetailsDialogOpen');
+      console.log(selectedItem);
+      console.log(dialogState);
+    }
+  };
+  const handleCloseDialog = () => {
+    closeDialog('isDetailsDialogOpen');
+  };
   const [tiltAnimation, api] = useSpring(() => ({
     transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
   }));
@@ -58,8 +73,9 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
         }}
       >
         <CardHeader
-          title={tier.title}
-          subheader={tier.subheader}
+          title={cardData.title}
+          subheader="Explore Features"
+          // subheader={tier.subheader}
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
           sx={{
@@ -69,7 +85,7 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
         />
         <CardContent>
           <CardUnorderedList>
-            {tier.description.map((line, index) => (
+            {cardData?.descriptionA?.map((line, index) => (
               <CardListItem key={index} theme={theme}>
                 {line}
               </CardListItem>
@@ -88,11 +104,16 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             size="large"
             variant="holo"
             withContainer={false}
-            onClick={() => onOpenModal(tier.title)}
-            // onClick={() => onOpenModal(tier.title)}
+            onClick={() => handleOpenModal(cardData.title)}
           >
-            {tier.title}
+            {cardData.title}
           </RCButton>
+          {dialogState.isDetailsDialogOpen && (
+            <DetailsModal
+              open={dialogState.isDetailsDialogOpen}
+              onClose={handleCloseDialog}
+            />
+          )}
         </CardActions>
       </FeatureCard>
     </AnimatedBox>
@@ -103,20 +124,7 @@ const FeatureCardsSection = () => {
   const breakpoints = theme.breakpoints;
   const isSmUp = useMediaQuery(breakpoints.up('sm'));
   const { tiers, introText } = pages;
-  const { dialogState, openDialog } = useDialogState();
-  const handleOpenModal = (itemTitle) => {
-    const selectedItem = featureCardData.find(
-      (item) => item.title === itemTitle
-    );
-    if (selectedItem) {
-      openDialog('isDetailsDialogOpen');
-      // openDialogWithData('isDetailsDialogOpen', selectedItem);
-      // toggleDialog('isDetailsDialogOpen');
-      console.log(selectedItem);
-      console.log(dialogState);
-      // openDialog('isDetailsDialogOpen');
-    }
-  };
+  console.log(featureCardData);
   return (
     <section className="feature-cards-section">
       <StyledContainerBox maxWidth="100%" theme={theme}>
@@ -126,25 +134,18 @@ const FeatureCardsSection = () => {
             spacing={isSmUp ? 5 : 2}
             sx={{
               justifyContent: 'space-between',
-              // m: 0,
-              // mt: 2,
             }}
           >
-            {tiers.map((tier, index) => (
+            {featureCardData?.map((cardData, index) => (
               <Grid
                 item
                 key={index}
                 xs={12}
                 sm={12}
                 md={4}
-                // md={tier.title === 'Store' ? 12 : 4}
                 style={{ display: 'flex', flexGrow: 1 }} // Ensure flex display for grid item
               >
-                <AnimatedFeatureCard
-                  tier={tier}
-                  onOpenModal={handleOpenModal}
-                  theme={theme}
-                />
+                <AnimatedFeatureCard cardData={cardData} />
               </Grid>
             ))}
           </Grid>
