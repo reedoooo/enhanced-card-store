@@ -11,9 +11,9 @@ const defaultCard = defaultCardData[0];
 const defaultCards = Array(5).fill(defaultCard); // More efficient way to create an array with default values
 const REACT_APP_SERVER = process.env.REACT_APP_SERVER;
 const defaultDecks = {
-  allIds: [SELECTED_DECK_ID],
-  byId: { [SELECTED_DECK_ID]: DEFAULT_DECK },
-  selectedId: SELECTED_DECK_ID,
+  allIds: [],
+  byId: {},
+  selectedId: null,
   lastUpdated: new Date(),
   showDecks: true,
 };
@@ -23,6 +23,7 @@ const defaultCollections = {
     [SELECTED_COLLECTION_ID]: DEFAULT_COLLECTION,
   },
   selectedId: SELECTED_COLLECTION_ID,
+  // lastUpdated: new Date(),
   prevSelectedId: SELECTED_COLLECTION_ID,
   showCollections: false,
 };

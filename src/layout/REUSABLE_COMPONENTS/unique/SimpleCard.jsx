@@ -9,7 +9,7 @@ import MDBox from '../MDBOX';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CollectionsIcon from '@mui/icons-material/Collections';
-import FlexBetween from '../FlexBetween';
+import FlexBetween from '../layout-utils/FlexBetween';
 
 const getPrimaryStyle = (theme, isPrimary) => ({
   background: isPrimary ? theme.colorPrimary : undefined,

@@ -9,14 +9,14 @@ import {
 } from '@mui/material';
 import { useMode } from '../../context';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import DashboardLayout from '../REUSABLE_COMPONENTS/DashBoardLayout';
+import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
 import SearchComponent from '../../components/forms/search/SearchComponent';
 import DeckDialog from '../../components/dialogs/DeckDialog';
 import useDialogState from '../../context/hooks/useDialogState';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import DeckListItem from './DeckListItem';
-import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
-import PageHeader from '../REUSABLE_COMPONENTS/PageHeader';
+import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
@@ -38,91 +38,29 @@ const DeckBuilder = () => {
     handleSelectDeck,
     refreshDecks,
   } = useSelectedDeck();
-  const { isLoading } = useLoading();
-  // const { allDecks } = prepareDeckData(selectedDeckId);
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
-  const handleOpenAddDialog = useCallback(() => {
-    setActiveFormSchema('addDeckForm');
-    openDialog('isAddDeckDialogOpen');
-  }, [openDialog, setActiveFormSchema]);
   const [activeTab, setActiveTab] = useState(0);
-  const [allDecksLoading, setAllDecksLoading] = useState(false);
   const [loadingState, setLoadingState] = useState({});
   const [safeDeckList, setSafeDeckList] = useState([]);
-  const prevSelectedDeckId = useRef(null); // Store the previous deck ID
-  const handleDeckLoaded = useCallback((deckId) => {
-    setLoadingState((prev) => ({ ...prev, [deckId]: false }));
-  }, []);
+  const [error, setError] = useState(null);
+  const decksRef = useRef([]);
   useEffect(() => {
     if (!hasFetchedDecks) {
+      // decksRef.current = allDecks;
       fetchDecks();
-      setActiveTab(0);
+      setSafeDeckList(allDecks);
+      console.log('DECKS REF', decksRef.current);
+      // fetchDecks();
     }
-  }, []);
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newData = JSON.parse(localStorage.getItem('decks') || '{}');
-      if (newData !== decks && newData.lastUpdated !== decks.lastUpdated) {
-        const newAllDecks = Object.values(newData.byId);
-        setSafeDeckList(newAllDecks);
-        refreshDecks();
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-  useEffect(() => {
-    setActiveTab((prevActiveTab) => {
-      const newIndex = Math.min(prevActiveTab, safeDeckList.length - 1);
-      return newIndex >= 0 ? newIndex : 0; // Ensure that the index is always non-negative
-    });
-  }, [safeDeckList.length]); // Update activeTab when the length of safeDeckList changes
-  useEffect(() => {
-    if (prevSelectedDeckId.current !== selectedDeckId) {
-      prevSelectedDeckId.current = selectedDeckId;
-    }
-  }, [selectedDeckId]);
-  // useEffect(() => {
-  //   if (isLoading('fetchDecks')) {
-  //     setAllDecksLoading(true);
-  //   }
-  //   if (!isLoading('fetchDecks')) {
-  //     setAllDecksLoading(false);
-  //   }
-  // }, [isLoading('fetchDecks')]);
-  const handleChangeTab = useCallback(
-    (event, newValue) => {
-      setActiveTab(newValue);
-      const newDeck = safeDeckList[newValue];
-      handleSelectDeck(newDeck);
-
-      if (!loadingState[newDeck._id]) {
-        setLoadingState((prev) => ({ ...prev, [newDeck._id]: true })); // Set loading for the new tab
-      }
-    },
-    [safeDeckList, handleSelectDeck, loadingState]
-  );
-
-  // const handleChangeTab = useCallback(
-  //   (event, newValue) => {
-  //     setActiveTab(newValue);
-  //     handleSelectDeck(safeDeckList[newValue]);
-  //     // setLoadingState((prev) => ({
-  //     //   ...prev,
-  //     //   [safeDeckList[newValue]._id]: true,
-  //     // }));
-  //     // setLoadingState((prev) => ({ ...prev, [newValue]: true })); // Set loading to true for the new tab
-  //   },
-  //   [safeDeckList, handleSelectDeck]
-  // );
-
+  }, [hasFetchedDecks]);
   const handleDelete = useCallback(
     async (deck) => {
       if (!deck) return;
       try {
-        await deleteDeck(deck._id);
+        deleteDeck(deck?._id);
         const updatedDecks = safeDeckList.filter((col) => col._id !== deck._id);
+        setSafeDeckList((prev) => updatedDecks);
         console.log('UPDATED DECKS', updatedDecks);
         // refreshDecks(updatedCollections); // Assuming refreshCollections now directly accepts an updated array
       } catch (error) {
@@ -131,57 +69,144 @@ const DeckBuilder = () => {
     },
     [deleteDeck]
   );
+  const handleDeckLoaded = useCallback((deckId) => {
+    setLoadingState((prev) => ({
+      ...prev,
+      [deckId]: false,
+    })); // Set loading state to false when deck is fully loaded
+  }, []);
   const deckTabs = safeDeckList?.map((deck, index) => (
     <Tab
       label={
-        loadingState[deck._id] ? <CircularProgress size={20} /> : deck.name
+        loadingState[deck?._id] ? <CircularProgress size={20} /> : deck.name
       }
       value={index}
-      key={deck._id || `deck-tab-${index}`}
+      key={`deck-tab-${deck?._id}-${index}`}
     />
   ));
   const deckList = safeDeckList?.map((deck, index) => (
-    <Collapse in={activeTab === index} key={deck._id}>
+    <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
       <DeckListItem
         // key={deck._id}
         deck={deck}
         selectedDeckId={selectedDeckId}
         handleDelete={() => handleDelete(deck)}
-        isEditPanelOpen={selectedDeckId === deck._id}
+        isEditPanelOpen={selectedDeckId === deck?._id}
         activeItem={activeTab === index}
         handleSelectAndShowDeck={() => handleSelectDeck(deck)}
         handleDeckLoaded={() => handleDeckLoaded(deck?._id)}
         loadingState={loadingState[deck?._id]}
+        setLoadingState={setLoadingState}
       />
     </Collapse>
   ));
-  // useEffect(() => {
-  //   // Simulate deck loading process
-  //   if (selectedDeckId && loadingState[selectedDeckId]) {
-  //     setLoadingState((prev) => ({
-  //       ...prev,
-  //       [selectedDeckId]: true,
-  //     }));
-  //     setTimeout(() => handleDeckLoaded(selectedDeckId), 2000); // Simulate fetching time
-  //   }
-  // }, [selectedDeckId, loadingState, handleDeckLoaded]);
+  const handleOpenAddDialog = useCallback(() => {
+    setActiveFormSchema('addDeckForm');
+    openDialog('isAddDeckDialogOpen');
+  }, [openDialog, setActiveFormSchema]);
+  const handleChangeTab = useCallback(
+    (event, newValue) => {
+      const newDeck = safeDeckList[newValue];
+      if (newDeck) {
+        setActiveTab(newValue);
+        console.log('Tab changed to:', newValue);
+        setLoadingState((prev) => ({
+          ...prev,
+          [newDeck._id]: true, // Assuming _id is always available; handle cases where it might not be
+        }));
+        decksRef.current[newValue] = newDeck;
+        handleSelectDeck(newDeck);
+        console.log('NEW SELECTED DECK', newDeck);
+        // console.log('DECKS REF', decksRef.current);
+        if (!loadingState[newDeck._id]) {
+          setTimeout(() => handleDeckLoaded(newDeck._id), 2000); // Simulate loading
+        }
+      } else {
+        console.error('Selected deck is undefined.');
+      }
+      // if (!loadingState[newDeck._id]) {
+      //   setLoadingState((prev) => ({ ...prev, [newDeck._id]: true })); // Set loading true for the new tab
+      //   setTimeout(() => handleDeckLoaded(newDeck._id), 2000); // Simulate fetching time
+      // }
+    },
+    [safeDeckList, handleSelectDeck]
+  );
+  const handleStorageChange = () => {
+    const rawData = localStorage.getItem('decks');
+    let newData = { byId: {} };
 
-  // useEffect(() => {
-  //   if (selectedDeckId) {
-  //     setLoadingState((prev) => ({ ...prev, [selectedDeckId]: true }));
-  //     // setLoadingState((prev) => ({ ...prev, [newValue]: true })); // Set loading to true for the new tab
-  //     console.log(`LOADING DECK ${selectedDeckId}`);
-  //     // setLoadingState((prev) => ({ ...prev, [selectedDeckId]: true }));
-  //   }
+    try {
+      newData = rawData ? JSON.parse(rawData) : newData;
+    } catch (e) {
+      console.error('Failed to parse decks data:', e);
+      setError('Failed to load decks from storage.');
+      return;
+    }
 
-  //   // if (prevSelectedDeckId.current !== selectedDeckId) {
-  //   //   setLoadingState((prev) => ({ ...prev, [selectedDeckId]: true }));
-  //   //   // setLoadingState((prev) => ({ ...prev, [newValue]: true })); // Set loading to true for the new tab
-  //   //   console.log(`LOADING DECK ${selectedDeckId}`);
-  //   //   // setLoadingState((prev) => ({ ...prev, [selectedDeckId]: true }));
-  //   // }
-  // }, [selectedDeckId]);
+    if (newData && typeof newData.byId === 'object') {
+      const newAllDecks = Object.values(newData.byId).filter(
+        (deck) => deck && deck._id !== undefined
+      );
 
+      if (!newAllDecks.length) {
+        setError('No decks found in storage.');
+        return;
+      }
+
+      decksRef.current = newAllDecks;
+      setSafeDeckList(newAllDecks);
+      refreshDecks();
+    } else {
+      setError('Invalid or corrupted deck data.');
+    }
+  };
+  useEffect(() => {
+    // const handleStorageChange = () => {
+    //   const newData = JSON.parse(localStorage.getItem('decks') || '{}');
+    //   // if (decksRef.current[0]?.userId !== null) {
+    //   //   setSafeDeckList(Object.values(newData?.byId));
+    //   // } else {
+    //   //   setSafeDeckList(
+    //   //     Object.values(newData?.byId).filter(
+    //   //       (deck) => deck?.userId === user?._id
+    //   //     )
+    //   //   );
+    //   // }
+    //   if (newData !== decks && newData?.lastUpdated !== decks.lastUpdated) {
+    //     const newAllDecks = Object.values(newData?.byId).filter(
+    //       (deck) => deck._id !== undefined
+    //     );
+    //     if (!newAllDecks.length) {
+    //       setError('No decks found in storage.');
+    //       return;
+    //     }
+    //     decksRef.current = newAllDecks;
+    //     setSafeDeckList(newAllDecks);
+    //     refreshDecks();
+    //   }
+    // };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  useEffect(() => {
+    setActiveTab((prevActiveTab) => {
+      const newIndex = Math.min(prevActiveTab, safeDeckList.length - 1);
+      const newDeck = safeDeckList[newIndex];
+      setLoadingState((prev) => ({
+        ...prev,
+        [newDeck?._id]: true,
+      })); // Set loading state to true when selecting a new deck
+      decksRef.current[newIndex] = newDeck;
+      console.log('NEW DECK', newDeck);
+      console.log('DECKS REF', decksRef.current);
+      // handleSelectDeck(newDeck);
+      if (!loadingState[newDeck?._id]) {
+        setLoadingState((prev) => ({ ...prev, [newDeck?._id]: true })); // Set loading true for the new tab
+        setTimeout(() => handleDeckLoaded(newDeck?._id), 2000); // Simulate fetching time
+      }
+      return newIndex >= 0 ? newIndex : 0; // Ensure that the index is always non-negative
+    });
+  }, [safeDeckList.length]);
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
       <DashboardLayout>

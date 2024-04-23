@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
-import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { getContextIcon } from '../../../layout/REUSABLE_COMPONENTS/icons/index';
-import useCollectionManager from '../../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import ActionButton from './ActionButton';
+import MDTypography from './MDTYPOGRAPHY/MDTypography';
+import { getContextIcon } from './icons/index';
+import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import { useSnackbar } from 'notistack';
-import GlassyIcon from '../../../layout/REUSABLE_COMPONENTS/icons/GlassyIcon';
-import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
-import useDeckManager from '../../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
-import { useCartManager } from '../../../context/MAIN_CONTEXT/CartContext/useCartManager';
-import LoadingOverlay from '../../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useSelectedDeck from '../../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
+import GlassyIcon from './icons/GlassyIcon';
+import MDBox from './MDBOX';
+import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
+import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import LoadingOverlay from './system-utils/LoadingOverlay';
+import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
+import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
+import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import { useMode } from '../../context';
+import { useLoading } from '../../context/hooks/useLoading';
+import { LoadingButton } from '@mui/lab';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -19,7 +23,63 @@ const buttonSizeMap = {
   md: 'medium',
   lg: 'large',
 };
+const ActionButton = ({
+  buttonSize,
+  handleCardAction,
+  labelValue,
+  actionType,
+  variant,
+}) => {
+  const { theme } = useMode();
+  const { isLoading } = useLoading();
+  const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
+  const actionIcon =
+    actionType === 'add' ? (
+      <AddCircleOutlineOutlined />
+    ) : (
+      <RemoveCircleOutlineOutlined />
+    );
+  const loadingKey =
+    actionType === 'add' ? 'addCardsToCollection' : 'removeCardsFromCollection';
 
+  return (
+    <LoadingButton
+      variant={'contained'}
+      // color={actionType === 'add' ? 'success.main' : 'error'}
+      size={adjustedButtonSize}
+      loading={isLoading(loadingKey)}
+      onClick={handleCardAction}
+      startIcon={actionIcon}
+      sx={{
+        width: '100%',
+        flexGrow: 1,
+        borderRadius: theme.shape.borderRadius,
+        maxWidth: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        display: 'flex',
+        backgroundColor:
+          labelValue === 'add'
+            ? theme.palette.success.main
+            : theme.palette.error.main,
+        '&:hover': {
+          backgroundColor: labelValue === 'add' ? '#3da58a' : '#cc4a4aff',
+        },
+      }}
+    >
+      <MDTypography
+        variant="button"
+        sx={{
+          color:
+            theme.palette[labelValue === 'add' ? 'success' : 'error']
+              .contrastText,
+        }}
+      >
+        {String(labelValue)} {/* Force conversion to string */}
+      </MDTypography>
+    </LoadingButton>
+  );
+};
 const GenericActionButtons = ({
   card,
   // selectedEnt,
@@ -31,15 +91,17 @@ const GenericActionButtons = ({
   cardSize = 'md',
   datatable = false,
 }) => {
+  const { theme } = useMode();
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const memoizedReturnValues = useCollectionManager(); // Add this line to use useCollectionManager
   const memoizedSelectionVals1 = useSelectedCollection(); // Add this line to use useCollectionManager
   const memoizedSelectionVals2 = useSelectedDeck(); // Add this line to use useCollectionManager
   const memoizedSelectionVals3 = useCartManager(); // Add this line to use useCollectionManager
+  const memoizedReturnValues4 = useDeckManager();
   if (!memoizedReturnValues) return <LoadingOverlay />; // Add this line to use useCollectionManager
   const { addOneToCollection, removeOneFromCollection } = memoizedReturnValues; // Modify this line to use useCollectionManager
-  const { addOneToDeck, removeOneFromDeck } = useDeckManager();
-  const { addOneToCart, removeOneFromCart } = useCartManager();
+  const { addOneToDeck, removeOneFromDeck } = memoizedReturnValues4;
+  const { addOneToCart, removeOneFromCart } = memoizedSelectionVals3;
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
@@ -54,9 +116,9 @@ const GenericActionButtons = ({
       setSelectedEntity(memoizedSelectionVals3.cart);
     }
   }, [
-    memoizedSelectionVals1.selectedCollection,
+    memoizedSelectionVals1.selectedCollectionId,
     memoizedSelectionVals2.selectedDeckId,
-    memoizedSelectionVals2.allDecks,
+    // memoizedSelectionVals2.allDecks,
     memoizedSelectionVals3.cart,
     context,
   ]);
@@ -107,7 +169,7 @@ const GenericActionButtons = ({
         height: '100%',
       }}
     >
-      {datatable !== 'data-table' && (
+      {datatable === 'data-table' && (
         <MDBox
           sx={{
             display: 'flex',
@@ -148,7 +210,8 @@ const GenericActionButtons = ({
           flexDirection: 'column',
           alignItems: 'center',
           gap: datatable ? 0 : 1,
-          width: '80%',
+          width: '100%',
+          my: theme.spacing(1),
         }}
       >
         <ActionButton

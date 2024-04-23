@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import StatBox from '../../REUSABLE_COMPONENTS/StatBox';
+import StatBox from '../../REUSABLE_COMPONENTS/layout-utils/StatBox';
 import { useMode, useAppContext } from '../../../context';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
 const TotalCardsCollectedStatBox = () => {

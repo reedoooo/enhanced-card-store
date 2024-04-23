@@ -4,7 +4,7 @@ import { useModalContext } from '../context/UTILITIES_CONTEXT/ModalContext/Modal
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import DetailsModal from '../components/dialogs/DetailsModal';
 import SplashPage2 from '../layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 // import MainContentSection from './sections/MainContentSection';
 import HeroSection from '../layout/home/HeroSection';
 import FeatureCardsSection from '../layout/home/FeatureCardsSection';

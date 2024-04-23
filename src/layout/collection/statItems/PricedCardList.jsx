@@ -1,5 +1,5 @@
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import BoxHeader from '../../REUSABLE_COMPONENTS/BoxHeader';
+import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import { Box, Card, CardContent } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../data/topCards';

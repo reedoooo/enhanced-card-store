@@ -1,23 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useMode } from '../../context';
-import DashboardLayout from '../REUSABLE_COMPONENTS/DashBoardLayout';
+import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
 import SelectCollectionList from './SelectCollectionList';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useDialogState from '../../context/hooks/useDialogState';
-import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
+import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import StatBoard from './StatBoard';
 import { Tab, Tabs } from '@mui/material';
 import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
 import ChartGridLayout from './ChartGridLayout';
 import CollectionPortfolioHeader from './CollectionPortfolioHeader';
-import PageHeader from '../REUSABLE_COMPONENTS/PageHeader';
+import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
+import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -97,6 +99,17 @@ const CollectionPortfolio = () => {
     allCollections,
     handleSelectCollection,
   } = useSelectedCollection();
+  const collectionData = useCollectionManager();
+  if (!collectionData) {
+    return <LoadingOverlay />;
+  }
+  const { fetchCollections, hasFetchedCollections } = collectionData;
+  // useEffect(() => {
+  //   if (!hasFetchedCollections) {
+  //     fetchCollections();
+  //   }
+  // }, []);
+
   const { chartData, setChartData } = useCompileCardData();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);

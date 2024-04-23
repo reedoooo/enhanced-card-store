@@ -28,7 +28,8 @@ const CollectionListItem = memo(
       return <LoadingOverlay />;
     }
     const percentageChange =
-      collection?.collectionStatistics?.percentageChange || 0;
+      roundToNearestTenth(collection?.collectionStatistics?.percentageChange) ||
+      0;
 
     const handleEdit = useCallback(
       (event) => {
@@ -54,7 +55,7 @@ const CollectionListItem = memo(
         <MDBox
           sx={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: isMobile ? 'column' : 'row', // Stack elements vertically on mobile
             justifyContent: 'center',
             height: '100%',
             ...(isMobile &&
@@ -69,7 +70,8 @@ const CollectionListItem = memo(
             }}
             sx={{
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: 'column', // Always use column to align items vertically
+              // flexDirection: 'row',
               justifyContent: 'center',
               p: 'none !!important',
               flexGrow: 1,
@@ -110,12 +112,15 @@ const CollectionListItem = memo(
           <CardContent
             sx={{
               width: '20%',
-              maxWidth: 200,
+              // maxWidth: 200,
               flexGrow: 1,
               pb: `${0} !important`,
               alignItems: 'center',
               ...(isMobile && {
-                flexDirection: 'column', // Adjust layout for mobile
+                // flexDirection: 'row', // Adjust layout for mobile
+                flexDirection: 'column', // Buttons in column for mobile
+                width: '100%',
+                pb: `${null} !important`,
               }),
             }}
           >

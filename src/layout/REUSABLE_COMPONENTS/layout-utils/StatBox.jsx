@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
-import ProgressCircle from './ProgressCircle';
-import { useMode } from '../../context';
-import MDBox from './MDBOX';
+import ProgressCircle from '../system-utils/ProgressCircle';
+import { useMode } from '../../../context';
+import MDBox from '../MDBOX';
 
 const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const { theme } = useMode();

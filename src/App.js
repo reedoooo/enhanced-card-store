@@ -15,7 +15,6 @@ import {
   SidebarProvider,
   AppContextProvider,
   ConfiguratorProvider,
-  DataProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
 import { CssBaseline, GlobalStyles } from '@mui/material';
@@ -39,9 +38,7 @@ const App = () => {
                     <CartProvider>
                       <SidebarProvider>
                         <AppContextProvider>
-                          <DataProvider>
-                            <Main />
-                          </DataProvider>
+                          <Main />
                         </AppContextProvider>
                       </SidebarProvider>
                     </CartProvider>

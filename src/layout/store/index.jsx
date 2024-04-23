@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMode } from '../../context';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import PageLayout from '../REUSABLE_COMPONENTS/PageLayout';
+import PageLayout from '../REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import { PortfolioBoxA } from '../../pages/pageStyles/StyledComponents';
 import SearchComponent from '../../components/forms/search/SearchComponent';
 

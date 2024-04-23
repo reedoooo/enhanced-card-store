@@ -37,7 +37,7 @@ const useDeckManager = () => {
         setError('User is not logged in or request is in loading state.');
         return;
       }
-
+      console.log('DECK DATA', deckData);
       const url = createApiUrl(urlSuffix);
       try {
         const response = await fetchWrapper(url, method, deckData, actionName);
@@ -85,9 +85,9 @@ const useDeckManager = () => {
   const createNewDeck = (deckData) =>
     performFetchAndUpdate('create', 'POST', deckData, 'createNewDeck');
 
-  const updateDeckDetails = (deckId, deckData) =>
+  const updateDeckDetails = (deckData) =>
     performFetchAndUpdate(
-      `${deckId}/deckDetails`,
+      `${deckData._id}/deckDetails`,
       'PUT',
       deckData,
       'updateDeckDetails'

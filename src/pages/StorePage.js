@@ -3,7 +3,7 @@ import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import HeroBanner from './pageStyles/HeroBanner';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/PageLayout';
+import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import StoreSearch from '../layout/store';
 const StorePage = () => {
   const { loadingStatus, returnDisplay, isModalOpen, modalContent } =

@@ -93,7 +93,8 @@ const HeroSectionSkeleton = () => {
           background: 'rgba(189, 181, 181, 0.1)',
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
           backdropFilter: 'blur(20px)',
-          '-webkit-backdrop-filter': 'blur(20px)',
+
+          // '-webkit-backdrop-filter': 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.3)',
           borderRadius: '25px',
           padding: '30px',

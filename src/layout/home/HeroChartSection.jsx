@@ -1,7 +1,7 @@
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from '../../assets/images/placeholder.jpeg';
 import { Card, CardContent, Zoom } from '@mui/material';
-import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
+import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -12,8 +12,8 @@ import {
   Line,
   Tooltip,
 } from 'recharts';
-import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
-import BoxHeader from '../REUSABLE_COMPONENTS/BoxHeader';
+import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import { useMode } from '../../context';
 import { useMemo } from 'react';
 import {

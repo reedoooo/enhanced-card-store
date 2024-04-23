@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   useMediaQuery,
+  Icon,
 } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -20,13 +21,14 @@ import placeHolder from '../../assets/images/placeholder.jpeg';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import CardDetailsContainer from '../../components/cards/CardDetailsContainer';
 import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import FlexBetween from '../REUSABLE_COMPONENTS/FlexBetween';
-import DashboardBox from '../REUSABLE_COMPONENTS/DashboardBox';
+import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  const { selectedCollection } = useSelectedCollection();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { collectionMetaData } = useCompileCardData();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
@@ -56,8 +58,10 @@ export const TopCardsDisplayRow = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
+            justifyContent: 'center',
             width: '100%',
             transition: 'transform 0.9s',
+            flexGrow: 1,
           }}
         >
           <MDBox
@@ -66,6 +70,8 @@ export const TopCardsDisplayRow = () => {
               flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
               width: '100%',
               height: '100%',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
             }}
           >
             <Card
@@ -73,18 +79,87 @@ export const TopCardsDisplayRow = () => {
                 flexGrow: 1,
                 width: isMobileView ? '100%' : 'auto', // Adjust width based on screen size
                 minHeight: '100%', // Ensure card takes full height
-                p: theme.spacing(2),
-                m: theme.spacing(1),
+                alignItems: 'flex-start',
+                flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
+                justifyContent: 'center',
+                // p: theme.spacing(2),
+                // m: theme.spacing(1),
               }}
             >
               <FlexBetween
                 sx={{
-                  justifyContent: 'space-around', // Space distribution
+                  // justifyContent: 'space-around', // Space distribution
+                  justifyContent: isMobileView ? 'center' : 'space-around', // Adjust direction based on screen size
                   padding: theme.spacing(2),
+                  // alignItems: 'flex-start',
+                  // alignItems: isMobileView ? 'center' : 'flex-start',
+                  flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
                 }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    // width: '100%',
+                    // mb: theme.spacing(10),
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    mx: 'auto',
+                    my: 'auto',
+                  }}
+                >
+                  <BoxHeader
+                    title={card.name}
+                    subtitle="none"
+                    sideText="none"
+                    icon={
+                      <MDBox
+                        sx={{
+                          border: 'none',
+                          p: theme.spacing(2),
+                        }}
+                      >
+                        <Icon
+                          sx={{
+                            fontSize: '3rem',
+                            color: theme.palette.greenAccent.pureGreenBlue,
+                          }}
+                        >
+                          check_circle
+                        </Icon>
+                      </MDBox>
+                    }
+                  />
                   <DashboardBox gridArea="b">
+                    {/* <MDTypography
+                      variant="h5"
+                      sx={{ fontWeight: 'bold', mb: 2 }}
+                    >
+                      {card.name}
+                    </MDTypography> */}
+                    {/* <BoxHeader
+                      title={card.name}
+                      subtitle="none"
+                      sideText="none"
+                      icon={
+                        <MDBox
+                          sx={{
+                            border: 'none',
+                            p: theme.spacing(2),
+                          }}
+                        >
+                          <Icon
+                            sx={{
+                              fontSize: '3rem',
+                              color: theme.palette.greenAccent.pureGreenBlue,
+                            }}
+                          >
+                            check_circle
+                          </Icon>
+                        </MDBox>
+                      }
+                    /> */}
                     <CardMedia
                       component="img"
                       alt={`Image for ${card.name || 'the card'}`}
@@ -93,6 +168,8 @@ export const TopCardsDisplayRow = () => {
                       style={{
                         borderRadius: 0,
                         width: 'auto',
+                        // height: 'auto',
+                        mx: 'auto',
                       }}
                     />
                   </DashboardBox>
@@ -103,6 +180,7 @@ export const TopCardsDisplayRow = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     width: 'auto',
+                    my: 'auto',
                   }}
                 >
                   <CardDetailsContainer
