@@ -8,7 +8,6 @@ import React, {
 import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from '../../assets/images/placeholder.jpeg';
-import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useMode } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useSnackbar } from 'notistack';
@@ -24,6 +23,7 @@ import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/Loadin
 import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import useDialogState from '../../context/hooks/useDialogState';
 const getQuantity = ({
   card,
   cart,
@@ -63,8 +63,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   const { selectedDeck, allDecks } = useSelectedDeck();
   const { setContext, setIsContextSelected } = useSelectedContext();
   const { isCardInContext } = useCompileCardData();
-  const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
-    useModalContext();
+  const { dialogState, openDialog } = useDialogState();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
   const { card, context, page, quantityIndex, isDeckCard } = props;
@@ -90,11 +89,12 @@ const GenericCard = React.forwardRef((props, ref) => {
     };
   }, []);
 
-  const handleClick = useCallback(() => {
-    openModalWithCard(card);
-    setModalOpen(true);
-    setIsPopoverOpen(false);
-  }, [openModalWithCard, setModalOpen, setIsPopoverOpen, card]);
+  // const handleClick = useCallback(() => {
+  //   // openDialogWithData('isCardDialogOpen', card);
+  //   openDialog('isCardDialogOpen');
+  //   // setModalOpen(true);
+  //   setIsPopoverOpen(false);
+  // }, [openDialog, setIsPopoverOpen, card]);
   const handleInteraction = useCallback(
     (hoverState) => {
       setHoveredCard(hoverState ? card : null);
@@ -183,8 +183,8 @@ const GenericCard = React.forwardRef((props, ref) => {
           quantity={card?.quantity}
           isHovered={hoveredCard === card}
           handleInteraction={handleInteraction}
-          handleClick={handleClick}
-          isModalOpen={isModalOpen}
+          // handleClick={handleClick}
+          isModalOpen={dialogState.isCardDialogOpen}
           ref={cardRef}
         />
       </AspectRatioBox>

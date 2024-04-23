@@ -5,7 +5,6 @@ import './assets/css/card.css';
 import './assets/css/page.css';
 import Main from './Main';
 import {
-  ModalProvider,
   UserProvider,
   useMode,
   CollectionProvider,
@@ -31,21 +30,19 @@ const App = () => {
       <ParallaxProvider>
         <ConfiguratorProvider>
           <UserProvider>
-            <ModalProvider>
-              <CollectionProvider>
-                <CardProvider>
-                  <DeckProvider>
-                    <CartProvider>
-                      <SidebarProvider>
-                        <AppContextProvider>
-                          <Main />
-                        </AppContextProvider>
-                      </SidebarProvider>
-                    </CartProvider>
-                  </DeckProvider>
-                </CardProvider>
-              </CollectionProvider>
-            </ModalProvider>
+            <CollectionProvider>
+              <CardProvider>
+                <DeckProvider>
+                  <CartProvider>
+                    <SidebarProvider>
+                      <AppContextProvider>
+                        <Main />
+                      </AppContextProvider>
+                    </SidebarProvider>
+                  </CartProvider>
+                </DeckProvider>
+              </CardProvider>
+            </CollectionProvider>
           </UserProvider>
         </ConfiguratorProvider>
       </ParallaxProvider>

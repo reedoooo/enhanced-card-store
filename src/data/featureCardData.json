@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Deck Builder",
+    "description": "A deck building application that allows users to search for cards and add them to their deck. Users can also create an account, save their decks, and view other users decks.",
+    "url": "https://github.com/reedoooo/enhanced-card-store",
+    "readmeurl": "deck-builder-frontend/README.md",
+    "images": [
+      "https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/deckBuilder.png?raw=true"
+    ],
+    "startDate": "August 2021",
+    "endDate": "September 2021",
+    "technologies": ["React", "Node", "Express", "PostgreSQL"]
+  },
+  {
+    "title": "Collection Tracker",
+    "description": "A collection tracker application that allows users to search for cards and add them to their collection. Users can also create an account, save their collection, and view other users collections.",
+    "url": "https://github.com/reedoooo/enhanced-card-store",
+    "readmeurl": "collection-tracker-frontend/README.md",
+    "images": [
+      "https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/portfolio.png?raw=true"
+    ],
+    "startDate": "August 2021",
+    "endDate": "September 2021",
+    "technologies": ["React", "Node", "Express", "PostgreSQL"]
+  },
+  {
+    "title": "Store",
+    "description": "A store application that allows users to search for cards and add them to their cart. Users can also create an account, save their cart, and view other users carts.",
+    "url": "https://github.com/reedoooo/enhanced-card-store",
+    "readmeurl": "store-frontend/README.md",
+    "images": [
+      "https://github.com/reedoooo/enhanced-card-store/blob/main/public/images/pages/cart.png?raw=true"
+    ],
+    "startDate": "August 2021",
+    "endDate": "September 2021",
+    "technologies": ["React", "Node", "Express", "PostgreSQL"]
+  }
+]

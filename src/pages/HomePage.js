@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { CardHeader, Grid, Box, useMediaQuery } from '@mui/material';
-import { useModalContext } from '../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import DetailsModal from '../components/dialogs/DetailsModal';
 import SplashPage2 from '../layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
-// import MainContentSection from './sections/MainContentSection';
 import HeroSection from '../layout/home/HeroSection';
 import FeatureCardsSection from '../layout/home/FeatureCardsSection';
+import useDialogState from '../context/hooks/useDialogState';
 
 const HomePage = () => {
-  const { detailsModalShow, isModalOpen, modalContent } = useModalContext();
+  const { dialogState, data, closeDialog } = useDialogState();
+
   const splashRef = useRef(null);
 
   useEffect(() => {
@@ -32,29 +32,31 @@ const HomePage = () => {
   );
   const renderDialogs = () => (
     <>
-      {isModalOpen && (
+      {/* {dialogState.isCardDialogOpen && (
         <GenericCardDialog
-          open={isModalOpen}
+          open={dialogState.isCardDialogOpen}
+          onClose={() => closeDialog('isCardDialogOpen')}
           context={'Home'}
-          card={modalContent}
+          card={data}
+        />
+      )} */}
+      {dialogState.isDetailsDialogOpen && (
+        <DetailsModal
+          open={dialogState.isDetailsDialogOpen}
+          onClose={() => closeDialog('isDetailsDialogOpen')}
+          selectedCard={data}
         />
       )}
-      {detailsModalShow && <DetailsModal />}
     </>
   );
 
   return (
     <PageLayout backCol={true}>
-      {/* {renderSplashPage()} */}
       <Grid container spacing={3}>
-        {/* INTRO SECTION */}
+        {/* HERO SECTION */}
         <Grid item xs={12}>
           <HeroSection />
         </Grid>
-        {/* MAIN CONTENT SECTION */}
-        {/* <Grid item xs={12}>
-          <MainContentSection />
-        </Grid> */}
         {/* FEATURE CARDS SECTION */}
         <Grid item xs={12}>
           <FeatureCardsSection />

@@ -6,7 +6,6 @@ import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { ChartArea } from '../../pages/pageStyles/StyledComponents';
 import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
@@ -24,6 +23,7 @@ import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCom
 import NivoContainer from '../REUSABLE_COMPONENTS/layout-utils/NivoContainer';
 import MyResponsiveLine from './MyPortfolioLineChart';
 import { CircularProgress } from '@mui/joy';
+import { ChartArea } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const renderCardContainer = (content) => {
   return (

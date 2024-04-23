@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,17 +13,31 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import { useModalContext } from '../../context';
+import featureCardData from '../../data/featureCardData.json'; // Path to your JSON file
+import useDialogState from '../../context/hooks/useDialogState';
 
-const DetailsModal = () => {
-  const { featureData, detailsModalShow, closeDetailsModal } =
-    useModalContext();
+const DetailsModal = ({ open, onClose }) => {
+  // const { onClose, selectedValue, open } = props;
+  const handleClose = () => {
+    onClose('isDetailsDialogOpen');
+  };
+
+  const handleListItemClick = (value) => {
+    onClose(value);
+  };
+  // const { closeDialog, dialogState } = useDialogState();
+  // const [open, setOpen] = React.useState(false);
+  // useEffect(() => {
+  //   console.log('DETAILS DIALOG EFFECT', dialogState);
+  //   setOpen(dialogState.isDetailsDialogOpen);
+  // }, [dialogState.isDetailsDialogOpen]);
+  const featureData = featureCardData[0]; // Example: Using first item for demo
 
   console.log('featureData', featureData);
   return (
     <Dialog
-      open={detailsModalShow}
-      onClose={closeDetailsModal}
+      open={open}
+      onClose={handleClose}
       maxWidth="lg"
       fullWidth
       PaperProps={{
@@ -54,7 +68,7 @@ const DetailsModal = () => {
               {featureData?.title}
             </Typography>
           </Box>
-          <IconButton onClick={closeDetailsModal}>
+          <IconButton onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </Box>

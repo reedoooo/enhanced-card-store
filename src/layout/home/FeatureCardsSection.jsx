@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Grid } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
-import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useMode } from '../../context';
 import pages from '../../data/pages.json';
 import {
@@ -10,16 +9,16 @@ import {
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { Box, CardActions, CardContent, CardHeader } from '@mui/material';
 import { useSpring, animated as a, animated } from 'react-spring';
-import {
-  ActionButton,
-  CardListItem,
-  CardUnorderedList,
-  FeatureCard,
-} from '../../pages/pageStyles/StyledComponents';
 import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
-
+import useDialogState from '../../context/hooks/useDialogState';
+import featureCardData from '../../data/featureCardData.json'; // Adjust the path as necessary
+import {
+  CardListItem,
+  CardUnorderedList,
+  FeatureCard,
+} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 const AnimatedBox = animated(Box);
 
 export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
@@ -90,8 +89,9 @@ export const AnimatedFeatureCard = ({ tier, onOpenModal }) => {
             variant="holo"
             withContainer={false}
             onClick={() => onOpenModal(tier.title)}
+            // onClick={() => onOpenModal(tier.title)}
           >
-            Manage Collections
+            {tier.title}
           </RCButton>
         </CardActions>
       </FeatureCard>
@@ -103,19 +103,18 @@ const FeatureCardsSection = () => {
   const breakpoints = theme.breakpoints;
   const isSmUp = useMediaQuery(breakpoints.up('sm'));
   const { tiers, introText } = pages;
-  const {
-    allFeatureData,
-    showDetailsModal,
-    detailsModalShow,
-    isModalOpen,
-    modalContent,
-  } = useModalContext();
+  const { dialogState, openDialog } = useDialogState();
   const handleOpenModal = (itemTitle) => {
-    const selectedItem = allFeatureData.find(
+    const selectedItem = featureCardData.find(
       (item) => item.title === itemTitle
     );
     if (selectedItem) {
-      showDetailsModal(selectedItem);
+      openDialog('isDetailsDialogOpen');
+      // openDialogWithData('isDetailsDialogOpen', selectedItem);
+      // toggleDialog('isDetailsDialogOpen');
+      console.log(selectedItem);
+      console.log(dialogState);
+      // openDialog('isDetailsDialogOpen');
     }
   };
   return (

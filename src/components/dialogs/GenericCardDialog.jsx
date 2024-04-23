@@ -17,26 +17,27 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import CardMediaSection from '../cards/CardMediaSection';
 import CardDetailsContainer from '../cards/CardDetailsContainer';
-import { useSelectedContext, useModalContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import { useSnackbar } from 'notistack';
 import FlexBetween from '../../layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import useDialogState from '../../context/hooks/useDialogState';
 
 const GenericCardDialog = ({
   open = false,
   transition = false,
-  onClose,
   title = '',
   card,
   context,
+  onClose,
   ...otherProps
 }) => {
   const { theme } = useMode();
+  const { closeDialog, dialogState } = useDialogState();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const { isMobile } = useBreakpoint();
-
-  const { closeModal } = useModalContext();
+  console.log('GENERIC CARD DIALOG OPEN', open);
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
   const handleAction = useCallback(
     (message, variant) => {
@@ -57,11 +58,14 @@ const GenericCardDialog = ({
     },
     [handleAction]
   );
-
   return (
     <Dialog
       open={open}
-      onClose={closeModal}
+      onClose={(e) => {
+        if (onClose) {
+          onClose(e);
+        }
+      }}
       TransitionComponent={transition ? Slide : Fade}
       fullScreen={fullScreen}
       aria-labelledby="card-detail-dialog-title"
@@ -69,32 +73,51 @@ const GenericCardDialog = ({
       maxWidth="md"
       fullWidth
       sx={{
+        // position: 'relative', // Ensure the relative positioning for the close button's absolute positioning
+
         '& .MuiDialog-paper': {
           borderRadius: 2,
           p: 2,
           maxHeight: '90vh',
           alignItems: 'center',
+          // position: 'relative', // Ensure the relative positioning for the close button's absolute positioning
+        },
+      }}
+      slotProps={{
+        Backdrop: {
+          onClick: (e) => {
+            e.stopPropagation();
+            if (onClose) {
+              onClose();
+            }
+          },
         },
       }}
     >
+      <IconButton
+        aria-label="close"
+        onClick={(e) => {
+          e.stopPropagation(); // Ensure the click doesn't propagate
+          if (onClose) {
+            onClose(e);
+          }
+        }}
+        sx={{
+          position: 'absolute', // Ensure the button is absolutely positioned
+          right: 10, // Right aligned
+          top: 8, // Top aligned
+          color: theme.palette.grey[500], // Color from the theme
+          zIndex: 2, // Ensure it's above other elements
+        }}
+      >
+        <CloseIcon fontSize="15rem" />
+      </IconButton>
       <FlexBetween
         sx={{
           position: isMobile ? 'absolute' : 'relative',
           height: isMobile ? '100%' : 'auto',
         }}
       >
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon fontSize="2rem" />
-        </IconButton>
         <Typography variant="h6" sx={{ mb: 2 }} id="card-detail-dialog-title">
           {title}
         </Typography>

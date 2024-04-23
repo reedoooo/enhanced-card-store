@@ -17,7 +17,7 @@ import { useMode } from '../../../context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
-} from '../../../pages/pageStyles/StyledComponents';
+} from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const LoadingCardSkeleton = () => {
   return (

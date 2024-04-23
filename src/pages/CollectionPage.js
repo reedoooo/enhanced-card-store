@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 import CollectionPortfolio from '../layout/collection';
 import GenericCardDialog from '../components/dialogs/GenericCardDialog';
-import useLoadingAndModal from './pageStyles/useLoadingAndModal';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import useSelectedCollection from '../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useCollectionManager from '../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import { useLoading } from '../context/hooks/useLoading';
 import LoadingOverlay from '../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useDialogState from '../context/hooks/useDialogState';
 
 const CollectionPage = () => {
   const selectionData = useSelectedCollection();
@@ -20,8 +19,7 @@ const CollectionPage = () => {
     return <LoadingOverlay />;
   }
   const { fetchCollections, hasFetchedCollections } = collectionData;
-  const { returnDisplay, isModalOpen, modalContent, closeModal } =
-    useLoadingAndModal();
+  const { dialogState, closeDialog, data } = useDialogState();
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
@@ -32,14 +30,14 @@ const CollectionPage = () => {
     <PageLayout backCol={true}>
       <Grid item xs={12}>
         <CollectionPortfolio allCollections={allCollections} />
-        {isModalOpen && (
+        {/* {dialogState.isCardDialogOpen && (
           <GenericCardDialog
-            open={isModalOpen}
+            open={dialogState.isCardDialogOpen}
             context={'Collection'}
-            closeModal={closeModal}
-            card={modalContent}
+            closeModal={closeDialog('isCardDialogOpen')}
+            card={data}
           />
-        )}
+        )} */}
       </Grid>
     </PageLayout>
   );

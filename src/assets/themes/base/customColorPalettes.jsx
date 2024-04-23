@@ -61,6 +61,16 @@ const grey = {
   contrastText: '#e0e0e0',
   main: '#e0e0e0',
 };
+const white = {
+  main: '#ffffff',
+  focus: '#E8E8E8',
+};
+const black = {
+  light: '#212121',
+  main: '#1C1C1C',
+  focus: '#26242C',
+  dark: '#0B0C0E',
+};
 const greenAccent = {
   crystalGreen: hexToRgba('#4cceac', 0.6),
   darkCerulean: hexToRgba('#0d5d96', 0.9),
@@ -289,6 +299,8 @@ export {
   redAccent,
   blueAccent,
   myGradients,
+  white,
+  black,
 };
 // const backgroundA = {
 //   darkest: '#2e7c67', // '#70d8bd',

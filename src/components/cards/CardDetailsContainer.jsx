@@ -153,11 +153,12 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
             <CardHeader
               title={<Typography variant="h6">{detail.title}:</Typography>}
             />
+            <Divider />
             <CardContent>
               {/* <MDBox sx={{ border: 'none' }}> */}
               {/* <Typography variant="h6">{detail.title}:</Typography> */}
               {/* {detail.key === 'title' && <CardDetailTitle value={card?.name} />} */}
-              <Divider />
+              {/* <Divider /> */}
               {detail.key === 'desc' && (
                 <CardDetailDescription value={card?.desc} />
               )}

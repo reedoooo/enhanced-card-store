@@ -9,6 +9,9 @@ import {
 import Checkbox from '@mui/material/Checkbox';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import useDialogState from '../../context/hooks/useDialogState';
+import GenericCardDialog from '../dialogs/GenericCardDialog';
+import { usePopover } from '../../context/hooks/usePopover';
 
 const CardMediaSection = forwardRef(
   (
@@ -17,14 +20,14 @@ const CardMediaSection = forwardRef(
       card,
       isHovered,
       handleInteraction,
-      handleClick,
+      // handleClick,
       isRequired,
       isModalOpen,
+      context,
     },
     ref
   ) => {
     const [anchorEl, setAnchorEl] = useState(null);
-
     useEffect(() => {
       if (isHovered && ref?.current) {
         setAnchorEl(ref.current);
@@ -32,20 +35,38 @@ const CardMediaSection = forwardRef(
         setAnchorEl(null);
       }
     }, [isHovered, ref]);
+    const { dialogState, openDialog, closeDialog } = useDialogState();
+    const { setIsPopoverOpen } = usePopover();
+    const handleOpenDialog = () => {
+      openDialog('isCardDialogOpen');
+      setIsPopoverOpen(false);
+    };
     const label = { inputProps: { 'aria-label': 'Bookmark card' } };
-
+    const handleCloseDialog = () => {
+      closeDialog('isCardDialogOpen');
+    };
     return (
       <MediaContainer
         ref={ref}
+        onClick={handleOpenDialog}
         style={{ position: 'relative' }} // Ensure this container has relative positioning
         {...(isRequired && {
           onMouseEnter: () => handleInteraction?.(!isModalOpen ? true : false), // Use optional chaining
           onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
-          onClick: () => {
-            handleClick?.();
-          },
+          // onClick: () => {
+          //   handleClick?.();
+          // },
         })}
       >
+        {dialogState.isCardDialogOpen && (
+          <GenericCardDialog
+            open={dialogState.isCardDialogOpen}
+            context={context}
+            card={card}
+            onClose={handleCloseDialog}
+            title={card?.name}
+          />
+        )}
         <Media
           component="img"
           alt={`Image for ${imgUrl || 'the card'}`}

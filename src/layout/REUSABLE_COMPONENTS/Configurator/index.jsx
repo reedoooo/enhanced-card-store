@@ -19,7 +19,7 @@ import MDBox from '../MDBOX';
 import MDButton from '../MDBUTTON';
 import { formFields } from '../../../components/forms/formsConfig';
 import { TextField, InputLabel } from '@mui/material';
-import { StyledFormControl } from '../../../pages/pageStyles/StyledComponents';
+import { StyledFormControl } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const SearchSettingsForm = ({
   searchSettings,

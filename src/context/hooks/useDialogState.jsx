@@ -1,17 +1,28 @@
 // hooks/useDialogState.js
 import { useState, useCallback } from 'react';
 
-const useDialogState = (
-  initialState = {
+const useDialogState = () => {
+  const [state, setState] = useState({
     isAddDeckDialogOpen: false,
     isEditDeckDialogOpen: false,
     isAddCollectionDialogOpen: false,
     isEditCollectionDialogOpen: false,
     isAuthDialogOpen: false,
-  }
-) => {
-  const [state, setState] = useState(initialState);
-
+    isDetailsDialogOpen: false,
+    isCardDialogOpen: false,
+  });
+  const openDialog = useCallback((dialogName) => {
+    setState((prevStates) => ({
+      ...prevStates,
+      [dialogName]: true,
+    }));
+  }, []);
+  const closeDialog = useCallback((dialogName) => {
+    setState((prevStates) => ({
+      ...prevStates,
+      [dialogName]: false,
+    }));
+  }, []);
   const toggleDialog = useCallback((dialogName) => {
     setState((prevState) => ({
       ...prevState,
@@ -19,21 +30,15 @@ const useDialogState = (
     }));
   }, []);
 
-  const openDialog = useCallback((dialogName) => {
-    setState((prevState) => ({
-      ...prevState,
-      [dialogName]: true,
-    }));
-  }, []);
-
-  const closeDialog = useCallback((dialogName) => {
-    setState((prevState) => ({
-      ...prevState,
-      [dialogName]: false,
-    }));
-  }, []);
-
-  return { dialogState: state, toggleDialog, openDialog, closeDialog };
+  return {
+    dialogState: state,
+    toggleDialog,
+    openDialog,
+    closeDialog,
+    open,
+    // openDialogWithData,
+    // data,
+  };
 };
 
 export default useDialogState;

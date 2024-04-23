@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { IconButton, Box, Grid, Grow, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CollectionsIcon from '@mui/icons-material/Collections';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../context';
 import { DEFAULT_COLLECTION } from '../../context/constants';
