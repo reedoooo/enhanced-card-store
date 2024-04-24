@@ -6,7 +6,7 @@ import prepareTableData from '../data/topCards';
 import { useMemo } from 'react';
 import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import { Divider } from '@mui/joy';
-import { useMode } from '../../../context';
+import { useAppContext, useMode } from '../../../context';
 
 const PricedCardList = () => {
   const { theme } = useMode();
@@ -15,7 +15,7 @@ const PricedCardList = () => {
   const lightGrey = colors.grey.lightest;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
-  const { collectionMetaData } = useCompileCardData();
+  const { collectionMetaData } = useAppContext();
   const { data, columns } = useMemo(
     () => prepareTableData(collectionMetaData?.topFiveCards),
     [collectionMetaData?.topFiveCards]

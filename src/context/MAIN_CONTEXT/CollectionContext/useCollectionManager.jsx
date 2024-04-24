@@ -25,22 +25,33 @@ const useCollectionManager = () => {
   const { getCookie } = useManageCookies();
   const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const logger = useLogger('useCollectionManager');
-  const collectionData = useSelectedCollection();
-  if (!collectionData) {
-    console.error('Collection data not found');
-    return null;
-  }
   const {
-    selectedCollection,
-    selectedCollectionId,
+    collections,
+    handleSelectCollection,
     customError,
     setCustomError,
     refreshCollections,
-    updateCollectionsData,
-    handleRemoveCard,
     removeCollection,
+    updateCollectionField,
+    addCardToCollection,
     removeCardFromCollection,
-  } = collectionData;
+  } = useSelectedCollection();
+  // const collectionData = useSelectedCollection();
+  // if (!collectionData) {
+  //   console.error('Collection data not found');
+  //   return null;
+  // }
+  // const {
+  //   selectedCollection,
+  //   selectedCollectionId,
+  //   customError,
+  //   setCustomError,
+  //   refreshCollections,
+  //   updateCollectionsData,
+  //   handleRemoveCard,
+  //   removeCollection,
+  //   removeCardFromCollection,
+  // } = collectionData;
   const [error, setError] = useState(null);
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
   const handleError = useCallback(
@@ -63,7 +74,8 @@ const useCollectionManager = () => {
           null,
           'fetchCollections'
         );
-        updateCollectionsData(responseData?.data, actionName, deletedId);
+        // updateCollectionsData(responseData?.data, actionName, deletedId);
+        refreshCollections(responseData?.data);
         setHasFetchedCollections(true);
       } catch (error) {
         handleError(error, 'fetchCollections');
@@ -75,7 +87,7 @@ const useCollectionManager = () => {
       status,
       fetchWrapper,
       createApiUrl,
-      updateCollectionsData,
+      refreshCollections,
       handleError,
     ]
   );
@@ -86,10 +98,10 @@ const useCollectionManager = () => {
         return;
       }
 
-      if (!selectedCollection || selectedCollection === null) {
-        console.warn('No collection selected');
-        return;
-      }
+      // if (!selectedCollection || selectedCollection === null) {
+      //   console.warn('No collection selected');
+      //   return;
+      // }
 
       options.beforeAction?.();
       console.log(
@@ -123,10 +135,9 @@ const useCollectionManager = () => {
           // await fetchCollections(actionName, response?.data?.data); // Refresh collections after any action
         } else {
           console.log('REMOVED CARDS FROM COLLECTION', response?.data);
-          handleRemoveCard(
-            response?.data?.cardId,
+          removeCardFromCollection(
             response?.data?.collectionId,
-            response?.data?.newQuantity
+            response?.data?.cardId
           );
           await fetchCollections(actionName, response?.data?.collectionId); // Refresh collections after any action
         }
@@ -143,8 +154,8 @@ const useCollectionManager = () => {
       fetchCollections,
       handleError,
       setCustomError,
-      selectedCollection,
-      selectedCollectionId,
+      // selectedCollection,
+      // selectedCollectionId,
     ]
   );
   const createNewCollection = useCallback(async (datas) => {
@@ -254,7 +265,7 @@ const useCollectionManager = () => {
       customError,
       setCustomError,
       refreshCollections,
-      updateCollectionsData,
+      // updateCollectionsData,
       hasFetchedCollections,
       handleError,
       removeOneFromCollection: (card, collection) =>
@@ -272,7 +283,7 @@ const useCollectionManager = () => {
       customError,
       setCustomError,
       refreshCollections,
-      updateCollectionsData,
+      // updateCollectionsData,
       hasFetchedCollections,
       handleError,
     ]

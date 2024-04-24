@@ -11,7 +11,6 @@ import {
   CardProvider,
   DeckProvider,
   CartProvider,
-  SidebarProvider,
   AppContextProvider,
   ConfiguratorProvider,
 } from './context';
@@ -34,11 +33,9 @@ const App = () => {
               <CardProvider>
                 <DeckProvider>
                   <CartProvider>
-                    <SidebarProvider>
-                      <AppContextProvider>
-                        <Main />
-                      </AppContextProvider>
-                    </SidebarProvider>
+                    <AppContextProvider>
+                      <Main />
+                    </AppContextProvider>
                   </CartProvider>
                 </DeckProvider>
               </CardProvider>

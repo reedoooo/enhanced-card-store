@@ -1,18 +1,17 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { Grid, useMediaQuery, Icon, Box } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import { useMode } from '../../context';
+import { useAppContext, useMode } from '../../context';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import { ResponsiveContainer } from 'recharts';
-import preparePortfolioTableData from './data/portfolioData';
 import {
   calculateChangePercentage,
+  createMarkers,
   formatDateBasedOnRange,
 } from '../../context/Helpers';
 import { TopCardsDisplayRow } from './TopCardsDisplayRow';
@@ -24,6 +23,10 @@ import NivoContainer from '../REUSABLE_COMPONENTS/layout-utils/NivoContainer';
 import MyResponsiveLine from './MyPortfolioLineChart';
 import { CircularProgress } from '@mui/joy';
 import { ChartArea } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import useSelector from '../../context/MAIN_CONTEXT/CollectionContext/useSelector';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import { defaultValues } from '../../context/simplified_constants';
+import preparePortfolioTableData from './data/portfolioData';
 
 const renderCardContainer = (content) => {
   return (
@@ -43,15 +46,30 @@ const renderCardContainer = (content) => {
 const ChartGridLayout = () => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
-  const selectionData = useSelectedCollection();
-  if (!selectionData) {
+  const {
+    fetchCollections,
+    collections: allCollections,
+    hasFetchedCollections,
+    selectedCollectionId,
+    selectedCollection,
+  } = useManager();
+
+  useEffect(() => {
+    if (!hasFetchedCollections) {
+      fetchCollections();
+    }
+  }, []);
+  const showCollections = selectedCollectionId ? true : false;
+  const { data, columns } = useMemo(() => {
+    if (!selectedCollection?.cards) {
+      return { data: [], columns: [] }; // Provide default empty structures
+    }
+    return preparePortfolioTableData(selectedCollection.cards);
+  }, [selectedCollection?.cards]);
+
+  if (!selectedCollection) {
     return <LoadingOverlay />;
   }
-  const { selectedCollection, showCollections } = useSelectedCollection();
-  const { data, columns } = useMemo(
-    () => preparePortfolioTableData(selectedCollection?.cards),
-    [selectedCollection?.cards]
-  );
   return (
     <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
@@ -162,18 +180,22 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
-  const { selectedTimeRange = '24hr' } = useCompileCardData();
-  const { selectedCollection, createMarkers } = useSelectedCollection();
+  const { selectedTimeRange = '24hr' } = useAppContext();
+  const { selectedCollection } = useManager();
   if (!selectedCollection) {
     return <LoadingOverlay />;
   }
   const memoChartData = useMemo(() => {
     const { selectedChartData, averagedChartData, selectedChartDataKey } =
       selectedCollection;
-    return !selectedChartData.data.length
+    return !selectedChartData?.data?.length
       ? averagedChartData[selectedChartDataKey]
       : selectedChartData;
-  }, [selectedCollection]);
+  }, [
+    selectedCollection.selectedChartData,
+    selectedCollection.averagedChartData,
+    selectedCollection.selectedChartDataKey,
+  ]);
   if (!memoChartData) {
     return <LoadingOverlay />;
   }

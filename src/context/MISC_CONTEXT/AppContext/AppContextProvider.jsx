@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { defaultContextValue } from '../../constants';
+import { defaultContextValue } from '../../defaultContextValues';
 import { useCompileCardData } from './useCompileCardData';
 
 const AppContext = createContext(defaultContextValue.APP_CONTEXT);
@@ -39,6 +39,11 @@ export const AppContextProvider = ({ children }) => {
       setSelectedTimeRange,
       chartData,
       setChartData,
+      compileCollectionMetaData,
+      compileCardsWithQuantities,
+      // isCollectionInContext: () => {},
+      // getCardQuantities: () => {},
+      // checkIfCardIsInContext: () => {},
     }),
     [
       isCardInContext,
@@ -47,6 +52,10 @@ export const AppContextProvider = ({ children }) => {
       compileCardsWithQuantities,
       isCardInContext,
       compileCollectionMetaData,
+      selectedTimeRange,
+      setSelectedTimeRange,
+      chartData,
+      setChartData,
     ]
   );
 

@@ -4,7 +4,7 @@ export { useDeckStore } from './MAIN_CONTEXT/DeckContext/DeckContext';
 export { useCardStore } from './MAIN_CONTEXT/CardContext/CardContext';
 export { useCollectionStore } from './MAIN_CONTEXT/CollectionContext/CollectionContext';
 export { useUserContext } from './MAIN_CONTEXT/UserContext/UserContext';
-export { useSidebarContext } from './UTILITIES_CONTEXT/SideBarContext/SideBarProvider';
+// export { useSidebarContext } from './UTILITIES_CONTEXT/SideBarContext/SideBarProvider';
 export { useAppContext } from './MISC_CONTEXT/AppContext/AppContextProvider';
 export { useAuthContext } from './MAIN_CONTEXT/AuthContext/authContext';
 export { useMode } from './UTILITIES_CONTEXT/ColorModeContext/useMode';
@@ -20,5 +20,5 @@ export { CollectionProvider } from './MAIN_CONTEXT/CollectionContext/CollectionC
 export { AppContextProvider } from './MISC_CONTEXT/AppContext/AppContextProvider';
 export { UserProvider } from './MAIN_CONTEXT/UserContext/UserContext';
 export { ColorModeProvider } from './UTILITIES_CONTEXT/ColorModeContext/ColorModeProvider';
-export { SidebarProvider } from './UTILITIES_CONTEXT/SideBarContext/SideBarProvider';
+// export { SidebarProvider } from './UTILITIES_CONTEXT/SideBarContext/SideBarProvider';
 export { ConfiguratorProvider } from './UTILITIES_CONTEXT/ConfiguratorContext/ConfiguratorContext';

@@ -5,7 +5,7 @@ import {
   updateField,
   addItem,
   removeItem,
-} from './utilities';
+} from './crud-utils';
 
 function useSelectedCollection() {
   const [collections, modifyCollections] = useLocalStorageManager(

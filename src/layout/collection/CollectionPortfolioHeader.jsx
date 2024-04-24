@@ -3,11 +3,10 @@ import { IconButton, Box, Grid, Grow, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../context';
-import { DEFAULT_COLLECTION } from '../../context/constants';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from '../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+// import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import { collectionPortfolioHeaderItems } from '../../data/collectionPortfolioHeaderItems';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
@@ -33,9 +32,6 @@ const HeaderItem = ({ icon, label, value, delay }) => {
 };
 const CollectionPortfolioHeader = ({ onBack, collection }) => {
   const { theme } = useMode();
-  if (!collection || collection === DEFAULT_COLLECTION) {
-    return <PageHeaderSkeleton />;
-  }
   const items = collectionPortfolioHeaderItems(collection);
   return (
     <DashboardBox

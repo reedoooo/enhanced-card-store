@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { CardHeader, Grid, Box, useMediaQuery } from '@mui/material';
-import GenericCardDialog from '../components/dialogs/GenericCardDialog';
-import DetailsModal from '../components/dialogs/DetailsModal';
 import SplashPage2 from '../layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import HeroSection from '../layout/home/HeroSection';
@@ -9,10 +7,7 @@ import FeatureCardsSection from '../layout/home/FeatureCardsSection';
 import useDialogState from '../context/hooks/useDialogState';
 
 const HomePage = () => {
-  const { dialogState, data, closeDialog } = useDialogState();
-
   const splashRef = useRef(null);
-
   useEffect(() => {
     if (splashRef.current) {
       Object.assign(splashRef.current.style, {
@@ -30,18 +25,6 @@ const HomePage = () => {
       <SplashPage2 />
     </div>
   );
-  const renderDialogs = () => (
-    <>
-      {dialogState.isDetailsDialogOpen && (
-        <DetailsModal
-          open={dialogState.isDetailsDialogOpen}
-          onClose={() => closeDialog('isDetailsDialogOpen')}
-          selectedCard={data}
-        />
-      )}
-    </>
-  );
-
   return (
     <PageLayout backCol={true}>
       <Grid container spacing={3}>
@@ -53,7 +36,6 @@ const HomePage = () => {
         <Grid item xs={12}>
           <FeatureCardsSection />
         </Grid>
-        {renderDialogs()}
       </Grid>
     </PageLayout>
   );

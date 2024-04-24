@@ -1,21 +1,13 @@
 import { Box, Typography } from '@mui/material';
 import StatBox from 'REUSABLE_COMPONENTS/StatBox';
 import { useMode, useAppContext } from '../../../context';
-
 import StackedLineChartRoundedIcon from '@mui/icons-material/StackedLineChartRounded';
+
 const PerformanceStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
-  // const primary = colors.primary.default;
-  // const blue = colors.blueAccent.default;
-  const green = colors.greenAccent.default;
-  const greenliht = colors.greenAccent.light;
-
-  const grey = colors.grey.default;
-  const { collectionMetaData } = useAppContext();
-
   return (
     <Box
       sx={{

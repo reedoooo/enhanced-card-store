@@ -28,7 +28,6 @@ import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
 import useInitialFormData from '../../components/forms/hooks/useInitialFormData';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 import prepareDeckData from './deckData';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import { nanoid } from 'nanoid';
 import { useLoading } from '../../context/hooks/useLoading';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
@@ -71,12 +70,6 @@ const DeckListItem = ({
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const isSelected = selectedDeckId === deck._id;
-
-  // useEffect(() => {
-  //   if (isEditPanelOpen) {
-  //     handleDeckLoaded(deck?._id);
-  //   }
-  // }, [isEditPanelOpen]);
 
   return (
     <Collapse in={true} timeout={1000}>
@@ -193,6 +186,7 @@ const DeckListItem = ({
                               key={`${card._id}-${index}-${quantityIndex}`}
                               cardClasses="card-deck"
                               // cardClasses={`base-card-quantity-index-${quantityIndex}`}
+                              selectedDeckId={selectedDeckId}
                               card={card}
                               initialIndex={index}
                               quantityIndex={quantityIndex}

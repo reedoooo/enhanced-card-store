@@ -8,7 +8,7 @@ import React, {
 import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from '../../assets/images/placeholder.jpeg';
-import { useMode } from '../../context';
+import { useAppContext, useMode } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useSnackbar } from 'notistack';
 import useSelectedContext from '../../context/hooks/useSelectedContext';
@@ -18,12 +18,9 @@ import {
   StyledCardContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { usePopover } from '../../context/hooks/usePopover';
-import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
 import useDialogState from '../../context/hooks/useDialogState';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
 const getQuantity = ({
   card,
   cart,
@@ -56,17 +53,27 @@ const getQuantity = ({
 };
 
 const GenericCard = React.forwardRef((props, ref) => {
-  const { cart } = useCartManager();
-  const collectiondata = useSelectedContext();
-  if (!collectiondata) return <LoadingOverlay />;
-  const { selectedCollection, allCollections } = collectiondata;
-  const { selectedDeck, allDecks } = useSelectedDeck();
+  // const collectiondata = useSelectedContext();
+  // if (!collectiondata) return <LoadingOverlay />;
+  // const { selectedCollection, allCollections } = collectiondata;
+  // const { entities: collections } = useSelector('collections');
+  // const { entities: decks } = useSelector('decks');
+  const {
+    collections: allCollections,
+    decks: allDecks,
+    selectedDeck,
+    selectedCollection,
+    selectedCollectionId,
+    selectedDeckId,
+    cart,
+  } = useManager();
   const { setContext, setIsContextSelected } = useSelectedContext();
-  const { isCardInContext } = useCompileCardData();
+  const { isCardInContext } = useAppContext();
   const { dialogState, openDialog } = useDialogState();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
   const { card, context, page, quantityIndex, isDeckCard } = props;
+
   const effectiveContext =
     typeof context === 'object' ? context.pageContext : context;
   const { theme } = useMode();
@@ -198,13 +205,13 @@ const GenericCard = React.forwardRef((props, ref) => {
       >
         <GenericActionButtons
           card={card}
-          // selectedEntity={
-          //   effectiveContext === 'Cart'
-          //     ? cart
-          //     : effectiveContext === 'Collection'
-          //       ? selectedCollection
-          //       : selectedDeck
-          // }
+          selectedId={
+            effectiveContext === 'Cart'
+              ? cart?._id
+              : effectiveContext === 'Collection'
+                ? selectedCollection?._id
+                : selectedDeck?._id
+          }
           context={effectiveContext}
           // selectedEnt={selectedEntity}
           onClick={() => handleContextSelect(effectiveContext)}

@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { defaultContextValue } from '../../constants';
+import { defaultContextValue } from '../../defaultContextValues';
 import useManageCookies from '../../hooks/useManageCookies';
 export const CollectionContext = createContext(
   defaultContextValue.COLLECTION_CONTEXT

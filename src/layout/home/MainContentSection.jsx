@@ -24,19 +24,21 @@ import {
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import placeHolder from '../../assets/images/placeholder.jpeg';
 import { DEFAULT_COLLECTION } from '../../context/constants';
-import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useManageCookies from '../../context/hooks/useManageCookies';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
 
 const MainContentSection = () => {
   const { theme } = useMode();
   const { getCookie } = useManageCookies();
   const { isLoggedIn } = getCookie(['isLoggedIn']);
   const { user } = useUserData();
-  const { hasFetchedCollections } = useCollectionManager();
-  const { allCollections, selectedCollection } = useSelectedCollection();
+  const {
+    collections: allCollections,
+    selectedCollection,
+    hasFetchedCollections,
+  } = useManager();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const initialCardsData = hasFetchedCollections
     ? allCollections[0]?.cards[0]

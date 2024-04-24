@@ -1,8 +1,8 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import set from 'lodash.set';
-import { defaultValues } from '../../simplified_constants';
-import { SELECTED_DECK_ID } from '../../constants';
+import { defaultValues, constants } from '../../simplified_constants';
+const { SELECTED_DECK_ID } = constants;
 import useManageCookies from '../../hooks/useManageCookies';
 // const defaultDecks = {
 //   allIds: [SELECTED_DECK_ID],

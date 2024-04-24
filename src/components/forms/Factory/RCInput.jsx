@@ -15,25 +15,15 @@ import {
   Input,
   Autocomplete,
   OutlinedInput,
-  useMediaQuery,
-  Box,
-  Button,
-  ButtonBase,
-  CardActions,
   Chip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import {
-  FormFieldBox,
-  StyledTextField,
-} from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledTextField } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { useMode } from '../../../context';
 import RCSwitch from './RCSwitch';
-import { zodSchemas } from '../formsConfig';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
-import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import { nanoid } from 'nanoid';
+import useManager from '../../../context/MAIN_CONTEXT/CollectionContext/useManager';
 const RCInput = forwardRef(
   (
     {
@@ -52,31 +42,52 @@ const RCInput = forwardRef(
   ) => {
     const { theme } = useMode();
     const { isMobile } = useBreakpoint();
-    const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
-      useCompileCardData();
-    const { selectedCollection, updateCollectionField } =
-      useSelectedCollection();
+    const { updateEntityField, selectedCollection, selectedCollectionId } =
+      useManager();
+
+    // const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
+    //   useCompileCardData();
     const handleSelectChange = (event) => {
       const selectedValue = event.target.value;
-      // if (rest.name === 'timeRange') {
-      setSelectedTimeRange(selectedValue); // Update local form state
-      // }
       onChange(selectedValue); // Update local form state
 
+      // Dynamically update collection fields
       if (type === 'select') {
-        // For 'select' type inputs, update collection fields dynamically
-        updateCollectionField(
-          selectedCollection._id,
+        updateEntityField(
+          'collections',
+          selectedCollectionId,
           'selectedChartDataKey',
           selectedValue
         );
-        updateCollectionField(
-          selectedCollection._id,
-          'selectedChartData',
-          selectedCollection?.averagedChartData[selectedValue]
-        );
+        // updateEntityField(
+        //   'collections',
+        //   selectedCollectionId,
+        //   'selectedChartData',
+        //   selectedCollection?.averagedChartData[selectedValue]
+        // );
       }
     };
+    // const handleSelectChange = (event) => {
+    //   const selectedValue = event.target.value;
+    //   // if (rest.name === 'timeRange') {
+    //   setSelectedTimeRange(selectedValue); // Update local form state
+    //   // }
+    //   onChange(selectedValue); // Update local form state
+
+    //   if (type === 'select') {
+    //     // For 'select' type inputs, update collection fields dynamically
+    //     updateCollectionField(
+    //       selectedCollection._id,
+    //       'selectedChartDataKey',
+    //       selectedValue
+    //     );
+    //     updateCollectionField(
+    //       selectedCollection._id,
+    //       'selectedChartData',
+    //       selectedCollection?.averagedChartData[selectedValue]
+    //     );
+    //   }
+    // };
     const [inputValue, setInputValue] = useState('');
 
     const handleKeyDown = (event) => {

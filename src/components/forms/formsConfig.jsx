@@ -20,11 +20,8 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { z } from 'zod';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
-import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ------------------------------- FORM KEYS -----------------------------------
@@ -74,14 +71,14 @@ const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
   const { handleRequest, setSearchSettings, searchSettings } =
     useCardStoreHook();
-  const collectionmanagedata = useCollectionManager();
-  const selectionData = useSelectedCollection();
-  if (!collectionmanagedata || !selectionData) {
-    return <LoadingOverlay />;
-  }
-  const { createNewCollection, updateCollection } = collectionmanagedata;
-  const { selectedCollection, updateCollectionField } = selectionData;
-  const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
+  const {
+    addCollection,
+    updateCollection,
+    deleteDeck,
+    addDeck,
+    updateDeck: updateDeckDetails,
+  } = useManager();
+  // const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
 
   const formHandlers = {
     loginForm: (formData) => {
@@ -97,7 +94,7 @@ const getFormFieldHandlers = () => {
     },
     addCollectionForm: (formData, additionalData) => {
       console.log('Add Collection Form Data:', formData, additionalData);
-      createNewCollection(formData, additionalData);
+      addCollection(formData, additionalData);
     },
     updateCollectionForm: (formData, additionalData) => {
       console.log('Update Collection Form Data:', formData, additionalData);
@@ -109,7 +106,7 @@ const getFormFieldHandlers = () => {
     },
     addDeckForm: (formData, additionalData) => {
       console.log('Add Deck Form Data:', formData, additionalData);
-      createNewDeck(formData, additionalData);
+      addDeck(formData, additionalData);
     },
     deleteDeckForm: (formData, additionalData) => {
       console.log('Delete Deck Form Data:', formData, additionalData);

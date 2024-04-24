@@ -2,20 +2,16 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import MDTypography from './MDTYPOGRAPHY/MDTypography';
 import { getContextIcon } from './icons/index';
-import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import { useSnackbar } from 'notistack';
 import GlassyIcon from './icons/GlassyIcon';
 import MDBox from './MDBOX';
-import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
-import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
 import LoadingOverlay from './system-utils/LoadingOverlay';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import { useMode } from '../../context';
 import { useLoading } from '../../context/hooks/useLoading';
 import { LoadingButton } from '@mui/lab';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -31,6 +27,7 @@ const ActionButton = ({
   variant,
 }) => {
   const { theme } = useMode();
+  // const { isLoading } = useSelector('loadingStates', { defaultEntities: {} });
   const { isLoading } = useLoading();
   const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
   const actionIcon =
@@ -47,7 +44,8 @@ const ActionButton = ({
       variant={'contained'}
       // color={actionType === 'add' ? 'success.main' : 'error'}
       size={adjustedButtonSize}
-      loading={isLoading(loadingKey)}
+      loading={isLoading(`${actionType}Cards`)}
+      // loading={isLoading(loadingKey)}
       onClick={handleCardAction}
       startIcon={actionIcon}
       sx={{
@@ -82,6 +80,7 @@ const ActionButton = ({
 };
 const GenericActionButtons = ({
   card,
+  selectedId,
   // selectedEnt,
   context = 'Collection',
   onClick,
@@ -93,71 +92,103 @@ const GenericActionButtons = ({
 }) => {
   const { theme } = useMode();
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
-  const memoizedReturnValues = useCollectionManager(); // Add this line to use useCollectionManager
-  const memoizedSelectionVals1 = useSelectedCollection(); // Add this line to use useCollectionManager
-  const memoizedSelectionVals2 = useSelectedDeck(); // Add this line to use useCollectionManager
-  const memoizedSelectionVals3 = useCartManager(); // Add this line to use useCollectionManager
-  const memoizedReturnValues4 = useDeckManager();
-  if (!memoizedReturnValues) return <LoadingOverlay />; // Add this line to use useCollectionManager
-  const { addOneToCollection, removeOneFromCollection } = memoizedReturnValues; // Modify this line to use useCollectionManager
-  const { addOneToDeck, removeOneFromDeck } = memoizedReturnValues4;
-  const { addOneToCart, removeOneFromCart } = memoizedSelectionVals3;
+  // const { selectedEntity, selectedEntityId } = useSelector(
+  //   context.toLowerCase()
+  // );
+  const manager = useManager();
+  if (!manager) {
+    return <LoadingOverlay />;
+  }
+  const {
+    addItemToCart,
+    removeItemFromCart,
+    addItemToCollection,
+    removeItemFromCollection,
+    addItemToDeck,
+    removeItemFromDeck,
+    fetchDecks,
+    setDecks,
+    allDecks,
+    selectedCollectionId,
+    selectedDeckId,
+    selectedCartId,
+  } = manager;
+  // const updateDecksState = useCallback((updatedDeck) => {
+  //   setDecks((prevDecks) =>
+  //     prevDecks.map((deck) =>
+  //       deck._id === updatedDeck._id ? updatedDeck : deck
+  //     )
+  //   );
+  // }, []);
+  // const selectedEntity = entities[context?.toLowerCase()]; // dynamically access the right context
+  // const addEnt = addOrUpdateEntity[context];
+  // const removeEnt = removeEntity[context];
+  const handleAction = useCallback(
+    (actionType) => {
+      try {
+        switch (context) {
+          case 'Collection':
+            if (actionType === 'add') {
+              addItemToCollection(card);
+            } else {
+              removeItemFromCollection(card);
+            }
+            break;
+          case 'Deck':
+            if (actionType === 'add') {
+              console.log(card);
+              addItemToDeck(card);
+            } else {
+              removeItemFromDeck(card);
+            }
+            break;
+          case 'Cart':
+            if (actionType === 'add') {
+              addItemToCart(card);
+            } else {
+              removeItemFromCart(card);
+            }
+            break;
+          default:
+            throw new Error('Invalid context');
+        }
+        enqueueSnackbar(`Card ${actionType}ed in ${context}`, {
+          variant: 'success',
+        });
+      } catch (error) {
+        console.error(`Error with ${actionType} card in ${context}:`, error);
+        enqueueSnackbar(`Failed to ${actionType} card in ${context}`, {
+          variant: 'error',
+        });
+      }
+    },
+    [
+      enqueueSnackbar,
+      context,
+      card,
+      addItemToCollection,
+      removeItemFromCollection,
+      addItemToDeck,
+      removeItemFromDeck,
+      addItemToCart,
+      removeItemFromCart,
+      selectedCollectionId,
+      selectedDeckId,
+      selectedCartId,
+      addItemToCart,
+      removeItemFromCart,
+      addItemToCollection,
+      removeItemFromCollection,
+      addItemToDeck,
+      removeItemFromDeck,
+    ]
+  );
   const [buttonSize, setButtonSize] = useState(
     buttonSizeMap[cardSize] || 'medium'
   );
-  const [selectedEntity, setSelectedEntity] = useState({});
-  useEffect(() => {
-    if (context === 'Collection') {
-      setSelectedEntity(memoizedSelectionVals1.selectedCollection);
-    } else if (context === 'Deck') {
-      // console.log('ENT', memoizedSelectionVals2.selectedDeck);
-      setSelectedEntity(memoizedSelectionVals2.selectedDeckId);
-    } else if (context === 'Cart') {
-      setSelectedEntity(memoizedSelectionVals3.cart);
-    }
-  }, [
-    memoizedSelectionVals1.selectedCollectionId,
-    memoizedSelectionVals2.selectedDeckId,
-    // memoizedSelectionVals2.allDecks,
-    memoizedSelectionVals3.cart,
-    context,
-  ]);
   useEffect(() => {
     setButtonSize(buttonSizeMap[cardSize] || 'medium');
   }, [cardSize]);
-  const addActions = useMemo(
-    () => ({
-      Collection: addOneToCollection,
-      Deck: addOneToDeck,
-      Cart: addOneToCart,
-    }),
-    [addOneToCollection, addOneToDeck, addOneToCart]
-  );
-  const removeActions = useMemo(
-    () => ({
-      Collection: removeOneFromCollection,
-      Deck: removeOneFromDeck,
-      Cart: removeOneFromCart,
-    }),
-    [removeOneFromCollection, removeOneFromDeck, removeOneFromCart]
-  );
-
-  const handleAction = useCallback(
-    async (action, cardData, currentContext) => {
-      if (!cardData) {
-        console.error('No card data provided.');
-        enqueueSnackbar('Action failed.', { variant: 'error' });
-        return;
-      }
-      console.log(
-        `Action: ${action}, Card: ${card?.name}, Context: ${currentContext}, ENTITY: ${selectedEntity}`
-      );
-      const actionMap = action === 'add' ? addActions : removeActions;
-      actionMap[currentContext]?.(card, selectedEntity);
-    },
-    [addActions, removeActions, enqueueSnackbar, selectedEntity]
-  );
-
   return (
     <Box
       sx={{
@@ -217,24 +248,26 @@ const GenericActionButtons = ({
         <ActionButton
           action="add"
           buttonSize={buttonSize}
-          handleCardAction={() =>
-            handleAction('add', card, context, selectedEntity)
-          }
+          // handleCardAction={() =>
+          //   handleAction('add', card, context, selectedEntity)
+          // }
+          handleCardAction={() => handleAction('add')}
           labelValue={'add'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={datatable ? 'data-table' : 'card'}
           actionType="add"
-          selectedEntity={selectedEntity}
+          // selectedEntity={selectedEntity}
         />
         <ActionButton
           action="remove"
           buttonSize={buttonSize}
-          handleCardAction={() =>
-            handleAction('remove', card, context, selectedEntity)
-          }
+          handleCardAction={() => handleAction('remove')}
+          // handleCardAction={() =>
+          //   handleAction('remove', card, context, selectedEntity)
+          // }
           labelValue={'remove'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={datatable ? 'data-table' : 'card'}
           actionType="remove"
-          selectedEntity={selectedEntity}
+          // selectedEntity={selectedEntity}
         />
       </Box>
     </Box>

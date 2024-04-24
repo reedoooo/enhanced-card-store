@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCartManager } from '../../MAIN_CONTEXT/CartContext/useCartManager';
-import useSelectedCollection from '../../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
-import useSelectedDeck from '../../MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import useSelectedContext from '../../hooks/useSelectedContext';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import useManager from '../../MAIN_CONTEXT/CollectionContext/useManager';
 
 export const useCompileCardData = () => {
-  const { selectedDeck, allDecks } = useSelectedDeck();
-  const { selectedCollection, allCollections, updateCollectionField } =
-    useSelectedCollection();
-  const { cart } = useCartManager();
+  const {
+    selectedCollection,
+    collections: allCollections,
+    selectedDeck,
+    decks: allDecks,
+    cart,
+  } = useManager();
   const { selectedContext } = useSelectedContext();
   const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
     'collectionMetaData',
@@ -24,22 +25,6 @@ export const useCompileCardData = () => {
   const [selectedStat, setSelectedStat] = useState('highpoint');
   const [selectedTheme, setSelectedTheme] = useState('light');
   const [chartData, setChartData] = useState({});
-  // const [chartData, setChartData] = useState(
-  //   selectedCollection.averagedChartData[selectedTimeRange]
-  // );
-  // useEffect(() => {
-  //   const newData = selectedCollection?.averagedChartData[selectedTimeRange];
-  //   console.log(newData);
-  //   if (newData) {
-  //     console.log('NEW DATA FOR CHART', newData);
-  //     setChartData(newData);
-  //     updateCollectionField(
-  //       selectedCollection._id,
-  //       'selectedChartData',
-  //       newData
-  //     );
-  //   }
-  // }, []);
   const compileCardsWithQuantities = useCallback(() => {
     if (!allCollections && !allDecks && !cart) return [];
 

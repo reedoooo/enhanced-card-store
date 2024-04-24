@@ -6,8 +6,6 @@ import useDeckManager from '../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import useDialogState from '../context/hooks/useDialogState';
 
 const DeckBuilderPage = () => {
-  const { closeDialog, dialogState, data } = useDialogState();
-  const { hasFetchedDecks, fetchDecks } = useDeckManager();
   return (
     <PageLayout>
       <DeckBuilder />

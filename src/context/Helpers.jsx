@@ -65,3 +65,32 @@ export const formatDateBasedOnRange = (range) => {
 
   return formatMap[range] || formatMap.default;
 };
+export const createMarkers = (selected) => {
+  if (!selected || !selected.collectionStatistics) return [];
+
+  const { highPoint, lowPoint, avgPrice, percentageChange } =
+    selected.collectionStatistics;
+  return [
+    {
+      axis: 'y',
+      value: percentageChange,
+      lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+      legend: `${selected.name} High`,
+      legendOrientation: 'vertical',
+    },
+    {
+      axis: 'y',
+      value: lowPoint,
+      lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+      legend: `${selected.name} Low`,
+      legendOrientation: 'vertical',
+    },
+    {
+      axis: 'y',
+      value: avgPrice,
+      lineStyle: { stroke: '#b0413e', strokeWidth: 2 },
+      legend: `${selected.name} Avg`,
+      legendOrientation: 'vertical',
+    },
+  ];
+};

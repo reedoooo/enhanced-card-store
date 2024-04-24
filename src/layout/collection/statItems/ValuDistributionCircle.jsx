@@ -17,7 +17,7 @@ import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
-  const { collectionMetaData } = useCompileCardData();
+  const { collectionMetaData } = useAppContext();
   const colors = theme.palette.chartTheme;
   const { lightest, darkest, light, dark } = colors.greenAccent;
   const greyDark = colors.grey.dark;

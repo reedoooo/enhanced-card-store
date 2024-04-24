@@ -5,21 +5,18 @@ import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
 import CollectionDialog from '../../components/dialogs/CollectionDialog';
 import SelectCollectionList from './SelectCollectionList';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import useDialogState from '../../context/hooks/useDialogState';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import StatBoard from './StatBoard';
 import { Tab, Tabs } from '@mui/material';
-import RCHeader from '../REUSABLE_COMPONENTS/RCHeader';
 import ChartGridLayout from './ChartGridLayout';
 import CollectionPortfolioHeader from './CollectionPortfolioHeader';
 import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -94,59 +91,48 @@ const PortfolioView = ({ selectedCollection, handleBackToCollections }) => (
 const CollectionPortfolio = () => {
   const { theme } = useMode();
   const {
-    selectedCollectionId,
-    selectedCollection,
-    allCollections,
+    collections: allCollections,
     handleSelectCollection,
-  } = useSelectedCollection();
-  const collectionData = useCollectionManager();
-  if (!collectionData) {
-    return <LoadingOverlay />;
-  }
-  const { fetchCollections, hasFetchedCollections } = collectionData;
-  // useEffect(() => {
-  //   if (!hasFetchedCollections) {
-  //     fetchCollections();
-  //   }
-  // }, []);
-
-  const { chartData, setChartData } = useCompileCardData();
+    selectedCollectionId,
+  } = useManager();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
-  const tabs = [<Tab label="Collections" value={0} key={'collections-tab'} />];
-  if (selectedCollectionId) {
-    tabs.push(<Tab label="Portfolio View" value={1} key={'portfolio-tab'} />);
-  }
+
+  const tabs = [
+    <Tab label="Collections" value={0} key={'collections-tab'} />,
+    ...(selectedCollectionId
+      ? [
+          <Tab
+            label="Portfolio View"
+            value={1}
+            key={`${selectedCollectionId}-collectionId`}
+          />,
+        ]
+      : []),
+  ];
+
   const handleTabChange = (event, newValue) => {
-    if (newValue === 0 || (newValue === 1 && selectedCollectionId)) {
-      setActiveTab(newValue);
-    }
+    setActiveTab(newValue);
   };
-  // const handleSelectAndShowCollection = useCallback(
-  //   (collection) => {
-  //     handleSelectCollection(collection); // Assume this function sets the selectedCollectionId
-  //     setActiveTab(1); // Switch to Portfolio View tab
-  //   },
-  //   [handleSelectCollection]
-  // );
+
   const handleSelectAndShowCollection = useCallback(
     (collection) => {
-      handleSelectCollection(collection); // Sets the selectedCollectionId and selectedCollection
-      if (collection.averagedChartData) {
-        const selectedChartDataKey = Object.keys(
-          collection.averagedChartData
-        )[0]; // Get the first key as default
-        const selectedChartDataValue =
-          collection.averagedChartData[selectedChartDataKey];
-        setChartData(selectedChartDataValue); // Update the selectedChartData
-      }
+      handleSelectCollection(collection);
       setActiveTab(1); // Switch to Portfolio View tab
     },
-    [handleSelectCollection, setChartData]
+    [handleSelectCollection]
   );
+
+  if (!allCollections) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
-      <MDBox
+      <Tabs
+        value={activeTab}
+        onChange={handleTabChange}
+        aria-label="collection portfolio tabs"
         sx={{
           justifyContent: 'space-between',
           display: 'flex',
@@ -154,31 +140,20 @@ const CollectionPortfolio = () => {
           p: theme.spacing(4),
         }}
       >
-        <RCHeader title="DASHBOARD" subtitle="Welcome to your dashboard" />
-        <MDBox>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            aria-label="collection portfolio tabs"
-          >
-            {tabs}
-          </Tabs>
-        </MDBox>
-      </MDBox>
+        {tabs}
+      </Tabs>
       {activeTab === 0 && (
         <CollectionsView
           openDialog={openDialog}
           handleTabAndSelect={handleSelectAndShowCollection}
         />
       )}
-
       {activeTab === 1 && selectedCollectionId && (
         <PortfolioView
-          selectedCollection={selectedCollection}
-          handleBackToCollections={() => {
-            setActiveTab(0); // Switch back to collections tab when going back
-          }}
-          // allCollections={allCollections}
+          selectedCollection={allCollections?.find(
+            (c) => c._id === selectedCollectionId
+          )}
+          handleBackToCollections={() => setActiveTab(0)}
         />
       )}
       {dialogState.isAddCollectionDialogOpen && (

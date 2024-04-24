@@ -2,18 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import { Grid } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { useMode } from '../../context';
-import pages from '../../data/pages.json';
+import pages from '../../data/json-data/pages.json';
 import {
   StyledContainerBox,
   StyledPaper,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { Box, CardActions, CardContent, CardHeader } from '@mui/material';
 import { useSpring, animated as a, animated } from 'react-spring';
-import SimpleButton from '../REUSABLE_COMPONENTS/unique/SimpleButton';
-import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import useDialogState from '../../context/hooks/useDialogState';
-import featureCardData from '../../data/featureCardData.json'; // Adjust the path as necessary
+import featureCardData from '../../data/json-data/featureCardData.json'; // Adjust the path as necessary
 import {
   CardListItem,
   CardUnorderedList,

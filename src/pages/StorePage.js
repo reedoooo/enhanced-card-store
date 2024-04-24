@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import GenericCardDialog from '../components/dialogs/GenericCardDialog';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import StoreSearch from '../layout/store';
 import { Grid, Typography, Box } from '@mui/material';
 import { useMode } from '../context';
-import useDialogState from '../context/hooks/useDialogState';
 
 const heroBannerHeight = {
   xs: '7vh',

@@ -190,7 +190,7 @@ export const useCartManager = () => {
   return {
     cart,
     totalCost,
-    cartCardQuantity: cart.items.length,
+    cartCardQuantity: cart?.items?.length,
     fetchUserCart,
     createUserCart,
     updateCartLocally,

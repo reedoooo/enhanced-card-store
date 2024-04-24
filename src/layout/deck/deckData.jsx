@@ -1,6 +1,4 @@
 import { roundToNearestTenth } from '../../context/Helpers';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
-
 export default function prepareDeckData(deck) {
   const genData = {
     name: deck?.name,

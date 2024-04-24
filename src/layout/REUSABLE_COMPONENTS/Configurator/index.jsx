@@ -10,7 +10,7 @@ import {
   Slide,
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
-import searchData from '../../../data/search.json';
+import searchData from '../../../data/json-data/search.json';
 import { useConfiguratorContext, useMode } from '../../../context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';

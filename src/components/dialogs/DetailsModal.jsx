@@ -13,26 +13,13 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import featureCardData from '../../data/featureCardData.json'; // Path to your JSON file
-import useDialogState from '../../context/hooks/useDialogState';
+import featureCardData from '../../data/json-data/featureCardData.json'; // Path to your JSON file
 
 const DetailsModal = ({ open, onClose }) => {
-  // const { onClose, selectedValue, open } = props;
   const handleClose = () => {
     onClose('isDetailsDialogOpen');
   };
-
-  const handleListItemClick = (value) => {
-    onClose(value);
-  };
-  // const { closeDialog, dialogState } = useDialogState();
-  // const [open, setOpen] = React.useState(false);
-  // useEffect(() => {
-  //   console.log('DETAILS DIALOG EFFECT', dialogState);
-  //   setOpen(dialogState.isDetailsDialogOpen);
-  // }, [dialogState.isDetailsDialogOpen]);
   const featureData = featureCardData[0]; // Example: Using first item for demo
-
   console.log('featureData', featureData);
   return (
     <Dialog

@@ -1,0 +1,220 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+const defaultAuthContextValues = {
+  isLoggedIn: false,
+  accessToken: null,
+  refreshToken: null,
+  responseMessage: '',
+  authUser: null,
+  user: null,
+  basicData: null,
+  securityData: null,
+  userId: null,
+  login: () => {},
+  signup: () => {},
+  logout: () => {},
+  resetLogoutTimer: () => {},
+};
+const defaultDeckContextValues = {
+  deckData: {}, // Provide default values for context properties
+  allDecks: [],
+  selectedDeck: {},
+  userDecks: [],
+  totalQuantity: () => 0,
+  setSelectedDeck: () => {},
+  addOneToDeck: () => {},
+  removeOneFromDeck: () => {},
+  getTotalCost: () => 0,
+  getCardQuantity: () => 0,
+  updateAndSyncDeck: () => {},
+  updateDeckDetails: () => {},
+  createUserDeck: () => {},
+  fetchAllDecksForUser: () => {},
+  addCardsToDeck: () => {},
+  removeCardsFromDeck: () => {},
+  updateCardsInDeck: () => {},
+  updateOneInDeck: () => {},
+};
+const defaultCartContextValues = {
+  cartData: {},
+  cart: [],
+  selectedCart: {},
+  userCarts: [],
+  totalQuantity: () => 0,
+  setSelectedCart: () => {},
+  addOneToCart: () => {},
+  removeOneFromCart: () => {},
+  getTotalCost: () => 0,
+  getCardQuantity: () => 0,
+  updateAndSyncCart: () => {},
+  updateCartDetails: () => {},
+  deleteFromCart: () => {},
+
+  createUserCart: () => {},
+  fetchUserCart: () => {},
+  addCardsToCart: () => {},
+  removeCardsFromCart: () => {},
+  updateCardsInCart: () => {},
+  updateOneInCart: () => {},
+};
+const defaultCollectionContextValues = {
+  // MAIN STATE
+  // collectionData: {
+  //   data: [DEFAULT_COLLECTION.addDefaultCard()],
+  // },
+  // allCollections: [DEFAULT_COLLECTION.addDefaultCard()],
+  // selectedCollection: DEFAULT_COLLECTION.addDefaultCard(),
+  // selectedCards: DEFAULT_COLLECTION.cards,
+
+  // SECONDARY STATE (derived from main state selectedCollection)
+  collectionStatistics: {
+    collectionStatistics: {
+      highPoint: 0,
+      lowPoint: Infinity,
+      priceChange: 0,
+      percentageChange: 0,
+      twentyFourHourAverage: {
+        startDate: new Date(),
+        endDate: new Date(),
+        lowPoint: 0,
+        highPoint: 0,
+        priceChange: 0,
+        percentageChange: 0,
+        priceIncreased: false,
+      },
+      average: 0,
+      volume: 0,
+      volatility: 0,
+      general: {
+        totalPrice: 0,
+        topCard: '',
+        topCollection: '',
+      },
+    },
+  },
+  chartData: {
+    id: '24hr',
+    color: 'hsl(252, 70%, 50%)',
+    data: [{ x: new Date(), y: 0 }],
+  },
+  // allXYValues: DEFAULT_COLLECTION.chartData.allXYValues || [],
+  // totalPrice: DEFAULT_COLLECTION.totalPrice,
+  // totalQuantity: DEFAULT_COLLECTION.totalQuantity,
+  // latestPrice: DEFAULT_COLLECTION.latestPrice || {},
+  // lastSavedPrice: DEFAULT_COLLECTION.lastSavedPrice || {},
+  // collectionPriceHistory: DEFAULT_COLLECTION.collectionPriceHistory || [],
+  // cards: DEFAULT_COLLECTION.cards || [],
+
+  // STATE SETTERS
+  setCollectionData: () => {},
+  setAllCollections: () => {},
+  handleSelectCollection: () => {},
+  setSelectedCards: () => {},
+
+  // COLLECTION ACTIONS
+  createUserCollection: () => {},
+  removeCollection: () => {},
+  getAllCollectionsForUser: () => {},
+  updateAndSyncCollection: () => {},
+  deleteCollection: () => {},
+  updateSelectedCollection: () => {},
+
+  // CARD ACTIONS
+  addOneToCollection: () => {},
+  removeOneFromCollection: () => {},
+  updateOneInCollection: () => {},
+  updateChartDataInCollection: () => {},
+
+  // OTHER ACTIONS
+  getTotalPrice: () => {},
+  getCardQuantity: () => 0,
+};
+const defaultAppContextValues = {
+  deck: defaultDeckContextValues,
+  collection: defaultCollectionContextValues,
+  cart: defaultCartContextValues,
+  isCardInContext: () => {},
+  isCollectionInContext: () => {},
+  getCardQuantities: () => {},
+  checkIfCardIsInContext: () => {},
+};
+const defaultCardContextValues = {
+  cardsArray: [],
+  searchData: [],
+  savedDeckData: [],
+  currentCartArray: [],
+  isCardDataValid: false,
+  rawSearchData: [],
+  organizedSearchData: [],
+  slicedSearchData: [],
+  slicedAndMergedSearchData: [],
+  handleRequest: () => {},
+  setCardsArray: () => {},
+  setCurrentCartArray: () => {},
+  setSearchData: () => {},
+  setSavedDeckData: () => {},
+  setRawSearchData: () => {},
+  setOrganizedSearchData: () => {},
+  setSlicedSearchData: () => {},
+  setSlicedAndMergedSearchData: () => {},
+  setIsCardDataValid: () => {},
+  setCookie: () => {},
+  clearSearchData: () => {},
+  getCardData: () => {},
+  getRandomCard: () => {},
+};
+const defaultFormContextValues = {
+  forms: {},
+  formErrors: {},
+  initialFormStates: {},
+  currentForm: {},
+  schemas: {},
+  currentFormType: '',
+  errors: {},
+  isSubmitting: false,
+  isFormDataLoading: false,
+  isFormValid: false,
+  formMethods: {},
+  handleSearchTermChange: () => {},
+  setIsFormValid: () => {},
+  setForms: () => {},
+  setFormErrors: () => {},
+  handleChange: () => {},
+  handleSubmit: () => {},
+  onSubmit: () => {},
+  onChange: () => {},
+  resetForm: () => {},
+  handleRequest: () => {},
+  register: () => {},
+  registerForm: () => {},
+  setFormType: () => {},
+  setValueAtPath: () => {},
+  setError: () => {},
+  toggleAuthForm: () => {},
+  toggleCollectionForm: () => {},
+  toggleFormType: () => {},
+  getFormMethods: () => {},
+  toggleForm: () => {},
+  onBlur: () => {},
+  onFocus: () => {},
+  handleFocus: () => {},
+  handleBlur: () => {},
+  handleFieldChange: () => {},
+  handleFormChange: () => {},
+  handleFormSubmit: () => {},
+};
+export const defaultContextValue = {
+  // AUTH CONTEXT
+  AUTH_CONTEXT: defaultAuthContextValues,
+  // CARD CONTEXT
+  CARD_CONTEXT: defaultCardContextValues,
+  // COLLECTION CONTEXT
+  COLLECTION_CONTEXT: defaultCollectionContextValues,
+  // DECK CONTEXT
+  DECK_CONTEXT: defaultDeckContextValues,
+  // CART CONTEXT
+  CART_CONTEXT: defaultCartContextValues,
+  // FORM CONTEXT
+  FORM_CONTEXT: defaultFormContextValues,
+  // MISC CONTEXT
+  APP_CONTEXT: defaultAppContextValues,
+};
