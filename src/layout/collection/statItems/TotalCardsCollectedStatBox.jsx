@@ -1,14 +1,15 @@
 import { Box } from '@mui/material';
 import StatBox from '../../REUSABLE_COMPONENTS/layout-utils/StatBox';
-import { useMode, useAppContext } from '../../../context';
+import { useMode } from '../../../context';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
+import { useCollectionMetaData } from '../../../context/MISC_CONTEXT/AppContext/useCollectionMetaData';
 const TotalCardsCollectedStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
   const grey = colors.grey.dark;
-  const { collectionMetaData } = useAppContext();
+  const { collectionMetaData } = useCollectionMetaData();
   return (
     <Box
       sx={{

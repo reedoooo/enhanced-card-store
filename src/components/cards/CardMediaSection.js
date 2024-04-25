@@ -12,6 +12,9 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import useDialogState from '../../context/hooks/useDialogState';
 import GenericCardDialog from '../dialogs/GenericCardDialog';
 import { usePopover } from '../../context/hooks/usePopover';
+import { Avatar } from '@mui/material';
+import { useMode } from '../../context';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const CardMediaSection = forwardRef(
   (
@@ -24,10 +27,15 @@ const CardMediaSection = forwardRef(
       isRequired,
       isModalOpen,
       context,
+      isLast,
     },
     ref
   ) => {
+    const { theme } = useMode();
     const [anchorEl, setAnchorEl] = useState(null);
+    const cardId = card?.id;
+    const [cardWithSameIdCount, setCardWithSameIdCount] = useState(0);
+
     useEffect(() => {
       if (isHovered && ref?.current) {
         setAnchorEl(ref.current);
@@ -40,6 +48,10 @@ const CardMediaSection = forwardRef(
     const handleOpenDialog = () => {
       openDialog('isCardDialogOpen');
       setIsPopoverOpen(false);
+    };
+    const handleClick = (event) => {
+      event.stopPropagation();
+      setAnchorEl(event.currentTarget);
     };
     const label = { inputProps: { 'aria-label': 'Bookmark card' } };
     const handleCloseDialog = () => {
@@ -73,7 +85,28 @@ const CardMediaSection = forwardRef(
           image={imgUrl}
           loading="lazy"
         />
-        <Checkbox
+        {isLast && (
+          <Avatar
+            variant="rounded"
+            sx={{
+              ...theme.typography.commonAvatar,
+              ...theme.typography.mediumAvatar,
+              backgroundColor: theme.palette.secondary.dark,
+              color: theme.palette.secondary[200],
+              zIndex: 1,
+              position: 'absolute',
+              top: 0, // Align to the top
+              right: 0, // Align to the right
+              margin: '8px', // Adjust spacing as needed
+            }}
+            aria-controls="menu-earning-card"
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <MoreHorizIcon fontSize="inherit" />
+          </Avatar>
+        )}
+        {/* <Checkbox
           {...label}
           icon={<BookmarkBorderIcon />}
           checkedIcon={<BookmarkIcon />}
@@ -83,7 +116,7 @@ const CardMediaSection = forwardRef(
             right: 0, // Align to the right
             margin: '8px', // Adjust spacing as needed
           }}
-        />
+        /> */}
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}

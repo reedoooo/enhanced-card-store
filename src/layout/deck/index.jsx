@@ -24,8 +24,7 @@ import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
 import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
-import useSelector from '../../context/MAIN_CONTEXT/CollectionContext/useSelector';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../context/useManager';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -37,10 +36,7 @@ const DeckBuilder = () => {
     hasFetchedDecks,
     handleSelectDeck,
     selectedDeckId,
-    addDeck,
-    addItemToDeck,
-    updated,
-    setUpdated,
+    fetchDeckById,
   } = useManager();
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
@@ -51,20 +47,6 @@ const DeckBuilder = () => {
       fetchDecks();
     }
   }, [hasFetchedDecks]);
-  useEffect(() => {
-    if (updated) {
-      console.log('UPDATED');
-      fetchDecks();
-    }
-    setUpdated(false);
-  }, [updated, fetchDecks]);
-  // const updateDecksState = useCallback((updatedDeck) => {
-  //   setDecks((prevDecks) =>
-  //     prevDecks.map((deck) =>
-  //       deck._id === updatedDeck._id ? updatedDeck : deck
-  //     )
-  //   );
-  // }, []);
   const handleDelete = useCallback(
     async (deckId) => {
       try {
@@ -86,25 +68,30 @@ const DeckBuilder = () => {
     openDialog('isAddDeckDialogOpen');
   }, [openDialog, setActiveFormSchema]);
   const handleChangeTab = useCallback(
-    (event, newValue) => {
+    async (event, newValue) => {
       const newDeck = allDecks[newValue];
       if (newDeck) {
         setActiveTab(newValue);
-        console.log('Tab changed to:', newValue);
-        handleSelectDeck(newDeck);
-        console.log('NEW SELECTED DECK', newDeck);
         setLoadingState((prev) => ({
           ...prev,
-          [newDeck._id]: true, // Assuming _id is always available; handle cases where it might not be
+          [newDeck._id]: true, // Set loading state to true immediately
         }));
-        if (!loadingState[newDeck._id]) {
-          setTimeout(() => handleDeckLoaded(newDeck._id), 2000); // Simulate loading
+
+        // Fetch deck details from the API
+        const deckDetails = await fetchDeckById(newDeck?._id);
+        if (deckDetails) {
+          handleSelectDeck(deckDetails); // Update the selected deck in state
+          console.log('NEW SELECTED DECK', deckDetails);
+        } else {
+          console.error('Failed to fetch deck details.');
         }
+
+        handleDeckLoaded(newDeck._id);
       } else {
         console.error('Selected deck is undefined.');
       }
     },
-    [allDecks, handleSelectDeck]
+    [allDecks, handleSelectDeck, fetchDeckById, handleDeckLoaded]
   );
   const deckTabs = allDecks?.map((deck, index) => (
     <Tab

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { List, ListItem, ListItemText, Typography } from '@mui/material';
-import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import useManager from '../../context/useManager';
 
 function Info({ totalPrice }) {
-  const { cart } = useCartManager();
+  const { cart } = useManager();
   return (
     <React.Fragment>
       <Typography variant="subtitle2" color="text.secondary">

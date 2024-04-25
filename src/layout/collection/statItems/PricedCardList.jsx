@@ -1,12 +1,12 @@
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import { Box, Card, CardContent } from '@mui/material';
+import { Box, Card } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../data/topCards';
 import { useMemo } from 'react';
 import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import { Divider } from '@mui/joy';
-import { useAppContext, useMode } from '../../../context';
+import { useMode } from '../../../context';
 
 const PricedCardList = () => {
   const { theme } = useMode();
@@ -15,7 +15,7 @@ const PricedCardList = () => {
   const lightGrey = colors.grey.lightest;
   const primary = colors.primary.dark;
   const greenAccent = colors.greenAccent.light;
-  const { collectionMetaData } = useAppContext();
+  const { collectionMetaData } = useCompileCardData();
   const { data, columns } = useMemo(
     () => prepareTableData(collectionMetaData?.topFiveCards),
     [collectionMetaData?.topFiveCards]

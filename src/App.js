@@ -7,11 +7,11 @@ import Main from './Main';
 import {
   UserProvider,
   useMode,
-  CollectionProvider,
+  // CollectionProvider,
   CardProvider,
-  DeckProvider,
-  CartProvider,
-  AppContextProvider,
+  // DeckProvider,
+  // CartProvider,
+  // AppContextProvider,
   ConfiguratorProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
@@ -29,17 +29,17 @@ const App = () => {
       <ParallaxProvider>
         <ConfiguratorProvider>
           <UserProvider>
-            <CollectionProvider>
-              <CardProvider>
-                <DeckProvider>
-                  <CartProvider>
-                    <AppContextProvider>
-                      <Main />
-                    </AppContextProvider>
-                  </CartProvider>
-                </DeckProvider>
-              </CardProvider>
-            </CollectionProvider>
+            {/* <CollectionProvider> */}
+            <CardProvider>
+              {/* <DeckProvider> */}
+              {/* <CartProvider> */}
+              {/* <AppContextProvider> */}
+              <Main />
+              {/* </AppContextProvider> */}
+              {/* </CartProvider> */}
+              {/* </DeckProvider> */}
+            </CardProvider>
+            {/* </CollectionProvider> */}
           </UserProvider>
         </ConfiguratorProvider>
       </ParallaxProvider>

@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { Grid, useMediaQuery, Icon, Box } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import { useAppContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
@@ -18,15 +18,13 @@ import { TopCardsDisplayRow } from './TopCardsDisplayRow';
 import { formFields } from '../../components/forms/formsConfig';
 import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import NivoContainer from '../REUSABLE_COMPONENTS/layout-utils/NivoContainer';
 import MyResponsiveLine from './MyPortfolioLineChart';
 import { CircularProgress } from '@mui/joy';
 import { ChartArea } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useSelector from '../../context/MAIN_CONTEXT/CollectionContext/useSelector';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
-import { defaultValues } from '../../context/simplified_constants';
+import useManager from '../../context/useManager';
 import preparePortfolioTableData from './data/portfolioData';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 
 const renderCardContainer = (content) => {
   return (
@@ -139,13 +137,19 @@ const ChartGridLayout = () => {
 export default ChartGridLayout;
 // !--------------------- FORM SELECTOR ROW COMPONENTS ---------------------
 const FormSelectorRow = React.memo(({ isXs }) => {
+  const { theme } = useMode();
   const formKeys = ['statRangeForm', 'timeRangeForm', 'themeRangeForm'];
   return (
     <SimpleCard theme={uniqueTheme} hasTitle={false} isSelectorRow={true}>
       <Grid
         container
-        spacing={2}
-        sx={{ width: '100%', flexDirection: isXs ? 'column' : 'row' }}
+        // spacing={2}
+        sx={{
+          width: '100%',
+          flexDirection: isXs ? 'column' : 'row',
+          // mx: 'auto',
+          mt: theme.spacing(1),
+        }}
       >
         <Grid
           item
@@ -154,20 +158,27 @@ const FormSelectorRow = React.memo(({ isXs }) => {
           // md={4}
           // lg={4}
           sx={{
-            width: '100%',
+            // width: '100%',
+            // ml: -16,
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'row',
+            bgcolor: theme.palette.background.default,
           }}
           // key={formKey}
         >
-          {' '}
           {formKeys?.map((formKey) => (
             <RCDynamicForm
               key={formKey}
               formKey={formKey}
               inputs={formFields[formKey]}
-              userInterfaceOptions={{}}
+              userInterfaceOptions={{
+                formBoxStyles: {
+                  boxShadow: 'none',
+                  py: '0.5rem',
+                  // width: '100%',
+                },
+              }}
             />
           ))}
         </Grid>
@@ -180,7 +191,7 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
-  const { selectedTimeRange = '24hr' } = useAppContext();
+  const { selectedTimeRange = '24hr' } = useCompileCardData();
   const { selectedCollection } = useManager();
   if (!selectedCollection) {
     return <LoadingOverlay />;
@@ -188,7 +199,8 @@ const ChartAreaComponent = React.memo(() => {
   const memoChartData = useMemo(() => {
     const { selectedChartData, averagedChartData, selectedChartDataKey } =
       selectedCollection;
-    return !selectedChartData?.data?.length
+    return !selectedChartData?.data?.length ||
+      selectedChartData?.data?.length < 5
       ? averagedChartData[selectedChartDataKey]
       : selectedChartData;
   }, [
@@ -236,7 +248,13 @@ ChartAreaComponent.displayName = 'ChartAreaComponent';
 //!--------------------- CARD DISPLAY COMPONENT ---------------------
 const TopCardsDisplayRowComponent = React.memo(({ isXs }) => {
   return (
-    <SimpleCard theme={uniqueTheme} hasTitle={false} isPrimary={true} data={''}>
+    <SimpleCard
+      theme={uniqueTheme}
+      hasTitle={false}
+      isPrimary={false}
+      data={''}
+      noBottomMargin={true}
+    >
       <Grid
         container
         spacing={2}

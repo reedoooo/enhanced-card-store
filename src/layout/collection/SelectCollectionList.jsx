@@ -9,10 +9,10 @@ import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { useMode } from '../../context';
 import { CollectionListItemSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../context/useManager';
 
 const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
-  const { isMobile } = useBreakpoint(); // Detect mobile screen
+  const { isMobile } = useBreakpoint();
   const { theme } = useMode();
   const {
     fetchCollections,
@@ -20,23 +20,23 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
     collections: allCollections,
     hasFetchedCollections,
   } = useManager();
-  // const { entities, hasFetched } = useSelector(
-  //   'collections',
-  //   defaultValues.defaultCollections
-  // );
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
     }
   }, []);
   const [collectionList, setCollectionList] = useState([]);
+  const [showSkeletons, setShowSkeletons] = useState(true);
+  useEffect(() => {
+    // Auto hide skeletons after a delay to simulate loading
+    const timer = setTimeout(() => setShowSkeletons(false), 200); // Adjust the delay to match your fetch timing or interaction
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     console.log('ALL COLLECTIONS:', allCollections);
-    // console.log('ENTITIES:', Object.values(entities.byId));
     setCollectionList(allCollections);
-    // setCollectionList(Object.values(entities.byId));
   }, [allCollections]);
-  // console.log(entities);
 
   if (!allCollections) {
     return <LoadingOverlay />;
@@ -72,30 +72,6 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
   );
   const skeletonCount = 5 - collectionList.length;
 
-  // const maxSkeletonItems = 5;
-  // const skeletonCount = Math.min(
-  //   maxSkeletonItems,
-  //   maxSkeletonItems - collectionList.length
-  // );
-  // for (let i = 0; i < skeletonCount; i++) {
-  //   collectionList.push(<CollectionListItemSkeleton key={`skeleton-${i}`} />);
-  // }
-  // RENDER SKELETON ITEMS EQUAL TO THE DIFFERENCE BETWEEN THE MAX SKELETON ITEMS AND THE LENGTH OF THE COLLECTION LIST
-  // const renderedCollectionList = useMemo(() => {
-  //   return [
-  //    ...collectionList.map((item, index) => renderCollectionItem(item, index)),
-  //    ...Array.from({ length: skeletonCount }, (_, i) => (
-  //       <CollectionListItemSkeleton key={`skeleton-${i}`} />
-  //     )),
-  //   ];
-  // }, [collectionList, skeletonCount]);
-  // const renderedCollectionList = Array.isArray(collectionList) ? (
-  //   collectionList.map((item, index) => renderCollectionItem(item, index))
-  // ) : (
-  // for (let i = 0; i < skeletonCount; i++) {
-  //     <CollectionListItemSkeleton key={`skeleton-${i}`} />;
-  //   });
-
   return (
     <SimpleCard
       theme={uniqueTheme}
@@ -122,8 +98,18 @@ const SelectCollectionList = ({ handleSelectAndShowCollection }) => {
             renderCollectionItem(item, index)
           )}
           {[...Array(skeletonCount).keys()].map((i) => (
-            <CollectionListItemSkeleton key={`skeleton-${i}`} />
+            <Collapse
+              key={`skeleton-${i}`}
+              in={showSkeletons}
+              timeout={500}
+              unmountOnExit
+            >
+              <CollectionListItemSkeleton />
+            </Collapse>
           ))}
+          {/* {[...Array(skeletonCount).keys()].map((i) => (
+            <CollectionListItemSkeleton key={`skeleton-${i}`} />
+          ))} */}
         </TransitionGroup>
       </List>
     </SimpleCard>

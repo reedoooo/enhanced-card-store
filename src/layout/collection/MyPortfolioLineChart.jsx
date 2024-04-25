@@ -17,23 +17,18 @@ const TooltipLayer = ({ points }) => (
 );
 const MyResponsiveLine = ({
   data,
-  selectedData,
-  // handleMouseMove,
-  // handleMouseLeave,
   tickValues,
   validMarkers,
   greenAccent,
   redAccent,
   grey,
   text,
-  // TooltipLayer,
 }) => {
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
 
   return (
     <ResponsiveLine
       data={data}
-      // data={data[selectedData]}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       colors={{ datum: 'color' }} // This is the only change from the original code

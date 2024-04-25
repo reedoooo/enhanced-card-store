@@ -1,11 +1,5 @@
 /* eslint-disable max-len */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -13,26 +7,17 @@ import {
   CardContent,
   Grid,
   Collapse,
-  useMediaQuery,
-  Box,
 } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 import RCInfoItem from '../REUSABLE_COMPONENTS/RCInfoItem';
 import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
-import { roundToNearestTenth } from '../../context/Helpers';
 import { useMode } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
 import { formFields } from '../../components/forms/formsConfig';
 import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
-import useInitialFormData from '../../components/forms/hooks/useInitialFormData';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 import prepareDeckData from './deckData';
-import { nanoid } from 'nanoid';
-import { useLoading } from '../../context/hooks/useLoading';
-import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import LoadingIndicator from '../REUSABLE_COMPONENTS/system-utils/LoadingIndicator';
-
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
   useEffect(() => {
@@ -62,15 +47,11 @@ const DeckListItem = ({
   handleSelectAndShowDeck,
   isEditPanelOpen,
   handleDelete,
-  handleDeckLoaded,
-  setLoadingState,
-  loadingState,
 }) => {
   const { genData, infoItems } = prepareDeckData(deck);
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const isSelected = selectedDeckId === deck._id;
-
   return (
     <Collapse in={true} timeout={1000}>
       <Card>

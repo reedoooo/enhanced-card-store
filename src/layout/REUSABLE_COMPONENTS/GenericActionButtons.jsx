@@ -11,7 +11,7 @@ import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutline
 import { useMode } from '../../context';
 import { useLoading } from '../../context/hooks/useLoading';
 import { LoadingButton } from '@mui/lab';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../context/useManager';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -27,14 +27,18 @@ const ActionButton = ({
   variant,
 }) => {
   const { theme } = useMode();
-  // const { isLoading } = useSelector('loadingStates', { defaultEntities: {} });
   const { isLoading } = useLoading();
+  const isDataTable = variant === 'data-table';
   const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
   const actionIcon =
     actionType === 'add' ? (
-      <AddCircleOutlineOutlined />
+      <AddCircleOutlineOutlined
+        sx={{ ml: isDataTable ? '8px !important' : 1 }}
+      />
     ) : (
-      <RemoveCircleOutlineOutlined />
+      <RemoveCircleOutlineOutlined
+        sx={{ ml: isDataTable ? '8px !important' : 1 }}
+      />
     );
   const loadingKey =
     actionType === 'add' ? 'addCardsToCollection' : 'removeCardsFromCollection';
@@ -43,13 +47,16 @@ const ActionButton = ({
     <LoadingButton
       variant={'contained'}
       // color={actionType === 'add' ? 'success.main' : 'error'}
-      size={adjustedButtonSize}
+      size={isDataTable ? 'small' : buttonSize}
       loading={isLoading(`${actionType}Cards`)}
       // loading={isLoading(loadingKey)}
       onClick={handleCardAction}
       startIcon={actionIcon}
       sx={{
-        width: '100%',
+        width: isDataTable ? 'auto' : '100%',
+        height: isDataTable ? 30 : 'auto', // Ensure consistent height for datatable variant
+        // height: isDataTable ? 36 : 'auto', // Ensure consistent height for datatable variant
+        minWidth: isDataTable ? 20 : 'auto', // Ensure a minimal width when icon only
         flexGrow: 1,
         borderRadius: theme.shape.borderRadius,
         maxWidth: '100%',
@@ -63,38 +70,35 @@ const ActionButton = ({
         '&:hover': {
           backgroundColor: labelValue === 'add' ? '#3da58a' : '#cc4a4aff',
         },
+        ...(isDataTable && {
+          // padding: theme.spacing(0.5),
+          minWidth: theme.spacing(5),
+        }),
       }}
     >
-      <MDTypography
-        variant="button"
-        sx={{
-          color:
-            theme.palette[labelValue === 'add' ? 'success' : 'error']
-              .contrastText,
-        }}
-      >
-        {String(labelValue)} {/* Force conversion to string */}
-      </MDTypography>
+      {!isDataTable && (
+        <Box
+          component="span"
+          sx={{
+            color:
+              theme.palette[labelValue === 'add' ? 'success' : 'error']
+                .contrastText,
+          }}
+        >
+          {labelValue}
+        </Box>
+      )}
     </LoadingButton>
   );
 };
 const GenericActionButtons = ({
   card,
-  selectedId,
-  // selectedEnt,
   context = 'Collection',
-  onClick,
-  onSuccess,
-  onFailure,
-  page,
   cardSize = 'md',
   datatable = false,
 }) => {
   const { theme } = useMode();
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
-  // const { selectedEntity, selectedEntityId } = useSelector(
-  //   context.toLowerCase()
-  // );
   const manager = useManager();
   if (!manager) {
     return <LoadingOverlay />;
@@ -200,7 +204,7 @@ const GenericActionButtons = ({
         height: '100%',
       }}
     >
-      {datatable === 'data-table' && (
+      {/* {datatable === true && (
         <MDBox
           sx={{
             display: 'flex',
@@ -234,11 +238,11 @@ const GenericActionButtons = ({
             />
           </MDTypography>
         </MDBox>
-      )}
+      )} */}
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: datatable ? 'row' : 'column',
           alignItems: 'center',
           gap: datatable ? 0 : 1,
           width: '100%',

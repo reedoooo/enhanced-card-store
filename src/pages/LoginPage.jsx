@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMode } from '../context';
 import useManageCookies from '../context/hooks/useManageCookies';
+import SplashPage2 from '../layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
 
 function Copyright(props) {
   return (
@@ -35,7 +36,24 @@ export default function LoginPage() {
   const { theme } = useMode();
   const { getCookie } = useManageCookies();
   const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
-
+  const splashRef = React.useRef(null);
+  React.useEffect(() => {
+    if (splashRef.current) {
+      Object.assign(splashRef.current.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: '-1',
+      });
+    }
+  }, []);
+  const renderSplashPage = () => (
+    <div ref={splashRef}>
+      <SplashPage2 />
+    </div>
+  );
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -88,6 +106,7 @@ export default function LoginPage() {
             </Grid>
             <Copyright sx={{ mt: 5 }} />
           </Box>
+          {renderSplashPage()}
         </Grid>
       </Grid>
     </ThemeProvider>

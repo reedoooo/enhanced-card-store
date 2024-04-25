@@ -5,22 +5,19 @@ import GenericCard from '../../components/cards/GenericCard';
 import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import useMode from '../UTILITIES_CONTEXT/ColorModeContext/useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import useDeckManager from '../MAIN_CONTEXT/DeckContext/useDeckManager';
 import { useCardStoreHook } from '../MAIN_CONTEXT/CardContext/useCardStore';
+import useManager from '../useManager';
 const useGridItems = ({
   itemsPerPage,
   cards,
   pageContext,
   isLoading,
-  hasFetched,
-  allItems,
-  validSelection,
   type,
   deckId,
 }) => {
   const { loadingSearchResults } = useCardStoreHook();
   const { theme } = useMode();
-  const { removeOneFromDeck } = useDeckManager();
+  const { removeItemFromDeck } = useManager();
   const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations
   const gridItems = useMemo(() => {
     return (
@@ -64,8 +61,6 @@ const useGridItems = ({
                   page={pageContext}
                   context={pageContext}
                   cardClasses="base-card-no-quantity"
-                  // selectedEntity={selectedEntity}
-                  // context={`${pageContext}`}
                 />
                 {type === 'deck' && (
                   <Tooltip title="Delete">
@@ -78,28 +73,21 @@ const useGridItems = ({
                         color: theme.palette.error.contrastText,
                         top: 3,
                         right: 3,
-                        // bottom: '85%',
-                        // left: '85%',
-                        // top: 8,
-                        // right: 8,
                         zIndex: 5,
                         opacity: 1,
                         transition: 'opacity 0.3s ease',
                         '&:hover': {
                           opacity: 1,
                         },
-                        // Adjust icon size here
                         fontSize: '2rem', // Adjust based on your preference
                         '& .MuiSvgIcon-root': {
-                          // Directly target the icon SVG
                           fontSize: '2rem', // Adjust based on your preference
                         },
                       }}
                       size="small"
                       onClick={() => {
-                        // Add delete logic here
                         console.log('Delete icon clicked for', card?.id);
-                        removeOneFromDeck(card, card?.id, deckId);
+                        removeItemFromDeck(card, card?.id, deckId);
                         console.log(
                           'Card removed from deck',
                           card,

@@ -15,7 +15,7 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import { useAppContext, useMode } from '../../context';
+import { useMode } from '../../context';
 import placeHolder from '../../assets/images/placeholder.jpeg';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import CardDetailsContainer from '../../components/cards/CardDetailsContainer';
@@ -23,12 +23,14 @@ import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCom
 import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
+import { useCollectionMetaData } from '../../context/MISC_CONTEXT/AppContext/useCollectionMetaData';
+import { CardWrapper } from '../REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const { collectionMetaData } = useAppContext();
+  const { collectionMetaData } = useCollectionMetaData();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
 
   return (
@@ -46,6 +48,7 @@ export const TopCardsDisplayRow = () => {
       onSlideChange={handleSlideChange}
       style={{
         width: '100%',
+        mx: 'auto',
       }}
     >
       {collectionMetaData?.topFiveCards?.map((card, index) => (
@@ -60,6 +63,7 @@ export const TopCardsDisplayRow = () => {
             width: '100%',
             transition: 'transform 0.9s',
             flexGrow: 1,
+            mx: 'auto',
           }}
         >
           <MDBox
@@ -70,20 +74,22 @@ export const TopCardsDisplayRow = () => {
               height: '100%',
               alignItems: 'flex-start',
               justifyContent: 'center',
+              border: 'none',
             }}
           >
-            <Card
-              sx={{
-                flexGrow: 1,
-                width: isMobileView ? '100%' : 'auto', // Adjust width based on screen size
-                minHeight: '100%', // Ensure card takes full height
-                alignItems: 'flex-start',
-                flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
-                justifyContent: 'center',
-                // p: theme.spacing(2),
-                // m: theme.spacing(1),
-              }}
-            >
+            <CardWrapper border={false} content={false} theme={theme}>
+              {/* <Card
+                sx={{
+                  flexGrow: 1,
+                  width: isMobileView ? '100%' : 'auto', // Adjust width based on screen size
+                  minHeight: '100%', // Ensure card takes full height
+                  alignItems: 'flex-start',
+                  flexDirection: isMobileView ? 'column' : 'row', // Adjust direction based on screen size
+                  justifyContent: 'center',
+                  // p: theme.spacing(2),
+                  // m: theme.spacing(1),
+                }}
+              > */}
               <FlexBetween
                 sx={{
                   // justifyContent: 'space-around', // Space distribution
@@ -188,7 +194,8 @@ export const TopCardsDisplayRow = () => {
                   />
                 </CardContent>
               </FlexBetween>
-            </Card>
+              {/* </Card> */}
+            </CardWrapper>
           </MDBox>
         </SwiperSlide>
       ))}

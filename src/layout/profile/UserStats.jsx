@@ -1,11 +1,9 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import useSelector from '../../context/MAIN_CONTEXT/CollectionContext/useSelector';
+import useManager from '../../context/useManager';
 
 const UserStats = () => {
-  const { entities: collections } = useSelector('collections');
-  const { entities: decks } = useSelector('decks');
-  const { entities: cart } = useSelector('cart');
+  const { decks, collections, cart } = useManager();
   return (
     <Box mt={3}>
       <Typography variant="h6">User Statistics</Typography>

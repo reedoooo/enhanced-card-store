@@ -23,7 +23,7 @@ import { useMode } from '../../../context';
 import RCSwitch from './RCSwitch';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
 import { nanoid } from 'nanoid';
-import useManager from '../../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../../context/useManager';
 const RCInput = forwardRef(
   (
     {
@@ -36,6 +36,7 @@ const RCInput = forwardRef(
       value,
       placeholder,
       onSelectChange,
+      error,
       ...rest
     },
     ref
@@ -44,14 +45,9 @@ const RCInput = forwardRef(
     const { isMobile } = useBreakpoint();
     const { updateEntityField, selectedCollection, selectedCollectionId } =
       useManager();
-
-    // const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
-    //   useCompileCardData();
     const handleSelectChange = (event) => {
       const selectedValue = event.target.value;
       onChange(selectedValue); // Update local form state
-
-      // Dynamically update collection fields
       if (type === 'select') {
         updateEntityField(
           'collections',
@@ -59,37 +55,9 @@ const RCInput = forwardRef(
           'selectedChartDataKey',
           selectedValue
         );
-        // updateEntityField(
-        //   'collections',
-        //   selectedCollectionId,
-        //   'selectedChartData',
-        //   selectedCollection?.averagedChartData[selectedValue]
-        // );
       }
     };
-    // const handleSelectChange = (event) => {
-    //   const selectedValue = event.target.value;
-    //   // if (rest.name === 'timeRange') {
-    //   setSelectedTimeRange(selectedValue); // Update local form state
-    //   // }
-    //   onChange(selectedValue); // Update local form state
-
-    //   if (type === 'select') {
-    //     // For 'select' type inputs, update collection fields dynamically
-    //     updateCollectionField(
-    //       selectedCollection._id,
-    //       'selectedChartDataKey',
-    //       selectedValue
-    //     );
-    //     updateCollectionField(
-    //       selectedCollection._id,
-    //       'selectedChartData',
-    //       selectedCollection?.averagedChartData[selectedValue]
-    //     );
-    //   }
-    // };
     const [inputValue, setInputValue] = useState('');
-
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {
         event.preventDefault();
@@ -98,38 +66,10 @@ const RCInput = forwardRef(
         setInputValue('');
       }
     };
-
     const handleDeleteTag = (tagToDelete) => () => {
       onChange(value.filter((tag) => tag.key !== tagToDelete.key));
     };
-    // const handleAddTag = (tag) => {
-    //   const newTags = [...tags, tag];
-    //   setTags(newTags);
-    //   onChange(newTags); // Propagate change up to form
-    // };
 
-    // const handleDeleteTag = (tagIndex) => {
-    //   const newTags = tags.filter((_, index) => index !== tagIndex);
-    //   setTags(newTags);
-    //   onChange(newTags); // Propagate change up to form
-    // };
-
-    // const handleKeyDown = (event) => {
-    //   if (event.key === 'Enter' && inputValue) {
-    //     event.preventDefault();
-    //     const newTag = { key: nanoid(), label: inputValue.trim() };
-    //     const validation = zodSchemas?.updateDeckForm?.tags?.safeParse(newTag);
-    //     if (validation?.success) {
-    //       handleAddTag(newTag);
-    //       setInputValue('');
-    //       // setTags([...tags, newTag]);
-    //       // setInputValue('');
-    //     } else {
-    //       // Handle validation error
-    //       console.error('Validation failed', validation?.error.format());
-    //     }
-    //   }
-    // };
     switch (type) {
       case 'text':
       case 'number':
@@ -151,8 +91,8 @@ const RCInput = forwardRef(
               shrink: !initialValue ? undefined : true,
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
-            // error={!!errors[name]}
-            // helperText={errors[name]?.message}
+            error={!!error[rest.name]}
+            helperText={error[rest.name]?.message}
             {...rest}
           />
         );

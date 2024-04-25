@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import StatBox from 'REUSABLE_COMPONENTS/StatBox';
-import { useMode, useAppContext } from '../../../context';
+import { useMode } from '../../../context';
 import StackedLineChartRoundedIcon from '@mui/icons-material/StackedLineChartRounded';
 
 const PerformanceStatBox = () => {

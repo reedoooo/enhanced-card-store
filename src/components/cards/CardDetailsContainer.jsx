@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -12,6 +12,7 @@ import {
   Stack,
   Typography,
   Container,
+  Collapse,
 } from '@mui/material';
 import {
   FaDragon,
@@ -25,6 +26,7 @@ import { useMode } from '../../context';
 import styled from 'styled-components';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { CardWrapper } from '../../layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 const IconWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -62,11 +64,36 @@ const textDetails = [
     isMultiValue: true,
     action: 'onRarityClick',
   },
-];
-const inventoryDetails = [
-  { title: 'Deck', key: 'deck' },
-  { title: 'Collection', key: 'collection' },
-  { title: 'Cart', key: 'cart' },
+  {
+    title: 'Type',
+    key: 'type',
+    isMultiValue: false,
+  },
+  {
+    title: 'Race',
+    key: 'race',
+    isMultiValue: false,
+  },
+  {
+    title: 'Attribute',
+    key: 'attribute',
+    isMultiValue: false,
+  },
+  {
+    title: 'ATK',
+    key: 'atk',
+    isMultiValue: false,
+  },
+  {
+    title: 'DEF',
+    key: 'def',
+    isMultiValue: false,
+  },
+  {
+    title: 'Level',
+    key: 'level',
+    isMultiValue: false,
+  },
 ];
 const CardDetailChip = styled(Chip)(({ theme }) => ({
   borderWidth: '2px',
@@ -76,11 +103,6 @@ const CardDetailChip = styled(Chip)(({ theme }) => ({
     fontSize: theme.typography.pxToRem(12), // Smaller font size on small devices
   },
 }));
-const CardDetailTitle = ({ title }) => (
-  <Typography variant="h5" sx={{ mr: 1 }}>
-    {title}:
-  </Typography>
-);
 const CardDetailDescription = ({ value }) => (
   <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
     {value}
@@ -131,7 +153,14 @@ const CardDetailSet = ({ values }) => {
 const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;
 const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   const { theme } = useMode();
+  const [openStates, setOpenStates] = useState(details.map(() => false));
 
+  const toggleOpen = (index) => {
+    // Update the state of only the clicked card
+    setOpenStates((currentStates) =>
+      currentStates.map((state, i) => (i === index ? !state : state))
+    );
+  };
   const raritiesArray = Object.entries(card?.rarities || {}).map(
     ([name, value]) => ({
       name,
@@ -149,36 +178,59 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
     <Grid container spacing={2} sx={{ maxWidth: '100%' }}>
       {details?.map((detail, index) => (
         <Grid item xs={12} sm={12} md={4} lg={6} key={index}>
-          <Card sx={{ p: theme.spacing(1) }}>
+          <CardWrapper
+            border={false}
+            content={false}
+            theme={theme}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+            }}
+          >
             <CardHeader
-              title={<Typography variant="h6">{detail.title}:</Typography>}
+              title={
+                <Typography
+                  variant="h6"
+                  onClick={() => toggleOpen(index)} // Click event to toggle the collapse of specific card
+                  sx={{ cursor: 'pointer' }} // Change cursor to indicate clickable
+                >
+                  {detail.title}
+                </Typography>
+              }
             />
-            <Divider />
-            <CardContent>
-              {/* <MDBox sx={{ border: 'none' }}> */}
-              {/* <Typography variant="h6">{detail.title}:</Typography> */}
-              {/* {detail.key === 'title' && <CardDetailTitle value={card?.name} />} */}
-              {/* <Divider /> */}
-              {detail.key === 'desc' && (
-                <CardDetailDescription value={card?.desc} />
-              )}
-              {detail.key === 'price' && (
-                <CardDetailPrice value={card?.price} />
-              )}
-              {detail.key === 'rarities' && (
-                <Stack direction="row" justifyContent="center" flexWrap="wrap">
-                  <CardDetailRarity
-                    values={raritiesArray}
-                    onRarityClick={handleAction}
-                  />
-                </Stack>
-              )}
-              {detail.key === 'card_sets' && (
-                <Stack direction="row" justifyContent="center" flexWrap="wrap">
-                  <CardDetailSet values={cardSetsArray} />
-                </Stack>
-              )}
-              {/* {detail.icon && (
+            {/* <Divider /> */}
+            <Collapse in={openStates[index]} timeout="auto" unmountOnExit>
+              <Divider />
+              <CardContent>
+                {detail.key === 'desc' && (
+                  <CardDetailDescription value={card?.desc} />
+                )}
+                {detail.key === 'price' && (
+                  <CardDetailPrice value={card?.price} />
+                )}
+                {detail.key === 'rarities' && (
+                  <Stack
+                    direction="row"
+                    justifyContent="center"
+                    flexWrap="wrap"
+                  >
+                    <CardDetailRarity
+                      values={raritiesArray}
+                      onRarityClick={handleAction}
+                    />
+                  </Stack>
+                )}
+                {detail.key === 'card_sets' && (
+                  <Stack
+                    direction="row"
+                    justifyContent="center"
+                    flexWrap="wrap"
+                  >
+                    <CardDetailSet values={cardSetsArray} />
+                  </Stack>
+                )}
+                {/* {detail.icon && (
                 <CardDetailIcon
                   icon={
                     iconDetails.forEach(
@@ -187,37 +239,15 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                   }
                 />
               )} */}
-              {/* </MDBox> */}
-            </CardContent>
-          </Card>
+                {/* </MDBox> */}
+              </CardContent>
+            </Collapse>
+          </CardWrapper>
         </Grid>
       ))}
     </Grid>
   );
 };
-
-const RenderInventoryList = () => (
-  <Grid item xs={12} sm={12} md={6} lg={6} xl={6} key={'inventory-list'}>
-    <Stack>
-      <Card>
-        {/* Render the header separately */}
-        <CardHeader
-          title={
-            <Typography variant="h6">{inventoryDetails[0].title}</Typography>
-          }
-        />
-        <CardContent>
-          <List>
-            {/* Skip the header in mapping */}
-            {inventoryDetails.slice(1).map((detail, index) => (
-              <ListItem key={index}>{detail.title}</ListItem>
-            ))}
-          </List>
-        </CardContent>
-      </Card>
-    </Stack>
-  </Grid>
-);
 const CardDetailsContainer = ({
   card,
   className,

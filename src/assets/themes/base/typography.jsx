@@ -51,7 +51,25 @@ const typography = {
   fontWeightRegular: baseProperties.fontWeightRegular,
   fontWeightMedium: baseProperties.fontWeightMedium,
   fontWeightBold: baseProperties.fontWeightBold,
-
+  commonAvatar: {
+    cursor: 'pointer',
+    borderRadius: '8px',
+  },
+  smallAvatar: {
+    width: '22px',
+    height: '22px',
+    fontSize: '1rem',
+  },
+  mediumAvatar: {
+    width: '34px',
+    height: '34px',
+    fontSize: '1.2rem',
+  },
+  largeAvatar: {
+    width: '44px',
+    height: '44px',
+    fontSize: '1.5rem',
+  },
   h1: {
     ...baseHeadingProperties,
     fontSize: baseProperties.fontSize6XL(),

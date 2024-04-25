@@ -21,7 +21,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { z } from 'zod';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../context/useManager';
+import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ------------------------------- FORM KEYS -----------------------------------
@@ -69,8 +70,9 @@ const formFieldKeys = {
 // -----------------------------------------------------------------------------
 const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
-  const { handleRequest, setSearchSettings, searchSettings } =
-    useCardStoreHook();
+  const { handleRequest } = useCardStoreHook();
+  const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
+    useCompileCardData();
   const {
     addCollection,
     updateCollection,
@@ -78,7 +80,6 @@ const getFormFieldHandlers = () => {
     addDeck,
     updateDeck: updateDeckDetails,
   } = useManager();
-  // const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
 
   const formHandlers = {
     loginForm: (formData) => {
@@ -119,26 +120,19 @@ const getFormFieldHandlers = () => {
     collectionSearchForm: (formData, additionalData) => {
       console.log('Collection Search Form Data:', formData, additionalData);
     },
-    statRangeForm: (formData, additionalData) => {
-      console.log('Stat Range Form Data:', formData, additionalData);
-      setSearchSettings(formData, additionalData);
+    statRangeForm: (formData) => {
+      console.log('Stat Range Form Data:', formData);
+      setSelectedStat(formData);
+      // setSearchSettings(formData, additionalData);
     },
-    themeRangeForm: (formData, additionalData) => {
-      console.log('Theme Range Form Data:', formData, additionalData);
-      setSearchSettings(formData, additionalData);
+    themeRangeForm: (formData) => {
+      console.log('Theme Range Form Data:', formData);
+      setSelectedTheme(formData);
+      // setSearchSettings(formData, additionalData);
     },
     timeRangeForm: (formData) => {
       console.log('Time Range Selector Form Data:', formData);
-      // updateCollectionField(
-      //   selectedCollection._id,
-      //   'selectedChartDataKey',
-      //   formData
-      // );
-      // updateCollectionField(
-      //   selectedCollection._id,
-      //   'selectedChartData',
-      //   selectedCollection.averagedChartData[formData]
-      // );
+      setSelectedTimeRange(formData);
     },
     searchSettingsForm: (formData, additionalData) => {
       console.log(
@@ -146,7 +140,7 @@ const getFormFieldHandlers = () => {
         formData,
         additionalData
       );
-      setSearchSettings(formData, additionalData);
+      // setSearchSettings(formData, additionalData);
     },
 
     rememberMeForm: (formData) => {

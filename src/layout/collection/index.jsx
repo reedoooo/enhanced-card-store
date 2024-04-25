@@ -16,7 +16,7 @@ import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useManager from '../../context/MAIN_CONTEXT/CollectionContext/useManager';
+import useManager from '../../context/useManager';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -45,19 +45,6 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
             headerName="Collection Portfolio"
             username={user.username}
             handleOpenDialog={handleOpenAddDialog}
-            actions={
-              <RCButton
-                color="success"
-                size="large"
-                variant="holo"
-                onClick={() => {
-                  setActiveFormSchema('addCollectionForm');
-                  openDialog('isAddCollectionDialogOpen');
-                }}
-              >
-                Add New Collection
-              </RCButton>
-            }
           />
         </DashboardBox>
         <DashboardBox sx={{ px: theme.spacing(2) }}>
