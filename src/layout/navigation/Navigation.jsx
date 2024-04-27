@@ -19,7 +19,6 @@ import {
   Box,
   Card,
   CardContent,
-  DialogTitle,
   Divider,
   Drawer,
   ModalClose,
@@ -30,16 +29,14 @@ import {
 import { baseMenuItems } from '../../data/baseMenuItems';
 import rgba from '../../assets/themes/functions/rgba';
 import useManageCookies from '../../context/hooks/useManageCookies';
-import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ReusableLoadingButton from '../REUSABLE_COMPONENTS/ReusableLoadingButton';
 import { Logout } from '@mui/icons-material';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
+import useManager from '../../context/useManager';
 const Navigation = () => {
   const { theme } = useMode();
   const navigate = useNavigate();
-  const { cartCardQuantity } = useCartManager();
+  const { cart } = useManager();
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -49,7 +46,7 @@ const Navigation = () => {
   const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
   const username = authUser?.username;
   const { logout } = useAuthManager();
-  const menuItems = baseMenuItems({ cartCardQuantity: cartCardQuantity });
+  const menuItems = baseMenuItems({ cartCardQuantity: cart?.items?.length });
   const toggleSidebar = useCallback(() => setIsOpen(!isOpen), [isOpen]);
   const [logoutClicked, setLogoutClicked] = useState(false);
   const [springs] = useSprings(menuItems.length, (index) => ({

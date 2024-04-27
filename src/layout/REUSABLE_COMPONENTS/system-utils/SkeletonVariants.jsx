@@ -17,7 +17,7 @@ import { useMode } from '../../../context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
-} from '../../../pages/pageStyles/StyledComponents';
+} from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const LoadingCardSkeleton = () => {
   return (
@@ -167,19 +167,17 @@ const CollectionListItemSkeleton = ({ count, index }) => (
 );
 
 const DeckListItemSkeleton = ({ count, index }) => (
-  <Collapse key={`skeleton-${index}-${count}`} in={true}>
-    <Box sx={{ p: 1, display: 'flex', flexDirection: 'row' }}>
-      <Card sx={{ width: '100%' }}>
-        <CardActionArea sx={{ width: '100%' }} disabled={true}>
-          <Grid container spacing={2} sx={{ p: 2 }}>
-            <Skeleton variant="circular" width={40} height={40} />
-            <Skeleton variant="text" sx={{ flexGrow: 1, mx: 2 }} />
-            <Skeleton variant="text" width="60%" />
-          </Grid>
-        </CardActionArea>
-      </Card>
-    </Box>
-  </Collapse>
+  <Box sx={{ p: 1, display: 'flex', flexDirection: 'row', height: '300px' }}>
+    <Card sx={{ width: '100%' }}>
+      <CardActionArea sx={{ width: '100%' }} disabled={true}>
+        <Grid container spacing={2} sx={{ p: 2 }}>
+          <Skeleton variant="circular" width={40} height={40} />
+          <Skeleton variant="text" sx={{ flexGrow: 1, mx: 2 }} />
+          <Skeleton variant="text" width="60%" />
+        </Grid>
+      </CardActionArea>
+    </Card>
+  </Box>
 );
 
 const DynamicSkeletonList = ({ itemType, count, gridItemProps, context }) => (

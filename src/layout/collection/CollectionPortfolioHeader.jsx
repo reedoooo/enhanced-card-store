@@ -1,17 +1,12 @@
 import React, { useEffect } from 'react';
 import { IconButton, Box, Grid, Grow, Card } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CollectionsIcon from '@mui/icons-material/Collections';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../context';
-import { DEFAULT_COLLECTION } from '../../context/constants';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from '../REUSABLE_COMPONENTS/unique/IconStatWrapper';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+// import { PageHeaderSkeleton } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import { collectionPortfolioHeaderItems } from '../../data/collectionPortfolioHeaderItems';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
@@ -35,11 +30,10 @@ const HeaderItem = ({ icon, label, value, delay }) => {
     </Grid>
   );
 };
-const CollectionPortfolioHeader = ({ onBack, collection }) => {
+const CollectionPortfolioHeader = ({ onBack }) => {
   const { theme } = useMode();
-  if (!collection || collection === DEFAULT_COLLECTION) {
-    return <PageHeaderSkeleton />;
-  }
+  const selected = localStorage.getItem('selectedCollection');
+  const collection = JSON.parse(selected);
   const items = collectionPortfolioHeaderItems(collection);
   return (
     <DashboardBox

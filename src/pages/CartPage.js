@@ -1,30 +1,26 @@
 import React, { useEffect } from 'react';
-import { Box, Card, CardContent, Grid, useTheme } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Card,
+  CardContent,
+  CssBaseline,
+  Grid,
+  Toolbar,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import CartContent from '../layout/cart/CartContent';
-import { useMode } from '../context';
+import { useMode, useUserContext } from '../context';
 import Checkout from '../layout/cart/cartPageContainers/Checkout';
 import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
-import { useCartManager } from '../context/MAIN_CONTEXT/CartContext/useCartManager';
 import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
+import useManager from '../context/useManager';
 
 const CartPage = () => {
   const { theme } = useMode();
-  const { cart, fetchUserCart } = useCartManager();
   const [activeStep, setActiveStep] = React.useState(0);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchUserCart(); // Assuming fetchUserCart updates cartData
-      } catch (error) {
-        console.error('Error fetching cart data:', error);
-      }
-    };
-    if (!cart) {
-      fetchData();
-    }
-  }, [fetchUserCart]);
-
+  const { user } = useUserContext();
   return (
     <PageLayout>
       <MDBox sx={{ width: '100%', height: '100%' }}>
@@ -34,6 +30,22 @@ const CartPage = () => {
             height: '100%',
           }}
         >
+          <CssBaseline />
+          <AppBar
+            position="absolute"
+            color="default"
+            elevation={0}
+            sx={{
+              position: 'relative',
+              borderBottom: (t) => `1px solid ${t.palette.divider}`,
+            }}
+          >
+            <Toolbar theme={theme}>
+              <Typography variant="h6" color="inherit" noWrap>
+                {`${user && user?.username}'s Shopping Cart`}
+              </Typography>
+            </Toolbar>
+          </AppBar>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={6}>
               <CartContent

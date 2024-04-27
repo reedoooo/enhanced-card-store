@@ -73,7 +73,8 @@ const useFetchWrapper = () => {
           `Success: Your ${loadingID} data has been fetched.`,
           'success'
         );
-
+        console.log('MESSAGE: ', responseData?.message);
+        console.log('DATA: ', responseData?.data);
         return responseData;
       } catch (err) {
         const errorMessage = err.message || 'An unknown error occurred';
@@ -81,7 +82,7 @@ const useFetchWrapper = () => {
         setStatus(FETCH_STATUSES.ERROR);
         console.error(`Error fetching ${loadingID}:`, errorMessage);
         showNotification(
-          `Error fetching ${loadingID}: ${error.toString()}`,
+          `Error fetching ${loadingID}: ${err.toString()}`,
           'error'
         );
         return Promise.reject(err);
@@ -91,7 +92,7 @@ const useFetchWrapper = () => {
     },
     [
       setStatus,
-      // setData,
+      setData,
       setResponseCache,
       setError,
       showNotification,

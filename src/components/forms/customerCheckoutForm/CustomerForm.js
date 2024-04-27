@@ -1,17 +1,21 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { Box, Container, Typography, Grid, Button } from '@mui/material';
 import CustomerInfoFields from './CustomerInfoFields';
 import StripeCheckoutModal from '../../dialogs/stripeModal/StripeCheckoutModal';
 import { ModalContext } from '../../../context/ModalContext/ModalContext';
 import CartSummary from '../../other/dataDisplay/CartSummary';
 import { useMode } from '../../../context';
-import { useCartManager } from '../../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import useManager from '../../../context/useManager';
 
 const CustomerForm = () => {
   const { isModalOpen, setModalOpen } = useContext(ModalContext);
-  const { cart, cartCardQuantity, totalCost } = useCartManager();
+  const { cart } = useManager();
   const { theme } = useMode();
-
+  const totalCost = useMemo(
+    () =>
+      cart?.items?.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [cart?.items]
+  );
   const handleModalToggle = useCallback(
     () => setModalOpen((prev) => !prev),
     [setModalOpen]
@@ -54,7 +58,7 @@ const CustomerForm = () => {
                 }}
               >
                 <CartSummary
-                  quantity={cartCardQuantity}
+                  quantity={cart?.items?.length}
                   totalCost={totalCost}
                 />
                 <Button

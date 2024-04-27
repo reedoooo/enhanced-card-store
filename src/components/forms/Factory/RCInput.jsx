@@ -15,25 +15,16 @@ import {
   Input,
   Autocomplete,
   OutlinedInput,
-  useMediaQuery,
-  Box,
-  Button,
-  ButtonBase,
-  CardActions,
   Chip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import {
-  FormFieldBox,
-  StyledTextField,
-} from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledTextField } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { useMode } from '../../../context';
 import RCSwitch from './RCSwitch';
-import { zodSchemas } from '../formsConfig';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
-import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import useSelectedCollection from '../../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 import { nanoid } from 'nanoid';
+import useManager from '../../../context/useManager';
+import useSelectorActions from '../../../context/hooks/useSelectorActions';
 const RCInput = forwardRef(
   (
     {
@@ -46,39 +37,29 @@ const RCInput = forwardRef(
       value,
       placeholder,
       onSelectChange,
+      error,
       ...rest
     },
     ref
   ) => {
     const { theme } = useMode();
     const { isMobile } = useBreakpoint();
-    const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
-      useCompileCardData();
-    const { selectedCollection, updateCollectionField } =
-      useSelectedCollection();
-    const handleSelectChange = (event) => {
-      const selectedValue = event.target.value;
-      // if (rest.name === 'timeRange') {
-      setSelectedTimeRange(selectedValue); // Update local form state
-      // }
-      onChange(selectedValue); // Update local form state
-
-      if (type === 'select') {
-        // For 'select' type inputs, update collection fields dynamically
-        updateCollectionField(
-          selectedCollection._id,
-          'selectedChartDataKey',
-          selectedValue
-        );
-        updateCollectionField(
-          selectedCollection._id,
-          'selectedChartData',
-          selectedCollection?.averagedChartData[selectedValue]
-        );
-      }
-    };
+    const { updateEntityField, selectedCollection, selectedCollectionId } =
+      useManager();
+    const { handleSelectChange } = useSelectorActions();
+    // const handleSelectChange = (event) => {
+    //   const selectedValue = event.target.value;
+    //   // onChange(selectedValue); // Update local form state
+    //   if (type === 'select') {
+    //     updateEntityField(
+    //       'collections',
+    //       selectedCollectionId,
+    //       'selectedChartDataKey',
+    //       selectedValue
+    //     );
+    //   }
+    // };
     const [inputValue, setInputValue] = useState('');
-
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {
         event.preventDefault();
@@ -87,38 +68,10 @@ const RCInput = forwardRef(
         setInputValue('');
       }
     };
-
     const handleDeleteTag = (tagToDelete) => () => {
       onChange(value.filter((tag) => tag.key !== tagToDelete.key));
     };
-    // const handleAddTag = (tag) => {
-    //   const newTags = [...tags, tag];
-    //   setTags(newTags);
-    //   onChange(newTags); // Propagate change up to form
-    // };
 
-    // const handleDeleteTag = (tagIndex) => {
-    //   const newTags = tags.filter((_, index) => index !== tagIndex);
-    //   setTags(newTags);
-    //   onChange(newTags); // Propagate change up to form
-    // };
-
-    // const handleKeyDown = (event) => {
-    //   if (event.key === 'Enter' && inputValue) {
-    //     event.preventDefault();
-    //     const newTag = { key: nanoid(), label: inputValue.trim() };
-    //     const validation = zodSchemas?.updateDeckForm?.tags?.safeParse(newTag);
-    //     if (validation?.success) {
-    //       handleAddTag(newTag);
-    //       setInputValue('');
-    //       // setTags([...tags, newTag]);
-    //       // setInputValue('');
-    //     } else {
-    //       // Handle validation error
-    //       console.error('Validation failed', validation?.error.format());
-    //     }
-    //   }
-    // };
     switch (type) {
       case 'text':
       case 'number':
@@ -140,8 +93,8 @@ const RCInput = forwardRef(
               shrink: !initialValue ? undefined : true,
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
-            // error={!!errors[name]}
-            // helperText={errors[name]?.message}
+            error={!!error[rest.name]}
+            helperText={error[rest.name]?.message}
             {...rest}
           />
         );
@@ -155,7 +108,10 @@ const RCInput = forwardRef(
               labelId={`${rest?.name}-select-label`}
               id={`${rest?.name}-select`}
               value={value || ''}
-              onChange={handleSelectChange}
+              onChange={(e) => {
+                onChange(e.target.value);
+                handleSelectChange(e, rest.name, rest.context);
+              }}
               // onChange={(e) => {
               //   console.log(e.target.value);
               //   console.log(
@@ -191,8 +147,8 @@ const RCInput = forwardRef(
                 },
               }}
             >
-              {options?.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+              {options?.map((option, index) => (
+                <MenuItem key={`${option.value}-${index}`} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}

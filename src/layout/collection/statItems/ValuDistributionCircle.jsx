@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React, { useMemo } from 'react';
 import { Box, Card, Icon, Typography } from '@mui/material';
-import { useMode, useAppContext } from '../../../context';
+import { useMode } from '../../../context';
 import {
   PieChart,
   Pie,
@@ -11,13 +11,13 @@ import {
   Legend,
 } from 'recharts';
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
+import useManager from '../../../context/useManager';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
-  const { collectionMetaData } = useCompileCardData();
+  const { collectionMetaData } = useManager();
   const colors = theme.palette.chartTheme;
   const { lightest, darkest, light, dark } = colors.greenAccent;
   const greyDark = colors.grey.dark;

@@ -1,11 +1,5 @@
 /* eslint-disable max-len */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -13,27 +7,20 @@ import {
   CardContent,
   Grid,
   Collapse,
-  useMediaQuery,
-  Box,
+  Grow,
 } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 import RCInfoItem from '../REUSABLE_COMPONENTS/RCInfoItem';
 import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
-import { roundToNearestTenth } from '../../context/Helpers';
 import { useMode } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
 import { formFields } from '../../components/forms/formsConfig';
 import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
-import useInitialFormData from '../../components/forms/hooks/useInitialFormData';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 import prepareDeckData from './deckData';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
-import { nanoid } from 'nanoid';
-import { useLoading } from '../../context/hooks/useLoading';
-import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import LoadingIndicator from '../REUSABLE_COMPONENTS/system-utils/LoadingIndicator';
-
+import { SkeletonCard } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import useManager from '../../context/useManager';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
   useEffect(() => {
@@ -59,25 +46,36 @@ const AnimatedInfoItem = ({ label, value, theme, delay }) => {
 };
 const DeckListItem = ({
   deck,
-  selectedDeckId,
   handleSelectAndShowDeck,
   isEditPanelOpen,
   handleDelete,
-  handleDeckLoaded,
-  setLoadingState,
-  loadingState,
+  isLoading,
 }) => {
-  const { genData, infoItems } = prepareDeckData(deck);
+  const [cards, setCards] = useState([]);
+  const [infoItems, setInfoItems] = useState([]);
+  const [cardLoading, setCardLoading] = useState(false);
+  const selected = localStorage.getItem('selectedDeck');
+  const resetCards = useCallback(() => {
+    setCards([]);
+    setInfoItems([]);
+    setCardLoading(true);
+  }, []);
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedDeck' && event.newValue) {
+        setCards(JSON.parse(event.newValue).cards);
+        setInfoItems(
+          prepareDeckData(deck, JSON.parse(event.newValue).cards).infoItems
+        );
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [deck, setCards, setInfoItems]);
+  const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  const isSelected = selectedDeckId === deck._id;
-
-  // useEffect(() => {
-  //   if (isEditPanelOpen) {
-  //     handleDeckLoaded(deck?._id);
-  //   }
-  // }, [isEditPanelOpen]);
-
   return (
     <Collapse in={true} timeout={1000}>
       <Card>
@@ -150,64 +148,73 @@ const DeckListItem = ({
             </CardContent>
           </CardActionArea>
         </MDBox>
-        {isSelected &&
-          isEditPanelOpen && ( // Only render the edit panel if the current deck is selected
-            <Collapse in={isEditPanelOpen}>
-              <MDBox
-                sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
-              >
-                <RCDynamicForm
-                  formKey={'updateDeckForm'}
-                  inputs={formFields['updateDeckForm']}
-                  userInterfaceOptions={{
-                    submitButton: true,
-                    submitButtonLabel: 'Update Deck',
-                    deleteButton: true,
-                    deleteButtonLabel: 'Delete Deck',
-                    deleteActions: handleDelete,
-                  }}
-                  initialData={{
-                    name: deck?.name || '',
-                    description: deck?.description || '',
-                    tags: deck?.tags || [],
-                    color: deck?.color || '',
-                  }}
-                />
-              </MDBox>
-              <MDBox
-                sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
-              >
-                <Card>
-                  <Grid container spacing={2}>
-                    {deck?.cards?.map((card, index) => (
-                      <Grid
-                        item
-                        key={`${card.id}-${index}`}
-                        className="card-deck-grid-item"
-                      >
-                        <MDBox className="card-group-flex-item">
-                          {Array.from({
-                            length: Math.min(3, card.quantity || 1),
-                          }).map((_, quantityIndex) => (
-                            <GenericCard
-                              key={`${card._id}-${index}-${quantityIndex}`}
-                              cardClasses="card-deck"
-                              // cardClasses={`base-card-quantity-index-${quantityIndex}`}
-                              card={card}
-                              initialIndex={index}
-                              quantityIndex={quantityIndex}
-                              isDeckCard={true}
-                              selectedEntity={deck}
-                            />
-                          ))}
-                        </MDBox>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Card>
-              </MDBox>
-            </Collapse>
-          )}
+        {!isEditPanelOpen && ( // Only render the edit panel if the current deck is selected
+          <Collapse in={!isEditPanelOpen}>
+            <MDBox
+              sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
+            >
+              <RCDynamicForm
+                formKey={'updateDeckForm'}
+                inputs={formFields['updateDeckForm']}
+                userInterfaceOptions={{
+                  submitButton: true,
+                  submitButtonLabel: 'Update Deck',
+                  deleteButton: true,
+                  deleteButtonLabel: 'Delete Deck',
+                  deleteActions: handleDelete,
+                }}
+                initialData={{
+                  name: deck?.name || '',
+                  description: deck?.description || '',
+                  tags: deck?.tags || [],
+                  color: deck?.color || '',
+                }}
+              />
+            </MDBox>
+            <MDBox
+              sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
+            >
+              <Card>
+                <Grid container spacing={2}>
+                  {cardLoading
+                    ? Array.from({ length: 3 }).map((_, index) => (
+                        <Grid item xs={6} sm={4} md={4} key={index}>
+                          <SkeletonCard />
+                        </Grid>
+                      ))
+                    : cards?.map((card, index) => (
+                        <Grid
+                          item
+                          key={`${card.id}-${index}`}
+                          className="card-deck-grid-item"
+                        >
+                          <Grow
+                            in={true}
+                            style={{ transformOrigin: '0 0 0' }}
+                            timeout={calculateTimeout(index)}
+                          >
+                            <MDBox className="card-group-flex-item">
+                              {Array.from({
+                                length: Math.min(3, card.quantity || 1),
+                              }).map((_, quantityIndex) => (
+                                <GenericCard
+                                  key={`${card._id}-${index}-${quantityIndex}`}
+                                  cardClasses="card-deck"
+                                  card={card}
+                                  context={'deck'}
+                                  page={'deck'}
+                                  isDeckCard={true}
+                                />
+                              ))}
+                            </MDBox>
+                          </Grow>
+                        </Grid>
+                      ))}
+                </Grid>
+              </Card>
+            </MDBox>
+          </Collapse>
+        )}
       </Card>
     </Collapse>
   );

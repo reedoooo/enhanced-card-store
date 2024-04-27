@@ -17,6 +17,7 @@ import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
+import { useMode } from '../../../context';
 
 function Copyright() {
   return (
@@ -47,6 +48,7 @@ function getStepContent(step) {
 }
 
 export default function Checkout({ activeStep, setActiveStep }) {
+  const { theme } = useMode();
   // const [activeStep, setActiveStep] = React.useState(0);
   const { user } = useUserData();
   const handleNext = () => {
@@ -58,22 +60,6 @@ export default function Checkout({ activeStep, setActiveStep }) {
   return (
     <Elements stripe={stripePromise}>
       <React.Fragment>
-        <CssBaseline />
-        <AppBar
-          position="absolute"
-          color="default"
-          elevation={0}
-          sx={{
-            position: 'relative',
-            borderBottom: (t) => `1px solid ${t.palette.divider}`,
-          }}
-        >
-          <Toolbar>
-            <Typography variant="h6" color="inherit" noWrap>
-              {`${user && user?.username}'s Shopping Cart`}
-            </Typography>
-          </Toolbar>
-        </AppBar>
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
           <Paper
             variant="outlined"

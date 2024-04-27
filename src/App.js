@@ -5,15 +5,13 @@ import './assets/css/card.css';
 import './assets/css/page.css';
 import Main from './Main';
 import {
-  ModalProvider,
   UserProvider,
   useMode,
-  CollectionProvider,
+  // CollectionProvider,
   CardProvider,
-  DeckProvider,
-  CartProvider,
-  SidebarProvider,
-  AppContextProvider,
+  // DeckProvider,
+  // CartProvider,
+  // AppContextProvider,
   ConfiguratorProvider,
 } from './context';
 import { ThemeProvider } from 'styled-components';
@@ -31,21 +29,17 @@ const App = () => {
       <ParallaxProvider>
         <ConfiguratorProvider>
           <UserProvider>
-            <ModalProvider>
-              <CollectionProvider>
-                <CardProvider>
-                  <DeckProvider>
-                    <CartProvider>
-                      <SidebarProvider>
-                        <AppContextProvider>
-                          <Main />
-                        </AppContextProvider>
-                      </SidebarProvider>
-                    </CartProvider>
-                  </DeckProvider>
-                </CardProvider>
-              </CollectionProvider>
-            </ModalProvider>
+            {/* <CollectionProvider> */}
+            <CardProvider>
+              {/* <DeckProvider> */}
+              {/* <CartProvider> */}
+              {/* <AppContextProvider> */}
+              <Main />
+              {/* </AppContextProvider> */}
+              {/* </CartProvider> */}
+              {/* </DeckProvider> */}
+            </CardProvider>
+            {/* </CollectionProvider> */}
           </UserProvider>
         </ConfiguratorProvider>
       </ParallaxProvider>

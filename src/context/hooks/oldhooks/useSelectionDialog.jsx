@@ -1,7 +1,6 @@
 // import { useState, useCallback } from 'react';
 // import { useCollectionStore } from '../MAIN_CONTEXT/CollectionContext/CollectionContext';
 // import { useDeckStore } from '../MAIN_CONTEXT/DeckContext/DeckContext';
-// import useSelectedCollection from '../MAIN_CONTEXT/CollectionContext/useSelectedCollection';
 
 // export const useSelectionDialog = (
 //   context,
@@ -10,8 +9,7 @@
 //   // allCollections,
 //   allDecks
 // ) => {
-//   const { selectedCollection, allCollections, handleSelectCollection } =
-//     useSelectedCollection();
+
 //   const { setSelectedDeck } = useDeckStore();
 //   const [selectDialogOpen, setSelectDialogOpen] = useState(false);
 //   const [itemsForSelection, setItemsForSelection] = useState([]);

@@ -1,3 +1,5 @@
+import { roundToNearestTenth } from '../context/Helpers';
+
 export const collectionPortfolioHeaderItems = (collection) => [
   {
     // icon: <CollectionsIcon />,
@@ -10,8 +12,7 @@ export const collectionPortfolioHeaderItems = (collection) => [
     // icon: <AttachMoneyIcon />,
     icon: 'attach_money',
     label: 'Total Value',
-    value:
-      collection?.totalPrice || 'Select a collection to view its statistics',
+    value: roundToNearestTenth(collection?.totalPrice || 0),
     delay: 200,
   },
   {

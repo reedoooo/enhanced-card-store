@@ -20,11 +20,9 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { z } from 'zod';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
-import useCollectionManager from '../../context/MAIN_CONTEXT/CollectionContext/useCollectionManager';
-import useDeckManager from '../../context/MAIN_CONTEXT/DeckContext/useDeckManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useSelectedCollection from '../../context/MAIN_CONTEXT/CollectionContext/useSelectedCollection';
+import useManager from '../../context/useManager';
+import useSelectorActions from '../../context/hooks/useSelectorActions';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ------------------------------- FORM KEYS -----------------------------------
@@ -72,16 +70,15 @@ const formFieldKeys = {
 // -----------------------------------------------------------------------------
 const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
-  const { handleRequest, setSearchSettings, searchSettings } =
-    useCardStoreHook();
-  const collectionmanagedata = useCollectionManager();
-  const selectionData = useSelectedCollection();
-  if (!collectionmanagedata || !selectionData) {
-    return <LoadingOverlay />;
-  }
-  const { createNewCollection, updateCollection } = collectionmanagedata;
-  const { selectedCollection, updateCollectionField } = selectionData;
-  const { updateDeckDetails, deleteDeck, createNewDeck } = useDeckManager();
+  const { handleRequest } = useCardStoreHook();
+  const { setTime, setStat, setTheme } = useSelectorActions();
+  const {
+    addCollection,
+    updateCollection,
+    deleteDeck,
+    addDeck,
+    updateDeck: updateDeckDetails,
+  } = useManager();
 
   const formHandlers = {
     loginForm: (formData) => {
@@ -97,11 +94,11 @@ const getFormFieldHandlers = () => {
     },
     addCollectionForm: (formData, additionalData) => {
       console.log('Add Collection Form Data:', formData, additionalData);
-      createNewCollection(formData, additionalData);
+      addCollection(formData, additionalData);
     },
     updateCollectionForm: (formData, additionalData) => {
       console.log('Update Collection Form Data:', formData, additionalData);
-      updateCollection(formData, additionalData);
+      updateCollection(formData);
     },
     updateDeckForm: (formData) => {
       console.log('Update Deck Form Data:', formData);
@@ -109,7 +106,7 @@ const getFormFieldHandlers = () => {
     },
     addDeckForm: (formData, additionalData) => {
       console.log('Add Deck Form Data:', formData, additionalData);
-      createNewDeck(formData, additionalData);
+      addDeck(formData, additionalData);
     },
     deleteDeckForm: (formData, additionalData) => {
       console.log('Delete Deck Form Data:', formData, additionalData);
@@ -122,26 +119,19 @@ const getFormFieldHandlers = () => {
     collectionSearchForm: (formData, additionalData) => {
       console.log('Collection Search Form Data:', formData, additionalData);
     },
-    statRangeForm: (formData, additionalData) => {
-      console.log('Stat Range Form Data:', formData, additionalData);
-      setSearchSettings(formData, additionalData);
+    statRangeForm: (formData) => {
+      console.log('Stat Range Form Data:', formData);
+      setStat(formData);
+      // setSearchSettings(formData, additionalData);
     },
-    themeRangeForm: (formData, additionalData) => {
-      console.log('Theme Range Form Data:', formData, additionalData);
-      setSearchSettings(formData, additionalData);
+    themeRangeForm: (formData) => {
+      console.log('Theme Range Form Data:', formData);
+      setTheme(formData);
+      // setSearchSettings(formData, additionalData);
     },
     timeRangeForm: (formData) => {
       console.log('Time Range Selector Form Data:', formData);
-      // updateCollectionField(
-      //   selectedCollection._id,
-      //   'selectedChartDataKey',
-      //   formData
-      // );
-      // updateCollectionField(
-      //   selectedCollection._id,
-      //   'selectedChartData',
-      //   selectedCollection.averagedChartData[formData]
-      // );
+      setTime(formData);
     },
     searchSettingsForm: (formData, additionalData) => {
       console.log(
@@ -149,7 +139,7 @@ const getFormFieldHandlers = () => {
         formData,
         additionalData
       );
-      setSearchSettings(formData, additionalData);
+      // setSearchSettings(formData, additionalData);
     },
 
     rememberMeForm: (formData) => {
@@ -236,6 +226,7 @@ const signupFormFields = {
 const authFormFields = signupFormFields;
 const addDeckFormFields = {
   name: {
+    context: 'Deck',
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter deck name',
@@ -248,6 +239,7 @@ const addDeckFormFields = {
     required: true,
   },
   description: {
+    context: 'Deck',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter deck description',
@@ -267,6 +259,7 @@ const addDeckFormFields = {
 const updateDeckFormFields = {
   ...addDeckFormFields,
   tags: {
+    context: 'Deck',
     label: 'Tags',
     type: 'chips',
     placeholder: 'Enter a tag',
@@ -278,6 +271,7 @@ const updateDeckFormFields = {
     required: false, // Adjust based on whether tags are actually required or not
   },
   color: {
+    context: 'Deck',
     label: 'Color',
     type: 'select',
     defaultValue: 'blue',
@@ -302,6 +296,8 @@ const updateDeckFormFields = {
 const deckFormFields = updateDeckFormFields;
 const collectionFormFields = {
   name: {
+    context: 'Collection',
+
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter collection name',
@@ -313,6 +309,7 @@ const collectionFormFields = {
     required: true,
   },
   description: {
+    context: 'Collection',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter collection description',
@@ -363,6 +360,7 @@ const collectionSearchFormFields = {
 };
 const statRangeFormFields = {
   statRange: {
+    context: 'Collection',
     name: 'statRange',
     label: 'Statistics Range',
     type: 'select',
@@ -387,6 +385,7 @@ const statRangeFormFields = {
 };
 const timeRangeFormFields = {
   timeRange: {
+    context: 'Collection',
     name: 'timeRange',
     label: 'Time Range',
     type: 'select',
@@ -410,6 +409,7 @@ const timeRangeFormFields = {
 };
 const themeRangeFormFields = {
   themeRange: {
+    context: 'Collection',
     name: 'themeRange',
     label: 'Theme Range',
     type: 'select',

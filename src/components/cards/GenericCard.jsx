@@ -8,7 +8,6 @@ import React, {
 import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from '../../assets/images/placeholder.jpeg';
-import { useModalContext } from '../../context/UTILITIES_CONTEXT/ModalContext/ModalContext';
 import { useMode } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useSnackbar } from 'notistack';
@@ -19,11 +18,9 @@ import {
   StyledCardContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { usePopover } from '../../context/hooks/usePopover';
-import { useCartManager } from '../../context/MAIN_CONTEXT/CartContext/useCartManager';
-import LoadingOverlay from '../../layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
-import useSelectedDeck from '../../context/MAIN_CONTEXT/DeckContext/useSelectedDeck';
 import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import useDialogState from '../../context/hooks/useDialogState';
+import useManager from '../../context/useManager';
 const getQuantity = ({
   card,
   cart,
@@ -56,18 +53,19 @@ const getQuantity = ({
 };
 
 const GenericCard = React.forwardRef((props, ref) => {
-  const { cart } = useCartManager();
-  const collectiondata = useSelectedContext();
-  if (!collectiondata) return <LoadingOverlay />;
-  const { selectedCollection, allCollections } = collectiondata;
-  const { selectedDeck, allDecks } = useSelectedDeck();
+  const {
+    collections: allCollections,
+    decks: allDecks,
+    selectedDeck,
+    selectedCollection,
+    cart,
+    checkForCardInContext,
+  } = useManager();
   const { setContext, setIsContextSelected } = useSelectedContext();
-  const { isCardInContext } = useCompileCardData();
-  const { openModalWithCard, setModalOpen, setClickedCard, isModalOpen } =
-    useModalContext();
+  const { dialogState, openDialog } = useDialogState();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
-  const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
-  const { card, context, page, quantityIndex, isDeckCard } = props;
+  const { card, context, page, isDeckCard } = props;
+
   const effectiveContext =
     typeof context === 'object' ? context.pageContext : context;
   const { theme } = useMode();
@@ -89,12 +87,6 @@ const GenericCard = React.forwardRef((props, ref) => {
       window.removeEventListener('resize', measureCard);
     };
   }, []);
-
-  const handleClick = useCallback(() => {
-    openModalWithCard(card);
-    setModalOpen(true);
-    setIsPopoverOpen(false);
-  }, [openModalWithCard, setModalOpen, setIsPopoverOpen, card]);
   const handleInteraction = useCallback(
     (hoverState) => {
       setHoveredCard(hoverState ? card : null);
@@ -112,7 +104,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   useEffect(() => {
     setIsPopoverOpen(hoveredCard === card);
   }, [hoveredCard, card, setIsPopoverOpen]);
-  const isInContext = isCardInContext(card);
+  const isInContext = checkForCardInContext(card);
   const name = card?.name;
   const imgUrl = card?.card_images?.[0]?.image_url || placeholder;
   const price = `Price: ${
@@ -160,19 +152,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   }
 
   return (
-    <Card
-      ref={cardRef}
-      // theme={theme}
-      className={`base-card ${props.cardClasses}`}
-      // sx={{
-      //   position: 'initial',
-      //   top: 0,
-      //   left: `${quantityIndex * 10}%`, // Offset each card by 10% of the card's width
-      //   width: '100%', // Assuming card takes full width of its container
-      //   height: '100%', // Adjust based on your card's height
-      //   ml: isDeckCard ? `-${(100 % Math.max(3, quantityIndex)) * 90}%` : 0,
-      // }}
-    >
+    <Card ref={cardRef} className={`base-card ${props.cardClasses}`}>
       <AspectRatioBox ref={cardRef} theme={theme}>
         <CardMediaSection
           isRequired={true}
@@ -183,8 +163,7 @@ const GenericCard = React.forwardRef((props, ref) => {
           quantity={card?.quantity}
           isHovered={hoveredCard === card}
           handleInteraction={handleInteraction}
-          handleClick={handleClick}
-          isModalOpen={isModalOpen}
+          isModalOpen={dialogState.isCardDialogOpen}
           ref={cardRef}
         />
       </AspectRatioBox>
@@ -193,42 +172,11 @@ const GenericCard = React.forwardRef((props, ref) => {
         sx={{
           justifyContent: 'center',
           display: cardSize !== 'xs' && !isDeckCard ? 'flex' : 'none',
-          // hidden: isDeckCard ? true : false,
         }}
       >
         <GenericActionButtons
           card={card}
-          // selectedEntity={
-          //   effectiveContext === 'Cart'
-          //     ? cart
-          //     : effectiveContext === 'Collection'
-          //       ? selectedCollection
-          //       : selectedDeck
-          // }
           context={effectiveContext}
-          // selectedEnt={selectedEntity}
-          onClick={() => handleContextSelect(effectiveContext)}
-          onSuccess={() =>
-            enqueueSnackbar(
-              {
-                title: 'Action successful',
-                message: `Card added to ${card?.name || ''} successfully.`,
-              },
-              'success',
-              null
-            )
-          }
-          onFailure={(error) =>
-            enqueueSnackbar(
-              {
-                title: 'Action failed',
-                message: `Failed to add card to ${card?.name || ''}.`,
-              },
-              'error',
-              error
-            )
-          }
-          page={page}
           cardSize={cardSize}
         />
       </CardActions>

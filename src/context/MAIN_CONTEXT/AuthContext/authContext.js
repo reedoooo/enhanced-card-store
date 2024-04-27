@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { defaultContextValue } from '../../constants';
+import { defaultContextValue } from '../../defaultContextValues';
 import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import useUserData from '../UserContext/useUserData';

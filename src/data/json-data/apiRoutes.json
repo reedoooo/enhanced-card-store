@@ -1,0 +1,29 @@
+{
+  "collections": {
+    "create": "/api/collections",
+    "update": "/api/collections/{id}",
+    "delete": "/api/collections/{id}",
+    "addCard": "/api/collections/{id}/cards",
+    "incrementCard": "/api/collections/{id}/cards/{cardId}/increment",
+    "decrementCard": "/api/collections/{id}/cards/{cardId}/decrement",
+    "deleteCard": "/api/collections/{id}/cards/{cardId}"
+  },
+  "decks": {
+    "create": "/api/decks",
+    "update": "/api/decks/{id}",
+    "delete": "/api/decks/{id}",
+    "addCard": "/api/decks/{id}/cards",
+    "incrementCard": "/api/decks/{id}/cards/{cardId}/increment",
+    "decrementCard": "/api/decks/{id}/cards/{cardId}/decrement",
+    "deleteCard": "/api/decks/{id}/cards/{cardId}"
+  },
+  "cart": {
+    "create": "/api/cart",
+    "update": "/api/cart/{id}",
+    "delete": "/api/cart",
+    "addItem": "/api/cart/items",
+    "incrementItem": "/api/cart/items/{itemId}/increment",
+    "decrementItem": "/api/cart/items/{itemId}/decrement",
+    "deleteItem": "/api/cart/items/{itemId}"
+  }
+}

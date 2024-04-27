@@ -2,7 +2,7 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { white, text, info, secondary, success, green, grey } = colors;
+const { white, text, info, secondary, success, grey } = colors;
 const { size } = typography;
 
 export default {
@@ -18,7 +18,7 @@ export default {
     cursor: 'pointer',
     transition: 'background-color 0.3s, color 0.3s',
     '&:hover': {
-      backgroundColor: green.focus,
+      backgroundColor: success.focus,
     },
     '&:active, &:active:focus, &:active:hover': {
       opacity: 0.85,

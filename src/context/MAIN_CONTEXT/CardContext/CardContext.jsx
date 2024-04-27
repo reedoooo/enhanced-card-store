@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useCardStoreHook } from './useCardStore';
-import { defaultContextValue } from '../../constants';
+import { defaultContextValue } from '../../defaultContextValues';
 const { CARD_CONTEXT } = defaultContextValue;
 
 const CardContext = createContext(CARD_CONTEXT);

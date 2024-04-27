@@ -18,10 +18,14 @@ import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 // import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { Avatar } from '@mui/material';
+import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
+import useManageCookies from '../../../context/hooks/useManageCookies';
 
 function Header({ children }) {
   const { theme } = useMode();
   const { gradients } = theme.palette;
+  const { getCookie } = useManageCookies();
+  const { user } = getCookie(['user']);
   const [tabsOrientation, setTabsOrientation] = useState('horizontal');
   const [tabValue, setTabValue] = useState(0);
 
@@ -78,7 +82,7 @@ function Header({ children }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Richard Davis
+                {user?.username}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
                 CEO / Co-Founder
@@ -91,6 +95,7 @@ function Header({ children }) {
                 orientation={tabsOrientation}
                 value={tabValue}
                 onChange={handleSetTabValue}
+                theme={theme}
               >
                 <Tab
                   label="App"

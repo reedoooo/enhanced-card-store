@@ -11,15 +11,7 @@ import {
 } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { useCardStore, useMode } from '../../../context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {
-  zodSchemas,
-  getFormFieldHandlers,
-  getSpecificFormHandler,
-  formKeys,
-  formFieldKeys,
-  formFields,
-  validationFunctions,
-} from '../formsConfig';
+import { getFormFieldHandlers } from '../formsConfig';
 import { useFormSubmission } from '../hooks/useFormSubmission';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
@@ -31,6 +23,7 @@ const RCDynamicForm = ({
   userInterfaceOptions = {},
   initialData,
   updatedData,
+  additonalData,
 }) => {
   if (!inputs || typeof inputs !== 'object') {
     console.error('Invalid inputs provided to RCDynamicForm:', inputs);
@@ -48,7 +41,6 @@ const RCDynamicForm = ({
     reset,
   } = methods;
   const [isMounted, setIsMounted] = useState(false);
-  const { handleRequest } = useCardStore();
   useEffect(() => {
     console.log('MOUNTED', isMounted);
     setIsMounted(true);
@@ -63,31 +55,27 @@ const RCDynamicForm = ({
   }, [updatedData, initialData, reset]);
   const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
   const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
-  // useEffect(() => {
-  //   const subscription = methods.watch((value, { name, type }) => {
-  //     if (name === 'searchTerm') {
-  //       console.log(`SEARCH TERM: ${value.searchTerm}`);
-  //       handleRequest(value.searchTerm);
-  //     }
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [methods.watch, handleRequest]);
   return (
     <FormBox
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       theme={theme}
+      // sx={{
+      //   ...(isMobile && {
+      //     padding: theme.spacing(3),
+      //   }),
+      // }}
       sx={{
         ...(isMobile && {
           padding: theme.spacing(3),
         }),
+        ...userInterfaceOptions.formBoxStyles, // Custom styles for FormBox
       }}
     >
       {Object.entries(inputs).map(([fieldName, fieldConfig]) => (
         <FormFieldBox key={fieldName} theme={theme}>
           <Controller
+            theme={theme}
             name={fieldName}
             control={control}
             rules={fieldConfig.rules}
@@ -99,6 +87,8 @@ const RCDynamicForm = ({
                 label={fieldConfig.label}
                 placeholder={fieldConfig.placeholder}
                 error={!!error}
+                name={fieldConfig.name}
+                context={fieldConfig.context}
                 // helperText={error ? <RCFieldError name={fieldName} /> : null}
                 initialValue={fieldConfig.initialValue}
                 helperText={error ? error.message : null}

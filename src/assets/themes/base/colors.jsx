@@ -17,6 +17,8 @@ import {
   redAccent,
   blueAccent,
   customDarkTheme,
+  white,
+  black,
   myGradients,
 } from './customColorPalettes';
 const colors = {
@@ -48,30 +50,10 @@ const colors = {
   // ERROR COLORS
   error,
   grey,
-  // OTHER COLORS
-  // text: {
-  //   main: '#7b809a',
-  //   focus: '#7b809a',
-  // },
-
+  white,
+  black,
   transparent: {
     main: 'transparent',
-  },
-
-  white: {
-    main: '#ffffff',
-    focus: '#ffffff',
-  },
-
-  black: {
-    light: '#000000',
-    main: '#000000',
-    focus: '#000000',
-  },
-
-  green: {
-    main: '#5CDB95',
-    focus: '#379683',
   },
   primary,
   secondary,

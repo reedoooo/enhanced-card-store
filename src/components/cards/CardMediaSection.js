@@ -9,6 +9,12 @@ import {
 import Checkbox from '@mui/material/Checkbox';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import useDialogState from '../../context/hooks/useDialogState';
+import GenericCardDialog from '../dialogs/GenericCardDialog';
+import { usePopover } from '../../context/hooks/usePopover';
+import { Avatar } from '@mui/material';
+import { useMode } from '../../context';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const CardMediaSection = forwardRef(
   (
@@ -17,13 +23,18 @@ const CardMediaSection = forwardRef(
       card,
       isHovered,
       handleInteraction,
-      handleClick,
+      // handleClick,
       isRequired,
       isModalOpen,
+      context,
+      isLast,
     },
     ref
   ) => {
+    const { theme } = useMode();
     const [anchorEl, setAnchorEl] = useState(null);
+    const cardId = card?.id;
+    const [cardWithSameIdCount, setCardWithSameIdCount] = useState(0);
 
     useEffect(() => {
       if (isHovered && ref?.current) {
@@ -32,27 +43,70 @@ const CardMediaSection = forwardRef(
         setAnchorEl(null);
       }
     }, [isHovered, ref]);
+    const { dialogState, openDialog, closeDialog } = useDialogState();
+    const { setIsPopoverOpen } = usePopover();
+    const handleOpenDialog = () => {
+      openDialog('isCardDialogOpen');
+      setIsPopoverOpen(false);
+    };
+    const handleClick = (event) => {
+      event.stopPropagation();
+      setAnchorEl(event.currentTarget);
+    };
     const label = { inputProps: { 'aria-label': 'Bookmark card' } };
-
+    const handleCloseDialog = () => {
+      closeDialog('isCardDialogOpen');
+    };
     return (
       <MediaContainer
         ref={ref}
+        onClick={handleOpenDialog}
         style={{ position: 'relative' }} // Ensure this container has relative positioning
         {...(isRequired && {
           onMouseEnter: () => handleInteraction?.(!isModalOpen ? true : false), // Use optional chaining
           onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
-          onClick: () => {
-            handleClick?.();
-          },
+          // onClick: () => {
+          //   handleClick?.();
+          // },
         })}
       >
+        {dialogState.isCardDialogOpen && (
+          <GenericCardDialog
+            open={dialogState.isCardDialogOpen}
+            context={context}
+            card={card}
+            onClose={handleCloseDialog}
+            title={card?.name}
+          />
+        )}
         <Media
           component="img"
           alt={`Image for ${imgUrl || 'the card'}`}
           image={imgUrl}
           loading="lazy"
         />
-        <Checkbox
+        {isLast && (
+          <Avatar
+            variant="rounded"
+            sx={{
+              ...theme.typography.commonAvatar,
+              ...theme.typography.mediumAvatar,
+              backgroundColor: theme.palette.secondary.dark,
+              color: theme.palette.secondary[200],
+              zIndex: 1,
+              position: 'absolute',
+              top: 0, // Align to the top
+              right: 0, // Align to the right
+              margin: '8px', // Adjust spacing as needed
+            }}
+            aria-controls="menu-earning-card"
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <MoreHorizIcon fontSize="inherit" />
+          </Avatar>
+        )}
+        {/* <Checkbox
           {...label}
           icon={<BookmarkBorderIcon />}
           checkedIcon={<BookmarkIcon />}
@@ -62,7 +116,7 @@ const CardMediaSection = forwardRef(
             right: 0, // Align to the right
             margin: '8px', // Adjust spacing as needed
           }}
-        />
+        /> */}
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}

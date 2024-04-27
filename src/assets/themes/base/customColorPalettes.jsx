@@ -61,6 +61,16 @@ const grey = {
   contrastText: '#e0e0e0',
   main: '#e0e0e0',
 };
+const white = {
+  main: '#ffffff',
+  focus: '#E8E8E8',
+};
+const black = {
+  light: '#212121',
+  main: '#1C1C1C',
+  focus: '#26242C',
+  dark: '#0B0C0E',
+};
 const greenAccent = {
   crystalGreen: hexToRgba('#4cceac', 0.6),
   darkCerulean: hexToRgba('#0d5d96', 0.9),
@@ -83,6 +93,26 @@ const greenAccent = {
   contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
   secondary: '#5CDB95',
 };
+// const greenPalette = {
+//   50: '#b7ebde',      // Even lighter than the lightest
+//   100: '#94e2cd',     // Lightest shade
+//   200: '#70d8bd',     // Lighter shade
+//   300: '#4cceac',     // Light shade, also 'crystalGreen' with opacity adjusted for full hex
+//   400: '#3da58a',     // Default, mid-light
+//   500: '#18b984',     // Main green used in the primary color
+//   600: '#159b76',     // Slightly darker and less saturated than 500
+//   700: '#12875f',     // Darker and more muted green
+//   800: '#0f7348',     // Dark, rich green
+//   900: '#2e7c67'      // Darkest shade, used for the deepest contrast
+// };
+
+// const primaryPalette = {
+//   main: '#18b984', // Greenish shade vibrant and suitable for primary buttons and icons
+//   light: '#4cceac', // Lighter green for backgrounds or less emphasized components
+//   dark: '#1e5245', // Dark green for text or dramatic background
+//   focus: 'rgba(24, 185, 132, 0.15)', // Slightly transparent green for focus states
+//   contrastText: '#fff', // White for text that contrasts against the primary shades
+// };
 const redAccent = {
   darkest: '#2c100f',
   darker: '#58201e',
@@ -289,6 +319,8 @@ export {
   redAccent,
   blueAccent,
   myGradients,
+  white,
+  black,
 };
 // const backgroundA = {
 //   darkest: '#2e7c67', // '#70d8bd',

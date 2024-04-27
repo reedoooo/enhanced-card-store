@@ -24,13 +24,10 @@ const StatBoxes = () => {
 const DistCircle = () => {
   return <ValuDistributionCircle />;
 };
-
 const PriceList = () => {
   return <PricedCardList />;
 };
 const StatBoard = () => {
-  const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
   const { isMobile } = useBreakpoint();
   return (
     <SimpleCard

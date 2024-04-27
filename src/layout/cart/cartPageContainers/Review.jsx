@@ -4,7 +4,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
-import { useCartManager } from '../../../context/MAIN_CONTEXT/CartContext/useCartManager';
+import useManager from '../../../context/useManager';
 const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
 const payments = [
   { name: 'Card type', detail: 'Visa' },
@@ -14,7 +14,7 @@ const payments = [
 ];
 
 export default function Review() {
-  const { cart } = useCartManager();
+  const { cart } = useManager();
 
   return (
     <React.Fragment>
