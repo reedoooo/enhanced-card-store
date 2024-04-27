@@ -21,7 +21,6 @@ import { usePopover } from '../../context/hooks/usePopover';
 import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
 import useDialogState from '../../context/hooks/useDialogState';
 import useManager from '../../context/useManager';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 const getQuantity = ({
   card,
   cart,
@@ -60,13 +59,12 @@ const GenericCard = React.forwardRef((props, ref) => {
     selectedDeck,
     selectedCollection,
     cart,
+    checkForCardInContext,
   } = useManager();
   const { setContext, setIsContextSelected } = useSelectedContext();
-  const { isCardInContext } = useCompileCardData();
   const { dialogState, openDialog } = useDialogState();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
-  const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
-  const { card, context, page, quantityIndex, isDeckCard } = props;
+  const { card, context, page, isDeckCard } = props;
 
   const effectiveContext =
     typeof context === 'object' ? context.pageContext : context;
@@ -106,7 +104,7 @@ const GenericCard = React.forwardRef((props, ref) => {
   useEffect(() => {
     setIsPopoverOpen(hoveredCard === card);
   }, [hoveredCard, card, setIsPopoverOpen]);
-  const isInContext = isCardInContext(card);
+  const isInContext = checkForCardInContext(card);
   const name = card?.name;
   const imgUrl = card?.card_images?.[0]?.image_url || placeholder;
   const price = `Price: ${

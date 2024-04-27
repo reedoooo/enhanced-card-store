@@ -6,7 +6,7 @@
  */
 import { useState, useCallback } from 'react';
 
-const useFormSelect = (initialValues, formKey) => {
+const useFormSelect = (initialValues) => {
   const [selectedValues, setSelectedValues] = useState(initialValues);
 
   const handleChange = useCallback(

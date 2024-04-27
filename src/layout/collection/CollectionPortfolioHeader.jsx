@@ -30,8 +30,10 @@ const HeaderItem = ({ icon, label, value, delay }) => {
     </Grid>
   );
 };
-const CollectionPortfolioHeader = ({ onBack, collection }) => {
+const CollectionPortfolioHeader = ({ onBack }) => {
   const { theme } = useMode();
+  const selected = localStorage.getItem('selectedCollection');
+  const collection = JSON.parse(selected);
   const items = collectionPortfolioHeaderItems(collection);
   return (
     <DashboardBox

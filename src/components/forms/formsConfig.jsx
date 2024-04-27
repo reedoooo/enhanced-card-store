@@ -22,7 +22,7 @@ import { z } from 'zod';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
 import useManager from '../../context/useManager';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
+import useSelectorActions from '../../context/hooks/useSelectorActions';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ------------------------------- FORM KEYS -----------------------------------
@@ -71,8 +71,7 @@ const formFieldKeys = {
 const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
   const { handleRequest } = useCardStoreHook();
-  const { setSelectedTimeRange, setSelectedStat, setSelectedTheme } =
-    useCompileCardData();
+  const { setTime, setStat, setTheme } = useSelectorActions();
   const {
     addCollection,
     updateCollection,
@@ -99,7 +98,7 @@ const getFormFieldHandlers = () => {
     },
     updateCollectionForm: (formData, additionalData) => {
       console.log('Update Collection Form Data:', formData, additionalData);
-      updateCollection(formData, additionalData);
+      updateCollection(formData);
     },
     updateDeckForm: (formData) => {
       console.log('Update Deck Form Data:', formData);
@@ -122,17 +121,17 @@ const getFormFieldHandlers = () => {
     },
     statRangeForm: (formData) => {
       console.log('Stat Range Form Data:', formData);
-      setSelectedStat(formData);
+      setStat(formData);
       // setSearchSettings(formData, additionalData);
     },
     themeRangeForm: (formData) => {
       console.log('Theme Range Form Data:', formData);
-      setSelectedTheme(formData);
+      setTheme(formData);
       // setSearchSettings(formData, additionalData);
     },
     timeRangeForm: (formData) => {
       console.log('Time Range Selector Form Data:', formData);
-      setSelectedTimeRange(formData);
+      setTime(formData);
     },
     searchSettingsForm: (formData, additionalData) => {
       console.log(
@@ -227,6 +226,7 @@ const signupFormFields = {
 const authFormFields = signupFormFields;
 const addDeckFormFields = {
   name: {
+    context: 'Deck',
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter deck name',
@@ -239,6 +239,7 @@ const addDeckFormFields = {
     required: true,
   },
   description: {
+    context: 'Deck',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter deck description',
@@ -258,6 +259,7 @@ const addDeckFormFields = {
 const updateDeckFormFields = {
   ...addDeckFormFields,
   tags: {
+    context: 'Deck',
     label: 'Tags',
     type: 'chips',
     placeholder: 'Enter a tag',
@@ -269,6 +271,7 @@ const updateDeckFormFields = {
     required: false, // Adjust based on whether tags are actually required or not
   },
   color: {
+    context: 'Deck',
     label: 'Color',
     type: 'select',
     defaultValue: 'blue',
@@ -293,6 +296,8 @@ const updateDeckFormFields = {
 const deckFormFields = updateDeckFormFields;
 const collectionFormFields = {
   name: {
+    context: 'Collection',
+
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter collection name',
@@ -304,6 +309,7 @@ const collectionFormFields = {
     required: true,
   },
   description: {
+    context: 'Collection',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter collection description',
@@ -354,6 +360,7 @@ const collectionSearchFormFields = {
 };
 const statRangeFormFields = {
   statRange: {
+    context: 'Collection',
     name: 'statRange',
     label: 'Statistics Range',
     type: 'select',
@@ -378,6 +385,7 @@ const statRangeFormFields = {
 };
 const timeRangeFormFields = {
   timeRange: {
+    context: 'Collection',
     name: 'timeRange',
     label: 'Time Range',
     type: 'select',
@@ -401,6 +409,7 @@ const timeRangeFormFields = {
 };
 const themeRangeFormFields = {
   themeRange: {
+    context: 'Collection',
     name: 'themeRange',
     label: 'Theme Range',
     type: 'select',

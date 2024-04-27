@@ -351,9 +351,9 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  border: `1px solid ${theme.palette.divider}`,
+  // border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.grey.contrastText,
+  background: '#e0e0e0',
 }));
 export const SquareChartContainer = styled(Box)(({ theme }) => ({
   position: 'relative',

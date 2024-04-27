@@ -11,14 +11,13 @@ import {
   Legend,
 } from 'recharts';
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import { useCompileCardData } from '../../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import { useCollectionMetaData } from '../../../context/MISC_CONTEXT/AppContext/useCollectionMetaData';
+import useManager from '../../../context/useManager';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
-  const { collectionMetaData } = useCollectionMetaData();
+  const { collectionMetaData } = useManager();
   const colors = theme.palette.chartTheme;
   const { lightest, darkest, light, dark } = colors.greenAccent;
   const greyDark = colors.grey.dark;

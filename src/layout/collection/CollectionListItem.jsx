@@ -28,8 +28,9 @@ const CollectionListItem = memo(
       return <LoadingOverlay />;
     }
     const percentageChange =
-      roundToNearestTenth(collection?.collectionStatistics?.percentageChange) ||
-      0;
+      roundToNearestTenth(
+        (collection?.totalPrice / (collection?.totalPrice / 100)) * 100
+      ) || 0;
 
     const handleEdit = useCallback(
       (event) => {

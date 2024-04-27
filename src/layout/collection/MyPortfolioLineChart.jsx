@@ -2,22 +2,28 @@ import { ResponsiveLine } from '@nivo/line';
 import { BasicTooltip } from '@nivo/tooltip';
 import PropTypes from 'prop-types';
 import { useEventHandlers } from '../../context/hooks/useEventHandlers';
-const TooltipLayer = ({ points }) => (
-  <>
-    {points?.map((point) => (
-      <BasicTooltip
-        key={point.id}
-        id={point.id}
-        value={point.data.yFormatted}
-        color="#000000"
-        enableChip
-      />
-    ))}
-  </>
-);
+const TooltipLayer = ({ points }) => {
+  // console.log(points);
+  return (
+    <>
+      {points?.map((point, index) => (
+        <BasicTooltip
+          key={point.data.id}
+          id={point.data.id}
+          label={point.data.label}
+          x={point.data.xFormatted}
+          value={point.data.yFormatted}
+          color="#000000"
+          enableChip
+        />
+      ))}
+    </>
+  );
+};
+
 const MyResponsiveLine = ({
   data,
-  tickValues,
+  // tickValues,
   validMarkers,
   greenAccent,
   redAccent,
@@ -25,7 +31,8 @@ const MyResponsiveLine = ({
   text,
 }) => {
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
-
+  // console.log(validMarkers);
+  // console.log(tickValues);
   return (
     <ResponsiveLine
       data={data}
@@ -37,6 +44,10 @@ const MyResponsiveLine = ({
       pointBorderWidth={2}
       pointBorderColor={{ from: 'serieColor' }}
       yFormat="$.2f"
+      xFormat={(value) => {
+        const d = new Date(value);
+        return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      }}
       axisBottom={{
         tickRotation: 0,
         legend: 'Time',
@@ -44,7 +55,7 @@ const MyResponsiveLine = ({
         legendPosition: 'middle',
         tickSize: 5,
         tickPadding: 5,
-        tickValues: tickValues,
+        // tickValues: (v)
         format: (value) => {
           const d = new Date(value);
           return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
@@ -55,12 +66,12 @@ const MyResponsiveLine = ({
         tickPadding: 5,
         tickRotation: 0,
         legend: 'Value ($)',
-        legendOffset: -50,
+        legendOffset: -60,
         legendPosition: 'middle',
         color: text,
         format: (value) => `$${value?.toFixed(2)}`,
       }}
-      margin={{ top: 20, right: 40, bottom: 50, left: 55 }}
+      margin={{ top: 20, right: 40, bottom: 50, left: 70 }}
       padding={0.5}
       animate={true}
       xScale={{
@@ -82,7 +93,7 @@ const MyResponsiveLine = ({
       stiffness={90}
       damping={15}
       enableSlices="x"
-      markers={validMarkers}
+      // markers={}
       layers={[
         'grid',
         'markers',
@@ -150,7 +161,7 @@ MyResponsiveLine.propTypes = {
   ).isRequired,
   // handleMouseMove: PropTypes.func.isRequired,
   // handleMouseLeave: PropTypes.func.isRequired,
-  tickValues: PropTypes.arrayOf(PropTypes.number).isRequired,
+  // tickValues: PropTypes.arrayOf(PropTypes.number).isRequired,
   validMarkers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

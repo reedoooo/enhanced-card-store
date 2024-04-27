@@ -10,7 +10,7 @@ export const useEventHandlers = () => {
   const handleMouseMove = useCallback(
     (point) => {
       debouncedSetHoveredData(
-        point ? { x: point?.x, y: point?.y, id: point?.id } : null
+        point ? { x: point?.x, y: point?.y, id: point?.label } : null
       );
     },
     [debouncedSetHoveredData]

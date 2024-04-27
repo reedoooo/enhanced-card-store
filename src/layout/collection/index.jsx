@@ -60,14 +60,11 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
     </DashboardLayout>
   );
 };
-const PortfolioView = ({ selectedCollection, handleBackToCollections }) => (
+const PortfolioView = ({ handleBackToCollections }) => (
   <DashboardLayout>
     <Grid container spacing={1}>
       <Grid item xs={12}>
-        <CollectionPortfolioHeader
-          onBack={handleBackToCollections}
-          collection={selectedCollection}
-        />
+        <CollectionPortfolioHeader onBack={handleBackToCollections} />
       </Grid>
       <Grid item xs={12}>
         <ChartGridLayout />
@@ -77,16 +74,17 @@ const PortfolioView = ({ selectedCollection, handleBackToCollections }) => (
 );
 const CollectionPortfolio = () => {
   const { theme } = useMode();
-  const {
-    collections: allCollections,
-    handleSelectCollection,
-    selectedCollectionId,
-  } = useManager();
+  const { collections, handleSelectCollection } = useManager();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
+  const selectedCollectionId = localStorage.getItem('selectedCollectionId');
 
   const tabs = [
-    <Tab label="Collections" value={0} key={'collections-tab'} />,
+    <Tab
+      label="Collections"
+      value={0}
+      key={selectedCollectionId === null ? 0 : 1}
+    />,
     ...(selectedCollectionId
       ? [
           <Tab
@@ -100,6 +98,15 @@ const CollectionPortfolio = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+    if (newValue === 0) {
+      handleSelectCollection(null);
+    } else {
+      handleSelectCollection(
+        collections.find(
+          (collection) => collection._id === selectedCollectionId
+        )
+      );
+    }
   };
 
   const handleSelectAndShowCollection = useCallback(
@@ -109,8 +116,39 @@ const CollectionPortfolio = () => {
     },
     [handleSelectCollection]
   );
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (
+        event.key === 'selectedCollectionId' ||
+        event.key === 'selectedCollection'
+      ) {
+        const updatedCollectionId = event.newValue;
+        const updatedCollection = collections.find(
+          (collection) => collection._id === updatedCollectionId
+        );
+        if (updatedCollection) {
+          // setActiveTab(collections.indexOf(updatedDeck));
+          handleSelectCollection(updatedCollection);
+        }
+      }
+      // if (event.key === 'selectedDeck') {
+      //   const updatedCollection = JSON.parse(event.newValue);
+      //   handleSelectCollection(updatedCollection);
+      // }
+      // if (event.key === 'decks') {
+      //   const updatedDecks = JSON.parse(event.newValue);
+      //   setDecks(updatedDecks);
+      //   setHasUpdatedDecks(true);
+      // }
+    };
 
-  if (!allCollections) {
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [collections, handleSelectCollection]);
+
+  if (!collections) {
     return <LoadingOverlay />;
   }
 
@@ -137,7 +175,7 @@ const CollectionPortfolio = () => {
       )}
       {activeTab === 1 && selectedCollectionId && (
         <PortfolioView
-          selectedCollection={allCollections?.find(
+          selectedCollection={collections?.find(
             (c) => c._id === selectedCollectionId
           )}
           handleBackToCollections={() => setActiveTab(0)}

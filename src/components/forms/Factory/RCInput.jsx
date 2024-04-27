@@ -24,6 +24,7 @@ import RCSwitch from './RCSwitch';
 import useBreakpoint from '../../../context/hooks/useBreakPoint';
 import { nanoid } from 'nanoid';
 import useManager from '../../../context/useManager';
+import useSelectorActions from '../../../context/hooks/useSelectorActions';
 const RCInput = forwardRef(
   (
     {
@@ -45,18 +46,19 @@ const RCInput = forwardRef(
     const { isMobile } = useBreakpoint();
     const { updateEntityField, selectedCollection, selectedCollectionId } =
       useManager();
-    const handleSelectChange = (event) => {
-      const selectedValue = event.target.value;
-      onChange(selectedValue); // Update local form state
-      if (type === 'select') {
-        updateEntityField(
-          'collections',
-          selectedCollectionId,
-          'selectedChartDataKey',
-          selectedValue
-        );
-      }
-    };
+    const { handleSelectChange } = useSelectorActions();
+    // const handleSelectChange = (event) => {
+    //   const selectedValue = event.target.value;
+    //   // onChange(selectedValue); // Update local form state
+    //   if (type === 'select') {
+    //     updateEntityField(
+    //       'collections',
+    //       selectedCollectionId,
+    //       'selectedChartDataKey',
+    //       selectedValue
+    //     );
+    //   }
+    // };
     const [inputValue, setInputValue] = useState('');
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {
@@ -106,7 +108,10 @@ const RCInput = forwardRef(
               labelId={`${rest?.name}-select-label`}
               id={`${rest?.name}-select`}
               value={value || ''}
-              onChange={handleSelectChange}
+              onChange={(e) => {
+                onChange(e.target.value);
+                handleSelectChange(e, rest.name, rest.context);
+              }}
               // onChange={(e) => {
               //   console.log(e.target.value);
               //   console.log(
@@ -142,8 +147,8 @@ const RCInput = forwardRef(
                 },
               }}
             >
-              {options?.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+              {options?.map((option, index) => (
+                <MenuItem key={`${option.value}-${index}`} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}

@@ -93,6 +93,19 @@ const greenAccent = {
   contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
   secondary: '#5CDB95',
 };
+// const greenPalette = {
+//   50: '#b7ebde',      // Even lighter than the lightest
+//   100: '#94e2cd',     // Lightest shade
+//   200: '#70d8bd',     // Lighter shade
+//   300: '#4cceac',     // Light shade, also 'crystalGreen' with opacity adjusted for full hex
+//   400: '#3da58a',     // Default, mid-light
+//   500: '#18b984',     // Main green used in the primary color
+//   600: '#159b76',     // Slightly darker and less saturated than 500
+//   700: '#12875f',     // Darker and more muted green
+//   800: '#0f7348',     // Dark, rich green
+//   900: '#2e7c67'      // Darkest shade, used for the deepest contrast
+// };
+
 // const primaryPalette = {
 //   main: '#18b984', // Greenish shade vibrant and suitable for primary buttons and icons
 //   light: '#4cceac', // Lighter green for backgrounds or less emphasized components

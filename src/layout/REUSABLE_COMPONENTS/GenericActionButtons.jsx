@@ -111,6 +111,7 @@ const GenericActionButtons = ({
     addItemToDeck,
     removeItemFromDeck,
     fetchDecks,
+    setHasUpdatedCards,
     setDecks,
     allDecks,
     selectedCollectionId,
@@ -137,6 +138,8 @@ const GenericActionButtons = ({
             } else {
               removeItemFromCollection(card);
             }
+            setHasUpdatedCards(true);
+
             break;
           case 'Deck':
             if (actionType === 'add') {
@@ -145,6 +148,8 @@ const GenericActionButtons = ({
             } else {
               removeItemFromDeck(card);
             }
+            setHasUpdatedCards(true);
+
             break;
           case 'Cart':
             if (actionType === 'add') {
@@ -152,6 +157,8 @@ const GenericActionButtons = ({
             } else {
               removeItemFromCart(card);
             }
+            setHasUpdatedCards(true);
+
             break;
           default:
             throw new Error('Invalid context');

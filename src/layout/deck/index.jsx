@@ -32,19 +32,31 @@ const DeckBuilder = () => {
   const {
     fetchDecks,
     deleteDeck,
-    decks: allDecks,
-    hasFetchedDecks,
     handleSelectDeck,
-    selectedDeckId,
     fetchDeckById,
+    hasFetchedDecks,
+    setHasUpdatedDecks,
   } = useManager();
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
   const [loadingState, setLoadingState] = useState({});
+  const [decks, setDecks] = useState([]);
+  // const selected = localStorage.getItem('selectedDeck');
+  // const selectedDeck = JSON.parse(selected);
   useEffect(() => {
+    const initFetch = async () => {
+      const loadedDecks = await fetchDecks();
+      setDecks(loadedDecks);
+      const storedDeckId = localStorage.getItem('selectedDeckId');
+      const initialDeck = loadedDecks.find((deck) => deck._id === storedDeckId);
+      if (initialDeck) {
+        setActiveTab(initialDeck ? loadedDecks.indexOf(initialDeck) : 0);
+        // handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
+      }
+    };
     if (!hasFetchedDecks) {
-      fetchDecks();
+      initFetch();
     }
   }, [hasFetchedDecks]);
   const handleDelete = useCallback(
@@ -67,33 +79,53 @@ const DeckBuilder = () => {
     setActiveFormSchema('addDeckForm');
     openDialog('isAddDeckDialogOpen');
   }, [openDialog, setActiveFormSchema]);
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
+        const updatedDeckId = event.newValue;
+        const updatedDeck = decks.find((deck) => deck._id === updatedDeckId);
+        if (updatedDeck) {
+          setActiveTab(decks.indexOf(updatedDeck));
+          handleSelectDeck(updatedDeck);
+        }
+      }
+      // if (event.key === 'selectedDeck') {
+      //   const updatedDeck = JSON.parse(event.newValue);
+      //   handleSelectDeck(updatedDeck);
+      // }
+      if (event.key === 'decks') {
+        const updatedDecks = JSON.parse(event.newValue);
+        setDecks(updatedDecks);
+        setHasUpdatedDecks(true);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [decks, handleSelectDeck]);
   const handleChangeTab = useCallback(
     async (event, newValue) => {
-      const newDeck = allDecks[newValue];
-      if (newDeck) {
-        setActiveTab(newValue);
+      setActiveTab(newValue);
+      const deckValue = decks[newValue];
+      if (deckValue) {
         setLoadingState((prev) => ({
           ...prev,
-          [newDeck._id]: true, // Set loading state to true immediately
+          [deckValue._id]: true, // Set loading state to true immediately
         }));
-
-        // Fetch deck details from the API
-        const deckDetails = await fetchDeckById(newDeck?._id);
-        if (deckDetails) {
-          handleSelectDeck(deckDetails); // Update the selected deck in state
-          console.log('NEW SELECTED DECK', deckDetails);
-        } else {
-          console.error('Failed to fetch deck details.');
-        }
-
-        handleDeckLoaded(newDeck._id);
+        const selectedDeck = await fetchDeckById(deckValue?._id);
+        // localStorage.setItem('selectedDeckId', selectedDeck._id);
+        handleSelectDeck(selectedDeck);
+        handleDeckLoaded(selectedDeck._id);
       } else {
         console.error('Selected deck is undefined.');
       }
     },
-    [allDecks, handleSelectDeck, fetchDeckById, handleDeckLoaded]
+    [decks, handleSelectDeck, fetchDeckById, handleDeckLoaded]
   );
-  const deckTabs = allDecks?.map((deck, index) => (
+  const deckTabs = decks?.map((deck, index) => (
     <Tab
       label={
         loadingState[deck?._id] ? <CircularProgress size={20} /> : deck.name
@@ -104,26 +136,27 @@ const DeckBuilder = () => {
   ));
   const deckListItems = useMemo(
     () =>
-      allDecks.map((deck, index) => (
+      decks.map((deck, index) => (
         <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
           <DeckListItem
             // key={deck._id}
             deck={deck}
-            selectedDeckId={selectedDeckId}
+            selectedDeckId={localStorage.getItem('selectedDeckId')}
             handleDelete={() => handleDelete(deck)}
-            isEditPanelOpen={selectedDeckId === deck?._id}
+            isEditPanelOpen={
+              localStorage.getItem('selectedDeckId') === deck._id
+            }
             activeItem={activeTab === index}
             handleSelectAndShowDeck={() => handleSelectDeck(deck)}
             handleDeckLoaded={() => handleDeckLoaded(deck?._id)}
-            loadingState={loadingState[deck?._id]}
+            isLoading={loadingState[deck?._id]}
             setLoadingState={setLoadingState}
           />
         </Collapse>
       )),
     [
-      allDecks,
+      decks,
       activeTab,
-      selectedDeckId,
       handleDelete,
       handleSelectDeck,
       handleDeckLoaded,

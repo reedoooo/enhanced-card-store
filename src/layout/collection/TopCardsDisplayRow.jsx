@@ -19,18 +19,17 @@ import { useMode } from '../../context';
 import placeHolder from '../../assets/images/placeholder.jpeg';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import CardDetailsContainer from '../../components/cards/CardDetailsContainer';
-import { useCompileCardData } from '../../context/MISC_CONTEXT/AppContext/useCompileCardData';
 import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import { useCollectionMetaData } from '../../context/MISC_CONTEXT/AppContext/useCollectionMetaData';
 import { CardWrapper } from '../REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
+import useManager from '../../context/useManager';
 
 export const TopCardsDisplayRow = () => {
   const { theme } = useMode();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const { collectionMetaData } = useCollectionMetaData();
+  const { collectionMetaData } = useManager();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
 
   return (

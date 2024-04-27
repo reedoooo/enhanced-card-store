@@ -23,6 +23,7 @@ const RCDynamicForm = ({
   userInterfaceOptions = {},
   initialData,
   updatedData,
+  additonalData,
 }) => {
   if (!inputs || typeof inputs !== 'object') {
     console.error('Invalid inputs provided to RCDynamicForm:', inputs);
@@ -86,6 +87,8 @@ const RCDynamicForm = ({
                 label={fieldConfig.label}
                 placeholder={fieldConfig.placeholder}
                 error={!!error}
+                name={fieldConfig.name}
+                context={fieldConfig.context}
                 // helperText={error ? <RCFieldError name={fieldName} /> : null}
                 initialValue={fieldConfig.initialValue}
                 helperText={error ? error.message : null}
