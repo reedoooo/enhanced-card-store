@@ -31,21 +31,23 @@ const Main = () => {
         <CSSTransition key={location.key} classNames="fade" timeout={300}>
           <Suspense fallback={<LoadingOverlay />}>
             <Routes>
-              {ROUTE_CONFIG.map(({ path, componentName, isPrivate }, index) => (
-                <Route
-                  key={index}
-                  path={path}
-                  element={
-                    isPrivate ? (
-                      <PrivateRoute>
+              {ROUTE_CONFIG.routes.map(
+                ({ path, componentName, isPrivate }, index) => (
+                  <Route
+                    key={index}
+                    path={path}
+                    element={
+                      isPrivate ? (
+                        <PrivateRoute>
+                          <LazyRoute componentName={componentName} />
+                        </PrivateRoute>
+                      ) : (
                         <LazyRoute componentName={componentName} />
-                      </PrivateRoute>
-                    ) : (
-                      <LazyRoute componentName={componentName} />
-                    )
-                  }
-                />
-              ))}
+                      )
+                    }
+                  />
+                )
+              )}
             </Routes>
           </Suspense>
         </CSSTransition>

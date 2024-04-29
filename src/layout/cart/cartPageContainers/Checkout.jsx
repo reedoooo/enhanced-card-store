@@ -16,8 +16,8 @@ import PaymentForm from './PaymentForm';
 import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
-import { useMode } from '../../../context';
+import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
+import { useMode } from 'context';
 
 function Copyright() {
   return (

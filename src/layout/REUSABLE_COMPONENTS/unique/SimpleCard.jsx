@@ -3,7 +3,7 @@ import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import styled from 'styled-components';
 import { AspectRatio, CardContent, IconButton, Typography } from '@mui/joy';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 import { Icon, useMediaQuery } from '@mui/material';
 import MDBox from '../MDBOX';
 import SaveIcon from '@mui/icons-material/Save';

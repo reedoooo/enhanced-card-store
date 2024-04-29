@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import { useMediaQuery, useTheme } from '@mui/material';
 import MDBox from '../MDBOX';

@@ -67,8 +67,11 @@ const MyResponsiveLine = ({
         tickRotation: 0,
         legend: 'Value ($)',
         legendOffset: -60,
-        legendPosition: 'middle',
+        legendPosition: 'start',
+        // legendPosition: 'middle',
         color: text,
+        min: 'auto',
+        max: 'auto',
         format: (value) => `$${value?.toFixed(2)}`,
       }}
       margin={{ top: 20, right: 40, bottom: 50, left: 70 }}
@@ -81,11 +84,12 @@ const MyResponsiveLine = ({
         useUTC: false,
       }}
       yScale={{
-        type: 'linear',
+        type: 'linear', // Linear scale will be used for y-axis
+        // min: 'auto', // Auto-scale will fit values between min and max
         min: '0', // Explicitly setting minimum to 0, adjust as needed
         max: 'auto', // Consider setting an explicit max if appropriate
         stacked: false, // Changed to false unless stacking is needed
-        reverse: false,
+        reverse: false, // Reverse the scale if needed
       }}
       curve="catmullRom" // This curve type can create smoother, more wavy lines
       motionConfig="wobbly" // A more dynamic motion configuration
@@ -93,7 +97,7 @@ const MyResponsiveLine = ({
       stiffness={90}
       damping={15}
       enableSlices="x"
-      // markers={}
+      markers={validMarkers}
       layers={[
         'grid',
         'markers',
@@ -162,15 +166,15 @@ MyResponsiveLine.propTypes = {
   // handleMouseMove: PropTypes.func.isRequired,
   // handleMouseLeave: PropTypes.func.isRequired,
   // tickValues: PropTypes.arrayOf(PropTypes.number).isRequired,
-  validMarkers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-      value: PropTypes.number.isRequired,
-      color: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  // validMarkers: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     id: PropTypes.string.isRequired,
+  //     x: PropTypes.number.isRequired,
+  //     y: PropTypes.number.isRequired,
+  //     value: PropTypes.number.isRequired,
+  //     color: PropTypes.string.isRequired,
+  //   })
+  // ).isRequired,
   greenAccent: PropTypes.object.isRequired,
   redAccent: PropTypes.object.isRequired,
 

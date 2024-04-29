@@ -2,7 +2,7 @@ import { Box, Icon, Typography } from '@mui/material';
 import React from 'react';
 import FlexBetween from './FlexBetween';
 import PropTypes from 'prop-types';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 const BoxHeader = ({
   icon,

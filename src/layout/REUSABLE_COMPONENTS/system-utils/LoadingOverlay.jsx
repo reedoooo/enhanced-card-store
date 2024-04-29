@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useMode } from '../../../context';
-import useBreakpoint from '../../../context/hooks/useBreakPoint';
+import { useMode } from 'context';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 import { Box, CircularProgress } from '@mui/material';
 
 const LoadingOverlay = () => {

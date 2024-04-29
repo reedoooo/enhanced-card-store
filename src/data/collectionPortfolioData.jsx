@@ -2,7 +2,7 @@ import Icon from '@mui/material/Icon';
 // Images
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import React from 'react';
-import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import LoadingIndicator from 'components/reusable/indicators/LoadingIndicator';
 import { roundToNearestTenth } from '../context/Helpers';
 const Name = ({ name }) => (
   <MDTypography

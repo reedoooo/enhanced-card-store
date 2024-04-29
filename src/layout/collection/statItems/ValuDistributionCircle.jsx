@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React, { useMemo } from 'react';
 import { Box, Card, Icon, Typography } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 import {
   PieChart,
   Pie,
@@ -13,7 +13,7 @@ import {
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import useManager from '../../../context/useManager';
+import useManager from 'context/useManager';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();

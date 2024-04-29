@@ -22,7 +22,6 @@ import { z } from 'zod';
 import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
 import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
 import useManager from '../../context/useManager';
-import useSelectorActions from '../../context/hooks/useSelectorActions';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ------------------------------- FORM KEYS -----------------------------------
@@ -71,13 +70,13 @@ const formFieldKeys = {
 const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
   const { handleRequest } = useCardStoreHook();
-  const { setTime, setStat, setTheme } = useSelectorActions();
   const {
     addCollection,
     updateCollection,
     deleteDeck,
     addDeck,
     updateDeck: updateDeckDetails,
+    // selectedCollection,
   } = useManager();
 
   const formHandlers = {
@@ -121,17 +120,17 @@ const getFormFieldHandlers = () => {
     },
     statRangeForm: (formData) => {
       console.log('Stat Range Form Data:', formData);
-      setStat(formData);
+      // setStat(formData);
       // setSearchSettings(formData, additionalData);
     },
     themeRangeForm: (formData) => {
       console.log('Theme Range Form Data:', formData);
-      setTheme(formData);
+      // setTheme(formData);
       // setSearchSettings(formData, additionalData);
     },
     timeRangeForm: (formData) => {
       console.log('Time Range Selector Form Data:', formData);
-      setTime(formData);
+      // setTime(formData);
     },
     searchSettingsForm: (formData, additionalData) => {
       console.log(
@@ -227,6 +226,7 @@ const authFormFields = signupFormFields;
 const addDeckFormFields = {
   name: {
     context: 'Deck',
+    name: 'name',
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter deck name',
@@ -240,6 +240,7 @@ const addDeckFormFields = {
   },
   description: {
     context: 'Deck',
+    name: 'description',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter deck description',
@@ -261,6 +262,7 @@ const updateDeckFormFields = {
   tags: {
     context: 'Deck',
     label: 'Tags',
+    name: 'tags',
     type: 'chips',
     placeholder: 'Enter a tag',
     defaultValue: [{ value: 'tag1', label: 'tag1' }],
@@ -273,6 +275,7 @@ const updateDeckFormFields = {
   color: {
     context: 'Deck',
     label: 'Color',
+    name: 'color',
     type: 'select',
     defaultValue: 'blue',
     rules: {
@@ -297,7 +300,7 @@ const deckFormFields = updateDeckFormFields;
 const collectionFormFields = {
   name: {
     context: 'Collection',
-
+    name: 'name',
     label: 'Name',
     type: 'text',
     placeHolder: 'Enter collection name',
@@ -310,6 +313,7 @@ const collectionFormFields = {
   },
   description: {
     context: 'Collection',
+    name: 'description',
     label: 'Description',
     type: 'text',
     placeHolder: 'Enter collection description',
@@ -329,6 +333,7 @@ const searchFormFields = {
   searchTerm: {
     label: 'Search Cards',
     type: 'text',
+    name: 'searchTerm',
     placeholder: 'Search for cards...',
     defaultValue: '',
     rules: {
@@ -348,6 +353,7 @@ const collectionSearchFormFields = {
   searchTerm: {
     label: 'Search',
     type: 'text',
+    name: 'collectionSearchTerm',
     placeholder: 'Search for cards...',
     field: 'searchTerm',
     defaultValue: '',
@@ -367,10 +373,6 @@ const statRangeFormFields = {
     placeholder: 'Select statistics range', // Optional for a select, used if you have a default empty option
     defaultValue: 'highPoint',
     selected: 'highPoint',
-
-    // onSelectChange: (value) => {
-    //   console.log(value);
-    // },
     rules: {
       required: 'Statistics range is required', // Assuming you want to enforce a selection
     },
@@ -378,6 +380,12 @@ const statRangeFormFields = {
       { value: 'highPoint', label: 'High Point' },
       { value: 'lowPoint', label: 'Low Point' },
       { value: 'average', label: 'Average' },
+      { value: 'avgPrice', label: 'Average Price' },
+      { value: 'priceChange', label: 'Price Change' },
+      {
+        value: 'percentageChange',
+        label: 'Percentage Change',
+      },
       { value: 'volume', label: 'Volume' },
       { value: 'volatility', label: 'Volatility' },
     ],
@@ -430,6 +438,8 @@ const authSwitchFormFields = {
   authSwitch: {
     label: 'Auth Switch',
     type: 'switch',
+    placeHolder: 'Auth Switch',
+    name: 'authSwitch',
     defaultValue: false,
     rules: {
       required: true,

@@ -1,6 +1,6 @@
 import TextField from '@mui/material/TextField';
 import styled from 'styled-components';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 export default styled(TextField)(({ ownerState }) => {
   const { error, success, disabled } = ownerState;

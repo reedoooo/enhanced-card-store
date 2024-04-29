@@ -10,14 +10,14 @@ import {
   Slide,
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
-import searchData from '../../../data/json-data/search.json';
-import { useConfiguratorContext, useMode } from '../../../context';
+import searchData from 'data/json-data/search.json';
+import { useConfiguratorContext, useMode } from 'context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import MDBox from '../MDBOX';
 import MDButton from '../MDBUTTON';
-import { formFields } from '../../../components/forms/formsConfig';
+import { formFields } from 'components/forms/formsConfig';
 import { TextField, InputLabel } from '@mui/material';
 import { StyledFormControl } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 

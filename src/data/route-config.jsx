@@ -1,4 +1,4 @@
-export const ROUTE_CONFIG = [
+export const ROUTES = [
   { path: '/', componentName: 'HomePage', isPrivate: false },
   { path: '/home', componentName: 'HomePage', isPrivate: false },
   { path: '/deckbuilder', componentName: 'DeckBuilderPage', isPrivate: false },
@@ -14,3 +14,12 @@ export const ROUTE_CONFIG = [
   { path: '/privacy', componentName: 'PrivacyPage', isPrivate: false },
   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
+
+export const ROUTE_CONFIG = {
+  defaultPath: '/',
+  routes: ROUTES.map(({ path, componentName, isPrivate }) => ({
+    path,
+    componentName,
+    isPrivate,
+  })),
+};

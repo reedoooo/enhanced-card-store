@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import styled from 'styled-components';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 // const calculateStyles = (size) => {
 //   switch (size) {
 //     case 'small':

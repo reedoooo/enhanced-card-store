@@ -12,19 +12,19 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import SearchResults from './SearchResults';
-import MDBox from '../../../layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { useMode } from '../../../context';
-import useLocalStorage from '../../../context/hooks/useLocalStorage';
-import { useConfiguratorContext } from '../../../context';
-import SimpleCard from '../../../layout/REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from '../../../layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { useCardStoreHook } from '../../../context/MAIN_CONTEXT/CardContext/useCardStore';
+import { useMode } from 'context';
+import useLocalStorage from 'context/hooks/useLocalStorage';
+import { useConfiguratorContext } from 'context';
+import SimpleCard from 'layout/REUSABLE_COMPONENTS/unique/SimpleCard';
+import uniqueTheme from 'layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
+import { useCardStoreHook } from 'context/MAIN_CONTEXT/CardContext/useCardStore';
 import RCDynamicForm from '../Factory/RCDynamicForm';
 import { formFields } from '../formsConfig';
 import SearchIcon from '@mui/icons-material/Search';
-import useBreakpoint from '../../../context/hooks/useBreakPoint';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 // import SearchForm from './SearchForm';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();

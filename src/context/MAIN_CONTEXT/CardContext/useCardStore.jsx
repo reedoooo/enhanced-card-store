@@ -5,7 +5,7 @@ import useLogger from '../../hooks/useLogger';
 import useLocalStorage from '../../hooks/useLocalStorage'; // Ensure this is the correct path to your hook
 import { useLoading } from '../../hooks/useLoading';
 import useManageCookies from '../../hooks/useManageCookies';
-import { formFields } from '../../../components/forms/formsConfig';
+import { formFields } from 'components/forms/formsConfig';
 
 function debounce(func, wait) {
   let timeout;

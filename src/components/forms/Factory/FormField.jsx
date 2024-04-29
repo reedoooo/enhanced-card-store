@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
-import { useMode } from '../../../context';
-import { StyledTextField } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useMode } from 'context';
+import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const FormField = ({
   name,

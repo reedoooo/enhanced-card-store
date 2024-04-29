@@ -5,8 +5,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import prepareTableData from '../data/topCards';
 import { useMemo } from 'react';
 import { Divider } from '@mui/joy';
-import { useMode } from '../../../context';
-import useManager from '../../../context/useManager';
+import { useMode } from 'context';
+import useManager from 'context/useManager';
 
 const PricedCardList = () => {
   const { theme } = useMode();

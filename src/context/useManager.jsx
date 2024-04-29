@@ -137,7 +137,28 @@ const useManager = () => {
     // }, {});
     return cards;
   }, [collections, decks, cart, setCardsWithQuantities]);
-
+  let BASE_STAT_CONFIGS = [
+    { name: 'highPoint', statKey: 'highPoint', label: 'High Point' },
+    { name: 'lowPoint', statKey: 'lowPoint', label: 'Low Point' },
+    { name: 'average', statKey: 'average', label: 'Average' },
+    {
+      name: 'percentageChange',
+      statKey: 'percentageChange',
+      label: 'Percentage Change',
+    },
+    { name: 'priceChange', statKey: 'priceChange', label: 'Price Change' },
+    { name: 'avgPrice', statKey: 'avgPrice', label: 'Average Price' },
+    { name: 'volume', statKey: 'volume', label: 'Volume' },
+    { name: 'volatility', statKey: 'volatility', label: 'Volatility' },
+  ];
+  const generateCollectionStatistics = useCallback(
+    (allCollections) => {
+      if (!allCollections) return;
+      compileCollectionMetaData(allCollections);
+      compileCardsWithQuantities();
+    },
+    [collections, setCollectionMetaData, compileCardsWithQuantities]
+  );
   const isCardInContext = useCallback(
     (card) => {
       const cardsList = {
@@ -179,8 +200,7 @@ const useManager = () => {
           return response.data;
         } else if (entity === 'collections') {
           setCollections(response.data);
-          compileCollectionMetaData(response.data);
-          compileCardsWithQuantities();
+          generateCollectionStatistics(response.data);
           setHasFetchedCollections(true);
           return response.data;
         } else {
@@ -203,6 +223,7 @@ const useManager = () => {
       setHasFetchedCart,
       setCart,
       compileCollectionMetaData,
+      generateCollectionStatistics,
     ]
   );
   const fetchSingleEntity = useCallback(
@@ -266,9 +287,9 @@ const useManager = () => {
           switch (entity) {
             case 'collections':
               setCollections((prev) =>
-                prev.map((col) =>
-                  col._id === response.data._id ? response.data : col
-                )
+                prev.map((col) => {
+                  return col._id === response.data._id ? response.data : col;
+                })
               );
               break;
             case 'decks':

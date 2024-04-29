@@ -2,33 +2,30 @@ import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
-  Button,
   Checkbox,
-  CircularProgress,
   CssBaseline,
-  DialogContent,
   DialogTitle,
   Divider,
   FormControlLabel,
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useMode } from '../context';
-import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { useMode } from 'context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
-} from '../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import RCSwitch from '../components/forms/Factory/RCSwitch';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import RCSwitch from 'components/forms/Factory/RCSwitch';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import useDialogState from '../context/hooks/useDialogState';
-import useManageCookies from '../context/hooks/useManageCookies';
-import { useFormManagement } from '../components/forms/hooks/useFormManagement';
-import { formFields } from '../components/forms/formsConfig';
-import RCDynamicForm from '../components/forms/Factory/RCDynamicForm';
+import useDialogState from 'context/hooks/useDialogState';
+import useManageCookies from 'context/hooks/useManageCookies';
+import { useFormManagement } from 'components/forms/hooks/useFormManagement';
+import { formFields } from 'components/forms/formsConfig';
+import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 function LoginDialog() {
   const { theme } = useMode();
   const { getCookie } = useManageCookies();
@@ -113,9 +110,7 @@ function LoginDialog() {
             startIcon: signupMode ? <PersonAddIcon /> : <LoginIcon />,
           }}
           intialData={{}}
-          // initialData={formFields[currentSchemaKey]}
         />
-        {/* <AuthForm formType={currentSchemaKey} /> */}
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"

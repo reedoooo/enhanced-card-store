@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Switch, FormControlLabel, FormControl } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 const RCSwitch = ({
   checked,

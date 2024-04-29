@@ -1,8 +1,8 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
-import { useConfiguratorContext, useMode } from '../../../context';
+import { useConfiguratorContext, useMode } from 'context';
 import { useEffect } from 'react';
-import { useCardStoreHook } from '../../../context/MAIN_CONTEXT/CardContext/useCardStore';
+import { useCardStoreHook } from 'context/MAIN_CONTEXT/CardContext/useCardStore';
 
 export default styled(Drawer)(({ ownerState }) => {
   const { theme } = useMode();

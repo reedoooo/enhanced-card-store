@@ -1,8 +1,8 @@
 import React from 'react';
 import { ButtonBase, Typography, Avatar } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import config from '../../../config';
 import DeckBuilderIcon from '../icons/DeckBuilderIcon'; // Import DeckBuilderIcon
+import { ROUTE_CONFIG } from 'data/route-config';
 
 // ==============================|| MAIN LOGO ||============================== //
 
@@ -17,7 +17,7 @@ const RCLogoSection = () => {
     <ButtonBase
       disableRipple
       // component={Link}
-      to={config.defaultPath}
+      to={ROUTE_CONFIG.defaultPath}
       onClick={handleClick}
       sx={{
         display: 'flex',

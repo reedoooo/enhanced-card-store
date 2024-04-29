@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import placeholder from '../../../assets/images/placeholder.jpeg';
+import placeholder from 'assets/images/placeholder.jpeg';
 import { Box } from '@mui/material';
 
 const SplashPage2 = () => {

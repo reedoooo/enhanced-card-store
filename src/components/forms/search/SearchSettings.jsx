@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { Paper, Box, Container, Typography } from '@mui/material';
 import SearchFormB from './SearchFormB'; // Ensure path is correct
-import { useMode } from '../../../context';
-import { SearchSettingsBox } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useMode } from 'context';
+import { SearchSettingsBox } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 export const commonPaperStyles = (theme) => ({
   padding: theme.spacing(3),

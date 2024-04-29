@@ -67,7 +67,7 @@ const useFetchWrapper = () => {
         setData(responseData);
         setResponseCache((prevCache) => ({
           ...prevCache,
-          [loadingID]: responseData,
+          [loadingID]: responseData.message,
         }));
         showNotification(
           `Success: Your ${loadingID} data has been fetched.`,

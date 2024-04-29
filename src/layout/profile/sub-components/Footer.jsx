@@ -5,7 +5,7 @@ import Link from '@mui/material/Link';
 import Icon from '@mui/material/Icon';
 
 // Material Dashboard 2 React base styles
-import typography from '../../../assets/themes/base/typography';
+import typography from 'assets/themes/base/typography';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
