@@ -10,8 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Icon from '@mui/material/Icon';
 
 // Material Dashboard 2 React base styles
-import colors from '../../../assets/themes/base/colors';
-import typography from '../../../assets/themes/base/typography';
+import colors from 'assets/themes/base/colors';
+import typography from 'assets/themes/base/typography';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 

@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { styled } from 'styled-components';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 export default styled(Box)(({ ownerstate }) => {
   const { theme } = useMode();

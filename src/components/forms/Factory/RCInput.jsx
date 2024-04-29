@@ -18,13 +18,13 @@ import {
   Chip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { StyledTextField } from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useMode } from '../../../context';
+import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useMode } from 'context';
 import RCSwitch from './RCSwitch';
-import useBreakpoint from '../../../context/hooks/useBreakPoint';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 import { nanoid } from 'nanoid';
-import useManager from '../../../context/useManager';
-import useSelectorActions from '../../../context/hooks/useSelectorActions';
+import useManager from 'context/useManager';
+import useSelectorActions from 'context/hooks/useSelectorActions';
 const RCInput = forwardRef(
   (
     {
@@ -44,21 +44,7 @@ const RCInput = forwardRef(
   ) => {
     const { theme } = useMode();
     const { isMobile } = useBreakpoint();
-    const { updateEntityField, selectedCollection, selectedCollectionId } =
-      useManager();
     const { handleSelectChange } = useSelectorActions();
-    // const handleSelectChange = (event) => {
-    //   const selectedValue = event.target.value;
-    //   // onChange(selectedValue); // Update local form state
-    //   if (type === 'select') {
-    //     updateEntityField(
-    //       'collections',
-    //       selectedCollectionId,
-    //       'selectedChartDataKey',
-    //       selectedValue
-    //     );
-    //   }
-    // };
     const [inputValue, setInputValue] = useState('');
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {

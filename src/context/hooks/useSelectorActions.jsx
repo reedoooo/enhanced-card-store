@@ -3,27 +3,20 @@ import useLocalStorage from './useLocalStorage';
 import useManager from '../useManager';
 
 function useSelectorActions() {
-  // const [timeRange, setTimeRange] = useLocalStorage('timeRange', '24hr');
-  // const [stat, setStat] = useLocalStorage('stat', 'highpoint');
-  // const [theme, setTheme] = useLocalStorage('theme', 'light');
   const { updateEntityField, selectedCollection, handleSelectCollection } =
     useManager();
   const [time, setTime] = useState('24hr');
   const [stat, setStat] = useState('highpoint');
   const [theme, setTheme] = useState('light');
-  const selectorValues = useLocalStorage('selectorValues', {
+  const [selectorValues, setSelectorValues] = useLocalStorage('selectors', {
     selectedTimeRange: time,
     selectedStat: stat,
     selectedTheme: theme,
   });
-  const themes = new Map(
-    Object.entries({
-      light: 'light',
-      dark: 'dark',
-    })
-  );
-  const [selectedTheme, setSelectedTheme] = useState(themes['light']);
-
+  const themes = {
+    light: 'light',
+    dark: 'dark',
+  };
   const handleSelectChange = (e, selectorName, context) => {
     console.log(
       'SELECTOR VALUES CHANGED',
@@ -37,9 +30,6 @@ function useSelectorActions() {
     switch (selectorName) {
       case 'timeRange':
         setTime(e.target.value);
-        // setSelectedChartData(
-        //   selectedCollection.averagedChartData[e.target.value]
-        // );
         updateEntityField(
           'collections',
           selectedCollectionId,
@@ -49,44 +39,55 @@ function useSelectorActions() {
         selectedCollection.selectedChartDataKey = e.target.value;
         selectedCollection.selectedChartData =
           selectedCollection.averagedChartData[e.target.value];
+        setSelectorValues({
+          selectedTimeRange: e.target.value,
+          selectedStat: selectedCollection.selectedStatDataKey,
+          selectedTheme: selectedCollection.selectedThemeDataKey,
+        });
         handleSelectCollection(selectedCollection);
         break;
       case 'statRange':
         setStat(e.target.value);
-        // setSelectedStat(selectedCollection.collectionStatistics[stat]);
-        // updateEntityField(
-        //   'collections',
-        //   selectedCollectionId,
-        //   ['selectedStatDataKey', 'selectedStat'],
-        //   [
-        //     e.target.value,
-        //     selectedCollection.collectionStatistics
-        //       .get(selectedCollection.selectedChartDataKey)
-        //       .data.get(e.target.value),
-        //   ]
-        // );
+        updateEntityField(
+          'collections',
+          selectedCollectionId,
+          ['selectedStatDataKey', 'selectedStatData'],
+          [
+            e.target.value,
+            selectedCollection.collectionStatistics[e.target.value],
+          ]
+        );
+        selectedCollection.selectedStatDataKey = e.target.value;
+        selectedCollection.selectedStatData =
+          selectedCollection.collectionStatistics[e.target.value];
+        setSelectorValues({
+          selectedTimeRange: selectedCollection.selectedChartDataKey,
+          selectedStat: e.target.value,
+          selectedTheme: selectedCollection.selectedThemeDataKey,
+        });
+        handleSelectCollection(selectedCollection);
         break;
       case 'themeRange':
         setTheme(e.target.value);
-        setSelectedTheme(themes[selectorValues.selectedTheme]);
+        updateEntityField(
+          'collections',
+          selectedCollectionId,
+          ['selectedThemeDataKey', 'selectedThemeData'],
+          [e.target.value, themes[e.target.value]]
+        );
+        selectedCollection.selectedThemeDataKey = e.target.value;
+        selectedCollection.selectedThemeData = themes[e.target.value];
+        setSelectorValues({
+          selectedTimeRange: selectedCollection.selectedChartDataKey,
+          selectedStat: selectedCollection.selectedStatDataKey,
+          selectedTheme: e.target.value,
+        });
+        handleSelectCollection(selectedCollection);
         break;
       default:
         break;
     }
   };
-
-  // useEffect(() => {
-  //   // Assuming setSelectedChartData is a function that sets some state elsewhere
-  //   setSelectedChartData(selectedCollection.averagedChartData[timeRange]);
-  // }, [timeRange, selectedCollection]);
-
-  // useEffect(() => {
-  //   setSelectedChartData(selectedCollection.collectionStatistics[stat]);
-  // }, [stat, selectedCollection]);
-
-  // useEffect(() => {
-  //   setSelectedChartData(themes.get(theme));
-  // }, [theme, themes]);
 
   return {
     setTime,
@@ -94,9 +95,9 @@ function useSelectorActions() {
     setTheme,
     handleSelectChange,
     selectorValues,
-    selectedTheme: theme,
-    selectedTimeRange: time,
-    selectedStat: stat,
+    selectedTheme: selectedCollection?.selectedThemeDataKey,
+    selectedTimeRange: selectedCollection?.selectedChartDataKey,
+    selectedStat: selectedCollection?.selectedStatDataKey,
   };
 }
 

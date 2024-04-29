@@ -200,14 +200,11 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
   const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
-  const { selectedTimeRange } = useSelectorActions();
+  const { selectedTimeRange, selectedStat } = useSelectorActions();
   const { selectedCollection, handleSelectCollection } = useManager();
   const [collection, setCollection] = useState(selectedCollection);
   const [timeRange, setTimeRange] = useState('24hr');
   const [marker, setMarker] = useState(null);
-  // if (!selectedCollection) {
-  //   return <LoadingOverlay />;
-  // }
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedCollection' && event.newValue) {
@@ -215,14 +212,10 @@ const ChartAreaComponent = React.memo(() => {
         setCollection(JSON.parse(event.newValue));
         setTimeRange(JSON.parse(event.newValue).selectedChartDataKey);
         setMarker(
-          JSON.parse(event.newValue)
-            .collectionStatistics.get(
-              JSON.parse(event.newValue).selectedChartDataKey
-            )
-            .data.get(JSON.parse(event.newValue).selectedStat)
+          JSON.parse(event.newValue).collectionStatistics[
+            event.newValue.selectedStatDataKey
+          ]
         );
-
-        // handleSelectCollection(JSON.parse(event.newValue));
       }
     };
 
@@ -256,11 +249,15 @@ const ChartAreaComponent = React.memo(() => {
     return <LoadingOverlay />;
   }
   const memoMarker = useMemo(() => {
-    if (!marker) {
-      return null;
-    }
-    return marker;
-  }, [marker]);
+    const { selectedStatData, collectionStatistics, selectedStatDataKey } =
+      collection;
+    console.log('MARKER SET: ', collectionStatistics[selectedStatDataKey]);
+    const newMarker = !selectedStatData
+      ? collectionStatistics[selectedStatDataKey]
+      : selectedStatData;
+    // setMarker(newMarker);
+    return newMarker;
+  }, [collection, selectedStat]);
 
   const tickValues = useMemo(() => {
     const { ticks } = formatDateBasedOnRange(timeRange);
@@ -271,6 +268,8 @@ const ChartAreaComponent = React.memo(() => {
     console.log('TIME RANGE:', timeRange);
 
     console.log('SELCTED RANGE:', selectedTimeRange);
+    // console.log('MARKER:', memoMarker);
+    console.log('SELECTED MARKER', selectedStat);
   }, [memoChartData, timeRange, selectedTimeRange]);
   return renderCardContainer(
     <Suspense fallback={<LoadingOverlay />}>
@@ -281,7 +280,7 @@ const ChartAreaComponent = React.memo(() => {
               key={timeRange}
               data={[memoChartData]}
               tickValues={tickValues}
-              validMarkers={memoMarker}
+              validMarkers={[memoMarker]}
               xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
               redAccent={redAccent}
               greenAccent={greenAccent}

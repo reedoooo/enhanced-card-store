@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 // import LogRocket from 'logrocket';
 // LogRocket.init('8iqglq/card-store');
-import * as serviceWorker from './serviceWorker';
+import { register, unregister } from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
@@ -14,6 +14,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { Helmet } from 'react-helmet';
 import { SnackbarProvider } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from 'ErrorFallback';
 
 const domNode = document.getElementById('root');
 
@@ -40,11 +41,12 @@ const AppWrapper = () => {
 
   return (
     <ErrorBoundary
-      FallbackComponent={({ error, resetErrorBoundary }) => {
-        console.error(error);
-        resetErrorBoundary();
-        return null;
-      }}
+      FallbackComponent={ErrorFallback}
+      // FallbackComponent={({ error, resetErrorBoundary }) => {
+      //   console.error(error);
+      //   resetErrorBoundary();
+      //   return null;
+      // }}
       onError={(error) => {
         console.error(error);
       }}
@@ -70,7 +72,8 @@ const AppWrapper = () => {
 
 ReactDOM.render(<AppWrapper />, domNode);
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-// serviceWorker.unregister();
+if (process.env.NODE_ENV === 'production') {
+  register(); // Only register the service worker in production
+} else {
+  unregister(); // Disable the service worker in development
+}

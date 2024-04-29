@@ -1,6 +1,6 @@
 import { Badge } from '@mui/material';
 import styled from 'styled-components';
-import { useMode } from '../../../context/UTILITIES_CONTEXT/ColorModeContext/useMode';
+import { useMode } from 'context/UTILITIES_CONTEXT/ColorModeContext/useMode';
 
 export default styled(Badge)(({ ownerState }) => {
   const { theme } = useMode();

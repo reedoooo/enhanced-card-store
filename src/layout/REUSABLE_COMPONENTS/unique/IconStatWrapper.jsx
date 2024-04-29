@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Icon, Box, Typography } from '@mui/material';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 const StyledCard = styled(Card)`
   display: flex;

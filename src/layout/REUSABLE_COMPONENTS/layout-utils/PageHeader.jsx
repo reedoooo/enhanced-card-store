@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 import SimpleCard from '../unique/SimpleCard';
 import SimpleSectionHeader from '../unique/SimpleSectionHeader';
 import uniqueTheme from '../unique/uniqueTheme';
 import { PageHeaderSkeleton } from '../system-utils/SkeletonVariants';
 import RCButton from '../RCBUTTON';
-import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
-import { useFormManagement } from '../../../components/forms/hooks/useFormManagement';
+import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
+import { useFormManagement } from 'components/forms/hooks/useFormManagement';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

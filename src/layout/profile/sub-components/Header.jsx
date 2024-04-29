@@ -11,15 +11,15 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Icon from '@mui/material/Icon';
 // Images
-import backgroundImage from '../../../assets/images/bg1.jpg';
-import burceMars from '../../../assets/images/bg1.jpg';
-import { useMode } from '../../../context';
+import backgroundImage from 'assets/images/bg1.jpg';
+import burceMars from 'assets/images/bg1.jpg';
+import { useMode } from 'context';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 // import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { Avatar } from '@mui/material';
-import useUserData from '../../../context/MAIN_CONTEXT/UserContext/useUserData';
-import useManageCookies from '../../../context/hooks/useManageCookies';
+import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
+import useManageCookies from 'context/hooks/useManageCookies';
 
 function Header({ children }) {
   const { theme } = useMode();

@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
 import StatBox from '../../REUSABLE_COMPONENTS/layout-utils/StatBox';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { roundToNearestTenth } from '../../../context/Helpers';
-import useManager from '../../../context/useManager';
+import { roundToNearestTenth } from 'context/Helpers';
+import useManager from 'context/useManager';
 const TotalPriceStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;

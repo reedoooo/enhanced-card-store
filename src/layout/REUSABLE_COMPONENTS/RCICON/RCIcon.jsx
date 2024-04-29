@@ -3,7 +3,7 @@
 // import * as MuiIcons from '@mui/icons-material';
 // import uniqueTheme from '../unique/uniqueTheme';
 // import { Box } from '@mui/material';
-// import { useMode } from '../../../context';
+// import { useMode } from 'context';
 
 // const StyledIcon = styled(Box)(({ theme }) => ({
 //   borderRadius: '50%',

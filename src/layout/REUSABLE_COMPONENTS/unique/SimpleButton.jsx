@@ -2,7 +2,7 @@ import React from 'react';
 import { rgba } from 'polished';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 const ButtonContainer = styled(Box)`
   ${
     '' /* flex: 1;

@@ -8,14 +8,14 @@ import useRCFormHook from '../hooks/useRCFormHook';
 import {
   FormBox,
   FormFieldBox,
-} from '../../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useCardStore, useMode } from '../../../context';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useCardStore, useMode } from 'context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { getFormFieldHandlers } from '../formsConfig';
 import { useFormSubmission } from '../hooks/useFormSubmission';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import useBreakpoint from '../../../context/hooks/useBreakPoint';
-import ReusableLoadingButton from '../../../layout/REUSABLE_COMPONENTS/ReusableLoadingButton';
+import useBreakpoint from 'context/hooks/useBreakPoint';
+import ReusableLoadingButton from 'layout/REUSABLE_COMPONENTS/ReusableLoadingButton';
 
 const RCDynamicForm = ({
   formKey,
@@ -60,11 +60,6 @@ const RCDynamicForm = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       theme={theme}
-      // sx={{
-      //   ...(isMobile && {
-      //     padding: theme.spacing(3),
-      //   }),
-      // }}
       sx={{
         ...(isMobile && {
           padding: theme.spacing(3),

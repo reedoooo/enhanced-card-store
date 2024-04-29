@@ -6,7 +6,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import MDBox from '../MDBOX';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 const useStyles = (theme) => ({
   container: {

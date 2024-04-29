@@ -1,9 +1,9 @@
-import marie from '../../../assets/images/bg1.jpg';
-import ivana from '../../../assets/images/bg1.jpg';
-import team3 from '../../../assets/images/bg1.jpg';
-import team4 from '../../../assets/images/bg1.jpg';
+import marie from 'assets/images/bg1.jpg';
+import ivana from 'assets/images/bg1.jpg';
+import team3 from 'assets/images/bg1.jpg';
+import team4 from 'assets/images/bg1.jpg';
 
-import kal from '../../../assets/images/bg1.jpg';
+import kal from 'assets/images/bg1.jpg';
 
 export default [
   {

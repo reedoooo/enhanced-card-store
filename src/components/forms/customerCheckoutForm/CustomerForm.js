@@ -2,10 +2,10 @@ import React, { useCallback, useContext, useMemo } from 'react';
 import { Box, Container, Typography, Grid, Button } from '@mui/material';
 import CustomerInfoFields from './CustomerInfoFields';
 import StripeCheckoutModal from '../../dialogs/stripeModal/StripeCheckoutModal';
-import { ModalContext } from '../../../context/ModalContext/ModalContext';
+import { ModalContext } from 'context/ModalContext/ModalContext';
 import CartSummary from '../../other/dataDisplay/CartSummary';
-import { useMode } from '../../../context';
-import useManager from '../../../context/useManager';
+import { useMode } from 'context';
+import useManager from 'context/useManager';
 
 const CustomerForm = () => {
   const { isModalOpen, setModalOpen } = useContext(ModalContext);

@@ -2,7 +2,7 @@ import Icon from '@mui/material/Icon';
 // Images
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import React, { memo } from 'react';
-import LoadingIndicator from '../../../components/reusable/indicators/LoadingIndicator';
+import LoadingIndicator from 'components/reusable/indicators/LoadingIndicator';
 import GenericCard from '../components/cards/GenericCard';
 import { Container } from '@mui/system';
 import { Box } from '@mui/material';

@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import MDBox from '../MDBOX';
 import { Grid } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 function PageLayout({ background, backCol, children }) {
   const { pathname } = useLocation();

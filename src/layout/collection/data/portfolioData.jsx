@@ -1,7 +1,7 @@
 import React from 'react';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { useSnackbar } from 'notistack';
-import { roundToNearestTenth } from '../../../context/Helpers';
+import { roundToNearestTenth } from 'context/Helpers';
 import GenericActionButtons from '../../REUSABLE_COMPONENTS/GenericActionButtons';
 // Note: No changes needed for these components
 const Name = ({ name }) => (

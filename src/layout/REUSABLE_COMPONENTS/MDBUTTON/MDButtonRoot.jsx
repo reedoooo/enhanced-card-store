@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 export default styled(Button)(({ ownerState }) => {
   // const { palette, functions, borders, boxShadows } = theme;

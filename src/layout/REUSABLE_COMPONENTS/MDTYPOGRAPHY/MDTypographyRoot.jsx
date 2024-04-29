@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 export default styled(Typography)(({ ownerstate }) => {
   // const { palette, typography, functions } = theme;

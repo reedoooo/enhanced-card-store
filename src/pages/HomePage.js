@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
+import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
+// import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import HeroSection from '../layout/home/HeroSection';
 import FeatureCardsSection from '../layout/home/FeatureCardsSection';
 
