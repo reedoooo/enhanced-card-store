@@ -29,7 +29,7 @@ const CollectionListItem = memo(
     }
     const percentageChange =
       roundToNearestTenth(
-        (collection?.totalPrice / (collection?.totalPrice / 100)) * 100
+        collection?.collectionStatistics?.percentageChange?.value
       ) || 0;
 
     const handleEdit = useCallback(

@@ -16,8 +16,8 @@ TCG Enhanced Cardstore is a full-stack web application designed for trading card
 
 ### Technologies
 
-- **Frontend**: React, Stripe, MUI, Convertio, YGOProDeck-API, Nivo Charts.
-- **Backend**: Node.js, Express.js, MongoDB, scheduled data updates.
+- **Frontend**: React, Stripe, MUI, Convertio, YGOProDeck-API, Nivo Charts, Netlify, ReCharts, Axios, Fetch API, Local Storage, cookies.
+- **Backend**: Node.js, Express.js, MongoDB, cron, bcrypt, JWT, Mongoose, Render, MongoDB Atlas, Stripe, Axios, Fetch API, RESTful API, colors, winston, dotenv, nodemon.
 
 ## Gallery
 

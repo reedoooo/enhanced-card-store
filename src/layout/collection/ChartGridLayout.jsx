@@ -12,6 +12,7 @@ import { ResponsiveContainer } from 'recharts';
 import {
   calculateChangePercentage,
   formatDateBasedOnRange,
+  roundToNearestTenth,
 } from '../../context/Helpers';
 import { TopCardsDisplayRow } from './TopCardsDisplayRow';
 import { formFields } from '../../components/forms/formsConfig';
@@ -58,13 +59,16 @@ const ChartGridLayout = () => {
     selectedCollectionId,
     selectedCollection,
   } = useManager();
-
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
     }
   }, []);
   const showCollections = selectedCollectionId ? true : false;
+  const percentageChange =
+    roundToNearestTenth(
+      selectedCollection?.collectionStatistics?.percentageChange?.value
+    ) || 0;
   const { data, columns } = useMemo(() => {
     if (!selectedCollection?.cards) {
       return { data: [], columns: [] }; // Provide default empty structures
@@ -106,7 +110,8 @@ const ChartGridLayout = () => {
                   </RCWrappedIcon>
                 </MDBox>
               }
-              sideText={`Change: ${calculateChangePercentage(selectedCollection)}`}
+              // eslint-disable-next-line max-len
+              sideText={`Change: ${percentageChange}%`}
             />
           </SimpleCard>
           {/* CHART ROW SECTION */}
@@ -208,7 +213,7 @@ const ChartAreaComponent = React.memo(() => {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedCollection' && event.newValue) {
-        console.log('selectedCollection changed', event.newValue);
+        // console.log('selectedCollection changed', event.newValue);
         setCollection(JSON.parse(event.newValue));
         setTimeRange(JSON.parse(event.newValue).selectedChartDataKey);
         setMarker(
@@ -331,110 +336,109 @@ const TopCardsDisplayRowComponent = React.memo(({ isXs }) => {
 });
 TopCardsDisplayRowComponent.displayName = 'TopCardsDisplayRowComponent';
 //!--------------------- CARD LIST COMPONENT ---------------------
-const CollectionCardList = React.memo(
-  ({ data, columns, theme, selectedCollection }) => {
-    const formattedTime = selectedCollection?.updatedAt
-      ? new Date(selectedCollection?.updatedAt).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      : 'Loading...';
-    const entriesPerPage = {
-      defaultValue: 5,
-      entries: [5, 10, 25, 50, 100],
-    };
-    const [pageSize, setPageSize] = useState(entriesPerPage.defaultValue);
+const CollectionCardList = React.memo(({ data, columns, theme }) => {
+  const { selectedCollection } = useManager();
+  const formattedTime = selectedCollection?.updatedAt
+    ? new Date(selectedCollection?.updatedAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Loading...';
+  const entriesPerPage = {
+    defaultValue: 10,
+    entries: [5, 10, 25, 50, 100],
+  };
+  const [pageSize, setPageSize] = useState(entriesPerPage.defaultValue);
 
-    useEffect(() => {
-      setPageSize(entriesPerPage.defaultValue);
-    }, [entriesPerPage.defaultValue]);
-    return (
-      <DashboardBox
-        component={Grid}
-        item
-        xs={12}
-        lg={5}
+  useEffect(() => {
+    setPageSize(entriesPerPage.defaultValue);
+  }, [entriesPerPage.defaultValue]);
+  return (
+    <DashboardBox
+      component={Grid}
+      item
+      xs={12}
+      lg={5}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '800px',
+      }}
+    >
+      <SimpleCard
+        theme={uniqueTheme}
+        hasTitle={false}
+        data=""
+        isTableOrChart={true}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '800px',
+          alignItems: 'flex-start',
         }}
       >
-        <SimpleCard
-          theme={uniqueTheme}
-          hasTitle={false}
-          data=""
-          isTableOrChart={true}
-          sx={{
-            alignItems: 'flex-start',
-          }}
-        >
-          <BoxHeader
-            title="Collection Card List"
-            subtitle="List of all cards in the collection"
-            titleVariant="body1"
-            icon={
-              <MDBox>
-                <RCWrappedIcon
-                  color="white"
-                  sx={{
-                    background: theme.palette.success.main,
-                  }}
-                >
-                  <Icon>list</Icon>
-                </RCWrappedIcon>
-              </MDBox>
-            }
-            sideText={`Last Updated: ${formattedTime}`}
+        <BoxHeader
+          title="Collection Card List"
+          subtitle="List of all cards in the collection"
+          titleVariant="body1"
+          icon={
+            <MDBox>
+              <RCWrappedIcon
+                color="white"
+                sx={{
+                  background: theme.palette.success.main,
+                }}
+              >
+                <Icon>list</Icon>
+              </RCWrappedIcon>
+            </MDBox>
+          }
+          sideText={`Last Updated: ${formattedTime}`}
+        />
+      </SimpleCard>
+      {renderCardContainer(
+        <Box sx={{ height: 510, width: '100%' }}>
+          <DataGrid
+            rows={data?.map((row, index) => ({ id: index, ...row }))}
+            columns={columns}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            rowsPerPageOptions={[5, 10, 15, 20].map((pageSize) => ({
+              value: pageSize,
+              label: pageSize,
+            }))}
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+            initialState={{
+              filter: {
+                filterModel: {
+                  items: [],
+                  quickFilterValues: [''],
+                },
+              },
+            }}
+            checkboxSelection
+            sx={{
+              '& .MuiDataGrid-root': {
+                color: theme.palette.chartTheme.grey.dark,
+                border: 'none',
+              },
+              '& .MuiDataGrid-cell': {
+                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+              },
+              '& .MuiDataGrid-columnSeparator': {
+                visibility: 'hidden',
+              },
+            }}
           />
-        </SimpleCard>
-        {renderCardContainer(
-          <Box sx={{ height: 510, width: '100%' }}>
-            <DataGrid
-              rows={data?.map((row, index) => ({ id: index, ...row }))}
-              columns={columns}
-              pageSize={pageSize}
-              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              rowsPerPageOptions={[5, 10, 15, 20].map((pageSize) => ({
-                value: pageSize,
-                label: pageSize,
-              }))}
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              initialState={{
-                filter: {
-                  filterModel: {
-                    items: [],
-                    quickFilterValues: [''],
-                  },
-                },
-              }}
-              checkboxSelection
-              sx={{
-                '& .MuiDataGrid-root': {
-                  color: theme.palette.chartTheme.grey.dark,
-                  border: 'none',
-                },
-                '& .MuiDataGrid-cell': {
-                  borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
-                },
-                '& .MuiDataGrid-columnHeaders': {
-                  borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
-                },
-                '& .MuiDataGrid-columnSeparator': {
-                  visibility: 'hidden',
-                },
-              }}
-            />
-          </Box>
-        )}
-      </DashboardBox>
-    );
-  }
-);
+        </Box>
+      )}
+    </DashboardBox>
+  );
+});
 CollectionCardList.displayName = 'CollectionCardList';
 // !--------------------- END OF COMPONENTS ---------------------

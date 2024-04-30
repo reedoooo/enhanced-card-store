@@ -49,9 +49,11 @@ const DeckBuilder = () => {
       const loadedDecks = await fetchDecks();
       setDecks(loadedDecks);
       const storedDeckId = localStorage.getItem('selectedDeckId');
-      const initialDeck = loadedDecks.find((deck) => deck._id === storedDeckId);
+      const initialDeck = loadedDecks?.find(
+        (deck) => deck._id === storedDeckId
+      );
       if (initialDeck) {
-        setActiveTab(initialDeck ? loadedDecks.indexOf(initialDeck) : 0);
+        setActiveTab(initialDeck ? loadedDecks?.indexOf(initialDeck) : 0);
         // handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
       }
     };
@@ -84,9 +86,9 @@ const DeckBuilder = () => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
         const updatedDeckId = event.newValue;
-        const updatedDeck = decks.find((deck) => deck._id === updatedDeckId);
+        const updatedDeck = decks?.find((deck) => deck._id === updatedDeckId);
         if (updatedDeck) {
-          setActiveTab(decks.indexOf(updatedDeck));
+          setActiveTab(decks?.indexOf(updatedDeck));
           handleSelectDeck(updatedDeck);
         }
       }
@@ -136,7 +138,7 @@ const DeckBuilder = () => {
   ));
   const deckListItems = useMemo(
     () =>
-      decks.map((deck, index) => (
+      decks?.map((deck, index) => (
         <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
           <DeckListItem
             // key={deck._id}

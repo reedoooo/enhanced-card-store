@@ -33,7 +33,7 @@ const CartContent = ({ activeStep }) => {
         console.error('Error fetching cart data:', error);
       }
     };
-    if (!hasFetchedCart) {
+    if (!hasFetchedCart || !cart) {
       fetchData();
     }
   }, [fetchCart]);

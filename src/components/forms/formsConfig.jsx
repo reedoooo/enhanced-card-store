@@ -163,9 +163,12 @@ const loginFormFields = {
     name: 'username',
     type: 'text',
     placeHolder: 'Username',
+    helperText: 'Enter your username',
     defaultValue: '',
     rules: {
       required: true,
+      minLength: 3,
+      maxLength: 20,
     },
     icon: <LoginIcon />,
     field: 'username',
@@ -174,10 +177,14 @@ const loginFormFields = {
     label: 'Password',
     name: 'password',
     type: 'password',
+    helperText: 'Enter your password',
     placeHolder: 'Password',
     defaultValue: '',
     rules: {
       required: true,
+      minLength: 8,
+      maxLength: 20,
+      password: true,
     },
     icon: <LockIcon />,
     field: 'password',
@@ -471,24 +478,51 @@ const formFields = {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 const loginFormSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z
+    .string({ required_error: 'Username is required' })
+    .trim()
+    .min(3, {
+      message: 'Username must be at least 3 chars',
+    })
+    .max(255, { message: 'Username must not be more than 255 chars long' }),
+  // .default('Input Username'),
+  password: z
+    .string({ required_error: 'Password is required' })
+    .trim()
+    .min(3, {
+      message: 'Password must be at least 6 chars',
+    })
+    .max(255, { message: 'Password must not be more than 1024 chars long' }),
+  // .default('Input Password'),
+  // .regex(new RegExp(".*[A-Z].*"), { message: "Must conatain one uppercase character" })
+  // .regex(new RegExp(".*\\d.*"), { message: "Must contains one number" })
+  // .regex(new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*"), {message: "Must contain one special character"});
 });
 
 const signupFormSchema = loginFormSchema.extend({
   firstName: z
-    .string()
-    .min(1, 'First Name is required')
+    .string({ required_error: 'First Name is required' })
+    .trim()
+    .min(3, {
+      message: 'First Name must be at least 3 chars',
+    })
+    .max(255, { message: 'First Name must not be more than 255 chars long' })
     .default('Input First Name'),
   lastName: z
-    .string()
-    .min(1, 'Last Name is required')
+    .string({ required_error: 'Last Name is required' })
+    .trim()
+    .min(3, {
+      message: 'Last Name must be at least 3 chars',
+    })
+    .max(255, { message: 'Last Name must not be more than 255 chars long' })
     .default('Input Last Name'),
   email: z
-    .string()
-    .email('Invalid email format')
-    .min(1, 'Email is required')
-    .default('Input Email'),
+    .string({ required_error: 'Email is required' })
+    .trim()
+    .min(3, {
+      message: 'Email must be at least 3 chars',
+    })
+    .max(255, { message: 'Email must not be more than 255 chars long' }),
 });
 const addDeckFormSchema = z.object({
   name: z.string().min(1, 'Deck name is required').default(''),
@@ -539,35 +573,7 @@ const timeRangeFormSchema = z.object({
 const themeRangeFormSchema = z.object({
   timeRange: z.enum(['light', 'dark', 'system']).default('light'),
 });
-// const timeRangeFormSchema = z.enum(['24hr', '7d', '30d', '90d', '180d', '270d', '365d']).optional();
-// tags: [
-//   {
-//     label: 'Tags',
-//     type: 'chips',
-//     placeHolder: 'Enter tags',
-//     defaultValue: '',
-//     rules: {
-//       required: true,
-//     },
-//     icon: <DescriptionRoundedIcon />,
-//     field: 'tags',
-//     required: true,
-//   },
-// ],
-// color: [
-//   {
-//     label: 'Color',
-//     type: 'color',
-//     placeHolder: 'Enter color',
-//     defaultValue: '',
-//     rules: {
-//       required: true,
-//     },
-//     icon: <DescriptionRoundedIcon />,
-//     field: 'color',
-//     required: true,
-//   },
-// ],
+
 const zodSchemas = {
   statRangeForm: statRangeFormSchema,
   themeRangeForm: themeRangeFormSchema,
@@ -589,19 +595,17 @@ const zodSchemas = {
 // -------------------------- ZOD VALIDATION FUNCTIONS -------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-const validationFunctions = {
-  login: (data) => loginFormSchema.safeParse(data),
-  signup: (data) => signupFormSchema.safeParse(data),
-  authForm: (data) => signupFormSchema.safeParse(data),
-  addDeck: (data) => addDeckFormSchema.safeParse(data),
-  updateDeck: (data) => updateDeckFormSchema.safeParse(data),
-  addCollection: (data) => collectionFormSchema.safeParse(data),
-  updateCollection: (data) => collectionFormSchema.safeParse(data),
-  searchForm: (data) => searchFormSchema.safeParse(data),
-  // deckForm: (data) => updateDeckFormSchema.safeParse(data),
-  // collectionForm: (data) => collectionFormSchema.safeParse(data),
-  statistics: (data) => statRangeFormSchema.safeParse(data),
+const handleValidation = (schema, formData) => {
+  const result = schema.safeParse(formData);
+  if (result.success) {
+    console.log('Validation successful', formData);
+    return { success: true, data: formData };
+  } else {
+    console.error('Validation errors', result.error.errors);
+    return { success: false, errors: result.error.errors };
+  }
 };
+
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ----------------------- ADDITIONAL CONFIG OPTIONS ---------------------------
@@ -663,6 +667,6 @@ export {
   formFields,
   zodSchemas,
   configOptions,
-  validationFunctions,
+  handleValidation,
   getFormFieldHandlers,
 };

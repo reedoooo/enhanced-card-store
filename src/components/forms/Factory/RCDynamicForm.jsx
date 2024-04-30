@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Box, InputAdornment } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
-import { RCFieldError } from './RCFieldError';
+// import { RCFieldError } from './RCFieldError';
 import RCInput from './RCInput';
 import { Controller } from 'react-hook-form';
 import useRCFormHook from '../hooks/useRCFormHook';
@@ -74,6 +74,7 @@ const RCDynamicForm = ({
             name={fieldName}
             control={control}
             rules={fieldConfig.rules}
+            type={fieldConfig.type}
             render={({ field, fieldState: { error } }) => (
               <RCInput
                 {...field}
@@ -84,9 +85,11 @@ const RCDynamicForm = ({
                 error={!!error}
                 name={fieldConfig.name}
                 context={fieldConfig.context}
+                errorMessage={error?.message}
+                helperText={error?.message}
                 // helperText={error ? <RCFieldError name={fieldName} /> : null}
                 initialValue={fieldConfig.initialValue}
-                helperText={error ? error.message : null}
+                // helperText={fieldConfig.helperText}
                 // chipProps={{
                 //   onDelete: (chip) => handleDeleteChip(chip),
                 //   onAdd: (chip) => handleAddChip(chip),
@@ -113,9 +116,15 @@ const RCDynamicForm = ({
               />
             )}
           />
-          {errors[fieldName] && (
-            <RCFieldError>{errors[fieldName]?.message}</RCFieldError>
-          )}
+          {/* {errors[fieldName] && (
+            <Box
+              sx={{
+                color: theme.palette.error.main,
+              }}
+            >
+              {errors[fieldName].message}
+            </Box>
+          )} */}
         </FormFieldBox>
       ))}
 

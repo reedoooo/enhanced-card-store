@@ -28,7 +28,7 @@ export const collectionPortfolioHeaderItems = (collection) => [
     icon: 'trending_up',
     label: "Today's Performance",
     value:
-      collection?.statistics?.percentChange ||
+      `${collection?.collectionStatistics?.percentageChange.value}` ||
       'Select a collection to view its statistics',
     delay: 600,
   },

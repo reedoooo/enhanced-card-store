@@ -38,6 +38,7 @@ const RCInput = forwardRef(
       placeholder,
       onSelectChange,
       error,
+      helperText,
       ...rest
     },
     ref
@@ -79,8 +80,9 @@ const RCInput = forwardRef(
               shrink: !initialValue ? undefined : true,
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
-            error={!!error[rest.name]}
-            helperText={error[rest.name]?.message}
+            error={!!error}
+            // errorMessage={error?.message}
+            helperText={error ? helperText : null}
             {...rest}
           />
         );
