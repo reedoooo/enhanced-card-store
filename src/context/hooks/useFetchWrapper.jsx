@@ -3,6 +3,24 @@ import useLogger from './useLogger';
 import useLocalStorage from './useLocalStorage';
 import { useLoading } from './useLoading';
 import { useSnackbar } from 'notistack';
+// Utility function to serialize errors
+function serializeError(error) {
+  if (process.env.NODE_ENV !== 'production') {
+    const errorDetails = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+      status: error.status,
+    };
+
+    Object.getOwnPropertyNames(error).forEach((key) => {
+      errorDetails[key] = error[key];
+    });
+
+    return JSON.stringify(errorDetails);
+  }
+  return { message: error.message };
+}
 const FETCH_STATUSES = {
   IDLE: 'idle',
   LOADING: 'loading',
@@ -13,7 +31,7 @@ const useFetchWrapper = () => {
   const [status, setStatus] = useState(FETCH_STATUSES.IDLE);
   const [data, setData] = useState(null);
   const [responseCache, setResponseCache] = useLocalStorage('apiResponses', {});
-  const [error, setError] = useState(null);
+  const [errorResponse, setErrorResponse] = useLocalStorage('apiErrors', {});
   // const { logEvent } = useLogger('useFetchWrapper');
   const { startLoading, stopLoading, isLoading } = useLoading();
   const { enqueueSnackbar } = useSnackbar();
@@ -43,7 +61,7 @@ const useFetchWrapper = () => {
       try {
         setStatus(FETCH_STATUSES.LOADING);
         startLoading(loadingID);
-        showNotification(`Loading ${loadingID}...`, 'info');
+        showNotification(`[LOADING][${loadingID}]`, 'info');
         const headers = { 'Content-Type': 'application/json' };
         const options = {
           method,
@@ -60,7 +78,21 @@ const useFetchWrapper = () => {
           responseData = await response.json();
         }
         if (!response.ok) {
-          throw new Error(`An error occurred: ${response.statusText}`);
+          const errorInfo = `Error: ${response.statusText} (status: ${response.status})`;
+          console.error('[ERROR B]', responseData); // Log the detailed error message
+          const parsed = JSON.parse(responseData);
+          const errorDetails = {
+            message: parsed.message || 'Unknown error',
+            name: parsed.name || 'Error',
+            status: parsed.status || 'No status',
+            stack: parsed.stack || 'No additional details',
+            function: parsed.functionName || 'No function name',
+          };
+          setErrorResponse((prevErrors) => ({
+            ...prevErrors,
+            [loadingID]: errorDetails,
+          }));
+          throw new Error(responseData);
         }
 
         setStatus(FETCH_STATUSES.SUCCESS);
@@ -70,22 +102,34 @@ const useFetchWrapper = () => {
           [loadingID]: responseData.message,
         }));
         showNotification(
-          `Success: Your ${loadingID} data has been fetched.`,
+          `[SUCCESS][${loadingID}][${responseData?.message}]`,
           'success'
         );
-        console.log('MESSAGE: ', responseData?.message);
-        console.log('DATA: ', responseData?.data);
         return responseData;
-      } catch (err) {
-        const errorMessage = err.message || 'An unknown error occurred';
-        setError(errorMessage);
+      } catch (error) {
+        // const errorDetails = {
+        //   message: error.message || 'Unknown error',
+        //   name: error.name || 'Error',
+        //   status: error.status || 'No status',
+        //   detail: error.stack || 'No additional details',
+        // };
+        // setErrorResponse((prevErrors) => ({
+        //   ...prevErrors,
+        //   [loadingID]: errorDetails,
+        // }));
+        // setErrorResponse((prevErrors) => ({
+        //   ...prevErrors,
+        //   [loadingID]: {
+        //     message: error.message || 'Unknown error',
+        //     status: error.status || 'No status',
+        //     detail: error.responseData || 'No additional details',
+        //     name: error.name || 'No name',
+        //   },
+        // }));
         setStatus(FETCH_STATUSES.ERROR);
-        console.error(`Error fetching ${loadingID}:`, errorMessage);
-        showNotification(
-          `Error fetching ${loadingID}: ${err.toString()}`,
-          'error'
-        );
-        return Promise.reject(err);
+        showNotification(`[Error][${loadingID}] ${error.message}`, 'error');
+        throw error;
+        // return Promise.reject(err);
       } finally {
         stopLoading(loadingID);
       }
@@ -94,7 +138,7 @@ const useFetchWrapper = () => {
       setStatus,
       setData,
       setResponseCache,
-      setError,
+      setErrorResponse,
       showNotification,
       startLoading,
       stopLoading,
@@ -105,7 +149,7 @@ const useFetchWrapper = () => {
     status,
     data,
     responseCache,
-    error,
+    errorResponse,
     fetchWrapper,
     isLoading,
   };

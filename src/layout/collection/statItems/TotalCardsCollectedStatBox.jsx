@@ -7,7 +7,6 @@ const TotalCardsCollectedStatBox = () => {
   const { theme } = useMode();
   const colors = theme.palette.chartTheme;
   const primary = colors.primary.dark;
-  const greenAccent = colors.greenAccent.light;
   const grey = colors.grey.dark;
   const { collectionMetaData } = useManager();
   return (

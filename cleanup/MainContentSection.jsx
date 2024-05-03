@@ -14,7 +14,7 @@
 // import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 // import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 // import MDAvatar from '../../layout/REUSABLE_COMPONENTS/MDAVATAR';
-// import MDButton from '../REUSABLE_COMPONENTS/MDBUTTON';
+// import RCButton from '../REUSABLE_COMPONENTS/RCButton';
 // import SingleCardAnimation from '../../assets/animations/SingleCardAnimation';
 // import CardChart from '../../layout/CardChart';
 // import useCardCronJob from '../../layout/useCardCronJob';
@@ -125,9 +125,9 @@
 //                     >
 //                       Manage Collections
 //                     </RCButton>
-//                     <MDButton variant="outlined" color="primary" size="medium">
+//                     <RCButton variant="outlined" color="primary" size="medium">
 //                       View Purchase History
-//                     </MDButton>
+//                     </RCButton>
 //                   </CardActions>
 //                 </Card>
 //               )}

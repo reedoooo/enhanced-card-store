@@ -23,8 +23,8 @@ import { useMode } from 'context';
 import RCSwitch from './RCSwitch';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import { nanoid } from 'nanoid';
-import useManager from 'context/useManager';
 import useSelectorActions from 'context/hooks/useSelectorActions';
+import useManager from 'context/useManager';
 const RCInput = forwardRef(
   (
     {
@@ -38,25 +38,80 @@ const RCInput = forwardRef(
       placeholder,
       onSelectChange,
       error,
+      helperText,
       ...rest
     },
     ref
   ) => {
     const { theme } = useMode();
     const { isMobile } = useBreakpoint();
-    const { handleSelectChange } = useSelectorActions();
+    const { handleSelectChange, setTags, tags } = useSelectorActions();
+    const { updateEntityField } = useManager();
     const [inputValue, setInputValue] = useState('');
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {
         event.preventDefault();
-        const newTag = { key: nanoid(), label: inputValue.trim() };
-        onChange([...value, newTag]);
+        console.log(`[INPUT]: ${inputValue}`);
+        console.log(`[EVENT]: ${event.target.value}`);
+        console.log(`[EVENT]: ${event}`);
+        handleSelectChange({ target: { value: inputValue } }, 'tags', 'decks');
         setInputValue('');
       }
     };
+
     const handleDeleteTag = (tagToDelete) => () => {
-      onChange(value.filter((tag) => tag.key !== tagToDelete.key));
+      const updatedTags = tags.filter((tag) => tag.id !== tagToDelete.id);
+      setTags(updatedTags); // Update local state
+      updateEntityField('decks', 'deckId', 'tags', updatedTags); // Persist tags update
     };
+    const { newPalette, functions } = theme;
+
+    const {
+      grey,
+      transparent,
+      error: colorError,
+      success: colorSuccess,
+    } = newPalette;
+    const { pxToRem } = functions;
+    // styles for the input with error={true}
+    const errorStyles = () => ({
+      backgroundImage:
+        // eslint-disable-next-line max-len
+        "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23F44335' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3E%3Ccircle cx='6' cy='8.2' r='.6' fill='%23F44335' stroke='none'/%3E%3C/svg%3E\")",
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: `right ${pxToRem(12)} center`,
+      backgroundSize: `${pxToRem(16)} ${pxToRem(16)}`,
+
+      '& .Mui-focused': {
+        '& .MuiOutlinedInput-notchedOutline, &:after': {
+          borderColor: colorError.main,
+        },
+      },
+
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: colorError.main,
+      },
+    });
+
+    // styles for the input with success={true}
+    const successStyles = () => ({
+      backgroundImage:
+        // eslint-disable-next-line max-len
+        "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath fill='%234CAF50' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3E%3C/svg%3E\")",
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: `right ${pxToRem(12)} center`,
+      backgroundSize: `${pxToRem(16)} ${pxToRem(16)}`,
+
+      '& .Mui-focused': {
+        '& .MuiOutlinedInput-notchedOutline, &:after': {
+          borderColor: colorSuccess.main,
+        },
+      },
+
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: colorSuccess.main,
+      },
+    });
 
     switch (type) {
       case 'text':
@@ -69,6 +124,7 @@ const RCInput = forwardRef(
         return (
           <StyledTextField
             theme={theme}
+            type={type}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -79,8 +135,9 @@ const RCInput = forwardRef(
               shrink: !initialValue ? undefined : true,
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
-            error={!!error[rest.name]}
-            helperText={error[rest.name]?.message}
+            error={!!error}
+            // errorMessage={error?.message}
+            helperText={helperText}
             {...rest}
           />
         );
@@ -98,28 +155,6 @@ const RCInput = forwardRef(
                 onChange(e.target.value);
                 handleSelectChange(e, rest.name, rest.context);
               }}
-              // onChange={(e) => {
-              //   console.log(e.target.value);
-              //   console.log(
-              //     'SELECTED VALUE',
-              //     selectedCollection?.averagedChartData[e.target.value]
-              //   );
-              //   onChange(e.target.value);
-              //   // updateCollectionField(
-              //   //   selectedCollection._id,
-              //   //   'selectedChartDataKey',
-              //   //   e.target.value
-              //   // );
-              //   // updateCollectionField(
-              //   //   selectedCollection._id,
-              //   //   'selectedChartData',
-              //   //   selectedCollection?.averagedChartData[e.target.value]
-              //   // );
-              //   handleChange(e.target.value);
-              // }}
-              // onInputChange={(event, newInputValue) => {
-              //   console.log(newInputValue);
-              // }}
               input={<OutlinedInput label={rest?.label} />}
               sx={{
                 width: '100%',
@@ -143,9 +178,12 @@ const RCInput = forwardRef(
         );
       case 'multiline':
         return (
-          <TextField
+          <StyledTextField
+            theme={theme}
+            type={type}
             variant="outlined"
             multiline
+            fullWidth
             rows={rest?.rows || 4}
             placeholder={rest?.placeholder}
             value={value}
@@ -171,43 +209,24 @@ const RCInput = forwardRef(
       case 'chips':
         return (
           <StyledTextField
-            theme={theme}
             fullWidth
+            theme={theme}
             variant="outlined"
             margin="normal"
             placeholder={placeholder}
             label={rest?.label}
             value={inputValue}
-            // onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             onChange={(e) => setInputValue(e.target.value)}
             InputProps={{
-              startAdornment: value.map((tag) => (
+              startAdornment: tags?.map((tag) => (
                 <Chip
-                  key={tag.key}
+                  key={tag.id}
                   label={tag.label}
                   onDelete={handleDeleteTag(tag)}
                 />
               )),
             }}
-            // onChange={(newValue) => {
-            //   // Function to handle change in tags
-            //   onChange(newValue);
-            // }}
-            // InputProps={{
-            //   startAdornment: tags?.map((tag) => (
-            //     <Chip
-            //       key={tag.key}
-            //       tabIndex={-1}
-            //       label={tag.label}
-            //       // className={classes.chip}
-            //       onDelete={handleDeleteTag(tag)}
-            //       sx={{
-            //         margin: '0.5rem',
-            //       }}
-            //     />
-            //   )),
-            // }}
             {...rest}
           />
         );
@@ -336,173 +355,3 @@ RCInput.propTypes = {
   ]),
 };
 export default RCInput;
-// const submitTags = useCallback((newTags) => {
-//   console.log('TAG SUBMITTED: ', newTags);
-//   const validation = zodSchemas['updateDeckForm']?.tags?.safeParse(newTags);
-//   if (validation?.success) {
-//     setTags(newTags);
-//     console.log('Tags updated:', newTags); // Or any other logic
-//   } else {
-//     console.error('Validation failed:', validation?.error);
-//   }
-// }, []);
-// const handleChange = (e) => {
-//   const {
-//     target: { value },
-//   } = e;
-//   if (rest.fieldName === 'timeRange') {
-//     updateCollectionField(
-//       selectedCollection._id,
-//       'selectedChartDataKey',
-//       value
-//     );
-//     updateCollectionField(
-//       selectedCollection._id,
-//       'selectedChartData',
-//       selectedCollection?.averagedChartData[value]
-//     );
-//   }
-//   // setPersonName(
-//   //   // On autofill we get a stringified value.
-//   //   typeof value === 'string' ? value.split(',') : value
-//   // );
-// };
-// const handleSelectChange = (e) => {
-//   onChange(e.target.value); // This ensures form state is updated
-//   // onSelectChange && onSelectChange(e.target.value); // This calls the additional handler if provided
-// };
-// <div>
-//   <TextField
-// InputProps={{
-//   startAdornment: selectedItem?.map((item) => (
-//     <Chip
-//       key={item}
-//       tabIndex={-1}
-//       label={item}
-//       // className={classes.chip}
-//       onDelete={handleDelete(item)}
-//       sx={{
-//         margin: '0.5rem',
-//       }}
-//     />
-//   )),
-//   onBlur,
-//   onChange: (event) => {
-//     handleInputChange(event);
-//     onChange(event);
-//   },
-//   onFocus,
-// }}
-//               const [chipData, setChipData] = React.useState([
-//   { key: 0, label: 'Angular' },
-//   { key: 1, label: 'jQuery' },
-//   { key: 2, label: 'Polymer' },
-//   { key: 3, label: 'React' },
-//   { key: 4, label: 'Vue.js' },
-// ]);
-//               const handleDelete = (chipToDelete) => () => {
-//   setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
-// };
-//     input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-//     renderValue={(selected) => (
-//       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-//         {selected.map((value) => (
-//           <Chip
-//             key={value}
-//             label={value}
-//             icon={<CloseIcon onClick={handleDelete(value)} />}
-//             onDelete={handleDelete(value)}
-//           />
-//         ))}
-//       </Box>
-//     )}
-//     {...other}
-//     {...inputProps}
-//   />
-// </div>;
-// case 'switch':
-//   return (
-//     <FormControlLabel
-//       control={
-//         <Switch
-//           checked={value}
-//           onChange={(e) => onChange(e.target.checked)}
-//           {...rest}
-//         />
-//       }
-//       label={rest?.label}
-//     />
-//   );
-//   <FormFieldBox theme={theme}>
-//     <FormControl fullWidth margin="normal">
-//       <TextField
-//         label={rest.placeholder} // Using placeholder as label for consistency
-//         variant="outlined"
-//         value={inputValue}
-//         onChange={(e) => setInputValue(e.target.value)}
-//         onKeyDown={handleKeyDown}
-//         InputProps={{
-//           startAdornment: value?.map((chip, index) => (
-//             <Chip
-//               key={index}
-//               label={chip}
-//               onDelete={() => handleDeleteChip(chip)}
-//               variant="outlined"
-//               size="small"
-//             />
-//           )),
-//         }}
-//         fullWidth
-//         margin="normal"
-//         InputLabelProps={{
-//           shrink: true,
-//         }}
-//       />
-//     </FormControl>
-//   </FormFieldBox>
-// );
-// case 'chips':
-//   return (
-//     <FormFieldBox theme={theme}>
-//       <FormControl fullWidth margin="normal">
-//         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-//           <TextField
-//             InputProps={{
-//               startAdornment: value?.map((key, label, index) => (
-//                 <Chip
-//                   key={index}
-//                   tabIndex={-1}
-//                   label="Deletable"
-//                   // label={chip}
-//                   onDelete={() => handleDeleteChip(key)}
-//                   onAdd={() => handleAddChip(label)}
-//                   variant="outlined"
-//                   size="small"
-//                   color="error"
-//                 />
-//               )),
-//               onChange: (e) => onChange(e.target.value),
-//               // onBlur,
-//               // onChange: event => {
-//               //   handleInputChange(event);
-//               //   onChange(event);
-//               // },
-//               // onFocus
-//             }}
-//             variant="outlined"
-//             margin="normal"
-//             fullWidth
-//             placeholder={rest?.placeholder}
-//             value={value}
-//             onChange={(e) => onChange(e.target.value)}
-//             InputLabelProps={{
-//               shrink: !initialValue ? undefined : true,
-//             }}
-//             // error={!!errors[name]}
-//             // helperText={errors[name]?.message}
-//             {...rest}
-//           />
-//         </Box>
-//       </FormControl>
-//     </FormFieldBox>
-//   );

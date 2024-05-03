@@ -10,8 +10,6 @@ const RCSwitch = ({
   size = { width: 50, height: 14, thumbWidth: 22, thumbHeight: 22 },
 }) => {
   const { theme } = useMode();
-  // const toggleSwitch = () => setChecked(!checked);
-
   return (
     <FormControl component="fieldset" sx={{ alignItems: 'center' }}>
       <FormControlLabel

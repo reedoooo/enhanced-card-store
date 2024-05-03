@@ -4,12 +4,7 @@ import './assets/css/index.css';
 import './assets/css/card.css';
 import './assets/css/page.css';
 import Main from './Main';
-import {
-  UserProvider,
-  useMode,
-  CardProvider,
-  ConfiguratorProvider,
-} from './context';
+import { useMode, ConfiguratorProvider } from './context';
 import { ThemeProvider } from 'styled-components';
 import { CssBaseline, GlobalStyles } from '@mui/material';
 import { ParallaxProvider } from 'react-scroll-parallax';
@@ -24,11 +19,7 @@ const App = () => {
       <GlobalStyles />
       <ParallaxProvider>
         <ConfiguratorProvider>
-          <UserProvider>
-            <CardProvider>
-              <Main />
-            </CardProvider>
-          </UserProvider>
+          <Main />
         </ConfiguratorProvider>
       </ParallaxProvider>
     </ThemeProvider>

@@ -17,8 +17,6 @@ import {
   Typography,
 } from '@mui/material';
 import styled from 'styled-components';
-import MDButton from '../REUSABLE_COMPONENTS/MDBUTTON';
-import rgba from '../../assets/themes/functions/rgba';
 
 // COLOR PALETTE: #777 - opaque
 export const StyledContainerBoxPrimary = styled(Box)(({ theme }) => ({

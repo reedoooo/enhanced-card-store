@@ -22,7 +22,7 @@ import useDialogState from '../../context/hooks/useDialogState';
 import DeckListItem from './DeckListItem';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
-import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import useUserData from '../../context/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import useManager from '../../context/useManager';
 
@@ -42,17 +42,17 @@ const DeckBuilder = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [loadingState, setLoadingState] = useState({});
   const [decks, setDecks] = useState([]);
-  // const selected = localStorage.getItem('selectedDeck');
-  // const selectedDeck = JSON.parse(selected);
   useEffect(() => {
     const initFetch = async () => {
       const loadedDecks = await fetchDecks();
       setDecks(loadedDecks);
       const storedDeckId = localStorage.getItem('selectedDeckId');
-      const initialDeck = loadedDecks.find((deck) => deck._id === storedDeckId);
+      const initialDeck = loadedDecks?.find(
+        (deck) => deck._id === storedDeckId
+      );
       if (initialDeck) {
-        setActiveTab(initialDeck ? loadedDecks.indexOf(initialDeck) : 0);
-        // handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
+        setActiveTab(initialDeck ? loadedDecks?.indexOf(initialDeck) : 0);
+        handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
       }
     };
     if (!hasFetchedDecks) {
@@ -60,9 +60,9 @@ const DeckBuilder = () => {
     }
   }, [hasFetchedDecks]);
   const handleDelete = useCallback(
-    async (deckId) => {
+    async (deck) => {
       try {
-        await deleteDeck(deckId);
+        await deleteDeck(deck?._id);
       } catch (error) {
         console.error('Failed to delete deck:', error);
       }
@@ -84,16 +84,13 @@ const DeckBuilder = () => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
         const updatedDeckId = event.newValue;
-        const updatedDeck = decks.find((deck) => deck._id === updatedDeckId);
+        // const updatedDeckId = localStorage.getItem('selectedDeckId');
+        const updatedDeck = decks?.find((deck) => deck._id === updatedDeckId);
         if (updatedDeck) {
-          setActiveTab(decks.indexOf(updatedDeck));
+          setActiveTab(decks?.indexOf(updatedDeck));
           handleSelectDeck(updatedDeck);
         }
       }
-      // if (event.key === 'selectedDeck') {
-      //   const updatedDeck = JSON.parse(event.newValue);
-      //   handleSelectDeck(updatedDeck);
-      // }
       if (event.key === 'decks') {
         const updatedDecks = JSON.parse(event.newValue);
         setDecks(updatedDecks);
@@ -116,7 +113,7 @@ const DeckBuilder = () => {
           [deckValue._id]: true, // Set loading state to true immediately
         }));
         const selectedDeck = await fetchDeckById(deckValue?._id);
-        // localStorage.setItem('selectedDeckId', selectedDeck._id);
+        localStorage.setItem('selectedDeckId', selectedDeck._id);
         handleSelectDeck(selectedDeck);
         handleDeckLoaded(selectedDeck._id);
       } else {
@@ -136,7 +133,7 @@ const DeckBuilder = () => {
   ));
   const deckListItems = useMemo(
     () =>
-      decks.map((deck, index) => (
+      decks?.map((deck, index) => (
         <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
           <DeckListItem
             // key={deck._id}
@@ -182,6 +179,8 @@ const DeckBuilder = () => {
                 )}`}
                 buttonText="Add New Deck"
                 headerName="Deck Builder"
+                type={'Deck Collection'}
+                action={{ route: '', tooltip: 'Add Deck' }}
                 username={user.username}
                 handleOpenDialog={handleOpenAddDialog}
               />

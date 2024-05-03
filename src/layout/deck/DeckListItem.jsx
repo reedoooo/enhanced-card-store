@@ -11,16 +11,16 @@ import {
 } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
-import RCInfoItem from '../REUSABLE_COMPONENTS/RCInfoItem';
-import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import RCInfoItem from '../REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
 import { useMode } from '../../context';
 import GenericCard from '../../components/cards/GenericCard';
 import { formFields } from '../../components/forms/formsConfig';
 import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
-import prepareDeckData from './deckData';
 import { SkeletonCard } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import useManager from '../../context/useManager';
+import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+import { roundToNearestTenth } from '../../context/Helpers';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
   useEffect(() => {
@@ -44,6 +44,30 @@ const AnimatedInfoItem = ({ label, value, theme, delay }) => {
     </Collapse>
   );
 };
+function prepareDeckData(deck, cards) {
+  let tags = [];
+  deck?.tags?.forEach((tag) => {
+    tags?.push(tag.label);
+  });
+  const infoItems = [
+    { label: 'Name', value: deck?.name },
+    {
+      label: 'Value',
+      value: `$${roundToNearestTenth(deck?.totalPrice)}`,
+    },
+    { label: 'Cards', value: `${deck?.totalQuantity}` },
+    // { label: 'Unique Cards', value: `${cards?.length}` },
+    {
+      label: 'Tags',
+      value: tags.join(', '),
+    },
+    // { label: 'Color', value: deck?.color },
+  ];
+  return {
+    infoItems,
+  };
+}
+
 const DeckListItem = ({
   deck,
   handleSelectAndShowDeck,
@@ -54,22 +78,15 @@ const DeckListItem = ({
   const [cards, setCards] = useState([]);
   const [infoItems, setInfoItems] = useState([]);
   const [cardLoading, setCardLoading] = useState(false);
-  const selected = localStorage.getItem('selectedDeck');
-  const resetCards = useCallback(() => {
-    setCards([]);
-    setInfoItems([]);
-    setCardLoading(true);
-  }, []);
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeck' && event.newValue) {
-        setCards(JSON.parse(event.newValue).cards);
+        setCards(JSON.parse(event.newValue)?.cards);
         setInfoItems(
-          prepareDeckData(deck, JSON.parse(event.newValue).cards).infoItems
+          prepareDeckData(deck, JSON.parse(event.newValue)?.cards)?.infoItems
         );
       }
     };
-
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [deck, setCards, setInfoItems]);
@@ -114,7 +131,7 @@ const DeckListItem = ({
                 spacing={2}
               >
                 <Grid item xs={12} sm={12} md={2}>
-                  <MDBox>
+                  <MDBox border="none">
                     <RCWrappedIcon
                       sx={{
                         background: theme.palette.success.main,
@@ -135,9 +152,9 @@ const DeckListItem = ({
                   >
                     {infoItems?.map((item, index) => (
                       <AnimatedInfoItem
-                        key={item.label}
-                        label={item.label}
-                        value={item.value}
+                        key={item.label + item.value}
+                        label={item.label || ''}
+                        value={item.value || ''}
                         theme={theme}
                         delay={index * 200} // Adjust delay as needed
                       />

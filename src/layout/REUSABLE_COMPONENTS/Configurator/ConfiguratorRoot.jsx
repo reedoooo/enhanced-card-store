@@ -1,19 +1,9 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import { useConfiguratorContext, useMode } from 'context';
-import { useEffect } from 'react';
-import { useCardStoreHook } from 'context/MAIN_CONTEXT/CardContext/useCardStore';
 
 export default styled(Drawer)(({ ownerState }) => {
   const { theme } = useMode();
-  const {
-    searchSettings,
-    setSearchSettings,
-    setOpenConfigurator,
-    // openConfigurator,
-    // isConfiguratorOpen,
-    // toggleConfigurator,
-  } = useCardStoreHook();
   const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
 
   const { boxShadows, functions, transitions } = theme;
@@ -22,7 +12,6 @@ export default styled(Drawer)(({ ownerState }) => {
   const { lg } = boxShadows;
   const { pxToRem } = functions;
 
-  // drawer styles when openConfigurator={true}
   const drawerOpenStyles = () => ({
     width: configuratorWidth,
     left: 'initial',
@@ -33,7 +22,6 @@ export default styled(Drawer)(({ ownerState }) => {
     }),
   });
 
-  // drawer styles when openConfigurator={false}
   const drawerCloseStyles = () => ({
     left: 'initial',
     right: pxToRem(-350),

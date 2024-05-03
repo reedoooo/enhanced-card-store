@@ -5,6 +5,7 @@ import Card from '@mui/material/Card';
 import Switch from '@mui/material/Switch';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import { useMode } from 'context';
 
 function PlatformSettings() {
   const [followsMe, setFollowsMe] = useState(true);
@@ -13,7 +14,7 @@ function PlatformSettings() {
   const [newLaunches, setNewLaunches] = useState(false);
   const [productUpdate, setProductUpdate] = useState(true);
   const [newsletter, setNewsletter] = useState(false);
-
+  const { theme } = useMode();
   return (
     <Card sx={{ boxShadow: 'none' }}>
       <MDBox p={2}>
@@ -39,6 +40,7 @@ function PlatformSettings() {
             <Switch
               checked={followsMe}
               onChange={() => setFollowsMe(!followsMe)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>
@@ -52,6 +54,7 @@ function PlatformSettings() {
             <Switch
               checked={answersPost}
               onChange={() => setAnswersPost(!answersPost)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>
@@ -65,6 +68,7 @@ function PlatformSettings() {
             <Switch
               checked={mentionsMe}
               onChange={() => setMentionsMe(!mentionsMe)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>
@@ -88,6 +92,7 @@ function PlatformSettings() {
             <Switch
               checked={newLaunches}
               onChange={() => setNewLaunches(!newLaunches)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>
@@ -101,6 +106,7 @@ function PlatformSettings() {
             <Switch
               checked={productUpdate}
               onChange={() => setProductUpdate(!productUpdate)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>
@@ -114,6 +120,7 @@ function PlatformSettings() {
             <Switch
               checked={newsletter}
               onChange={() => setNewsletter(!newsletter)}
+              theme={theme}
             />
           </MDBox>
           <MDBox width="80%" ml={0.5}>

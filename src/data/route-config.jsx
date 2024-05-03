@@ -7,6 +7,7 @@ export const ROUTES = [
   { path: '/collection', componentName: 'CollectionPage', isPrivate: true },
   { path: '/profile', componentName: 'ProfilePage', isPrivate: true },
   { path: '/login', componentName: 'LoginDialog', isPrivate: false },
+  { path: '/loginPage', componentName: 'LoginPage', isPrivate: false },
   { path: '/signup', componentName: 'SignupPage', isPrivate: false },
   { path: '/about', componentName: 'AboutPage', isPrivate: false },
   { path: '/contact', componentName: 'ContactPage', isPrivate: false },

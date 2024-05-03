@@ -13,7 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useMode } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { useSpring, animated, useSprings } from 'react-spring';
-import RCLogoSection from '../REUSABLE_COMPONENTS/RCLOGOSECTION/RCLogoSection';
+import RCLogoSection from '../REUSABLE_COMPONENTS/RC_OTHER/RCLogoSection';
 import {
   Avatar,
   Box,
@@ -31,7 +31,7 @@ import rgba from '../../assets/themes/functions/rgba';
 import useManageCookies from '../../context/hooks/useManageCookies';
 import ReusableLoadingButton from '../REUSABLE_COMPONENTS/ReusableLoadingButton';
 import { Logout } from '@mui/icons-material';
-import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
+import useAuthManager from '../../context/useAuthManager';
 import useManager from '../../context/useManager';
 const Navigation = () => {
   const { theme } = useMode();

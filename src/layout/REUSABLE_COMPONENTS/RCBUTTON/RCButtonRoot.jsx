@@ -1,36 +1,7 @@
 import { Button } from '@mui/material';
 import styled from 'styled-components';
 import { useMode } from 'context';
-// const calculateStyles = (size) => {
-//   switch (size) {
-//     case 'small':
-//       return {
-//         width: '75px',
-//         // p: '1rem',
-//         p: '0.5rem 0.75rem',
-//         // m: '0.5rem',
-//         fontSize: '0.875rem',
-//       };
-//     case 'medium':
-//       return {
-//         width: '100px',
-//         padding: '0.75rem 1rem',
-//         fontSize: '1rem',
-//       };
-//     case 'large':
-//       return {
-//         width: '125px',
-//         padding: '1rem 1.5rem',
-//         fontSize: '1.25rem',
-//       };
-//     default:
-//       return {
-//         width: '140px',
-//         padding: '1rem 1.25rem',
-//         fontSize: '1.125rem',
-//       };
-//   }
-// };
+
 export default styled(Button)(({ ownerState }) => {
   const { theme } = useMode();
   const { palette, functions, borders, boxShadows } = theme;

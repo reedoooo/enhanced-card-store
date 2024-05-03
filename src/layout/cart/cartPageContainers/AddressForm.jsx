@@ -4,11 +4,14 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { useMode } from 'context';
 
 export default function AddressForm() {
+  const { theme } = useMode();
+
   return (
     <React.Fragment>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom theme={theme}>
         Shipping address
       </Typography>
       <Grid container spacing={3}>

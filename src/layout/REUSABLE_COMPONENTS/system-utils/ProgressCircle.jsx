@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, useTheme } from '@mui/material';
 import PropTypes from 'prop-types';
-import RCToolTip from '../RCTOOLTIP/RCToolTip';
+import RCToolTip from '../RC_OTHER/RCToolTip';
 import { useMode } from 'context';
 import useSkeletonLoader from './useSkeletonLoader';
 

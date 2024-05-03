@@ -1,16 +1,6 @@
 // DeckSearch.js
 import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  Collapse,
-  Container,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Paper,
-  useMediaQuery,
-} from '@mui/material';
+import { Card, Container, Grid, IconButton } from '@mui/material';
 import SearchResults from './SearchResults';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
@@ -20,22 +10,18 @@ import useLocalStorage from 'context/hooks/useLocalStorage';
 import { useConfiguratorContext } from 'context';
 import SimpleCard from 'layout/REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from 'layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { useCardStoreHook } from 'context/MAIN_CONTEXT/CardContext/useCardStore';
+import { useCardStoreHook } from 'context/useCardStore';
 import RCDynamicForm from '../Factory/RCDynamicForm';
 import { formFields } from '../formsConfig';
 import SearchIcon from '@mui/icons-material/Search';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-// import SearchForm from './SearchForm';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const itemsPerPage = 12;
-  const [searchBarFocused, setSearchBarFocused] = useState(false);
-  const { loadingSearchResults, searchSettings, setSearchSettings } =
-    useCardStoreHook();
+  const { loadingSearchResults } = useCardStoreHook();
   const { toggleConfigurator } = useConfiguratorContext();
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
-  const initialData = JSON.parse(localStorage.getItem('searchData') || '[]');
   useEffect(() => {
     const handleStorageChange = () => {
       const newData = JSON.parse(localStorage.getItem('searchData') || '[]');
@@ -117,13 +103,7 @@ const SearchComponent = (pageContext) => {
                 deleteButton: false,
                 startIcon: <SearchIcon />,
               }}
-              // initialData={initialData}
             />
-
-            {/* <SearchForm
-              onFocus={() => setSearchBarFocused(true)}
-              onBlur={() => setSearchBarFocused(false)}
-            /> */}
           </Container>
         </SimpleCard>
       </Grid>
@@ -135,7 +115,6 @@ const SearchComponent = (pageContext) => {
         }}
       >
         <Card
-          // className="hero-section-container"
           sx={{
             width: '100%',
             backgroundColor: 'transparent', // Make the Card background transparent

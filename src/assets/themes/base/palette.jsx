@@ -75,6 +75,16 @@ const palette = {
   transparent: {
     main: 'transparent',
   },
+  black: {
+    light: '#212121',
+    main: '#1C1C1C',
+    focus: '#26242C',
+    dark: '#0B0C0E',
+  },
+  white: {
+    main: '#ffffff',
+    focus: '#E8E8E8',
+  },
 };
 
 export default palette;

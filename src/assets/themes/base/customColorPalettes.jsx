@@ -105,14 +105,6 @@ const greenAccent = {
 //   800: '#0f7348',     // Dark, rich green
 //   900: '#2e7c67'      // Darkest shade, used for the deepest contrast
 // };
-
-// const primaryPalette = {
-//   main: '#18b984', // Greenish shade vibrant and suitable for primary buttons and icons
-//   light: '#4cceac', // Lighter green for backgrounds or less emphasized components
-//   dark: '#1e5245', // Dark green for text or dramatic background
-//   focus: 'rgba(24, 185, 132, 0.15)', // Slightly transparent green for focus states
-//   contrastText: '#fff', // White for text that contrasts against the primary shades
-// };
 const redAccent = {
   darkest: '#2c100f',
   darker: '#58201e',

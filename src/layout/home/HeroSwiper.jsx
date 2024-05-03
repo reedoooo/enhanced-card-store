@@ -137,7 +137,6 @@ const HeroSwiper = ({
               style={{
                 maxWidth: '100%',
                 objectFit: 'contain',
-                // width: 'auto',
                 borderRadius: 0,
                 height: 'auto',
                 transition: 'transform 0.9s',

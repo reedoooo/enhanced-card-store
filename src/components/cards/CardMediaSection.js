@@ -6,9 +6,6 @@ import {
   MediaContainer,
   MediaPopover,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import Checkbox from '@mui/material/Checkbox';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
 import useDialogState from '../../context/hooks/useDialogState';
 import GenericCardDialog from '../dialogs/GenericCardDialog';
 import { usePopover } from '../../context/hooks/usePopover';
@@ -23,7 +20,6 @@ const CardMediaSection = forwardRef(
       card,
       isHovered,
       handleInteraction,
-      // handleClick,
       isRequired,
       isModalOpen,
       context,
@@ -65,9 +61,6 @@ const CardMediaSection = forwardRef(
         {...(isRequired && {
           onMouseEnter: () => handleInteraction?.(!isModalOpen ? true : false), // Use optional chaining
           onMouseLeave: () => handleInteraction?.(false), // Use optional chaining
-          // onClick: () => {
-          //   handleClick?.();
-          // },
         })}
       >
         {dialogState.isCardDialogOpen && (
@@ -106,17 +99,6 @@ const CardMediaSection = forwardRef(
             <MoreHorizIcon fontSize="inherit" />
           </Avatar>
         )}
-        {/* <Checkbox
-          {...label}
-          icon={<BookmarkBorderIcon />}
-          checkedIcon={<BookmarkIcon />}
-          style={{
-            position: 'absolute',
-            top: 0, // Align to the top
-            right: 0, // Align to the right
-            margin: '8px', // Adjust spacing as needed
-          }}
-        /> */}
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}

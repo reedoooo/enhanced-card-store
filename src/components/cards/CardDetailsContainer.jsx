@@ -120,7 +120,6 @@ const CardDetailRarity = ({ values, onRarityClick }) => {
     <CardDetailChip
       key={index}
       theme={theme}
-      // label={`${rarity.name}: ${rarity.value}`}
       label={`${rarity.value}`}
       onClick={() => onRarityClick(rarity.name)}
       sx={{
@@ -156,7 +155,6 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   const [openStates, setOpenStates] = useState(details.map(() => false));
 
   const toggleOpen = (index) => {
-    // Update the state of only the clicked card
     setOpenStates((currentStates) =>
       currentStates.map((state, i) => (i === index ? !state : state))
     );

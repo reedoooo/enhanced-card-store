@@ -8,7 +8,7 @@ import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';
 import HeroSwiper from './HeroSwiper';
 import useLocalStorage from '../../context/hooks/useLocalStorage';
-import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
+import { useCardStoreHook } from '../../context/useCardStore';
 import HeroChartSection from './HeroChartSection';
 import useBreakpoint from '../../context/hooks/useBreakPoint';
 
@@ -29,7 +29,7 @@ const HeroSection = () => {
   useEffect(() => setShouldShow(true), []);
   useEffect(() => fetchRandomCardsAndSet(), []);
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
-  if (!randomCards.length) return <HeroSectionSkeleton />;
+  // if (!randomCards.length) return <HeroSectionSkeleton />;
   if (!cards.length) {
     return <HeroSectionSkeleton />;
   }
@@ -39,34 +39,20 @@ const HeroSection = () => {
       style={{
         display: 'flex',
         flexDirection: isMd ? 'column' : 'row',
-
-        // flexDirection: 'column',
-        // minHeight: '100vh', // Make sure it fills the viewport
         minHeight: isMd ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
-
-        // justifyContent: isMd ? 'center' : 'flex-start', // Center content vertically in medium devices
-        // alignItems: 'center', // Center content horizontally
-        // padding: '64px 0', // Assuming 64px is the height of the header/footer
         padding: isMd ? null : '128px 0', // Center content vertically in medium devices
-
         position: 'relative',
-        // minHeight: isMd ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
-        // flexDirection: isMd ? 'column' : 'row',
       }}
     >
       <MDBox
         sx={{
           width: isMd ? '100%' : '60%',
           height: isMd ? '100%' : null,
-          // height: isMd ? '100%' : 'calc(100vh - 64px)',
           display: 'flex',
           flexDirection: 'column',
-
           alignItems: 'center',
-          // justifyContent: 'center', // Center children vertically
           position: isMd ? 'absolute' : 'absolute',
           flexGrow: 1,
-
           left: 0,
           justifyContent: 'flex-start', // Align content at the top in mobile view
           zIndex: isMd ? 1 : 5,
@@ -84,7 +70,6 @@ const HeroSection = () => {
             justifyContent: isMd ? null : 'space-around',
             alignItems: 'center',
             backgroundColor: 'transparent',
-            // flexGrow: 1,
             height: isMd ? '100%' : '100%',
             overflow: 'hidden', // Hide overflow to maintain the card's dimensions
           }}

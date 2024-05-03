@@ -10,6 +10,7 @@ import pxToRem from './functions/pxToRem';
 import rgba from './functions/rgba';
 import breakpoints from './base/breakpoints';
 import Transitions from './Transitions';
+import palette from './base/palette';
 
 export const themeSettings = (mode) => {
   return {
@@ -22,6 +23,10 @@ export const themeSettings = (mode) => {
     },
     palette: {
       ...colors,
+      mode: mode,
+    },
+    newPalette: {
+      ...palette,
       mode: mode,
     },
     breakpoints: breakpoints.values,

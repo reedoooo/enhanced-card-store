@@ -1,31 +1,25 @@
 import { useState, useEffect } from 'react';
-
-// prop-types is a library for typechecking of props.
 import PropTypes from 'prop-types';
 
-// @mui material components
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Icon from '@mui/material/Icon';
-// Images
-import backgroundImage from 'assets/images/bg1.jpg';
 import burceMars from 'assets/images/bg1.jpg';
 import { useMode } from 'context';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-// import MDAvatar from '../../REUSABLE_COMPONENTS/MDAVATAR';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import { Avatar } from '@mui/material';
-import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
 import useManageCookies from 'context/hooks/useManageCookies';
 
 function Header({ children }) {
   const { theme } = useMode();
+  // const { isMobile } = useBreakpoint();
   const { gradients } = theme.palette;
   const { getCookie } = useManageCookies();
-  const { user } = getCookie(['user']);
+  const { authUser } = getCookie(['authUser']);
   const [tabsOrientation, setTabsOrientation] = useState('horizontal');
   const [tabValue, setTabValue] = useState(0);
 
@@ -60,7 +54,7 @@ function Header({ children }) {
         minHeight="18.75rem"
         borderRadius="xl"
         sx={{
-          backgroundImage: `url(${backgroundImage})`,
+          background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
           backgroundSize: 'cover',
           backgroundPosition: '50%',
           overflow: 'hidden',
@@ -82,45 +76,62 @@ function Header({ children }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                {user?.username}
+                {authUser?.username}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                CEO / Co-Founder
+                {authUser?.role_data?.name}
               </MDTypography>
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto' }}>
+          <Grid item xs={12} md={4} lg={4} sx={{ ml: 'auto' }}>
             <AppBar position="static">
               <Tabs
                 orientation={tabsOrientation}
                 value={tabValue}
                 onChange={handleSetTabValue}
                 theme={theme}
+                sx={{
+                  bgcolor: theme.palette.success.main,
+                  color: theme.palette.text.primary,
+                  borderBottom: `1px solid ${theme.palette.success.main}`,
+                  '&.Mui-selected': {
+                    color: theme.palette.text.primary,
+                  },
+                  '&.Mui-selected:hover': {
+                    color: theme.palette.text.primary,
+                  },
+                }}
               >
-                <Tab
-                  label="App"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      home
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Message"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      email
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Settings"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      settings
-                    </Icon>
-                  }
-                />
+                {['home', 'email', 'settings'].map((icon, index) => (
+                  <Tab
+                    key={icon}
+                    label={
+                      <span
+                        style={{
+                          color:
+                            tabValue === index
+                              ? 'black'
+                              : theme.palette.text.primary,
+                        }}
+                      >
+                        {icon.charAt(0).toUpperCase() + icon.slice(1)}
+                      </span>
+                    }
+                    // label={icon.charAt(0).toUpperCase() + icon.slice(1)}
+                    icon={
+                      <Icon
+                        sx={{ color: tabValue === index ? 'black' : 'inherit' }}
+                      >
+                        {icon}
+                      </Icon>
+                    }
+                    sx={
+                      {
+                        // color: tabValue === index ? 'black' : 'inherit', // Conditional styling for text color
+                      }
+                    }
+                  />
+                ))}
               </Tabs>
             </AppBar>
           </Grid>

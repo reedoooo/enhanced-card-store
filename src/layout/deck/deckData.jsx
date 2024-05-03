@@ -1,5 +1,5 @@
 import { roundToNearestTenth } from '../../context/Helpers';
-export default function prepareDeckData(deck, cards) {
+function prepareDeckData(deck, cards) {
   const genData = {
     name: deck?.name,
     description: deck?.description,

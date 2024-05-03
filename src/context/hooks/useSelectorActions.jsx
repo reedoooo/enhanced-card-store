@@ -1,13 +1,21 @@
+/* eslint-disable no-case-declarations */
 import { useState } from 'react';
 import useLocalStorage from './useLocalStorage';
 import useManager from '../useManager';
+import { nanoid } from 'nanoid';
 
 function useSelectorActions() {
-  const { updateEntityField, selectedCollection, handleSelectCollection } =
-    useManager();
+  const {
+    updateEntityField,
+    selectedCollection,
+    handleSelectCollection,
+    selectedDeck,
+    handleSelectDeck,
+  } = useManager();
   const [time, setTime] = useState('24hr');
   const [stat, setStat] = useState('highpoint');
   const [theme, setTheme] = useState('light');
+  const [tags, setTags] = useState([]); // Initially, tags are empty
   const [selectorValues, setSelectorValues] = useLocalStorage('selectors', {
     selectedTimeRange: time,
     selectedStat: stat,
@@ -25,6 +33,7 @@ function useSelectorActions() {
       context
     );
     const selectedCollectionId = localStorage.getItem('selectedCollectionId');
+    const selectedDeckId = localStorage.getItem('selectedDeckId');
     const selected = localStorage.getItem('selected' + context);
     const selectedCollection = JSON.parse(selected);
     switch (selectorName) {
@@ -84,6 +93,18 @@ function useSelectorActions() {
         });
         handleSelectCollection(selectedCollection);
         break;
+      case 'tags':
+        const newTag = { id: nanoid(), label: e.target.value };
+        const updatedTags = [...tags, newTag];
+        console.log('NEW TAG', updatedTags);
+        // selectedDeck.tags = updatedTags;
+        setTags(updatedTags); // Update local state
+        updateEntityField('decks', selectedDeckId, ['tags'], [updatedTags]); // Persist tags update
+        handleSelectDeck(selectedDeck);
+
+        e.target.value = ''; // Clear the input after adding a tag
+        break;
+      case 'deck':
       default:
         break;
     }
@@ -94,10 +115,12 @@ function useSelectorActions() {
     setStat,
     setTheme,
     handleSelectChange,
+    setTags,
     selectorValues,
     selectedTheme: selectedCollection?.selectedThemeDataKey,
     selectedTimeRange: selectedCollection?.selectedChartDataKey,
     selectedStat: selectedCollection?.selectedStatDataKey,
+    tags: selectedDeck?.tags,
   };
 }
 

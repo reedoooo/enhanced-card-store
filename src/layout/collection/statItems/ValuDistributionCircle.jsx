@@ -11,9 +11,9 @@ import {
   Legend,
 } from 'recharts';
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import RCWrappedIcon from '../../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import useManager from 'context/useManager';
+import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
@@ -24,18 +24,7 @@ const ValuDistributionCircle = () => {
   const greyDarkest = colors.grey.darkest;
   const contrastText = colors.grey.contrastText;
   const primaryDark = colors.primary.dark;
-  const COLORS = [
-    // theme.palette.chartTheme.blueAccent.lightest,
-    // theme.palette.chartTheme.blueAccent.light,
-    // theme.palette.chartTheme.blueAccent.default,
-    // theme.palette.chartTheme.blueAccent.dark,
-    // theme.palette.chartTheme.blueAccent.darkest,
-    colors.greenAccent.default,
-    lightest,
-    light,
-    dark,
-    darkest,
-  ];
+  const COLORS = [colors.greenAccent.default, lightest, light, dark, darkest];
   const renderCustomLabel = ({
     cx,
     cy,
@@ -118,12 +107,12 @@ const ValuDistributionCircle = () => {
               }
               subtitle="none"
               sideText=""
-              colorVariant={lightest}
+              colorVariant={light}
               useSX={true}
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
               sx={{
-                color: colors.greenAccent.default,
+                color: colors.greenAccent.light,
                 borderRadius: theme.shape.borderRadiusLarge,
               }}
             />

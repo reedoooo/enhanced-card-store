@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
-import { Grid, useMediaQuery, Icon, Box } from '@mui/material';
+import { Grid, useMediaQuery, Icon, Box, Typography } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../context';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
@@ -7,11 +7,10 @@ import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import { ResponsiveContainer } from 'recharts';
 import {
-  calculateChangePercentage,
   formatDateBasedOnRange,
+  roundToNearestTenth,
 } from '../../context/Helpers';
 import { TopCardsDisplayRow } from './TopCardsDisplayRow';
 import { formFields } from '../../components/forms/formsConfig';
@@ -22,9 +21,10 @@ import MyResponsiveLine from './MyPortfolioLineChart';
 import { CircularProgress } from '@mui/joy';
 import { ChartArea } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import useManager from '../../context/useManager';
-import preparePortfolioTableData from './data/portfolioData';
 import useSelectorActions from '../../context/hooks/useSelectorActions';
-
+import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+import prepareTableData from '../../data/prepareTableData';
+import { styled } from 'styled-components';
 const renderCardContainer = (content, isChart, isForm) => {
   return (
     <MDBox
@@ -47,29 +47,77 @@ const renderCardContainer = (content, isChart, isForm) => {
     </MDBox>
   );
 };
+const StyledInfoPanel = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[4],
+  position: 'relative',
+  // right: 15, // Align to the right edge of the parent dialog
+  // top: 15, // Align to the top of the dialog
+  // transform: 'translate(15%, 0%)', // Adjust so it slightly overlaps
+  width: 280,
+  zIndex: 1500, // Ensure it is above the dialog
+}));
 
+const newCollectionPanel = () => {
+  const { theme } = useMode();
+
+  return (
+    <StyledInfoPanel theme={theme}>
+      <Typography variant="h6" color="textPrimary" gutterBottom theme={theme}>
+        First Time Here?
+      </Typography>
+      <Typography
+        variant="body1"
+        color={theme.newPalette.text.secondary}
+        theme={theme}
+      >
+        Use the guest account to explore:
+      </Typography>
+      <Typography
+        variant="body2"
+        color={theme.newPalette.text.secondary}
+        sx={{ mt: 1 }}
+        theme={theme}
+      >
+        Username: <strong>guest</strong>
+      </Typography>
+      <Typography
+        variant="body2"
+        color={theme.newPalette.text.secondary}
+        theme={theme}
+      >
+        Password: <strong>password123</strong>
+      </Typography>
+    </StyledInfoPanel>
+  );
+};
 const ChartGridLayout = () => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     fetchCollections,
-    collections: allCollections,
+    collections,
     hasFetchedCollections,
     selectedCollectionId,
     selectedCollection,
   } = useManager();
-
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
     }
   }, []);
   const showCollections = selectedCollectionId ? true : false;
+  const percentageChange =
+    roundToNearestTenth(
+      selectedCollection?.collectionStatistics?.percentageChange?.value
+    ) || 0;
   const { data, columns } = useMemo(() => {
     if (!selectedCollection?.cards) {
       return { data: [], columns: [] }; // Provide default empty structures
     }
-    return preparePortfolioTableData(selectedCollection.cards);
+    return prepareTableData(selectedCollection.cards, 'portfolio');
   }, [selectedCollection?.cards]);
 
   if (!selectedCollection) {
@@ -95,7 +143,7 @@ const ChartGridLayout = () => {
               subtitle="Chart of the collection price performance"
               titleVariant="body1"
               icon={
-                <MDBox>
+                <MDBox border="none">
                   <RCWrappedIcon
                     color="white"
                     sx={{
@@ -106,11 +154,31 @@ const ChartGridLayout = () => {
                   </RCWrappedIcon>
                 </MDBox>
               }
-              sideText={`Change: ${calculateChangePercentage(selectedCollection)}`}
+              sideText={`Change: ${percentageChange}%`}
             />
           </SimpleCard>
           {/* CHART ROW SECTION */}
           {selectedCollection?.cards?.length < 5 ? (
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CircularProgress />
+              </Grid>
+              <Grid item xs={12} sm={6} md={8} lg={9}>
+                <newCollectionPanel />
+              </Grid>
+            </Grid>
+          ) : (
+            <ChartAreaComponent />
+          )}
+          {/* {selectedCollection?.cards?.length < 5 ? (
             <MDBox
               sx={{
                 display: 'flex',
@@ -120,10 +188,11 @@ const ChartGridLayout = () => {
               }}
             >
               <CircularProgress />
+              <newCollectionPanel />
             </MDBox>
           ) : (
             <ChartAreaComponent />
-          )}
+          )} */}
           {/* FORM SELECTOR ROW SECTION */}
           <FormSelectorRow isXs={isXs} />
           {/* TOP CARDS ROW SECTION */}
@@ -208,7 +277,7 @@ const ChartAreaComponent = React.memo(() => {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedCollection' && event.newValue) {
-        console.log('selectedCollection changed', event.newValue);
+        // console.log('selectedCollection changed', event.newValue);
         setCollection(JSON.parse(event.newValue));
         setTimeRange(JSON.parse(event.newValue).selectedChartDataKey);
         setMarker(
@@ -331,110 +400,109 @@ const TopCardsDisplayRowComponent = React.memo(({ isXs }) => {
 });
 TopCardsDisplayRowComponent.displayName = 'TopCardsDisplayRowComponent';
 //!--------------------- CARD LIST COMPONENT ---------------------
-const CollectionCardList = React.memo(
-  ({ data, columns, theme, selectedCollection }) => {
-    const formattedTime = selectedCollection?.updatedAt
-      ? new Date(selectedCollection?.updatedAt).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      : 'Loading...';
-    const entriesPerPage = {
-      defaultValue: 5,
-      entries: [5, 10, 25, 50, 100],
-    };
-    const [pageSize, setPageSize] = useState(entriesPerPage.defaultValue);
+const CollectionCardList = React.memo(({ data, columns, theme }) => {
+  const { selectedCollection } = useManager();
+  const formattedTime = selectedCollection?.updatedAt
+    ? new Date(selectedCollection?.updatedAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Loading...';
+  const entriesPerPage = {
+    defaultValue: 10,
+    entries: [5, 10, 25, 50, 100],
+  };
+  const [pageSize, setPageSize] = useState(entriesPerPage.defaultValue);
 
-    useEffect(() => {
-      setPageSize(entriesPerPage.defaultValue);
-    }, [entriesPerPage.defaultValue]);
-    return (
-      <DashboardBox
-        component={Grid}
-        item
-        xs={12}
-        lg={5}
+  useEffect(() => {
+    setPageSize(entriesPerPage.defaultValue);
+  }, [entriesPerPage.defaultValue]);
+  return (
+    <DashboardBox
+      component={Grid}
+      item
+      xs={12}
+      lg={5}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '800px',
+      }}
+    >
+      <SimpleCard
+        theme={uniqueTheme}
+        hasTitle={false}
+        data=""
+        isTableOrChart={true}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '800px',
+          alignItems: 'flex-start',
         }}
       >
-        <SimpleCard
-          theme={uniqueTheme}
-          hasTitle={false}
-          data=""
-          isTableOrChart={true}
-          sx={{
-            alignItems: 'flex-start',
-          }}
-        >
-          <BoxHeader
-            title="Collection Card List"
-            subtitle="List of all cards in the collection"
-            titleVariant="body1"
-            icon={
-              <MDBox>
-                <RCWrappedIcon
-                  color="white"
-                  sx={{
-                    background: theme.palette.success.main,
-                  }}
-                >
-                  <Icon>list</Icon>
-                </RCWrappedIcon>
-              </MDBox>
-            }
-            sideText={`Last Updated: ${formattedTime}`}
+        <BoxHeader
+          title="Collection Card List"
+          subtitle="List of all cards in the collection"
+          titleVariant="body1"
+          icon={
+            <MDBox>
+              <RCWrappedIcon
+                color="white"
+                sx={{
+                  background: theme.palette.success.main,
+                }}
+              >
+                <Icon>list</Icon>
+              </RCWrappedIcon>
+            </MDBox>
+          }
+          sideText={`Last Updated: ${formattedTime}`}
+        />
+      </SimpleCard>
+      {renderCardContainer(
+        <Box sx={{ height: 510, width: '100%' }}>
+          <DataGrid
+            rows={data?.map((row, index) => ({ id: index, ...row }))}
+            columns={columns}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            rowsPerPageOptions={[5, 10, 15, 20].map((pageSize) => ({
+              value: pageSize,
+              label: pageSize,
+            }))}
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+            initialState={{
+              filter: {
+                filterModel: {
+                  items: [],
+                  quickFilterValues: [''],
+                },
+              },
+            }}
+            checkboxSelection
+            sx={{
+              '& .MuiDataGrid-root': {
+                color: theme.palette.chartTheme.grey.dark,
+                border: 'none',
+              },
+              '& .MuiDataGrid-cell': {
+                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+              },
+              '& .MuiDataGrid-columnSeparator': {
+                visibility: 'hidden',
+              },
+            }}
           />
-        </SimpleCard>
-        {renderCardContainer(
-          <Box sx={{ height: 510, width: '100%' }}>
-            <DataGrid
-              rows={data?.map((row, index) => ({ id: index, ...row }))}
-              columns={columns}
-              pageSize={pageSize}
-              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              rowsPerPageOptions={[5, 10, 15, 20].map((pageSize) => ({
-                value: pageSize,
-                label: pageSize,
-              }))}
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              initialState={{
-                filter: {
-                  filterModel: {
-                    items: [],
-                    quickFilterValues: [''],
-                  },
-                },
-              }}
-              checkboxSelection
-              sx={{
-                '& .MuiDataGrid-root': {
-                  color: theme.palette.chartTheme.grey.dark,
-                  border: 'none',
-                },
-                '& .MuiDataGrid-cell': {
-                  borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
-                },
-                '& .MuiDataGrid-columnHeaders': {
-                  borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
-                },
-                '& .MuiDataGrid-columnSeparator': {
-                  visibility: 'hidden',
-                },
-              }}
-            />
-          </Box>
-        )}
-      </DashboardBox>
-    );
-  }
-);
+        </Box>
+      )}
+    </DashboardBox>
+  );
+});
 CollectionCardList.displayName = 'CollectionCardList';
 // !--------------------- END OF COMPONENTS ---------------------

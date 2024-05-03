@@ -1,25 +1,13 @@
-// menuItemsData.js
-
 import React from 'react';
 import {
-  Home as HomeIcon,
   Store as StoreIcon,
   ShoppingCart as CartIcon,
   Assessment as CollectionIcon,
-  Person as ProfileIcon,
 } from '@mui/icons-material';
 import DeckBuilderIcon from '../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
 import { Badge } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 
 export const baseMenuItems = ({ cartCardQuantity }) => [
-  // {
-  //   name: 'Menu',
-  //   icon: <MenuIcon />,
-  //   to: '/',
-  //   requiresLogin: false,
-  // },
-  // { name: 'Home', icon: <HomeIcon />, to: '/home', requiresLogin: false },
   {
     name: 'Deck',
     icon: <DeckBuilderIcon iconColor="black" />,
@@ -62,10 +50,4 @@ export const baseMenuItems = ({ cartCardQuantity }) => [
     to: '/cart',
     requiresLogin: true,
   },
-  // {
-  //   name: 'Profile',
-  //   icon: <ProfileIcon />,
-  //   to: '/profile',
-  //   requiresLogin: false,
-  // },
 ];

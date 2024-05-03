@@ -11,6 +11,8 @@ import LoadingOverlay from './layout/REUSABLE_COMPONENTS/system-utils/LoadingOve
 import useManageCookies from './context/hooks/useManageCookies.jsx';
 import { ROUTE_CONFIG } from './data/route-config.jsx';
 
+// ==============================|| MAIN ROUTING ||============================== //
+
 const LazyRoute = ({ componentName, ...rest }) => {
   const Component = lazy(() => import(`./pages/${componentName}`));
   return <Component {...rest} />;
@@ -18,7 +20,7 @@ const LazyRoute = ({ componentName, ...rest }) => {
 const Main = () => {
   const { getCookie } = useManageCookies();
   const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
-  const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
+  const { isConfiguratorOpen } = useConfiguratorContext();
   return (
     <PageLayout
       sx={{
