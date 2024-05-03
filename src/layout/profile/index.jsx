@@ -7,30 +7,18 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 // Images
-import homeDecor1 from '../../assets/images/bg1.jpg';
-import homeDecor2 from '../../assets/images/bg1.jpg';
-import homeDecor3 from '../../assets/images/bg1.jpg';
-import homeDecor4 from '../../assets/images/bg1.jpg';
-import team1 from '../../assets/images/bg1.jpg';
-import team2 from '../../assets/images/bg1.jpg';
-import team3 from '../../assets/images/bg1.jpg';
-import team4 from '../../assets/images/bg1.jpg';
 import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import Header from './sub-components/Header';
 import PlatformSettings from './sub-components/Settings';
 import ProfileInfoCard from './sub-components/ProfileInfoCard';
-import ProfilesList from './sub-components/ProfilesList';
-import profilesListData from './sub-components/profilesListData';
-import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import DefaultProjectCard from './sub-components/DefaultProjectCard';
 import { useMode } from '../../context';
 
 function Overview() {
   const { theme } = useMode();
   return (
     <DashboardLayout>
-      <MDBox mb={2} />
+      <MDBox mb={2} mt={-2.2} />
       <Header>
         <MDBox mt={5} mb={3}>
           <Grid container spacing={1}>
@@ -51,17 +39,17 @@ function Overview() {
                 }}
                 social={[
                   {
-                    link: 'https://www.facebook.com/CreativeTim/',
+                    link: 'https://www.facebook.com',
                     icon: <FacebookIcon />,
                     color: 'facebook',
                   },
                   {
-                    link: 'https://twitter.com/creativetim',
+                    link: 'https://twitter.com',
                     icon: <TwitterIcon />,
                     color: 'twitter',
                   },
                   {
-                    link: 'https://www.instagram.com/creativetimofficial/',
+                    link: 'https://www.instagram.com',
                     icon: <InstagramIcon />,
                     color: 'instagram',
                   },
@@ -71,16 +59,16 @@ function Overview() {
               />
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
-            <Grid item xs={12} xl={4}>
+            {/* <Grid item xs={12} xl={4}>
               <ProfilesList
                 title="conversations"
                 profiles={profilesListData}
                 shadow={false}
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         </MDBox>
-        <MDBox pt={2} px={2} lineHeight={1.25}>
+        {/* <MDBox pt={2} px={2} lineHeight={1.25}>
           <MDTypography variant="h6" fontWeight="medium" theme={theme}>
             Projects
           </MDTypography>
@@ -89,15 +77,15 @@ function Overview() {
               TBD TBD TBD
             </MDTypography>
           </MDBox>
-        </MDBox>
-        <MDBox p={2}>
+        </MDBox> */}
+        {/* <MDBox p={2}>
           <Grid container spacing={6}>
             <Grid item xs={12} md={6} xl={3}></Grid>
             <Grid item xs={12} md={6} xl={3}></Grid>
             <Grid item xs={12} md={6} xl={3}></Grid>
             <Grid item xs={12} md={6} xl={3}></Grid>
           </Grid>
-        </MDBox>
+        </MDBox> */}
       </Header>
       {/* <Footer /> */}
     </DashboardLayout>

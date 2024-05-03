@@ -15,7 +15,14 @@ import typography from 'assets/themes/base/typography';
 import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 
-function ProfileInfoCard({ title, description, info, social, action, shadow }) {
+function ProfileInfoCard({
+  title = '',
+  description = '',
+  info = {},
+  social = [],
+  action = {},
+  shadow = true,
+}) {
   const labels = [];
   const values = [];
   const { socialMediaColors } = colors;

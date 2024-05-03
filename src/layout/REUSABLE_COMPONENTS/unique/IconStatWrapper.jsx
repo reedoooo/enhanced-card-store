@@ -49,7 +49,12 @@ const IconContainer = styled(Box)`
   color: ${({ theme }) => theme.colorPrimaryText};
 `;
 
-const IconStatWrapper = ({ label, value, icon = 'bars', isPrimary }) => {
+const IconStatWrapper = ({
+  label = 'Label',
+  value = 'Value',
+  icon = 'bars',
+  isPrimary = false,
+}) => {
   const { theme } = useMode();
 
   // Pre-calculate colors based on isPrimary

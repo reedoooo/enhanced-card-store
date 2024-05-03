@@ -18,13 +18,13 @@ const ButtonContainer = ({ children, withContainer }) => (
 const RCButton = forwardRef(
   (
     {
-      color,
-      variant,
-      size,
-      circular,
-      iconOnly,
+      color = 'white',
+      variant = 'contained',
+      size = 'medium',
+      circular = false,
+      iconOnly = false,
       children,
-      withContainer,
+      withContainer = false, // Default value for withContainer prop
       // isPrimary,
       // isAccent,
       // isDefault,
@@ -41,7 +41,7 @@ const RCButton = forwardRef(
       <RCButtonRoot
         {...rest}
         ref={ref}
-        color="success"
+        color={color}
         variant={variant === 'gradient' ? 'contained' : variant}
         size={size}
         ownerState={{ color, variant, size, circular, iconOnly }}
@@ -62,14 +62,6 @@ const RCButton = forwardRef(
 );
 
 RCButton.displayName = 'RCButton';
-RCButton.defaultProps = {
-  size: 'medium',
-  variant: 'contained',
-  color: 'white',
-  circular: false,
-  iconOnly: false,
-  withContainer: false, // Default value for withContainer prop
-};
 RCButton.propTypes = {
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   variant: PropTypes.oneOf([
@@ -78,11 +70,6 @@ RCButton.propTypes = {
     'outlined',
     'gradient',
     'holo',
-    // 'primary',
-    // 'accent',
-    // 'default',
-    // 'disabled',
-    // 'error',
   ]),
   color: PropTypes.oneOf([
     'default',

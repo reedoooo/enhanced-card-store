@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Grid } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { useMode } from '../../context';
-import pages from '../../data/json-data/pages.json';
 import {
   StyledContainerBox,
   StyledPaper,
@@ -29,8 +28,6 @@ export const AnimatedFeatureCard = ({ cardData }) => {
     );
     if (selectedItem) {
       openDialog('isDetailsDialogOpen');
-      console.log(selectedItem);
-      console.log(dialogState);
     }
   };
   const handleCloseDialog = () => {
@@ -73,7 +70,6 @@ export const AnimatedFeatureCard = ({ cardData }) => {
         <CardHeader
           title={cardData.title}
           subheader="Explore Features"
-          // subheader={tier.subheader}
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
           sx={{
@@ -121,8 +117,6 @@ const FeatureCardsSection = () => {
   const { theme } = useMode();
   const breakpoints = theme.breakpoints;
   const isSmUp = useMediaQuery(breakpoints.up('sm'));
-  const { tiers, introText } = pages;
-  console.log(featureCardData);
   return (
     <section className="feature-cards-section">
       <StyledContainerBox maxWidth="100%" theme={theme}>

@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useMode } from 'context';
-import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
+import useUserData from 'context/useUserData';
 const ListItemWrapper = styled('div')(({ theme }) => ({
   cursor: 'pointer',
   padding: 16,

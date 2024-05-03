@@ -7,8 +7,9 @@ import SimpleSectionHeader from '../unique/SimpleSectionHeader';
 import uniqueTheme from '../unique/uniqueTheme';
 import { PageHeaderSkeleton } from '../system-utils/SkeletonVariants';
 import RCButton from '../RCBUTTON';
-import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
+import useUserData from 'context/useUserData';
 import { useFormManagement } from 'components/forms/hooks/useFormManagement';
+import { Tooltip } from '@mui/joy';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -31,6 +32,8 @@ const PageHeader = ({
   lastUpdated,
   buttonText = 'Add New Item', // Default button text
   formName = 'formSchemaName', // Default form name
+  type = 'Portfolio', // Default type
+  action,
 }) => {
   const { setActiveFormSchema } = useFormManagement();
   const { user } = useUserData();
@@ -54,6 +57,7 @@ const PageHeader = ({
           sectionName={headerName}
           userName={userName || user?.username}
           sectionDescription={description}
+          type={type}
           lastUpdated={
             lastUpdated ||
             new Date().toLocaleDateString('en-US', {
@@ -63,15 +67,17 @@ const PageHeader = ({
             })
           }
         />
-        <RCButton
-          color="success"
-          size="large"
-          variant="holo"
-          withContainer={true}
-          onClick={handleOpenDialog}
-        >
-          {buttonText}
-        </RCButton>
+        <Tooltip title={action.tooltip} placement="top">
+          <RCButton
+            color="success"
+            size="large"
+            variant="holo"
+            withContainer={true}
+            onClick={handleOpenDialog}
+          >
+            {buttonText}
+          </RCButton>
+        </Tooltip>
       </FlexContainer>
     </SimpleCard>
   );

@@ -10,11 +10,9 @@ import CardMediaSection from './CardMediaSection';
 import placeholder from '../../assets/images/placeholder.jpeg';
 import { useMode } from '../../context';
 import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { useSnackbar } from 'notistack';
 import useSelectedContext from '../../context/hooks/useSelectedContext';
 import {
   AspectRatioBox,
-  StyledCard,
   StyledCardContent,
 } from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { usePopover } from '../../context/hooks/usePopover';

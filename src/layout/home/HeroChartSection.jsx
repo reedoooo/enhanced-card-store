@@ -16,14 +16,19 @@ import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
 import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import { useMode } from '../../context';
 import { useMemo } from 'react';
-import {
-  FaDragon,
-  FaLevelUpAlt,
-  FaRegLightbulb,
-  FaShieldAlt,
-  FaVenusMars,
-} from 'react-icons/fa';
-import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
+import { FaShieldAlt } from 'react-icons/fa';
+import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+const currencyFormatter = (value, separator = '.') => {
+  const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return formatter.format(numericValue);
+};
 const HeroChartSection = ({
   card,
   randomCards,
@@ -85,10 +90,7 @@ const HeroChartSection = ({
               }}
             >
               <CardContent style={{ maxWidth: '25%', maxHeight: '100%' }}>
-                <DashboardBox
-                  gridArea="b"
-                  // style={{ maxWidth: '50%', maxHeight: '100%' }}
-                >
+                <DashboardBox gridArea="b">
                   <img
                     src={cardData?.image}
                     style={{ maxWidth: '100%', maxHeight: '100%' }}
@@ -104,7 +106,6 @@ const HeroChartSection = ({
               >
                 <DashboardBox
                   gridArea="b"
-                  // style={{ width: '100%', height: '100%', flexGrow: 1 }}
                   sx={{
                     flexGrow: 1,
                     border: theme.palette.chartTheme.greenAccent.default,
@@ -128,11 +129,9 @@ const HeroChartSection = ({
                   >
                     <BoxHeader
                       title={cardData?.name}
-                      // subtitle={`$${cardData?.price}`}
                       titleVariant={'h3'}
                       subtitle="none"
                       sideText={`$${cardData?.price}`}
-                      // sideText="+4%"
                       icon={
                         <MDBox
                           sx={{
@@ -152,28 +151,6 @@ const HeroChartSection = ({
                           </RCWrappedIcon>
                         </MDBox>
                       }
-                      // useSX={true}
-                      // paddingVariant={'1rem'}
-                      // sx={{
-                      //   root: {
-                      //     padding: theme.spacing(1),
-                      //     marginBottom: theme.spacing(2),
-                      //   },
-                      //   title: {
-                      //     fontWeight: 'bold',
-                      //     fontSize: '1.5rem',
-                      //     color: theme.palette.text.primary,
-                      //   },
-                      //   subtitle: {
-                      //     color: theme.palette.text.secondary,
-                      //     fontSize: '1rem',
-                      //   },
-                      //   sideText: {
-                      //     color: theme.palette.primary.main,
-                      //     fontWeight: 'bold',
-                      //     fontSize: '1rem',
-                      //   },
-                      // }}
                     />
                   </Card>
                   <ResponsiveContainer
@@ -202,6 +179,7 @@ const HeroChartSection = ({
                         axisLine={false}
                         style={{ fontSize: '10px' }}
                         domain={yDomain}
+                        tickFormatter={(item) => currencyFormatter(item)}
                       />
                       <Tooltip />
                       <Legend
@@ -213,6 +191,7 @@ const HeroChartSection = ({
                       <Line
                         type="monotone"
                         dataKey="y"
+                        format={(value) => `$${value}`}
                         stroke={theme.palette.success.main}
                       />
                     </LineChart>

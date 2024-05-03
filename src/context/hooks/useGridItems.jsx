@@ -3,9 +3,9 @@ import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
 import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
 import GenericCard from '../../components/cards/GenericCard';
 import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
-import useMode from '../UTILITIES_CONTEXT/ColorModeContext/useMode';
+import useMode from '../useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import { useCardStoreHook } from '../MAIN_CONTEXT/CardContext/useCardStore';
+import { useCardStoreHook } from '../useCardStore';
 import useManager from '../useManager';
 const useGridItems = ({
   itemsPerPage,

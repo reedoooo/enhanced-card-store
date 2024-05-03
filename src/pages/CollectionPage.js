@@ -5,17 +5,12 @@ import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import useManager from '../context/useManager';
 
 const CollectionPage = () => {
-  const { fetchCollections, hasFetchedCollections, compileCollectionMetaData } =
-    useManager();
+  const { fetchCollections, hasFetchedCollections } = useManager();
 
   useEffect(() => {
     if (!hasFetchedCollections) {
       fetchCollections();
     }
-  }, []);
-
-  useEffect(() => {
-    compileCollectionMetaData();
   }, []);
 
   return (

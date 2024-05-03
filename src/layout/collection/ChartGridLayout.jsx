@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
-import { Grid, useMediaQuery, Icon, Box } from '@mui/material';
+import { Grid, useMediaQuery, Icon, Box, Typography } from '@mui/material';
 import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from '../../context';
 import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
@@ -7,10 +7,8 @@ import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import RCWrappedIcon from '../REUSABLE_COMPONENTS/RCWRAPPEDICON/RCWrappedIcon';
 import { ResponsiveContainer } from 'recharts';
 import {
-  calculateChangePercentage,
   formatDateBasedOnRange,
   roundToNearestTenth,
 } from '../../context/Helpers';
@@ -23,9 +21,10 @@ import MyResponsiveLine from './MyPortfolioLineChart';
 import { CircularProgress } from '@mui/joy';
 import { ChartArea } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import useManager from '../../context/useManager';
-import preparePortfolioTableData from './data/portfolioData';
 import useSelectorActions from '../../context/hooks/useSelectorActions';
-
+import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+import prepareTableData from '../../data/prepareTableData';
+import { styled } from 'styled-components';
 const renderCardContainer = (content, isChart, isForm) => {
   return (
     <MDBox
@@ -48,13 +47,58 @@ const renderCardContainer = (content, isChart, isForm) => {
     </MDBox>
   );
 };
+const StyledInfoPanel = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[4],
+  position: 'relative',
+  // right: 15, // Align to the right edge of the parent dialog
+  // top: 15, // Align to the top of the dialog
+  // transform: 'translate(15%, 0%)', // Adjust so it slightly overlaps
+  width: 280,
+  zIndex: 1500, // Ensure it is above the dialog
+}));
 
+const newCollectionPanel = () => {
+  const { theme } = useMode();
+
+  return (
+    <StyledInfoPanel theme={theme}>
+      <Typography variant="h6" color="textPrimary" gutterBottom theme={theme}>
+        First Time Here?
+      </Typography>
+      <Typography
+        variant="body1"
+        color={theme.newPalette.text.secondary}
+        theme={theme}
+      >
+        Use the guest account to explore:
+      </Typography>
+      <Typography
+        variant="body2"
+        color={theme.newPalette.text.secondary}
+        sx={{ mt: 1 }}
+        theme={theme}
+      >
+        Username: <strong>guest</strong>
+      </Typography>
+      <Typography
+        variant="body2"
+        color={theme.newPalette.text.secondary}
+        theme={theme}
+      >
+        Password: <strong>password123</strong>
+      </Typography>
+    </StyledInfoPanel>
+  );
+};
 const ChartGridLayout = () => {
   const { theme } = useMode();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     fetchCollections,
-    collections: allCollections,
+    collections,
     hasFetchedCollections,
     selectedCollectionId,
     selectedCollection,
@@ -73,7 +117,7 @@ const ChartGridLayout = () => {
     if (!selectedCollection?.cards) {
       return { data: [], columns: [] }; // Provide default empty structures
     }
-    return preparePortfolioTableData(selectedCollection.cards);
+    return prepareTableData(selectedCollection.cards, 'portfolio');
   }, [selectedCollection?.cards]);
 
   if (!selectedCollection) {
@@ -99,7 +143,7 @@ const ChartGridLayout = () => {
               subtitle="Chart of the collection price performance"
               titleVariant="body1"
               icon={
-                <MDBox>
+                <MDBox border="none">
                   <RCWrappedIcon
                     color="white"
                     sx={{
@@ -110,12 +154,31 @@ const ChartGridLayout = () => {
                   </RCWrappedIcon>
                 </MDBox>
               }
-              // eslint-disable-next-line max-len
               sideText={`Change: ${percentageChange}%`}
             />
           </SimpleCard>
           {/* CHART ROW SECTION */}
           {selectedCollection?.cards?.length < 5 ? (
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CircularProgress />
+              </Grid>
+              <Grid item xs={12} sm={6} md={8} lg={9}>
+                <newCollectionPanel />
+              </Grid>
+            </Grid>
+          ) : (
+            <ChartAreaComponent />
+          )}
+          {/* {selectedCollection?.cards?.length < 5 ? (
             <MDBox
               sx={{
                 display: 'flex',
@@ -125,10 +188,11 @@ const ChartGridLayout = () => {
               }}
             >
               <CircularProgress />
+              <newCollectionPanel />
             </MDBox>
           ) : (
             <ChartAreaComponent />
-          )}
+          )} */}
           {/* FORM SELECTOR ROW SECTION */}
           <FormSelectorRow isXs={isXs} />
           {/* TOP CARDS ROW SECTION */}

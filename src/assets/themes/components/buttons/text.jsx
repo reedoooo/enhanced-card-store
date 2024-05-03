@@ -2,7 +2,7 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { text, info, secondary, transparent } = colors;
+const { text, info, success, secondary, transparent } = colors;
 const { size } = typography;
 
 export default {
@@ -57,14 +57,14 @@ export default {
   },
 
   primary: {
-    color: info.main,
+    color: success.main,
 
     '&:hover': {
-      color: info.main,
+      color: success.main,
     },
 
     '&:focus:not(:hover)': {
-      color: info.focus,
+      color: success.focus,
       boxShadow: 'none',
     },
   },

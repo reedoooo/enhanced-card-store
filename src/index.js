@@ -1,20 +1,16 @@
-import React, { StrictMode, useMemo } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
-// import LogRocket from 'logrocket';
-// LogRocket.init('8iqglq/card-store');
 import { register, unregister } from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
-import { AuthProvider, ColorModeProvider } from './context';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
+import { ColorModeProvider } from './context';
 import { Helmet } from 'react-helmet';
 import { SnackbarProvider } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
-import ErrorFallback from 'ErrorFallback';
+import ErrorFallback from 'layout/REUSABLE_COMPONENTS/system-utils/ErrorFallback';
 
 const domNode = document.getElementById('root');
 
@@ -34,35 +30,21 @@ const HelmetMetadata = () => (
 );
 
 const AppWrapper = () => {
-  const stripePromise = useMemo(
-    () => loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY),
-    [process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY]
-  );
-
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      // FallbackComponent={({ error, resetErrorBoundary }) => {
-      //   console.error(error);
-      //   resetErrorBoundary();
-      //   return null;
-      // }}
-      onError={(error) => {
-        console.error(error);
-      }}
       onReset={(details) => {
         console.log(details);
+      }}
+      onError={(error) => {
+        console.error(error);
       }}
     >
       <Router>
         <HelmetMetadata />
         <ColorModeProvider>
           <SnackbarProvider>
-            <AuthProvider>
-              <Elements stripe={stripePromise}>
-                <App />
-              </Elements>
-            </AuthProvider>
+            <App />
           </SnackbarProvider>
         </ColorModeProvider>
       </Router>

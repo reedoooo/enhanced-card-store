@@ -80,7 +80,6 @@ const useFetchWrapper = () => {
         if (!response.ok) {
           const errorInfo = `Error: ${response.statusText} (status: ${response.status})`;
           console.error('[ERROR B]', responseData); // Log the detailed error message
-          // const erroData = serializeError(responseData);
           const parsed = JSON.parse(responseData);
           const errorDetails = {
             message: parsed.message || 'Unknown error',
@@ -93,8 +92,6 @@ const useFetchWrapper = () => {
             ...prevErrors,
             [loadingID]: errorDetails,
           }));
-          // console.error('[ERROR C]', serializeError(responseData)); // Log the detailed error message
-          // console.error('[ERROR D]', JSON.parse(responseData)); // Log the detailed error message
           throw new Error(responseData);
         }
 
@@ -108,8 +105,6 @@ const useFetchWrapper = () => {
           `[SUCCESS][${loadingID}][${responseData?.message}]`,
           'success'
         );
-        console.log('MESSAGE: ', responseData?.message);
-        console.log('DATA: ', responseData?.data);
         return responseData;
       } catch (error) {
         // const errorDetails = {

@@ -5,6 +5,8 @@ import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import HeroSection from '../layout/home/HeroSection';
 import FeatureCardsSection from '../layout/home/FeatureCardsSection';
 
+// ==============================|| HOME PAGE ||============================== //
+
 const HomePage = () => {
   return (
     <PageLayout backCol={true}>

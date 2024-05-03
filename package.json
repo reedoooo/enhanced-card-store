@@ -69,7 +69,6 @@
     "sass": "^1.69.7",
     "shortid": "^2.2.16",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.7.2",
     "stripe": "^12.14.0",
     "styled-components": "^6.1.8",
     "swiper": "^11.0.6",

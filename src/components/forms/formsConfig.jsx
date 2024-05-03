@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import LoginIcon from '@mui/icons-material/Login';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
@@ -19,49 +20,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
 import { z } from 'zod';
-import useAuthManager from '../../context/MAIN_CONTEXT/AuthContext/useAuthManager';
-import { useCardStoreHook } from '../../context/MAIN_CONTEXT/CardContext/useCardStore';
+import useAuthManager from '../../context/useAuthManager';
+import { useCardStoreHook } from '../../context/useCardStore';
 import useManager from '../../context/useManager';
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// ------------------------------- FORM KEYS -----------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-const formKeys = {
-  loginForm: 'loginForm',
-  signupForm: 'signupForm',
-  addDeckForm: 'addDeckForm',
-  updateDeckForm: 'updateDeckForm',
-  addCollectionForm: 'addCollectionForm',
-  updateCollectionForm: 'updateCollectionForm',
-  updateUserDataForm: 'updateUserDataForm',
-  statRangeForm: 'statRangeForm',
-  searchForm: 'searchForm',
-  collectionSearchForm: 'collectionSearchForm',
-  timeRangeForm: 'timeRangeSelector',
-  searchSettingsForm: 'searchSettingsSelector',
-  rememberMeForm: 'rememberMeForm',
-  authSwitchForm: 'authSwitch',
-};
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// ------------------------------- FORM FIELD KEYS -----------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-const formFieldKeys = {
-  username: 'username',
-  password: 'password',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  email: 'email',
-  name: 'name',
-  description: 'description',
-  searchTerm: 'searchTerm',
-  statisticsRange: 'statisticsRange',
-  themeRange: 'themeRange',
-  timeRange: 'timeRange',
-  authSwitch: 'authSwitch',
-};
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ---------------------------- FORM FIELD HANDLERS ----------------------------
@@ -120,17 +81,12 @@ const getFormFieldHandlers = () => {
     },
     statRangeForm: (formData) => {
       console.log('Stat Range Form Data:', formData);
-      // setStat(formData);
-      // setSearchSettings(formData, additionalData);
     },
     themeRangeForm: (formData) => {
       console.log('Theme Range Form Data:', formData);
-      // setTheme(formData);
-      // setSearchSettings(formData, additionalData);
     },
     timeRangeForm: (formData) => {
       console.log('Time Range Selector Form Data:', formData);
-      // setTime(formData);
     },
     searchSettingsForm: (formData, additionalData) => {
       console.log(
@@ -138,16 +94,13 @@ const getFormFieldHandlers = () => {
         formData,
         additionalData
       );
-      // setSearchSettings(formData, additionalData);
     },
 
     rememberMeForm: (formData) => {
-      // Implement remember me form submission logic here
       console.log('Remember Me Form Data:', formData);
     },
     authSwitch: (formData) => {
       console.log('Auth Switch Form Data:', formData);
-      // toggleActiveForm('loginForm', 'signupForm');
     },
   };
   return formHandlers;
@@ -249,7 +202,7 @@ const addDeckFormFields = {
     context: 'Deck',
     name: 'description',
     label: 'Description',
-    type: 'text',
+    type: 'multiline',
     placeHolder: 'Enter deck description',
     defaultValue: '',
     rules: {
@@ -272,9 +225,12 @@ const updateDeckFormFields = {
     name: 'tags',
     type: 'chips',
     placeholder: 'Enter a tag',
-    defaultValue: [{ value: 'tag1', label: 'tag1' }],
+    defaultValue: [],
+    // defaultValue: [{ value: 'tag1', label: 'tag1' }],
     rules: {
-      required: true,
+      required: false,
+      minLength: 1,
+      maxLength: 10,
     },
     icon: <DescriptionRoundedIcon />, // If you're displaying this icon somewhere in your form
     required: false, // Adjust based on whether tags are actually required or not
@@ -322,7 +278,7 @@ const collectionFormFields = {
     context: 'Collection',
     name: 'description',
     label: 'Description',
-    type: 'text',
+    type: 'multiline',
     placeHolder: 'Enter collection description',
     defaultValue: '',
     rules: {
@@ -339,7 +295,7 @@ const collectionFormFields = {
 const searchFormFields = {
   searchTerm: {
     label: 'Search Cards',
-    type: 'text',
+    type: 'search',
     name: 'searchTerm',
     placeholder: 'Search for cards...',
     defaultValue: '',
@@ -349,17 +305,12 @@ const searchFormFields = {
     required: false,
     value: '',
     icon: <SearchRoundedIcon />,
-    // Assuming forms, handleChange, handleFocus, and handleBlur are defined elsewhere
-    // value: forms?.searchForm?.searchTerm || '',
-    // onChange: handleChange,
-    // onFocus: handleFocus,
-    // onBlur: handleBlur,
   },
 };
 const collectionSearchFormFields = {
   searchTerm: {
     label: 'Search',
-    type: 'text',
+    type: 'search',
     name: 'collectionSearchTerm',
     placeholder: 'Search for cards...',
     field: 'searchTerm',
@@ -470,7 +421,6 @@ const formFields = {
   timeRangeForm: timeRangeFormFields,
   authSwitchForm: authSwitchFormFields,
   collectionSearchForm: collectionSearchFormFields,
-  // searchSettingsForm: searchSettingsFormFields,
 };
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -498,7 +448,6 @@ const loginFormSchema = z.object({
   // .regex(new RegExp(".*\\d.*"), { message: "Must contains one number" })
   // .regex(new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*"), {message: "Must contain one special character"});
 });
-
 const signupFormSchema = loginFormSchema.extend({
   firstName: z
     .string({ required_error: 'First Name is required' })
@@ -532,7 +481,7 @@ const updateDeckFormSchema = addDeckFormSchema.extend({
   tags: z
     .array(
       z.object({
-        key: z.number().default(0),
+        id: z.number().default(0),
         label: z.string().min(1, { message: "Tag can't be empty" }).default(''),
       })
     )
@@ -586,8 +535,6 @@ const zodSchemas = {
   addCollectionForm: collectionFormSchema,
   updateCollectionForm: collectionFormSchema,
   searchForm: searchFormSchema,
-  // deckForm: updateDeckFormSchema,
-  // collectionForm: collectionFormSchema,
   authSwitchForm: authSwitchFormSchema,
 };
 // -----------------------------------------------------------------------------
@@ -605,7 +552,6 @@ const handleValidation = (schema, formData) => {
     return { success: false, errors: result.error.errors };
   }
 };
-
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ----------------------- ADDITIONAL CONFIG OPTIONS ---------------------------
@@ -633,28 +579,28 @@ const configOptions = {
   additionButtons: [
     {
       label: 'Delete Deck',
-      onClick: console.log('Delete Deck'),
+      onClick: () => {},
       startIcon: <DeleteIcon />,
       color: 'error',
       variant: 'holo',
     },
     {
       label: 'Save Deck',
-      onClick: console.log('Save Deck'),
+      onClick: () => {},
       startIcon: <SaveIcon />,
       color: 'primary',
       variant: 'holo',
     },
     {
       label: 'Edit',
-      onClick: console.log('Edit'),
+      onClick: () => {},
       startIcon: <EditIcon />,
       color: 'primary',
       variant: 'holo',
     },
     {
       label: 'Add',
-      onClick: console.log('Add'),
+      onClick: () => {},
       startIcon: <AddIcon />,
       color: 'primary',
       variant: 'holo',
@@ -662,8 +608,6 @@ const configOptions = {
   ],
 };
 export {
-  formKeys,
-  formFieldKeys,
   formFields,
   zodSchemas,
   configOptions,

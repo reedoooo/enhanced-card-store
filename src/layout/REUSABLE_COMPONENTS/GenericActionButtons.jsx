@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
-import MDTypography from './MDTYPOGRAPHY/MDTypography';
-import { getContextIcon } from './icons/index';
 import { useSnackbar } from 'notistack';
-import GlassyIcon from './icons/GlassyIcon';
-import MDBox from './MDBOX';
 import LoadingOverlay from './system-utils/LoadingOverlay';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
@@ -29,7 +25,6 @@ const ActionButton = ({
   const { theme } = useMode();
   const { isLoading } = useLoading();
   const isDataTable = variant === 'data-table';
-  const adjustedButtonSize = variant === 'data-table' ? 'small' : buttonSize;
   const actionIcon =
     actionType === 'add' ? (
       <AddCircleOutlineOutlined
@@ -40,22 +35,16 @@ const ActionButton = ({
         sx={{ ml: isDataTable ? '8px !important' : 1 }}
       />
     );
-  const loadingKey =
-    actionType === 'add' ? 'addCardsToCollection' : 'removeCardsFromCollection';
-
   return (
     <LoadingButton
       variant={'contained'}
-      // color={actionType === 'add' ? 'success.main' : 'error'}
       size={isDataTable ? 'small' : buttonSize}
       loading={isLoading(`${actionType}Cards`)}
-      // loading={isLoading(loadingKey)}
       onClick={handleCardAction}
       startIcon={actionIcon}
       sx={{
         width: isDataTable ? 'auto' : '100%',
         height: isDataTable ? 30 : 'auto', // Ensure consistent height for datatable variant
-        // height: isDataTable ? 36 : 'auto', // Ensure consistent height for datatable variant
         minWidth: isDataTable ? 20 : 'auto', // Ensure a minimal width when icon only
         flexGrow: 1,
         borderRadius: theme.shape.borderRadius,
@@ -71,7 +60,6 @@ const ActionButton = ({
           backgroundColor: labelValue === 'add' ? '#3da58a' : '#cc4a4aff',
         },
         ...(isDataTable && {
-          // padding: theme.spacing(0.5),
           minWidth: theme.spacing(5),
         }),
       }}
@@ -110,24 +98,12 @@ const GenericActionButtons = ({
     removeItemFromCollection,
     addItemToDeck,
     removeItemFromDeck,
-    fetchDecks,
     setHasUpdatedCards,
-    setDecks,
-    allDecks,
     selectedCollectionId,
     selectedDeckId,
     selectedCartId,
   } = manager;
-  // const updateDecksState = useCallback((updatedDeck) => {
-  //   setDecks((prevDecks) =>
-  //     prevDecks.map((deck) =>
-  //       deck._id === updatedDeck._id ? updatedDeck : deck
-  //     )
-  //   );
-  // }, []);
-  // const selectedEntity = entities[context?.toLowerCase()]; // dynamically access the right context
-  // const addEnt = addOrUpdateEntity[context];
-  // const removeEnt = removeEntity[context];
+
   const handleAction = useCallback(
     (actionType) => {
       try {
@@ -211,41 +187,6 @@ const GenericActionButtons = ({
         height: '100%',
       }}
     >
-      {/* {datatable === true && (
-        <MDBox
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexBasis: '20%', // Adjusting to occupy the desired space, may vary based on layout
-            height: '100%', // Full height for alignment with siblings
-            borderRadius: '8px', // Smoother corners for a subtle glass effect
-            background: 'rgba(255, 255, 255, 0.4)', // Lighter background for a frosted glass look
-            boxShadow: `
-          inset 0 0 10px rgba(12, 134, 223, 0.5), 
-          0 0 15px rgba(12, 134, 223, 0.5)
-        `, // Softer blue glow
-            backdropFilter: 'blur(5px)', // Reduced blur for a clearer effect
-            overflow: 'hidden', // Ensure contents do not overflow rounded corners
-            transition: 'all 0.3s ease', // Smooth transition for hover effects
-            '&:hover': {
-              transform: 'scale(1.05)', // Slight scale on hover for interactivity
-              boxShadow: `
-            inset 0 0 12px rgba(12, 134, 223, 0.6), 
-            0 0 20px rgba(12, 134, 223, 0.6)
-          `, // Intensify glow on hover
-            },
-          }}
-        >
-          <MDTypography variant="button" color="white" sx={{ color: 'white' }}>
-            <GlassyIcon
-              Icon={getContextIcon(context)}
-              iconColor="#FFFFFF"
-              size={160}
-            />
-          </MDTypography>
-        </MDBox>
-      )} */}
       <Box
         sx={{
           display: 'flex',
@@ -259,26 +200,18 @@ const GenericActionButtons = ({
         <ActionButton
           action="add"
           buttonSize={buttonSize}
-          // handleCardAction={() =>
-          //   handleAction('add', card, context, selectedEntity)
-          // }
           handleCardAction={() => handleAction('add')}
           labelValue={'add'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={datatable ? 'data-table' : 'card'}
           actionType="add"
-          // selectedEntity={selectedEntity}
         />
         <ActionButton
           action="remove"
           buttonSize={buttonSize}
           handleCardAction={() => handleAction('remove')}
-          // handleCardAction={() =>
-          //   handleAction('remove', card, context, selectedEntity)
-          // }
           labelValue={'remove'} // Assuming 'context' is intended to be used as 'labelValue'
           variant={datatable ? 'data-table' : 'card'}
           actionType="remove"
-          // selectedEntity={selectedEntity}
         />
       </Box>
     </Box>

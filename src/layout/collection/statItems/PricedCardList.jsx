@@ -2,11 +2,11 @@ import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
 import BoxHeader from '../../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import { Box, Card } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import prepareTableData from '../data/topCards';
 import { useMemo } from 'react';
 import { Divider } from '@mui/joy';
 import { useMode } from 'context';
 import useManager from 'context/useManager';
+import prepareTableData from '../../../data/prepareTableData';
 
 const PricedCardList = () => {
   const { theme } = useMode();
@@ -17,7 +17,7 @@ const PricedCardList = () => {
   const greenAccent = colors.greenAccent.light;
   const { collectionMetaData } = useManager();
   const { data, columns } = useMemo(
-    () => prepareTableData(collectionMetaData?.topFiveCards),
+    () => prepareTableData(collectionMetaData?.topFiveCards, 'topCards'),
     [collectionMetaData?.topFiveCards]
   );
 
@@ -35,10 +35,8 @@ const PricedCardList = () => {
       <Box
         sx={{
           background: primary,
-          // borderRadius: theme.spacing(4),
           borderRadius: theme.shape.borderRadius,
           minHeight: '270px',
-          // minHeight: '100%',
         }}
       >
         <MDBox sx={{ border: 'none' }}>
@@ -46,7 +44,6 @@ const PricedCardList = () => {
             sx={{
               width: '100%',
               justifyContent: 'center',
-              // borderRadius: theme.spacing(4),
               p: theme.spacing(2),
               background: grey,
               border: theme.palette.chartTheme.greenAccent.dark,

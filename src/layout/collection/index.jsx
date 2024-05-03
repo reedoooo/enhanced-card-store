@@ -12,7 +12,7 @@ import { Tab, Tabs } from '@mui/material';
 import ChartGridLayout from './ChartGridLayout';
 import CollectionPortfolioHeader from './CollectionPortfolioHeader';
 import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
-import useUserData from '../../context/MAIN_CONTEXT/UserContext/useUserData';
+import useUserData from '../../context/useUserData';
 import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
 import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
 import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
@@ -45,6 +45,7 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
             headerName="Collection Portfolio"
             username={user.username}
             handleOpenDialog={handleOpenAddDialog}
+            action={{ route: '', tooltip: 'Add Collection' }}
           />
         </DashboardBox>
         <DashboardBox sx={{ px: theme.spacing(2) }}>

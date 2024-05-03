@@ -16,10 +16,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import MDTypography from '../MDTYPOGRAPHY/MDTypography';
 import MDBox from '../MDBOX';
-import MDButton from '../MDBUTTON';
 import { formFields } from 'components/forms/formsConfig';
 import { TextField, InputLabel } from '@mui/material';
 import { StyledFormControl } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import RCButton from '../RCBUTTON';
 
 const SearchSettingsForm = ({
   searchSettings,
@@ -149,18 +149,29 @@ const Configurator = () => {
                 options={filter.values}
               />
             ))}
-            <MDButton type="submit" variant="contained" color="primary">
+            <RCButton
+              type="submit"
+              variant="holo"
+              color="success"
+              size="large"
+              withContainer={true}
+            >
               Apply
-            </MDButton>
+            </RCButton>
           </form>
           {renderSwitchSection('Navbar Fixed')}
           <Divider />
           {renderSwitchSection('Light / Dark')}
           <Divider />
           <MDBox mt={3} textAlign="center">
-            <MDButton color="primary" variant="contained">
+            <RCButton
+              variant="holo"
+              color="success"
+              size="large"
+              withContainer={true}
+            >
               view documentation
-            </MDButton>
+            </RCButton>
           </MDBox>
         </MDBox>
       </ConfiguratorRoot>

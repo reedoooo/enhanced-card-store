@@ -9,31 +9,16 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import useUserData from 'context/MAIN_CONTEXT/UserContext/useUserData';
 import { useMode } from 'context';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {`Copyright © ReedThaHuman ${new Date().getFullYear()}`}
-      <Link color="inherit" href="www.reedthahuman.com">
-        ReedThaHuman Industries
-      </Link>
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
+import Copyright from 'layout/REUSABLE_COMPONENTS/system-utils/Copyright';
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
-
 function getStepContent(step) {
   switch (step) {
     case 0:
@@ -46,24 +31,35 @@ function getStepContent(step) {
       throw new Error('Unknown step');
   }
 }
-
 export default function Checkout({ activeStep, setActiveStep }) {
   const { theme } = useMode();
-  // const [activeStep, setActiveStep] = React.useState(0);
-  const { user } = useUserData();
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
   const handleBack = () => {
     setActiveStep(activeStep - 1);
   };
+  const stripePromise = React.useMemo(
+    () => loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY),
+    [process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY]
+  );
   return (
     <Elements stripe={stripePromise}>
       <React.Fragment>
-        <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+        <Container
+          component="main"
+          maxWidth="sm"
+          sx={{
+            mb: 4,
+          }}
+        >
           <Paper
             variant="outlined"
-            sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+            sx={{
+              my: { xs: 3, md: 6 },
+              p: { xs: 2, md: 3 },
+              border: `5px solid ${theme.newPalette.success.main}`,
+            }}
           >
             <Typography component="h1" variant="h4" align="center">
               Checkout
@@ -77,10 +73,10 @@ export default function Checkout({ activeStep, setActiveStep }) {
             </Stepper>
             {activeStep === steps.length ? (
               <React.Fragment>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" gutterBottom theme={theme}>
                   Thank you for your order.
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" theme={theme}>
                   Your order number is #2001539. We have emailed your order
                   confirmation, and will send you an update when your order has
                   shipped.

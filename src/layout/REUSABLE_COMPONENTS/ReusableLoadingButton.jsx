@@ -54,7 +54,6 @@ const ReusableLoadingButton = ({
       onClick={onClick}
       sx={{
         ...sx,
-        // mt: 2, // Adjust spacing as needed
         ...getButtonStyles(variant),
       }}
     >

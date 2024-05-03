@@ -12,16 +12,8 @@ import cardContent from './card/cardContent';
 import slider from './slider';
 import switchButton from './forms/switchButton';
 import globals from '../base/globals';
-const cssbaseline = {
-  styleOverrides: `
-  body {
-    background-color: #f0f2f5; // Example background color
-    font-family: 'Roboto', sans-serif; // Default font
-    display: 'flex',
-    flexGrow: 1,
-  }
-  `,
-};
+import tabs from './tabs';
+import tab from './tabs/tab';
 
 export const components = {
   MuiCssBaseline: {
@@ -52,7 +44,8 @@ export const components = {
   MuiCard: { ...card },
   MuiCardMedia: { ...cardMedia },
   MuiCardContent: { ...cardContent },
-
+  MuiTabs: { ...tabs },
+  MuiTab: { ...tab },
   // MuiContainer: container,
 };
 

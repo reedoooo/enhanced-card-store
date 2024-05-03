@@ -9,13 +9,14 @@ import {
   FormBox,
   FormFieldBox,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useCardStore, useMode } from 'context';
+import { useMode } from 'context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { getFormFieldHandlers } from '../formsConfig';
 import { useFormSubmission } from '../hooks/useFormSubmission';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import ReusableLoadingButton from 'layout/REUSABLE_COMPONENTS/ReusableLoadingButton';
+import { Tooltip } from '@mui/joy';
 
 const RCDynamicForm = ({
   formKey,
@@ -35,8 +36,6 @@ const RCDynamicForm = ({
   const {
     control,
     handleSubmit,
-    watch,
-    getValues,
     formState: { errors, isSubmitting, dirtyFields, isDirty, isValid },
     reset,
   } = methods;
@@ -87,21 +86,7 @@ const RCDynamicForm = ({
                 context={fieldConfig.context}
                 errorMessage={error?.message}
                 helperText={error?.message}
-                // helperText={error ? <RCFieldError name={fieldName} /> : null}
                 initialValue={fieldConfig.initialValue}
-                // helperText={fieldConfig.helperText}
-                // chipProps={{
-                //   onDelete: (chip) => handleDeleteChip(chip),
-                //   onAdd: (chip) => handleAddChip(chip),
-                //   onkeydown: (event) => {
-                //     if (event.key === 'Enter') {
-                //       handleAddChip(event.target.value);
-                //     }
-                //   },
-                // }}
-                // onSelectChange={
-
-                // }
                 InputProps={
                   (fieldConfig.icon
                     ? {
@@ -116,117 +101,61 @@ const RCDynamicForm = ({
               />
             )}
           />
-          {/* {errors[fieldName] && (
-            <Box
-              sx={{
-                color: theme.palette.error.main,
-              }}
-            >
-              {errors[fieldName].message}
-            </Box>
-          )} */}
         </FormFieldBox>
       ))}
 
       {optionsForUi && optionsForUi.submitButton && (
-        <ReusableLoadingButton
-          type="submit"
-          loading={isSubmitting}
-          label={optionsForUi.submitButtonLabel}
-          startIcon={
-            optionsForUi.startIcon ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {optionsForUi.startIcon}
-              </Box>
-            ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {<AddCircleOutlineIcon />}
-              </Box>
-            )
-          }
-          fullWidth
-          sx={{
-            ...(isMobile && {
-              fontSize: '0.75rem', // Adjust button font size for mobile
-            }),
-          }}
-        />
+        <Tooltip title={optionsForUi.submitButtonLabel} placement="top">
+          <ReusableLoadingButton
+            type="submit"
+            loading={isSubmitting}
+            label={optionsForUi.submitButtonLabel}
+            startIcon={
+              optionsForUi.startIcon ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  {optionsForUi.startIcon}
+                </Box>
+              ) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  {<AddCircleOutlineIcon />}
+                </Box>
+              )
+            }
+            fullWidth
+            sx={{
+              ...(isMobile && {
+                fontSize: '0.75rem', // Adjust button font size for mobile
+              }),
+            }}
+          />
+        </Tooltip>
       )}
       {optionsForUi && optionsForUi.deleteButton && (
-        <ReusableLoadingButton
-          key={optionsForUi.deleteButtonLabel}
-          onClick={optionsForUi.deleteActions}
-          loading={isSubmitting}
-          label={optionsForUi.deleteButtonLabel}
-          startIcon={
-            optionsForUi.startIcon ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {optionsForUi.startIcon}
-              </Box>
-            ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {<AddCircleOutlineIcon />}
-              </Box>
-            )
-          }
-          // color={button.color}
-          variant="warning"
-          fullWidth
-          sx={{ mt: 2.2, background: theme.palette.error.main }}
-        />
+        <Tooltip title={optionsForUi.deleteButtonLabel} placement="top">
+          <ReusableLoadingButton
+            key={optionsForUi.deleteButtonLabel}
+            onClick={optionsForUi.deleteActions}
+            loading={isSubmitting}
+            label={optionsForUi.deleteButtonLabel}
+            startIcon={
+              optionsForUi.startIcon ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  {optionsForUi.startIcon}
+                </Box>
+              ) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  {<AddCircleOutlineIcon />}
+                </Box>
+              )
+            }
+            variant="warning"
+            fullWidth
+            sx={{ mt: 2.2, background: theme.palette.error.main }}
+          />
+        </Tooltip>
       )}
     </FormBox>
   );
 };
 
 export default React.memo(RCDynamicForm);
-// const [tags, setTags] = useState([]);
-// const submitTags = useCallback((newTags) => {
-//   const validation = zodSchemas['tags'].safeParse(newTags);
-//   if (validation.success) {
-//     setTags(newTags);
-//     console.log('Tags updated:', newTags); // Or any other logic
-//   } else {
-//     console.error('Validation failed:', validation.error);
-//   }
-// }, []);
-// useEffect(() => {
-//   setFormData(updatedData || initialData);
-//   reset(updatedData || initialData);
-// }, [updatedData, initialData, reset]);
-
-// useEffect(() => {
-//   const subscription = methods.watch((value, { name, type }) => {
-//     if (name === 'timeRange') {
-//       console.log(`selectedCollection: ${selectedCollection}`);
-//       const timeRangeValue = value.timeRange;
-//       updateCollectionField(
-//         selectedCollection._id,
-//         'selectedChartDataKey',
-//         timeRangeValue
-//       );
-//       updateCollectionField(
-//         selectedCollection._id,
-//         'selectedChartData',
-//         selectedCollection.averagedChartData[timeRangeValue]
-//       );
-//       console.log(
-//         `Updated chart data for range: ${timeRangeValue}`,
-//         selectedCollection.selectedChartData
-//       );
-//     }
-//     if (name === 'searchTerm') {
-//       console.log(`SEARCH TERM: ${value.searchTerm}`);
-//       handleRequest(value.searchTerm);
-//     }
-//     if (name === 'tags') {
-//       console.log(`TAGS: ${value.tags}`);
-//       submitTags(value.tags);
-//       updateDeckField(selectedDeck._id, 'tags', value.tags);
-//     }
-//   });
-//   return () => {
-//     subscription.unsubscribe();
-//   };
-// }, [methods.watch, updateCollectionField, handleRequest, submitTags]);
-// const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};

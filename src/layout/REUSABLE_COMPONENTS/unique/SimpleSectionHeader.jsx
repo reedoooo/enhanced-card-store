@@ -22,6 +22,7 @@ const SimpleSectionHeader = ({
   userName,
   sectionDescription,
   lastUpdated,
+  type,
 }) => {
   const { theme } = useMode();
   const lgDown = useMediaQuery(theme.breakpoints.down('lg'));
@@ -68,7 +69,7 @@ const SimpleSectionHeader = ({
             }} // Adjust spacing based on lgDown
             variant="h5"
           >
-            {`${userName}'s Portfolio`}
+            {`${userName}'s ` + `${type}`}
           </MDTypography>
         </Box>
         <MDBox
