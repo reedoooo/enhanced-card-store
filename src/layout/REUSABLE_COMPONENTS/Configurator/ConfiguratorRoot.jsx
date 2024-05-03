@@ -1,10 +1,11 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
-import { useConfiguratorContext, useMode } from 'context';
+import { useMode } from 'context';
+import { useConfigurator } from 'context/hooks/useConfigurator';
 
 export default styled(Drawer)(({ ownerState }) => {
   const { theme } = useMode();
-  const { isConfiguratorOpen, toggleConfigurator } = useConfiguratorContext();
+  const { isConfiguratorOpen, toggleConfigurator } = useConfigurator();
 
   const { boxShadows, functions, transitions } = theme;
 

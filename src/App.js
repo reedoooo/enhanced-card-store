@@ -4,26 +4,10 @@ import './assets/css/index.css';
 import './assets/css/card.css';
 import './assets/css/page.css';
 import Main from './Main';
-import { useMode, ConfiguratorProvider } from './context';
-import { ThemeProvider } from 'styled-components';
-import { CssBaseline, GlobalStyles } from '@mui/material';
-import { ParallaxProvider } from 'react-scroll-parallax';
-
 // ==============================|| APP ||============================== //
 
 const App = () => {
-  const { theme } = useMode();
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline theme={theme} />
-      <GlobalStyles />
-      <ParallaxProvider>
-        <ConfiguratorProvider>
-          <Main />
-        </ConfiguratorProvider>
-      </ParallaxProvider>
-    </ThemeProvider>
-  );
+  return <Main />;
 };
 
 export default App;

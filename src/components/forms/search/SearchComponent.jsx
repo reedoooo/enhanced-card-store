@@ -7,7 +7,6 @@ import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useMode } from 'context';
 import useLocalStorage from 'context/hooks/useLocalStorage';
-import { useConfiguratorContext } from 'context';
 import SimpleCard from 'layout/REUSABLE_COMPONENTS/unique/SimpleCard';
 import uniqueTheme from 'layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 import { useCardStoreHook } from 'context/useCardStore';
@@ -15,12 +14,13 @@ import RCDynamicForm from '../Factory/RCDynamicForm';
 import { formFields } from '../formsConfig';
 import SearchIcon from '@mui/icons-material/Search';
 import useBreakpoint from 'context/hooks/useBreakPoint';
+import { useConfigurator } from 'context/hooks/useConfigurator';
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const itemsPerPage = 12;
   const { loadingSearchResults } = useCardStoreHook();
-  const { toggleConfigurator } = useConfiguratorContext();
+  const { toggleConfigurator } = useConfigurator();
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
   useEffect(() => {
     const handleStorageChange = () => {

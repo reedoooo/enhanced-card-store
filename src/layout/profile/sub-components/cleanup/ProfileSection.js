@@ -22,10 +22,10 @@ import {
 } from '@mui/material';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useNavigate } from 'react-router-dom';
-import { useMode } from '../../context';
+import { useMode } from '../../../../context';
 import Transitions from '../Transitions';
 import MainCard from '../MainCard';
-import useUserData from '../../context/useUserData';
+import useUserData from '../../../../context/useUserData';
 
 // ==============================|| PROFILE MENU ||============================== //
 
