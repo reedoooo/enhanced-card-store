@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import useManager from '../../context/useManager';
+import useManager from '../../../../context/useManager';
 
 const UserStats = () => {
   const { decks, collections, cart } = useManager();

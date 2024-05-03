@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './layout/navigation/PrivateRoute.jsx';
 import LoginDialog from './pages/LoginDialog.jsx';
-import { useConfiguratorContext, useMode } from './context';
 import PageLayout from './layout/REUSABLE_COMPONENTS/layout-utils/PageLayout.jsx';
 import Navigation from './layout/navigation/Navigation.jsx';
 import Configurator from './layout/REUSABLE_COMPONENTS/Configurator/index.jsx';
@@ -10,6 +9,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import LoadingOverlay from './layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay.jsx';
 import useManageCookies from './context/hooks/useManageCookies.jsx';
 import { ROUTE_CONFIG } from './data/route-config.jsx';
+import { useConfigurator } from 'context/hooks/useConfigurator.jsx';
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -19,8 +19,8 @@ const LazyRoute = ({ componentName, ...rest }) => {
 };
 const Main = () => {
   const { getCookie } = useManageCookies();
-  const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
-  const { isConfiguratorOpen } = useConfiguratorContext();
+  const { isLoggedIn } = getCookie(['isLoggedIn']);
+  const { isConfiguratorOpen } = useConfigurator();
   return (
     <PageLayout
       sx={{

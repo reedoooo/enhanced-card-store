@@ -27,7 +27,6 @@ import { useFormManagement } from 'components/forms/hooks/useFormManagement';
 import { formFields } from 'components/forms/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import styled from 'styled-components';
-import Copyright from 'layout/REUSABLE_COMPONENTS/system-utils/Copyright';
 const StyledInfoPanel = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.paper,
@@ -40,7 +39,6 @@ const StyledInfoPanel = styled(Box)(({ theme }) => ({
   width: 280,
   zIndex: 1500, // Ensure it is above the dialog
 }));
-
 const GuestInfoPanel = () => {
   const { theme } = useMode();
 
@@ -62,7 +60,7 @@ const GuestInfoPanel = () => {
         sx={{ mt: 1 }}
         theme={theme}
       >
-        Username: <strong>guest</strong>
+        Username: <strong>guestUsername</strong>
       </Typography>
       <Typography
         variant="body2"

@@ -42,7 +42,6 @@ function useAuthManager() {
       'isLoggedIn',
     ]);
     localStorage.clear(); // Clear all local storage data
-
     navigate('/login');
   }, [navigate, deleteCookies]);
 

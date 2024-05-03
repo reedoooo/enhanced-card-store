@@ -41,7 +41,7 @@ const HeroBanner = ({ title, subtitle }) => {
             width: '100%',
             height: '100%',
             textAlign: 'center',
-            background: theme.palette.greenAccent.lighterSeaGreen,
+            background: theme.palette.success.main,
             padding: theme.spacing(2), // Adjust padding as needed
           }}
         >

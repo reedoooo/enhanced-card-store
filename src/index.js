@@ -6,11 +6,14 @@ import { register, unregister } from './serviceWorker';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
-import { ColorModeProvider } from './context';
+import { ColorModeProvider, useMode } from './context';
 import { Helmet } from 'react-helmet';
 import { SnackbarProvider } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from 'layout/REUSABLE_COMPONENTS/system-utils/ErrorFallback';
+import { ThemeProvider } from 'styled-components';
+import { CssBaseline, GlobalStyles } from '@mui/material';
+import { ParallaxProvider } from 'react-scroll-parallax';
 
 const domNode = document.getElementById('root');
 
@@ -30,6 +33,8 @@ const HelmetMetadata = () => (
 );
 
 const AppWrapper = () => {
+  const { theme } = useMode();
+
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
@@ -44,7 +49,13 @@ const AppWrapper = () => {
         <HelmetMetadata />
         <ColorModeProvider>
           <SnackbarProvider>
-            <App />
+            <ThemeProvider theme={theme}>
+              <CssBaseline theme={theme} />
+              <GlobalStyles />
+              <ParallaxProvider>
+                <App />
+              </ParallaxProvider>
+            </ThemeProvider>
           </SnackbarProvider>
         </ColorModeProvider>
       </Router>
