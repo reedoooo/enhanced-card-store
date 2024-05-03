@@ -4,7 +4,8 @@
 
 ## Overview
 
-TCG Enhanced Cardstore is a full-stack web application designed for trading card game enthusiasts. It offers a seamless experience for users to manage their card collections, build decks, and purchase cards online. With a focus on responsive design and secure transactions, this platform is a one-stop-shop for both casual collectors and serious traders.
+TCG Enhanced Cardstore is a full-stack web application designed for trading card game enthusiasts. It offers an all-encompassing platform to effortlessly manage card collections, construct decks, and transact securely. Designed with responsiveness and security at its core, this platform caters to the needs of both occasional collectors and professional traders.
+
 
 ### Key Features
 
@@ -104,17 +105,29 @@ The backend for the Enhanced Card Store is built using a diverse set of technolo
 
 Here's a glimpse of what TCG Enhanced Cardstore offers:
 
+### Home Page
+
+![Home Page](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/homepage.png)
+
 ### Deck Builder
 
-![Deck Builder](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/deckBuilder.png)
+![Deck Builder](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/deck-home.png)
 
 ### Portfolio
 
-![Portfolio](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/portfolio.png)
+![Portfolio Home](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/collection-home.png)
 
 ### Cart
 
-![Cart](https://github.com/reedoooo/enhanced-card-store/blob/733fee5d8ab28ca034f9f53bb56a8a5aee5330cb/public/images/pages/cart.png)
+![Cart](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/cart-checkout.png)
+
+### Profile
+
+![Profile](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/profile-home.png)
+
+### Store Search
+
+![Store Search](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/store-home.png)
 
 _For an interactive experience, visit the [Live Demo](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)._
 
@@ -122,7 +135,7 @@ _For an interactive experience, visit the [Live Demo](https://65624888827a370008
 
 Get started with these simple steps:
 
-`````bash
+``````bash
 git clone https://github.com/your_username_/TCG-Enhanced-Cardstore.git
 cd TCG-Enhanced-Cardstore
 npm install
@@ -182,4 +195,4 @@ Reed Vogt - [LinkedIn Profile](https://www.linkedin.com/in/reed-vogt-student/)
 - [Helmet](https://helmetjs.github.io/)
 
 `````markdown
-`````
+``````
