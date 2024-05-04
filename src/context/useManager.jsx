@@ -215,6 +215,26 @@ const useManager = () => {
           setHasFetchedCollections(true);
           setHasFetched((state) => ({ ...state, collections: true }));
           compileCardsWithQuantities(response.data, null, null);
+          const selectedId = localStorage.getItem('selectedCollectionId');
+          console.log('SELECTED ID', selectedId);
+          if (selectedId) {
+            // const collection = response.data.find((col) => {
+            //   console.log('ID', JSON.stringify(col._id));
+            //   return JSON.stringify(col._id) === JSON.stringify(selectedId); // Ensure both IDs are compared as strings
+            // });
+            const collection = response.data.find(
+              (col) => col._id === selectedId
+            );
+
+            console.log('SELECTED COLLECTION', collection);
+            console.log('RESPONSE DATA', response.data);
+            if (collection) {
+              setSelectedCollection(collection);
+            } else {
+              console.log('Selected collection not found');
+              // setSelectedCollection(null); // or handle the absence of the selected collection appropriately
+            }
+          }
           return response.data;
         } else {
           setDecks(response.data);
@@ -362,13 +382,24 @@ const useManager = () => {
           // Assuming the server returns the updated entity
           switch (entity) {
             case 'collections':
+              const selectedId = localStorage.getItem('selectedCollectionId');
+              setCollections(response.data);
+              // Re-select the collection if it was the one being updated
+              // if (selectedId === id) {
+              //   const updatedCollection = response.data.find(
+              //     (col) => col._id === id
+              //   );
+              //   setSelectedCollection(updatedCollection);
+              // }
               // const selected = localStorage.getItem('selectedCollectionId');
-              setCollections((prev) =>
-                prev.map((col) =>
-                  col._id === id ? { ...col, ...response.data } : col
-                )
-              );
-              // setSelectedCollection(response.data);
+              // setCollections(response.data);
+              // // setCollections((prev) =>
+              // //   prev.map((col) =>
+              // //     col._id === id ? { ...col, ...response.data } : col
+              // //   )
+              // // );
+              // setSelectedCollection((prev) => {
+
               break;
             case 'decks':
               setDecks((prev) =>

@@ -17,7 +17,7 @@ import GenericCard from 'components/cards/GenericCard';
 import { formFields } from 'data/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 import { roundToNearestTenth } from 'context/Helpers';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {

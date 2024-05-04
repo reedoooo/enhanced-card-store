@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
 import { useMode } from 'context';
-import MDBox from '../MDBOX';
+import MDBox from '../../MDBOX';
 
 const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const { theme } = useMode();

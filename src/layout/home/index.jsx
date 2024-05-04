@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import { HeroSectionSkeleton } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import { HeroSectionSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 import { Card } from '@mui/material';
 import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';

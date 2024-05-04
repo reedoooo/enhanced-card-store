@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { useMode } from 'context';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
 import SearchComponent from 'components/forms/search/SearchComponent';
 import DeckDialog from 'components/dialogs/DeckDialog';
 import useDialogState from 'context/hooks/useDialogState';
 import DeckListItem from './DeckListItem';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import PageHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/PageHeader';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
+import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
 import useUserData from 'context/state/useUserData';
 import { useFormManagement } from 'context/formHooks/useFormManagement';
 import useManager from 'context/useManager';
@@ -81,11 +81,11 @@ const DeckBuilder = () => {
           handleSelectDeck(updatedDeck);
         }
       }
-      if (event.key === 'decks') {
-        const updatedDecks = JSON.parse(event.newValue);
-        setDecks(updatedDecks);
-        setHasUpdatedDecks(true);
-      }
+      // if (event.key === 'decks') {
+      //   const updatedDecks = JSON.parse(event.newValue);
+      //   setDecks(updatedDecks);
+      //   setHasUpdatedDecks(true);
+      // }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -93,24 +93,6 @@ const DeckBuilder = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [decks, handleSelectDeck]);
-  // useEffect(() => {
-  //   // A function that sets the orientation state of the tabs.
-  //   function handleTabsOrientation() {
-  //     return window.innerWidth < theme.breakpoints.values.sm
-  //       ? setTabsOrientation('vertical')
-  //       : setTabsOrientation('horizontal');
-  //   }
-
-  //   /**
-  //    The event listener that's calling the handleTabsOrientation function when resizing the window.
-  //   */
-  //   window.addEventListener('resize', handleTabsOrientation);
-
-  //   // Call the handleTabsOrientation function to set the state with the initial value.
-  //   handleTabsOrientation();
-
-  //   // Remove event listener on cleanup
-  //   return () => window.removeEventListener('resize', handleTabsOrientation);
   // }, [tabsOrientation]);
   const handleChangeTab = useCallback(
     async (event, newValue) => {

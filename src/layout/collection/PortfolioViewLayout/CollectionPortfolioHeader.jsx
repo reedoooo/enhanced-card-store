@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconButton, Grid, Grow } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from 'context';
-import IconStatWrapper from 'layout/REUSABLE_COMPONENTS/layout-utils/IconStatWrapper';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import IconStatWrapper from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/IconStatWrapper';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import { collectionPortfolioHeaderItems } from 'data';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
@@ -31,7 +31,26 @@ const CollectionPortfolioHeader = ({ onBack }) => {
   const { theme } = useMode();
   const selected = localStorage.getItem('selectedCollection');
   const collection = JSON.parse(selected);
-  const items = collectionPortfolioHeaderItems(collection);
+  const [selectedCollection, setSelectedCollection] = useState(collection);
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  useEffect(() => {
+    const items = collectionPortfolioHeaderItems(selectedCollection);
+    setPortfolioItems(items);
+  }, [selectedCollection]);
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedCollection') {
+        setSelectedCollection(JSON.parse(event.newValue));
+        setPortfolioItems(
+          collectionPortfolioHeaderItems(JSON.parse(event.newValue))
+        );
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
   return (
     <DashboardBox
       sx={{
@@ -55,7 +74,7 @@ const CollectionPortfolioHeader = ({ onBack }) => {
         <ArrowBackIcon color={theme.palette.text.colorPrimary} />
       </IconButton>
       <Grid container spacing={2}>
-        {items?.map((item, index) => (
+        {portfolioItems?.map((item, index) => (
           <HeaderItem
             key={item.label}
             icon={item.icon}

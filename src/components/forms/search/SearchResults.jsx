@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import useGridItems from 'context/hooks/useGridItems';
 import usePagination from 'context/hooks/usePagination';
-import LoadingIndicator from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingIndicator';
+import LoadingIndicator from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingIndicator';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import PaginationComponent from './PaginationComponent';
 

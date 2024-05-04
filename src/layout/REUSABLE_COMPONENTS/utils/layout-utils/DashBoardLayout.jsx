@@ -1,7 +1,7 @@
 import { useMode } from 'context';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import MDBox from '../MDBOX/index';
+import MDBox from '../../MDBOX/index';
 
 function DashboardLayout({ children }) {
   const { pathname } = useLocation();

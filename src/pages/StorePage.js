@@ -1,6 +1,6 @@
 import React from 'react';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
+import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
 import StoreSearch from 'layout/store';
 import { Grid, Typography, Box } from '@mui/material';
 import { useMode } from 'context';

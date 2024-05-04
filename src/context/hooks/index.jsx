@@ -13,7 +13,7 @@ import useSelectedContext from './useSelectedContext';
 import usePopover from './usePopover';
 import useSelectorActions from './useSelectorActions';
 
-export default {
+export {
   useBreakpoint,
   useLocalStorage,
   useConfigurator,

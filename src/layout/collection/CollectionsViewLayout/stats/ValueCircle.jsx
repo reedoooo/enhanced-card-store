@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/BoxHeader';
+import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import useManager from 'context/useManager';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';

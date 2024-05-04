@@ -16,7 +16,7 @@ import Review from './Review';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useMode } from 'context';
-import Copyright from 'layout/REUSABLE_COMPONENTS/system-utils/Copyright';
+import Copyright from 'layout/REUSABLE_COMPONENTS/utils/system-utils/Copyright';
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 function getStepContent(step) {

@@ -8,7 +8,7 @@ import { register, unregister } from './serviceWorker';
 import { ColorModeProvider, useMode } from './context';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
-import ErrorFallback from 'layout/REUSABLE_COMPONENTS/system-utils/ErrorFallback';
+import ErrorFallback from 'layout/REUSABLE_COMPONENTS/utils/system-utils/ErrorFallback';
 import { ThemeProvider } from 'styled-components';
 import { CssBaseline, GlobalStyles } from '@mui/material';
 import { ParallaxProvider } from 'react-scroll-parallax';

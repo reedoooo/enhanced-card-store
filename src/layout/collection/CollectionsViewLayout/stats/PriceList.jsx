@@ -1,4 +1,4 @@
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/BoxHeader';
+import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import { Box, Card } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useMemo } from 'react';

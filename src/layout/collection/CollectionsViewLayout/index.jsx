@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { TransitionGroup } from 'react-transition-group';
 import CollectionListItem from './CollectionListItem';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
 import { useMode } from 'context';
-import { CollectionListItemSkeleton } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import { CollectionListItemSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 import useManager from 'context/useManager';
 import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
 

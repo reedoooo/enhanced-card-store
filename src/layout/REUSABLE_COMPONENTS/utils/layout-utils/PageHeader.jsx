@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { Box } from '@mui/material';
 import SimpleSectionHeader from './SimpleSectionHeader';
 import { PageHeaderSkeleton } from '../system-utils/SkeletonVariants';
-import RCButton from '../RCBUTTON';
+import RCButton from '../../RCBUTTON';
 import useUserData from 'context/state/useUserData';
 import { useFormManagement } from 'context/formHooks/useFormManagement';
 import { Tooltip } from '@mui/joy';
-import RCCard from '../RCCARD';
+import RCCard from '../../RCCARD';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

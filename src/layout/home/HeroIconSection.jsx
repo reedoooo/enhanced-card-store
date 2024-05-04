@@ -4,7 +4,7 @@ import { useMode } from 'context';
 import { AspectRatio } from '@mui/joy';
 import heroData from 'data/heroData';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CollectionsIcon from '@mui/icons-material/Collections';

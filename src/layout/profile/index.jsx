@@ -7,7 +7,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 // Images
-import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import Header from './sub-components/Header';
 import PlatformSettings from './sub-components/Settings';
