@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Button, Paper, Container, Box } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import RCButton from '../RCBUTTON';
+import RCButton from '../../RCBUTTON';
 import { useMode } from 'context';
 
 class ErrorFallback extends React.Component {

@@ -1,5 +1,5 @@
 import { Box, Divider } from '@mui/material';
-import StatBox from 'layout/REUSABLE_COMPONENTS/layout-utils/StatBox';
+import StatBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/StatBox';
 import { useMode } from 'context';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
 import useManager from 'context/useManager';

@@ -19,7 +19,7 @@ import CardMediaSection from '../cards/CardMediaSection';
 import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { useMode } from 'context';
 import { useSnackbar } from 'notistack';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
 import useDialogState from 'context/hooks/useDialogState';

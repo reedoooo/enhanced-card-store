@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import LoadingOverlay from './system-utils/LoadingOverlay';
+import LoadingOverlay from './utils/system-utils/LoadingOverlay';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import { useMode } from 'context';

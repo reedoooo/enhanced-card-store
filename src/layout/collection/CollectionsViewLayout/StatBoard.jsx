@@ -2,7 +2,7 @@
 import { Grid } from '@mui/material';
 
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import StatBoxes from './stats/StatBoxes';
 import ValueCircle from './stats/ValueCircle';

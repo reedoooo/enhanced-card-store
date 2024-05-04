@@ -3,15 +3,15 @@ import { Grid, useMediaQuery, Icon, Box, Typography } from '@mui/material';
 import { CircularProgress } from '@mui/joy';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from 'context';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
+import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
+import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
 import { ResponsiveContainer } from 'recharts';
 import { formatDateBasedOnRange, roundToNearestTenth } from 'context/Helpers';
 import { formFields } from 'data/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import NivoContainer from 'layout/REUSABLE_COMPONENTS/layout-utils/NivoContainer';
+import NivoContainer from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/NivoContainer';
 import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import useManager from 'context/useManager';
 import useSelectorActions from 'context/hooks/useSelectorActions';
@@ -64,11 +64,11 @@ const PortfolioViewLayout = () => {
     selectedCollectionId,
     selectedCollection,
   } = useManager();
-  useEffect(() => {
-    if (!hasFetchedCollections) {
-      fetchCollections();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasFetchedCollections) {
+  //     fetchCollections();
+  //   }
+  // }, []);
   const showCollections = selectedCollectionId ? true : false;
   const percentageChange =
     roundToNearestTenth(

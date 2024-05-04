@@ -1,6 +1,6 @@
 import React from 'react';
 import { CssBaseline, Box, Typography, Card } from '@mui/material';
-import SplashPage2 from 'layout/REUSABLE_COMPONENTS/system-utils/SplashPage2';
+import SplashPage2 from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SplashPage2';
 import LoginDialog from './LoginDialog'; // Import the LoginDialog component
 import useManageCookies from 'context/hooks/useManageCookies';
 import { useMode } from 'context';

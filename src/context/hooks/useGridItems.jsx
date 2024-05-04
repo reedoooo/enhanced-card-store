@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import GenericCard from 'components/cards/GenericCard';
-import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 import useMode from '../state/useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { useCardStoreHook } from '../state/useCardStore';

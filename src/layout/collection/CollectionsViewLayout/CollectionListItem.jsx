@@ -9,7 +9,7 @@ import CollectionDialog from 'components/dialogs/CollectionDialog';
 import RCChange from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCChange';
 import RCInfoItem from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
 import { roundToNearestTenth } from 'context/Helpers';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
 import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';

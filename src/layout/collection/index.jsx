@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useMode } from 'context';
-import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
 import CollectionDialog from 'components/dialogs/CollectionDialog';
 import useDialogState from 'context/hooks/useDialogState';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import StatBoard from './CollectionsViewLayout/StatBoard';
 import { Tab, Tabs } from '@mui/material';
 import CollectionPortfolioHeader from './PortfolioViewLayout/CollectionPortfolioHeader';
-import PageHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/PageHeader';
+import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
 import useUserData from 'context/state/useUserData';
 import { useFormManagement } from 'context/formHooks/useFormManagement';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
 import useManager from 'context/useManager';
 import CollectionsViewLayout from './CollectionsViewLayout';
 import PortfolioViewLayout from './PortfolioViewLayout';
@@ -21,11 +21,6 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
   const { setActiveFormSchema } = useFormManagement();
   const { user } = useUserData();
-
-  const handleOpenAddDialog = useCallback(() => {
-    setActiveFormSchema('addCollectionForm');
-    openDialog('isAddCollectionDialogOpen');
-  }, [openDialog, setActiveFormSchema]);
   return (
     <DashboardLayout>
       <MDBox theme={theme}>
@@ -43,7 +38,10 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
             buttonText="Add New Collection"
             headerName="Collection Portfolio"
             username={user.username}
-            handleOpenDialog={handleOpenAddDialog}
+            handleOpenDialog={() => {
+              setActiveFormSchema('addCollectionForm');
+              openDialog('isAddCollectionDialogOpen');
+            }}
             action={{ route: '', tooltip: 'Add Collection' }}
           />
         </DashboardBox>
@@ -60,11 +58,14 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
     </DashboardLayout>
   );
 };
-const PortfolioView = ({ handleBackToCollections }) => (
+const PortfolioView = ({ handleBackToCollections, selectedCollection }) => (
   <DashboardLayout>
     <Grid container spacing={1}>
       <Grid item xs={12}>
-        <CollectionPortfolioHeader onBack={handleBackToCollections} />
+        <CollectionPortfolioHeader
+          onBack={handleBackToCollections}
+          collection={selectedCollection}
+        />
       </Grid>
       <Grid item xs={12}>
         <PortfolioViewLayout />
@@ -74,11 +75,20 @@ const PortfolioView = ({ handleBackToCollections }) => (
 );
 const CollectionPortfolio = () => {
   const { theme } = useMode();
-  const { collections, handleSelectCollection } = useManager();
+  const {
+    collections,
+    handleSelectCollection,
+    hasFetchedCollections,
+    fetchCollections,
+  } = useManager();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
   const selectedCollectionId = localStorage.getItem('selectedCollectionId');
-
+  useEffect(() => {
+    if (!hasFetchedCollections) {
+      fetchCollections();
+    }
+  }, [hasFetchedCollections]);
   const tabs = [
     <Tab
       label="Collections"
@@ -109,19 +119,9 @@ const CollectionPortfolio = () => {
     }
   };
 
-  const handleSelectAndShowCollection = useCallback(
-    (collection) => {
-      handleSelectCollection(collection);
-      setActiveTab(1); // Switch to Portfolio View tab
-    },
-    [handleSelectCollection]
-  );
   useEffect(() => {
     const handleStorageChange = (event) => {
-      if (
-        event.key === 'selectedCollectionId' ||
-        event.key === 'selectedCollection'
-      ) {
+      if (event.key === 'selectedCollectionId') {
         const updatedCollectionId = event.newValue;
         const updatedCollection = collections.find(
           (collection) => collection._id === updatedCollectionId
@@ -131,6 +131,14 @@ const CollectionPortfolio = () => {
           handleSelectCollection(updatedCollection);
         }
       }
+      // if (
+      //   event.key === 'selectedCollection' &&
+      //   event.newValue &&
+      //   JSON.parse(event.newValue) !== event.oldValue
+      // ) {
+      //   const updatedCollection = JSON.parse(event.newValue);
+      //   handleSelectCollection(updatedCollection);
+      // }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -161,14 +169,17 @@ const CollectionPortfolio = () => {
       {activeTab === 0 && (
         <CollectionsView
           openDialog={openDialog}
-          handleTabAndSelect={handleSelectAndShowCollection}
+          handleTabAndSelect={(collection) => {
+            handleSelectCollection(collection);
+            setActiveTab(1); // Switch to Portfolio View tab
+          }}
         />
       )}
       {activeTab === 1 && selectedCollectionId && (
         <PortfolioView
-          selectedCollection={collections?.find(
-            (c) => c._id === selectedCollectionId
-          )}
+          // selectedCollection={collections?.find(
+          //   (c) => c._id === selectedCollectionId
+          // )}
           handleBackToCollections={() => setActiveTab(0)}
         />
       )}
