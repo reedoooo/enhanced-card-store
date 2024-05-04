@@ -5,7 +5,16 @@ import React from 'react';
 // ==============================|| TRANSITIONS ||============================== //
 
 const Transitions = React.forwardRef(
-  ({ children, position, type, direction, ...others }, ref) => {
+  (
+    {
+      children,
+      position = 'top-left',
+      type = 'grow',
+      direction = 'up',
+      ...others
+    },
+    ref
+  ) => {
     let positionSX = {
       transformOrigin: '0 0 0',
     };
@@ -105,12 +114,6 @@ Transitions.propTypes = {
     'bottom',
   ]),
   direction: PropTypes.oneOf(['up', 'down', 'left', 'right']),
-};
-
-Transitions.defaultProps = {
-  type: 'grow',
-  position: 'top-left',
-  direction: 'up',
 };
 
 export default Transitions;

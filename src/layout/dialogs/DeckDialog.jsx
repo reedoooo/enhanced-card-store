@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
+import { useMode } from 'context';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+
+import { formFields } from 'data/formsConfig';
+import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useInitialFormData from 'context/formHooks/useInitialFormData';
-import { useMode } from 'context';
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
+import useInitialFormData from 'context/hooks/useInitialFormData';
 
-const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
+const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();
-  const formKey = isNew ? 'addCollectionForm' : 'updateCollectionForm';
+  const formKey = isNew ? 'addDeckForm' : 'updateDeckForm';
   const initialFormData = useInitialFormData(
     isNew,
     formFields[formKey],
-    collectionData
+    deckData
   );
-
   return (
     <StyledDialog
       className="dialog-login"
@@ -61,7 +61,7 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
               <LockOutlinedIcon />
             </Avatar>
             <RCTypography component="h1" variant="h4">
-              {isNew ? 'Add a Collection' : 'Update a Collection'}
+              {isNew ? 'Add a Deck' : 'Update a Deck'}
             </RCTypography>
           </MDBox>
         </DialogTitle>
@@ -75,30 +75,24 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
           initialData={initialFormData}
           userInterfaceOptions={{
             submitButton: true,
-            submitButtonLabel: 'Add Collection',
+            submitButtonLabel: 'Add Deck',
             deleteButton: false,
             startIcon: <LockOutlinedIcon />,
           }}
-          // Conditionally pass initial data if it's an update operation
         />
-        {/* <CollectionForm
-          collectionData={!isNew ? collectionData : undefined}
-          actionType={actionType}
-        /> */}
       </StyledDialogContent>
     </StyledDialog>
   );
 };
 
-CollectionDialog.propTypes = {
+DeckDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   isNew: PropTypes.bool,
-  collectionData: PropTypes.shape({
-    _id: PropTypes.string,
+  deckData: PropTypes.shape({
     name: PropTypes.string,
     description: PropTypes.string,
   }),
 };
 
-export default CollectionDialog;
+export default DeckDialog;

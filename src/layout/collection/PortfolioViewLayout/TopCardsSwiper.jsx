@@ -9,12 +9,12 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { useMode } from 'context';
 import placeHolder from 'assets/images/placeholder.jpeg';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import CardDetailsContainer from 'components/cards/CardDetailsContainer';
+import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
 import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
 import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 
 const TopCardsSwiper = () => {

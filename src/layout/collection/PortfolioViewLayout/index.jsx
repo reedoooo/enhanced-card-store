@@ -9,11 +9,11 @@ import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/Loadin
 import { ResponsiveContainer } from 'recharts';
 import { formatDateBasedOnRange, roundToNearestTenth } from 'context/Helpers';
 import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
+import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import NivoContainer from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/NivoContainer';
 import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import useSelectorActions from 'context/hooks/useSelectorActions';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 import prepareTableData from 'data/prepareTableData';
@@ -216,7 +216,7 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 // !--------------------- CHART COMPONENT ---------------------
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
-  const { success, redAccent, grey } = theme.palette;
+  const { success, error, grey } = theme.palette;
   const { selectedTimeRange, selectedStat } = useSelectorActions();
   const { selectedCollection, handleSelectCollection } = useManager();
   const [collection, setCollection] = useState(selectedCollection);
@@ -299,7 +299,7 @@ const ChartAreaComponent = React.memo(() => {
               tickValues={tickValues}
               validMarkers={[memoMarker]}
               xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
-              redAccent={redAccent}
+              error={error}
               success={success}
               grey={grey}
               text={theme.palette.text.primary}

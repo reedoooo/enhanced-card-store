@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Avatar,
   Box,
@@ -10,23 +10,28 @@ import {
   Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import RCSwitch from 'components/forms/Factory/RCSwitch';
-import LoginIcon from '@mui/icons-material/Login';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import useDialogState from 'context/hooks/useDialogState';
-import useManageCookies from 'context/hooks/useManageCookies';
-import { useFormManagement } from 'context/formHooks/useFormManagement';
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import styled from 'styled-components';
+import { formFields } from 'data';
+import {
+  useDialogState,
+  useFormManagement,
+  useManageCookies,
+  useMode,
+} from 'context';
+import {
+  MDBox,
+  RCDynamicForm,
+  RCSwitch,
+  RCTypography,
+} from 'layout/REUSABLE_COMPONENTS';
+
 const StyledInfoPanel = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.paper,
@@ -75,10 +80,10 @@ const GuestInfoPanel = () => {
 function LoginDialog() {
   const { theme } = useMode();
   const { getCookie } = useManageCookies();
-  const { isLoggedIn } = getCookie(['isLoggedIn']);
-  const dialogName = 'isAuthDialogOpen'; // Define a name for the dialog
   const { closeDialog } = useDialogState(); // Adjusted to useDialog
   const { toggleActiveForm, currentSchemaKey } = useFormManagement('loginForm');
+  // const ref = React.useRef();
+  const { isLoggedIn } = getCookie(['isLoggedIn']);
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
   const signupMode = currentSchemaKey === 'signupForm';
   return (
@@ -95,7 +100,7 @@ function LoginDialog() {
       <StyledDialog
         className="dialog-login"
         open={isLoggedIn ? false : true}
-        onClose={() => closeDialog(dialogName)}
+        onClose={() => closeDialog('isAuthDialogOpen')}
         tbeme={theme}
         aria-labelledby="responsive-dialog-title"
         maxWidth="xl"

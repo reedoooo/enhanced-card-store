@@ -5,9 +5,6 @@ import buttonText from './text';
 import holo from './holo';
 
 export default {
-  defaultProps: {
-    disableRipple: false,
-  },
   styleOverrides: {
     root: { ...root },
     contained: { ...contained.base },

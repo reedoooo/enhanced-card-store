@@ -54,6 +54,7 @@ const RCButton = React.forwardRef(
 );
 
 RCButton.displayName = 'RCButton';
+
 RCButton.propTypes = {
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   variant: PropTypes.oneOf([

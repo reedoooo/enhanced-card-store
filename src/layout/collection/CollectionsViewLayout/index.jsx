@@ -7,7 +7,7 @@ import useBreakpoint from 'context/hooks/useBreakPoint';
 import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
 import { useMode } from 'context';
 import { CollectionListItemSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
 
 const CollectionsViewLayout = ({ handleSelectAndShowCollection }) => {

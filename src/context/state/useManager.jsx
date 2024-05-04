@@ -1,10 +1,12 @@
 /* eslint-disable no-case-declarations */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import useFetchWrapper from './hooks/useFetchWrapper';
-import useLogger from './hooks/useLogger';
-import useManageCookies from './hooks/useManageCookies';
-import useLocalStorage from './hooks/useLocalStorage';
-import useSelectedContext from './hooks/useSelectedContext';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  useFetchWrapper,
+  useLocalStorage,
+  useLogger,
+  useManageCookies,
+  useSelectedContext,
+} from '../hooks';
 
 const useManager = () => {
   const { fetchWrapper } = useFetchWrapper();
@@ -384,22 +386,6 @@ const useManager = () => {
             case 'collections':
               const selectedId = localStorage.getItem('selectedCollectionId');
               setCollections(response.data);
-              // Re-select the collection if it was the one being updated
-              // if (selectedId === id) {
-              //   const updatedCollection = response.data.find(
-              //     (col) => col._id === id
-              //   );
-              //   setSelectedCollection(updatedCollection);
-              // }
-              // const selected = localStorage.getItem('selectedCollectionId');
-              // setCollections(response.data);
-              // // setCollections((prev) =>
-              // //   prev.map((col) =>
-              // //     col._id === id ? { ...col, ...response.data } : col
-              // //   )
-              // // );
-              // setSelectedCollection((prev) => {
-
               break;
             case 'decks':
               setDecks((prev) =>

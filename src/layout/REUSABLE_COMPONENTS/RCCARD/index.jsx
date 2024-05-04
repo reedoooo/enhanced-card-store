@@ -1,11 +1,4 @@
 import PropTypes from 'prop-types';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Typography,
-} from '@mui/material';
 import { useMode } from 'context';
 import React from 'react';
 import RCCardRoot from './RCCardRoot';
@@ -98,8 +91,7 @@ const RCCard = React.forwardRef(
             </div>
           </>
         )}
-        {!hasTitle && children}
-        {/* {!content && children} */}
+        {!hasTitle || !content ? children : null}
       </RCCardRoot>
     );
   }

@@ -5,22 +5,21 @@ import PropTypes from 'prop-types';
 import { useMode } from 'context';
 
 const BoxHeader = ({
-  icon,
-  title,
-  subtitle,
-  sideText,
-  sx,
-  useSX,
-  titleVariant,
-  subtitleVariant,
-  colorVariant,
-  paddingVariant,
+  icon = <Icon />,
+  title = 'Title',
+  subtitle = 'Subtitle',
+  sideText = 'Side Text',
+  sx = {},
+  useSX = false,
+  titleVariant = 'h4',
+  subtitleVariant = 'body1',
+  colorVariant = 'text.main',
+  paddingVariant = '1.5rem 1rem 0 1rem',
 }) => {
   const { theme } = useMode();
   return (
     <FlexBetween
       color={theme.palette.grey.simpleGrey}
-      // margin={useSX ? '0 1rem 0 0rem' : '1.5rem 1rem 0 1rem'}
       paddingTop={useSX ? paddingVariant : 0}
       sx={useSX ? sx : {}}
     >
@@ -69,13 +68,6 @@ const BoxHeader = ({
 };
 
 export default BoxHeader;
-
-BoxHeader.defaultProps = {
-  icon: <Icon />,
-  title: 'Title',
-  subtitle: 'Subtitle',
-  sideText: 'Side Text',
-};
 
 BoxHeader.propTypes = {
   icon: PropTypes.node,

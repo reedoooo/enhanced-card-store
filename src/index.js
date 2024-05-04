@@ -1,26 +1,25 @@
-import ReactDOM from 'react-dom';
+import React, { StrictMode } from 'react';
+// import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 import { register, unregister } from './serviceWorker';
-import { createRoot } from 'react-dom/client';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
-import { ColorModeProvider, useMode } from './context';
+import { ColorModeProvider } from './context';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
-import ErrorFallback from 'layout/REUSABLE_COMPONENTS/utils/system-utils/ErrorFallback';
-import { ThemeProvider } from 'styled-components';
-import { CssBaseline, GlobalStyles } from '@mui/material';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import { HelmetMetaData } from 'data';
+import { ErrorFallback } from 'layout/REUSABLE_COMPONENTS';
 
-const domNode = document.getElementById('root');
-if (!domNode) throw new Error('Failed to find the root element');
+const root = createRoot(document.getElementById('root'));
 
-const root = createRoot(domNode); // Create a root.
+// ==============================|| APP WRAPPER ||============================== //
+
 const AppWrapper = () => {
-  const { theme } = useMode();
   const errorHandler = (error, errorInfo) => {
     console.error('Error:', error, 'Info:', errorInfo);
     enqueueSnackbar('An unexpected error occurred, please try again later.', {
@@ -28,27 +27,20 @@ const AppWrapper = () => {
     });
   };
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-      onError={errorHandler}
-      theme={theme}
-    >
-      <Router>
-        <HelmetMetaData />
+    <StrictMode>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <ColorModeProvider>
-          <SnackbarProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline theme={theme} />
-              <GlobalStyles />
+          <Router>
+            <HelmetMetaData />
+            <SnackbarProvider>
               <ParallaxProvider>
                 <App />
               </ParallaxProvider>
-            </ThemeProvider>
-          </SnackbarProvider>
+            </SnackbarProvider>
+          </Router>
         </ColorModeProvider>
-      </Router>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </StrictMode>
   );
 };
 

@@ -5,7 +5,7 @@ import { Divider, Tooltip } from '@mui/joy';
 import PropTypes from 'prop-types';
 import useDialogState from 'context/hooks/useDialogState';
 import { useMode } from 'context';
-import CollectionDialog from 'components/dialogs/CollectionDialog';
+import CollectionDialog from 'layout/dialogs/CollectionDialog';
 import RCChange from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCChange';
 import RCInfoItem from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
 import { roundToNearestTenth } from 'context/Helpers';

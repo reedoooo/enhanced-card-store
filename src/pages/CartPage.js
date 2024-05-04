@@ -26,7 +26,7 @@ import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import useUserData from 'context/state/useUserData';
 import CartContent from 'layout/cart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 const CartPage = () => {

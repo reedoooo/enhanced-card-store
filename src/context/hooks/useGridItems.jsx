@@ -1,12 +1,9 @@
 import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import GenericCard from 'components/cards/GenericCard';
-import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
-import useMode from '../state/useMode';
+import GenericCard from 'layout/cards/GenericCard';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import { useCardStoreHook } from '../state/useCardStore';
-import useManager from '../useManager';
+import { useCardStore, useManager, useMode } from 'context';
+import { MDBox, SkeletonCard } from 'layout/REUSABLE_COMPONENTS';
 const useGridItems = ({
   itemsPerPage,
   cards,
@@ -15,7 +12,7 @@ const useGridItems = ({
   type,
   deckId,
 }) => {
-  const { loadingSearchResults } = useCardStoreHook();
+  const { loadingSearchResults } = useCardStore();
   const { theme } = useMode();
   const { removeItemFromDeck } = useManager();
   const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations

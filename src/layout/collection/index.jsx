@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useMode } from 'context';
-import DashboardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
+import DashBoardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
-import CollectionDialog from 'components/dialogs/CollectionDialog';
+import CollectionDialog from 'layout/dialogs/CollectionDialog';
 import useDialogState from 'context/hooks/useDialogState';
 import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import StatBoard from './CollectionsViewLayout/StatBoard';
@@ -11,18 +11,18 @@ import { Tab, Tabs } from '@mui/material';
 import CollectionPortfolioHeader from './PortfolioViewLayout/CollectionPortfolioHeader';
 import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
 import useUserData from 'context/state/useUserData';
-import { useFormManagement } from 'context/formHooks/useFormManagement';
 import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import CollectionsViewLayout from './CollectionsViewLayout';
 import PortfolioViewLayout from './PortfolioViewLayout';
+import { useFormManagement } from 'context/hooks';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
   const { setActiveFormSchema } = useFormManagement();
   const { user } = useUserData();
   return (
-    <DashboardLayout>
+    <DashBoardLayout>
       <MDBox theme={theme}>
         <DashboardBox sx={{ p: theme.spacing(2) }}>
           <PageHeader
@@ -55,11 +55,11 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
           />
         </DashboardBox>
       </MDBox>
-    </DashboardLayout>
+    </DashBoardLayout>
   );
 };
 const PortfolioView = ({ handleBackToCollections, selectedCollection }) => (
-  <DashboardLayout>
+  <DashBoardLayout>
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <CollectionPortfolioHeader
@@ -71,7 +71,7 @@ const PortfolioView = ({ handleBackToCollections, selectedCollection }) => (
         <PortfolioViewLayout />
       </Grid>
     </Grid>
-  </DashboardLayout>
+  </DashBoardLayout>
 );
 const CollectionPortfolio = () => {
   const { theme } = useMode();

@@ -11,7 +11,7 @@ import {
 import usePopover from 'context/hooks/usePopover';
 import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
 import useDialogState from 'context/hooks/useDialogState';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 const getQuantity = ({
   card,
