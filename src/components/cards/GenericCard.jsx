@@ -151,8 +151,6 @@ const GenericCard = React.forwardRef((props, ref) => {
           imgUrl={imgUrl}
           card={card}
           context={effectiveContext}
-          page={page}
-          quantity={card?.quantity}
           isHovered={hoveredCard === card}
           handleInteraction={handleInteraction}
           isModalOpen={dialogState.isCardDialogOpen}
@@ -179,18 +177,3 @@ const GenericCard = React.forwardRef((props, ref) => {
 GenericCard.displayName = 'GenericCard';
 
 export default GenericCard;
-{
-  /* <StyledCard */
-}
-//   ref={cardRef}
-//   theme={theme}
-//   className={`base-card base-card-hover ${props.cardClasses}`}
-//   sx={{
-//     position: 'initial',
-//     top: 0,
-//     left: `${quantityIndex * 10}%`, // Offset each card by 10% of the card's width
-//     width: '100%', // Assuming card takes full width of its container
-//     height: '100%', // Adjust based on your card's height
-//     ml: isDeckCard ? `-${(100 % Math.max(3, quantityIndex)) * 90}%` : 0,
-//   }}
-// >

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useEffect, forwardRef, useState } from 'react';
 import CardToolTip from './CardToolTip';
 import PropTypes from 'prop-types';
@@ -16,14 +17,13 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 const CardMediaSection = React.forwardRef(
   (
     {
-      imgUrl,
-      card,
-      isHovered,
-      handleInteraction,
-      isRequired,
-      isModalOpen,
-      context,
-      isLast,
+      imgUrl = '',
+      card = {},
+      isHovered = false,
+      handleInteraction = () => {},
+      isRequired = false,
+      isModalOpen = false,
+      context = '',
     },
     ref
   ) => {
@@ -76,7 +76,7 @@ const CardMediaSection = React.forwardRef(
           image={imgUrl}
           loading="lazy"
         />
-        {isLast && (
+        {/* {isLast && (
           <Avatar
             variant="rounded"
             sx={{
@@ -96,7 +96,7 @@ const CardMediaSection = React.forwardRef(
           >
             <MoreHorizIcon fontSize="inherit" />
           </Avatar>
-        )}
+        )} */}
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}
@@ -121,11 +121,6 @@ CardMediaSection.propTypes = {
   handleInteraction: PropTypes.func,
   handleClick: PropTypes.func,
   isRequired: PropTypes.bool,
-};
-
-CardMediaSection.defaultProps = {
-  isHovered: false,
-  isRequired: true,
 };
 
 export default CardMediaSection;

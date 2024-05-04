@@ -8,7 +8,7 @@ import BoxHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/BoxHeader';
 import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { ResponsiveContainer } from 'recharts';
 import { formatDateBasedOnRange, roundToNearestTenth } from 'context/Helpers';
-import { formFields } from 'components/forms/formsConfig';
+import { formFields } from 'data/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import NivoContainer from 'layout/REUSABLE_COMPONENTS/layout-utils/NivoContainer';
@@ -21,6 +21,7 @@ import { styled } from 'styled-components';
 import TopCardsSwiper from './TopCardsSwiper';
 import MyPortfolioLineChart from './MyPortfolioLineChart';
 import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 const renderCardContainer = (content, isChart, isForm) => {
   return (
     <MDBox
@@ -33,7 +34,7 @@ const renderCardContainer = (content, isChart, isForm) => {
     >
       <RCCard
         content={content}
-        variant={isChart ? 'chart' : ''}
+        variant={isChart ? 'chart' : 'default'}
         hasTitle={false}
         noBottomMargin={false}
         // isChart={isChart ? true : false}
@@ -56,10 +57,9 @@ const StyledInfoPanel = styled(Box)(({ theme }) => ({
 
 const PortfolioViewLayout = () => {
   const { theme } = useMode();
-  const isXs = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useBreakpoint();
   const {
     fetchCollections,
-    collections,
     hasFetchedCollections,
     selectedCollectionId,
     selectedCollection,
@@ -141,7 +141,7 @@ const PortfolioViewLayout = () => {
                   </Typography>
                   <Typography
                     variant="body1"
-                    color={theme.newPalette.text.secondary}
+                    color={theme.palette.text.secondary}
                     theme={theme}
                   >
                     No worries, the chart requires that users add a minimum of 5
@@ -154,25 +154,10 @@ const PortfolioViewLayout = () => {
           ) : (
             <ChartAreaComponent />
           )}
-          {/* {selectedCollection?.cards?.length < 5 ? (
-            <MDBox
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CircularProgress />
-              <newCollectionPanel />
-            </MDBox>
-          ) : (
-            <ChartAreaComponent />
-          )} */}
           {/* FORM SELECTOR ROW SECTION */}
-          <FormSelectorRow isXs={isXs} />
+          <FormSelectorRow isXs={isMobile} />
           {/* TOP CARDS ROW SECTION */}
-          <TopCardsDisplayRowComponent isXs={isXs} />
+          <TopCardsDisplayRowComponent isXs={isMobile} />
         </DashboardBox>
         {/* CARD LIST SECTION */}
         <CollectionCardList
@@ -231,7 +216,7 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 // !--------------------- CHART COMPONENT ---------------------
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
-  const { greenAccent, redAccent, grey } = theme.palette.chartTheme;
+  const { success, redAccent, grey } = theme.palette;
   const { selectedTimeRange, selectedStat } = useSelectorActions();
   const { selectedCollection, handleSelectCollection } = useManager();
   const [collection, setCollection] = useState(selectedCollection);
@@ -315,7 +300,7 @@ const ChartAreaComponent = React.memo(() => {
               validMarkers={[memoMarker]}
               xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
               redAccent={redAccent}
-              greenAccent={greenAccent}
+              success={success}
               grey={grey}
               text={theme.palette.text.primary}
             />
@@ -389,6 +374,7 @@ const CollectionCardList = React.memo(({ data, columns, theme }) => {
       <RCCard
         hasTitle={false}
         variant="table"
+        noBottomMargin={false}
         sx={{
           alignItems: 'flex-start',
         }}
@@ -440,14 +426,14 @@ const CollectionCardList = React.memo(({ data, columns, theme }) => {
             checkboxSelection
             sx={{
               '& .MuiDataGrid-root': {
-                color: theme.palette.chartTheme.grey.dark,
+                color: theme.palette.grey.dark,
                 border: 'none',
               },
               '& .MuiDataGrid-cell': {
-                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+                borderBottom: `1px solid ${theme.palette.grey.lightest} !important`,
               },
               '& .MuiDataGrid-columnHeaders': {
-                borderBottom: `1px solid ${theme.palette.chartTheme.grey.lightest} !important`,
+                borderBottom: `1px solid ${theme.palette.grey.lightest} !important`,
               },
               '& .MuiDataGrid-columnSeparator': {
                 visibility: 'hidden',

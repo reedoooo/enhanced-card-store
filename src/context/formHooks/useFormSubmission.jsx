@@ -1,8 +1,5 @@
 import { useCallback, useState } from 'react';
-import {
-  handleValidation,
-  zodSchemas,
-} from '../../components/forms/formsConfig';
+import { handleValidation, zodSchemas } from '../../data/formsConfig';
 
 export const useFormSubmission = (formHandlers, formKey) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

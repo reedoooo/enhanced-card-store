@@ -109,7 +109,7 @@ RCCard.displayName = 'RCCard';
 RCCard.propTypes = {
   // CONTENT
   title: PropTypes.string,
-  content: PropTypes.string,
+  content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   icon: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,

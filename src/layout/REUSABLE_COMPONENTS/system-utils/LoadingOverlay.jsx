@@ -4,7 +4,6 @@ import useBreakpoint from 'context/hooks/useBreakPoint';
 import { Box, CircularProgress } from '@mui/material';
 
 const LoadingOverlay = () => {
-  const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const [isVisible, setIsVisible] = useState(true);
 

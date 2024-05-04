@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import Overview from '../layout/profile/index';
+import Overview from 'layout/profile/index';
 import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
 import { Grid } from '@mui/material';
+
+// ==============================|| PROFILE PAGE ||============================== //
 
 const ProfilePage = () => {
   return (

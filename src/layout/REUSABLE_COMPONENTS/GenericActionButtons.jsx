@@ -47,7 +47,7 @@ const ActionButton = ({
         height: isDataTable ? 30 : 'auto', // Ensure consistent height for datatable variant
         minWidth: isDataTable ? 20 : 'auto', // Ensure a minimal width when icon only
         flexGrow: 1,
-        borderRadius: theme.borders.borderRadius.md,
+        borderRadius: theme.borders.borderRadius.xxl,
         maxWidth: '100%',
         justifyContent: 'center',
         alignItems: 'center',

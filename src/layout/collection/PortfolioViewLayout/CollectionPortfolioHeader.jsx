@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { IconButton, Box, Grid, Grow, Card } from '@mui/material';
+import React from 'react';
+import { IconButton, Grid, Grow } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from 'context';
-import uniqueTheme from 'layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
 import IconStatWrapper from 'layout/REUSABLE_COMPONENTS/layout-utils/IconStatWrapper';
 import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import { collectionPortfolioHeaderItems } from 'data/collectionPortfolioHeaderItems';
+import { collectionPortfolioHeaderItems } from 'data';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
   return (
@@ -22,7 +21,6 @@ const HeaderItem = ({ icon, label, value, delay }) => {
             isPrimary={true}
             value={value}
             icon={icon}
-            theme={uniqueTheme}
           />
         </MDBox>
       </Grow>
@@ -54,7 +52,7 @@ const CollectionPortfolioHeader = ({ onBack }) => {
           background: 'white',
         }}
       >
-        <ArrowBackIcon color={theme.colorPrimary} />
+        <ArrowBackIcon color={theme.palette.text.colorPrimary} />
       </IconButton>
       <Grid container spacing={2}>
         {items?.map((item, index) => (

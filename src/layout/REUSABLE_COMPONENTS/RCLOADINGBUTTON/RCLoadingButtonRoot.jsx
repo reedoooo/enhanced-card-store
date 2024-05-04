@@ -148,7 +148,7 @@ export default styled(Button)(({ ownerState }) => {
   const holoStyles = () => {
     const backgroundValue = palette[color]
       ? palette[color].main
-      : greenAccent.light;
+      : success.main_light;
     const focusedBackgroundValue = palette[color]
       ? palette[color].focus
       : white.focus;

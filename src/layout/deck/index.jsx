@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Card,
   Collapse,
@@ -40,6 +34,7 @@ const DeckBuilder = () => {
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
+  const [tabsOrientation, setTabsOrientation] = useState('horizontal');
   const [loadingState, setLoadingState] = useState({});
   const [decks, setDecks] = useState([]);
   useEffect(() => {
@@ -73,18 +68,13 @@ const DeckBuilder = () => {
     setLoadingState((prev) => ({
       ...prev,
       [deckId]: false,
-    })); // Set loading state to false when deck is fully loaded
+    }));
   }, []);
-  const handleOpenAddDialog = useCallback(() => {
-    setActiveFormSchema('addDeckForm');
-    openDialog('isAddDeckDialogOpen');
-  }, [openDialog, setActiveFormSchema]);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
         const updatedDeckId = event.newValue;
-        // const updatedDeckId = localStorage.getItem('selectedDeckId');
         const updatedDeck = decks?.find((deck) => deck._id === updatedDeckId);
         if (updatedDeck) {
           setActiveTab(decks?.indexOf(updatedDeck));
@@ -103,6 +93,25 @@ const DeckBuilder = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [decks, handleSelectDeck]);
+  // useEffect(() => {
+  //   // A function that sets the orientation state of the tabs.
+  //   function handleTabsOrientation() {
+  //     return window.innerWidth < theme.breakpoints.values.sm
+  //       ? setTabsOrientation('vertical')
+  //       : setTabsOrientation('horizontal');
+  //   }
+
+  //   /**
+  //    The event listener that's calling the handleTabsOrientation function when resizing the window.
+  //   */
+  //   window.addEventListener('resize', handleTabsOrientation);
+
+  //   // Call the handleTabsOrientation function to set the state with the initial value.
+  //   handleTabsOrientation();
+
+  //   // Remove event listener on cleanup
+  //   return () => window.removeEventListener('resize', handleTabsOrientation);
+  // }, [tabsOrientation]);
   const handleChangeTab = useCallback(
     async (event, newValue) => {
       setActiveTab(newValue);
@@ -122,21 +131,11 @@ const DeckBuilder = () => {
     },
     [decks, handleSelectDeck, fetchDeckById, handleDeckLoaded]
   );
-  const deckTabs = decks?.map((deck, index) => (
-    <Tab
-      label={
-        loadingState[deck?._id] ? <CircularProgress size={20} /> : deck.name
-      }
-      value={index}
-      key={`deck-tab-${deck?._id}-${index}`}
-    />
-  ));
   const deckListItems = useMemo(
     () =>
       decks?.map((deck, index) => (
         <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
           <DeckListItem
-            // key={deck._id}
             deck={deck}
             selectedDeckId={localStorage.getItem('selectedDeckId')}
             handleDelete={() => handleDelete(deck)}
@@ -182,7 +181,10 @@ const DeckBuilder = () => {
                 type={'Deck Collection'}
                 action={{ route: '', tooltip: 'Add Deck' }}
                 username={user.username}
-                handleOpenDialog={handleOpenAddDialog}
+                handleOpenDialog={() => {
+                  setActiveFormSchema('addDeckForm');
+                  openDialog('isAddDeckDialogOpen');
+                }}
               />
             </DashboardBox>
           </Grid>
@@ -201,8 +203,23 @@ const DeckBuilder = () => {
                 variant="scrollable"
                 scrollButtons="auto"
                 theme={theme}
+                textColor="primary"
               >
-                {deckTabs}
+                {decks?.map((deck, index) => (
+                  <Tab
+                    label={
+                      loadingState[deck?._id] ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <span>{deck?.name}</span>
+                      )
+                    }
+                    value={index}
+                    key={`deck-tab-${deck?._id}-${index}`}
+                    theme={theme}
+                    textColor="primary"
+                  />
+                ))}
               </Tabs>
             </Grid>
             <Grid item xs={6}>

@@ -35,23 +35,11 @@ export const themeSettings = (mode) => {
     boxShadows: boxShadows,
     typography: typography,
     spacing: (factor) => `${0.25 * factor}rem`,
-    // lenSm1: '0.25rem' === spacing(1)
-    // lenSm2: '0.5rem' === spacing(2)
-    // lenSm3: '0.75rem' === spacing(3)
-    // lenMd1: '1rem' === spacing(4)
-    // lenMd2: '1.25rem' === spacing(5)
-    // lenMd3: '1.5rem' === spacing(6)
-    // lenLg1: '2rem' === spacing(7)
-    // lenLg2: '3rem' === spacing(8)
-    // lenLg3: '4rem' === spacing(9)
-    // lenXl1: '5rem' === spacing(10)
-    // lenXl2: '6rem' === spacing(11)
-    // lenXl3: '7rem' === spacing(12)
-    shape: {
-      borderRadius: 4,
-      borderRadiusLarge: 8,
-      borderRadiusExtraLarge: 16,
-    },
+    // shape: {
+    //   borderRadius: 4,
+    //   borderRadiusLarge: 8,
+    //   borderRadiusExtraLarge: 16,
+    // },
     zIndex: {
       appBar: 1200,
       drawer: 1100,

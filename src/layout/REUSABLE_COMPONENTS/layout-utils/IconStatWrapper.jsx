@@ -23,19 +23,19 @@ const TextContainer = styled(Box)`
 // Pre-calculated colors passed as props
 const StyledLabel = styled(Typography)`
   font-size: ${({ theme }) => theme.spacing(6)};
-  color: ${({ textColor }) => textColor};
+  color: ${({ color }) => color};
   word-wrap: break-word;
 `;
 
 const StyledValue = styled(Typography)`
-  font-size: ${({ theme }) => theme.spacing(8)};
-  color: ${({ textColor }) => textColor};
+  font-size: ${({ theme }) => theme.spacing(16)};
+  color: ${({ color }) => color};
   word-wrap: break-word;
 `;
 
 const StyledIcon = styled(Icon)`
   font-size: 3rem;
-  color: ${({ iconColor }) => iconColor};
+  color: ${({ color }) => color};
 `;
 
 const IconContainer = styled(Box)`
@@ -46,7 +46,7 @@ const IconContainer = styled(Box)`
   height: 4rem;
   border-radius: 50%;
   background-color: ${({ backgroundColor }) => backgroundColor};
-  color: ${({ theme }) => theme.colorPrimaryText};
+  color: ${({ theme }) => theme.palette.text.colorPrimaryText};
 `;
 
 const IconStatWrapper = ({
@@ -74,15 +74,15 @@ const IconStatWrapper = ({
     <StyledCard theme={theme}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <IconContainer theme={theme} backgroundColor={backgroundColor}>
-          <StyledIcon theme={theme} iconColor={iconColor}>
+          <StyledIcon theme={theme} color={iconColor}>
             {icon}
           </StyledIcon>
         </IconContainer>
         <TextContainer theme={theme}>
-          <StyledLabel theme={theme} textColor={labelColor} variant="button">
+          <StyledLabel theme={theme} color={labelColor} variant="button">
             {label}
           </StyledLabel>
-          <StyledValue theme={theme} textColor={valueColor}>
+          <StyledValue theme={theme} color={valueColor}>
             {value}
           </StyledValue>
         </TextContainer>

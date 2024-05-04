@@ -46,7 +46,6 @@ export const components = {
   MuiCardContent: { ...cardContent },
   MuiTabs: { ...tabs },
   MuiTab: { ...tab },
-  // MuiContainer: container,
 };
 
 export default components;

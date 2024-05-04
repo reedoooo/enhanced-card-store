@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { CardMedia, CardContent, useMediaQuery, Icon } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { CardMedia, CardContent, Icon } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -20,10 +20,26 @@ import useBreakpoint from 'context/hooks/useBreakPoint';
 const TopCardsSwiper = () => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
+  const swiperRef = useRef(null);
+
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { collectionMetaData } = useManager();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
-
+  useEffect(() => {
+    const swiperInstance = swiperRef.current?.swiper;
+    if (swiperInstance) {
+      swiperInstance.on('slideChange', () => {
+        const { activeIndex } = swiperInstance;
+        handleSlideChange(activeIndex);
+        if ((activeIndex + 1) % 4 === 0) {
+          swiperInstance.autoplay.stop();
+          setTimeout(() => {
+            swiperInstance?.autoplay?.start();
+          }, 10000);
+        }
+      });
+    }
+  }, []);
   return (
     <Swiper
       className="swiper-container"
@@ -103,7 +119,7 @@ const TopCardsSwiper = () => {
                         <Icon
                           sx={{
                             fontSize: '3rem',
-                            color: theme.palette.greenAccent.pureGreenBlue,
+                            color: '#4e93a6',
                           }}
                         >
                           check_circle

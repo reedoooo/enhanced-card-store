@@ -1,6 +1,6 @@
-import { roundToNearestTenth } from '../context/Helpers';
+import { roundToNearestTenth } from 'context/Helpers';
 
-export const collectionPortfolioHeaderItems = (collection) => [
+const collectionPortfolioHeaderItems = (collection) => [
   {
     icon: 'collections',
     label: 'Portfolio Selected',
@@ -29,3 +29,5 @@ export const collectionPortfolioHeaderItems = (collection) => [
     delay: 600,
   },
 ];
+
+export default collectionPortfolioHeaderItems;

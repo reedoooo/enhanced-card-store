@@ -24,7 +24,7 @@ const MyPortfolioLineChart = ({
   data,
   // tickValues,
   validMarkers,
-  greenAccent,
+  success,
   redAccent,
   grey,
   text,
@@ -116,7 +116,7 @@ const MyPortfolioLineChart = ({
           },
           legend: {
             text: {
-              fill: greenAccent.darkest,
+              fill: success.darkestest,
               fontSize: 12,
               outlineWidth: 0.1,
               outlineColor: grey.darkest,
@@ -161,7 +161,7 @@ MyPortfolioLineChart.propTypes = {
       ).isRequired,
     })
   ).isRequired,
-  greenAccent: PropTypes.object.isRequired,
+  success: PropTypes.object.isRequired,
   redAccent: PropTypes.object.isRequired,
   grey: PropTypes.object.isRequired,
   text: PropTypes.string.isRequired,

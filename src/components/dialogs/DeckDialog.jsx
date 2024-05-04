@@ -6,7 +6,7 @@ import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 
-import { formFields } from 'components/forms/formsConfig';
+import { formFields } from 'data/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import {
   DialogPaper,
@@ -57,7 +57,7 @@ const DeckDialog = ({ open, onClose, isNew, deckData }) => {
               border: 'none',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: theme.palette.grey.lighter2 }}>
+            <Avatar sx={{ m: 1, bgcolor: theme.palette.grey.lighter }}>
               <LockOutlinedIcon />
             </Avatar>
             <RCTypography component="h1" variant="h4">

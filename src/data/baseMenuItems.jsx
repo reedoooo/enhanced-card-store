@@ -7,7 +7,7 @@ import {
 import DeckBuilderIcon from './DeckBuilderIcon';
 import { Badge } from '@mui/material';
 
-export const baseMenuItems = ({ cartCardQuantity }) => [
+const baseMenuItems = ({ cartCardQuantity }) => [
   {
     name: 'Deck',
     icon: <DeckBuilderIcon iconColor="black" />,
@@ -51,3 +51,5 @@ export const baseMenuItems = ({ cartCardQuantity }) => [
     requiresLogin: true,
   },
 ];
+
+export default baseMenuItems;

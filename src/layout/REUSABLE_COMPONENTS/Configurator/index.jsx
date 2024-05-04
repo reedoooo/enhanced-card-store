@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
 import searchData from 'data/json-data/search.json';
-import { formFields } from 'components/forms/formsConfig';
+import { formFields } from 'data/formsConfig';
 import { TextField, InputLabel } from '@mui/material';
 import { StyledFormControl } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';

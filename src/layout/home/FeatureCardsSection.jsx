@@ -73,7 +73,7 @@ export const AnimatedFeatureCard = ({ cardData }) => {
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
           sx={{
-            backgroundColor: theme.palette.greenAccent.light,
+            backgroundColor: theme.palette.success.main_light,
             height: '20%',
           }}
         />

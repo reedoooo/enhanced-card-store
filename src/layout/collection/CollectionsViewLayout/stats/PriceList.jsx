@@ -10,11 +10,11 @@ import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 
 const PricedCardList = () => {
   const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
+  const colors = theme.palette;
   const grey = colors.grey.darkest;
   const lightGrey = colors.grey.lightest;
   const primary = colors.primary.dark;
-  const greenAccent = colors.greenAccent.light;
+  const greenAccent = colors.success.main_light;
   const { collectionMetaData } = useManager();
   const { data, columns } = useMemo(
     () => prepareTableData(collectionMetaData?.topFiveCards, 'topCards'),
@@ -46,7 +46,7 @@ const PricedCardList = () => {
               justifyContent: 'center',
               p: theme.spacing(2),
               background: grey,
-              border: theme.palette.chartTheme.greenAccent.dark,
+              border: theme.palette.success.darkest,
               borderRadius: theme.borders.borderRadius.md,
             }}
           >

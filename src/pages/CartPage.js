@@ -19,10 +19,10 @@ import {
   CardContent,
   IconButton,
 } from '@mui/material';
-import { useMode } from '../context';
-import Checkout from '../layout/cart/cartPageContainers/Checkout';
-import PageLayout from '../layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
-import MDBox from '../layout/REUSABLE_COMPONENTS/MDBOX';
+import { useMode } from 'context';
+import Checkout from 'layout/cart/cartPageContainers/Checkout';
+import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import useUserData from 'context/state/useUserData';
 import CartContent from 'layout/cart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';

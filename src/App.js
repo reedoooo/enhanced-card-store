@@ -12,8 +12,8 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from 'layout/navigation/PrivateRoute';
-import { ROUTE_CONFIG } from 'data/route-config';
 import LoginDialog from 'pages/LoginDialog';
+import { ROUTE_CONFIG } from 'data';
 
 // ==============================|| APP ||============================== //
 const LazyRoute = ({ componentName, ...rest }) => {

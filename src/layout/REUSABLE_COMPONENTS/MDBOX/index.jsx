@@ -6,10 +6,10 @@ const MDBox = React.forwardRef(
   (
     {
       variant = 'contained',
-      bgColor = 'transparent',
-      color = 'dark',
+      bgColor = 'default',
+      color = 'text',
       opacity = 1,
-      borderRadius = 'none',
+      borderRadius = 'md',
       shadow = 'none',
       coloredShadow = 'none',
       ...rest

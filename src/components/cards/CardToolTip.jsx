@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useMode } from 'context';
 import { Box, Tooltip, Typography, Zoom, styled } from '@mui/material';
-import rgba from 'assets/themes/functions';
+import rgba from 'assets/themes/functions/rgba';
 const formatKey = (key) =>
   key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 const StyledAttributeSpan = ({ theme, children }) => (
@@ -55,10 +55,7 @@ const createTooltipContent = (card) => {
         justifyContent: 'center',
         padding: theme.spacing(2),
         h: '100%',
-        background: rgba(
-          theme.palette.chartTheme.grey.lightest || 'white',
-          0.85
-        ),
+        background: rgba(theme.palette.grey.lightest || 'white', 0.85),
         color: theme.palette.text.primary,
         alignContent: 'flex-start',
         '&::before': {

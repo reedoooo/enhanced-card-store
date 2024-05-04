@@ -33,13 +33,13 @@ const RCInfoItem = ({
             <RCTypography
               variant={isMobile ? 'body2' : 'h4'}
               fontWeight="medium"
-              sx={{ color: theme.palette.chartTheme.grey.darkest }}
+              sx={{ color: theme.palette.grey.darkest }}
             >
               {`${label}:`}
             </RCTypography>
             <RCTypography
               variant={isMobile ? 'body1' : 'h6'}
-              sx={{ color: theme.palette.chartTheme.grey.light }}
+              sx={{ color: theme.palette.grey.light }}
             >
               {value}
             </RCTypography>

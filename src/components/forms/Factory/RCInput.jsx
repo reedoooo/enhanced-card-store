@@ -30,8 +30,6 @@ const RCInput = React.forwardRef(
       type,
       options,
       onChange,
-      onBlur,
-      onFocus,
       initialValue,
       value,
       placeholder,
@@ -131,7 +129,6 @@ const RCInput = React.forwardRef(
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
             error={!!error}
-            // errorMessage={error?.message}
             helperText={helperText}
             {...rest}
           />
@@ -181,7 +178,10 @@ const RCInput = React.forwardRef(
             fullWidth
             rows={rest?.rows || 4}
             placeholder={rest?.placeholder}
-            value={value}
+            value={value || ''}
+            InputLabelProps={{
+              shrink: !initialValue ? undefined : true,
+            }}
             onChange={(e) => onChange(e.target.value)}
             {...rest}
           />

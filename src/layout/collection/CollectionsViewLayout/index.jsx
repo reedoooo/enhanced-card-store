@@ -86,7 +86,7 @@ const CollectionsViewLayout = ({ handleSelectAndShowCollection }) => {
           alignItems: 'center',
           mx: 'auto',
           px: '1rem',
-          backgroundColor: theme.palette.grey.black,
+          backgroundColor: theme.palette.black.darker,
         }}
       >
         <TransitionGroup>

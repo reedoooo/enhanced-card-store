@@ -16,9 +16,7 @@ export default styled(Box)(({ color }) => {
     justifyContent: 'center',
     color: color,
     background:
-      color === 'success'
-        ? theme.palette.chartTheme.greenAccent.light
-        : 'black',
+      color === 'success' ? theme.palette.success.main_light : 'black',
     // [theme.breakpoints.down('md')]: {
     //   width: 30,
     //   height: 30,

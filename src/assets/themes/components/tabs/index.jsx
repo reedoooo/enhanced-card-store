@@ -3,7 +3,7 @@ import borders from 'assets/themes/base/borders';
 import boxShadows from 'assets/themes/base/boxShadows';
 import pxToRem from 'assets/themes/functions/pxToRem';
 
-const { grey, white, success } = colors;
+const { grey, white, success, text } = colors;
 const { borderRadius } = borders;
 const { tabsBoxShadow } = boxShadows;
 
@@ -11,10 +11,35 @@ export default {
   styleOverrides: {
     root: {
       position: 'relative',
-      // backgroundColor: grey.default,
-      borderRadius: borderRadius.xl,
+      backgroundColor: '#f8f9fa',
+      borderRadius: borderRadius.lg,
       minHeight: 'unset',
-      padding: pxToRem(4),
+      padding: pxToRem(12),
+
+      '&.MuiTabs-indicator': {
+        color: `${text.main} !important`,
+        backgroundColor: `${success.main} !important`,
+        boxShadow: tabsBoxShadow.indicator,
+        transition: 'all 500ms ease',
+      },
+      'span.MuiTabs-indicator': {
+        color: `${text.main} !important`,
+        backgroundColor: `${success.main} !important`,
+        boxShadow: tabsBoxShadow.indicator,
+        transition: 'all 500ms ease',
+      },
+      'span.label.MuiTabs-selected': {
+        color: `${text.main} !important`,
+        backgroundColor: `${success.main} !important`,
+        boxShadow: tabsBoxShadow.indicator,
+        transition: 'all 500ms ease',
+      },
+      // '&.MuiTabs-selected': {
+      //   color: `${text.main} !important`,
+      //   backgroundColor: `${success.main} !important`,
+      //   boxShadow: tabsBoxShadow.indicator,
+      //   transition: 'all 500ms ease',
+      // },
     },
 
     flexContainer: {
@@ -31,26 +56,16 @@ export default {
     vertical: {
       '& .MuiTabs-indicator': {
         width: '100%',
-        // color: `${success.main} !important`,
       },
     },
 
     indicator: {
       height: '100%',
-      borderRadius: borderRadius.lg,
-      // backgroundColor: success.dark,
-      backgroundColor: success.main, // Ensure this is not commented out
+      borderRadius: borderRadius.md,
+      color: `${text.main} !important`,
+      backgroundColor: `${success.main} !important`,
       boxShadow: tabsBoxShadow.indicator,
       transition: 'all 500ms ease',
-      color: `${success.main} !important`,
-    },
-
-    label: {
-      color: `${success.main} !important`,
-    },
-
-    labelIcon: {
-      color: `${success.main} !important`,
     },
   },
 };

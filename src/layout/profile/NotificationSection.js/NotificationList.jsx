@@ -164,7 +164,7 @@ const NotificationList = () => {
           <ListItemAvatar>
             <Avatar
               sx={{
-                color: theme.palette.grey.black,
+                color: theme.palette.black.darker,
                 backgroundColor: theme.palette.grey.blueGrey,
                 border: 'none',
                 borderColor: theme.palette.success.secondary,

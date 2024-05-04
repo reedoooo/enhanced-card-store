@@ -1,7 +1,6 @@
 import borders from '../../base/borders';
 import boxShadows from '../../base/boxShadows';
 import colors from '../../base/colors';
-import typography from '../../base/typography';
 import linearGradient from '../../functions/linearGradient';
 import pxToRem from '../../functions/pxToRem';
 
@@ -27,7 +26,7 @@ export default {
   },
   styleOverrides: {
     switchBase: {
-      color: chartTheme.greenAccent.default,
+      color: success.dark,
 
       '&:hover': {
         backgroundColor: transparent.main,
@@ -42,7 +41,7 @@ export default {
 
         '& .MuiSwitch-thumb': {
           borderColor: `${gradients.success.state} !important`,
-          backgroundColor: `${chartTheme.greenAccent.light} !important`,
+          backgroundColor: `${success.main_light} !important`,
         },
 
         '& + .MuiSwitch-track': {
@@ -64,7 +63,7 @@ export default {
       },
     },
     thumb: {
-      backgroundColor: chartTheme.greenAccent.dark,
+      backgroundColor: success.darkest,
       boxShadow: md,
       border: `${borderWidth[1]} solid ${grey.light}`,
     },

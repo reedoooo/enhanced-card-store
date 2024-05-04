@@ -4,11 +4,9 @@ import MDBox from '../MDBOX';
 
 const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
   const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
-  const primary = colors.primary.default;
-  const blue = colors.blueAccent.default;
-  const green = colors.greenAccent.default;
-  const greenliht = colors.greenAccent.light;
+  const colors = theme.palette;
+  const green = colors.success.dark;
+  const greenliht = colors.success.main_light;
   const grey = colors.grey.default;
   return (
     <MDBox

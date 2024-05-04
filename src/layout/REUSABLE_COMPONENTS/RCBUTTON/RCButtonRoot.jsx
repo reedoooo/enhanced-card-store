@@ -205,7 +205,7 @@ export default styled(Button)(({ ownerState }) => {
     };
   };
   const circularStyles = () => ({
-    borderRadius: borderRadius.section,
+    borderRadius: borderRadius.xl,
   });
   const iconOnlyStyles = () => {
     let sizeValue = pxToRem(38);
@@ -241,7 +241,7 @@ export default styled(Button)(({ ownerState }) => {
   const holoStyles = () => {
     const backgroundValue = palette[color]
       ? palette[color].main
-      : greenAccent.light;
+      : success.main_light;
     const focusedBackgroundValue = palette[color]
       ? palette[color].focus
       : white.focus;
@@ -250,22 +250,7 @@ export default styled(Button)(({ ownerState }) => {
       : 'rgba(0, 0, 0, 0.075)';
     const boxShadowValue = `0 0 0 4px ${rgba(palette[color].secondary || 'white', 0.4)}`;
     const hoveredBoxShadowValue = `0 0 0 4px ${rgba(palette[color].secondary || 'white', 0.15)}`;
-    // const boxShadowValue = colored[color]
-    //   ? `${boxShadow([0, 3], [3, 0], palette[color].main, 0.15)}, ${boxShadow(
-    //       [0, 3],
-    //       [1, -2],
-    //       palette[color].main,
-    //       0.2
-    //     )}, ${boxShadow([0, 1], [5, 0], palette[color].main, 0.15)}`
-    //   : 'none';
-    // const hoveredBoxShadowValue = colored[color]
-    //   ? `${boxShadow([0, 14], [26, -12], palette[color].main, 0.4)}, ${boxShadow(
-    //       [0, 4],
-    //       [23, 0],
-    //       palette[color].main,
-    //       0.15
-    //     )}, ${boxShadow([0, 8], [10, -5], palette[color].main, 0.2)}`
-    //   : 'none';
+
     let colorValue = white.main;
     if (color === 'default' || !palette[color]) {
       colorValue = text.main;
@@ -304,7 +289,7 @@ export default styled(Button)(({ ownerState }) => {
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
-      borderRadius: theme.borderRadius,
+      borderRadius: borderRadius.md,
       transitionProperty: 'color, background, box-shadow',
       transitionDuration: '0.35s',
       // fontSize: pxToRem(14),

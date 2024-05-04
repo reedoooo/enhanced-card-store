@@ -51,7 +51,7 @@ const Quantity = ({ quantity, color }) => (
   </RCTypography>
 );
 
-export default function prepareTableData(selectedCards, type) {
+function prepareTableData(selectedCards, type) {
   const columnsA = [
     {
       field: 'name',
@@ -142,3 +142,5 @@ export default function prepareTableData(selectedCards, type) {
 
   return { columns, data };
 }
+
+export default prepareTableData;

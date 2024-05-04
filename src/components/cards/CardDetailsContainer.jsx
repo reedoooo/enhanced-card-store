@@ -249,7 +249,7 @@ const CardDetailsContainer = ({ card, className }) => {
       container
       // spacing={2}
       sx={{
-        // background: theme.palette.chartTheme.greenAccent.light,
+        // background: theme.palette.success.main_light,
         justifyContent: 'center',
         borderRadius: theme.borders.borderRadius.md,
         maxWidth: '100%',

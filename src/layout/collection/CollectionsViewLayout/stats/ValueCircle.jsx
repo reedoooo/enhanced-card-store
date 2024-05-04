@@ -18,13 +18,13 @@ import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 const ValuDistributionCircle = () => {
   const { theme } = useMode();
   const { collectionMetaData } = useManager();
-  const colors = theme.palette.chartTheme;
-  const { lightest, darkest, light, dark } = colors.greenAccent;
+  const colors = theme.palette;
+  const { main_lighter, darkest, light, dark } = colors.success;
   const greyDark = colors.grey.dark;
   const greyDarkest = colors.grey.darkest;
   const contrastText = colors.grey.contrastText;
   const primaryDark = colors.primary.dark;
-  const COLORS = [colors.greenAccent.default, lightest, light, dark, darkest];
+  const COLORS = [colors.success.dark, main_lighter, light, dark, darkest];
   const renderCustomLabel = ({
     cx,
     cy,
@@ -96,7 +96,6 @@ const ValuDistributionCircle = () => {
               title="Collection Value Distribution"
               icon={
                 <RCWrappedIcon
-                  // color="success"
                   color={greyDark}
                   sx={{
                     background: theme.palette.success.main,
@@ -112,8 +111,8 @@ const ValuDistributionCircle = () => {
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
               sx={{
-                color: colors.greenAccent.light,
-                borderRadius: theme.borders.borderRadius.mdLarge,
+                color: colors.success.main_light,
+                borderRadius: theme.borders.borderRadius.lg,
               }}
             />
           </Card>

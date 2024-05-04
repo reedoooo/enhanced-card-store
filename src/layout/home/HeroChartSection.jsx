@@ -123,7 +123,7 @@ const HeroChartSection = ({
               <CardContent
                 sx={{
                   flexGrow: 1,
-                  border: theme.palette.chartTheme.greenAccent.default,
+                  border: theme.palette.success.dark,
                   borderWidth: 5,
                 }}
               >
@@ -131,7 +131,7 @@ const HeroChartSection = ({
                   gridArea="b"
                   sx={{
                     flexGrow: 1,
-                    border: theme.palette.chartTheme.greenAccent.default,
+                    border: theme.palette.success.dark,
                     borderWidth: 5,
                     width: '100%',
                     height: '100%',
@@ -143,7 +143,7 @@ const HeroChartSection = ({
                       justifyContent: 'center',
                       p: theme.spacing(2),
                       background: theme.palette.transparent.main,
-                      border: theme.palette.chartTheme.greenAccent.dark,
+                      border: theme.palette.success.darkest,
                       borderWidth: 5,
                       borderRadius: 'inherit',
                     }}
@@ -162,8 +162,7 @@ const HeroChartSection = ({
                           <RCWrappedIcon
                             color="white"
                             sx={{
-                              background:
-                                theme.palette.greenAccent.pureGreenBlue,
+                              background: '#4e93a6',
                             }}
                           >
                             <FaShieldAlt
@@ -194,7 +193,7 @@ const HeroChartSection = ({
                       >
                         <CartesianGrid
                           vertical={false}
-                          stroke={theme.palette.chartTheme.grey.default}
+                          stroke={theme.palette.grey.default}
                         />
                         <XAxis dataKey="x" style={{ fontSize: '10px' }} />
                         <YAxis

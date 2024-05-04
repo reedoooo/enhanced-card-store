@@ -12,7 +12,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { useMode } from 'context';
 import { useNavigate } from 'react-router-dom';
-import { useSpring, animated, useSprings } from 'react-spring';
+import { animated, useSprings } from 'react-spring';
 import RCLogoSection from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCLogoSection';
 import {
   Avatar,
@@ -22,18 +22,17 @@ import {
   Divider,
   Drawer,
   ModalClose,
-  Radio,
   Sheet,
   Typography,
 } from '@mui/joy';
-import { baseMenuItems } from 'data/baseMenuItems';
-import rgba from 'assets/themes/functions/rgba';
 import useManageCookies from 'context/hooks/useManageCookies';
-import ReusableLoadingButton from 'layout/REUSABLE_COMPONENTS/ReusableLoadingButton';
 import { Logout } from '@mui/icons-material';
 import useAuthManager from 'context/state/useAuthManager';
 import useManager from 'context/useManager';
 import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
+import { baseMenuItems } from 'data';
+import rgba from 'assets/themes/functions/rgba';
+
 const Navigation = () => {
   const { theme } = useMode();
   const navigate = useNavigate();
@@ -60,7 +59,7 @@ const Navigation = () => {
     await logout();
     navigate('/login');
     setLogoutClicked(false);
-  }, [logout, navigate]);
+  }, [navigate]);
   const ContentContainer = ({ type, content, clickAction, itemIndex }) => {
     const handleClick = () => {
       if (clickAction === 'navigate' && itemIndex !== undefined) {
@@ -81,7 +80,7 @@ const Navigation = () => {
           maxWidth: clickAction === 'navigate' ? '100%' : '5rem',
           boxShadow: 'none',
           border: '3px solid',
-          borderColor: theme.palette.chartTheme.greenAccent.light,
+          borderColor: theme.palette.success.main_light,
           '&:hover': { bgcolor: 'background.level1' },
         }}
         onClick={handleClick}
@@ -109,7 +108,7 @@ const Navigation = () => {
             maxHeight: 64,
             maxWidth: '100%',
             '&:hover': {
-              backgroundColor: rgba(theme.palette.greenAccent.lighterSeaGreen),
+              backgroundColor: rgba(theme.palette.success.main_lighter),
             },
           }}
         >
@@ -185,7 +184,7 @@ const Navigation = () => {
               variant="soft"
               sx={{
                 mr: 1,
-                background: theme.palette.chartTheme.greenAccent.light,
+                background: theme.palette.success.main_light,
                 color: 'white',
               }}
             />
@@ -260,7 +259,7 @@ const Navigation = () => {
                   variant="soft"
                   sx={{
                     mr: 1,
-                    background: theme.palette.chartTheme.greenAccent.light,
+                    background: theme.palette.success.main_light,
                     color: 'white',
                     // cursor: 'pointer',
                   }}

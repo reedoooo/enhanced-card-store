@@ -22,7 +22,10 @@ const warning = {
   secondary: '#ff5722',
 };
 const success = {
-  light: '#70d8bd', // '#4cceac',
+  light: '#70d8bd',
+  main_light: '#4cceac',
+  main_lighter: '#b7ebde',
+  main_emerald: '#06d6a0ff',
   main: '#18b984',
   secondary: '#5CDB95',
   tertiary: '#5fe7bb',
@@ -47,7 +50,6 @@ const grey = {
   simpleGrey: '#333',
   clearGrey: hexToRgba('#444', 0.6),
   black: '#040509',
-  white: '#f2f0f0',
   blueGrey: '#141b2d',
   lightBlueGrey: '#1F2A40',
   darkest: '#141414',
@@ -56,7 +58,6 @@ const grey = {
   default: '#525252',
   light: '#666666',
   lighter: '#858585',
-  lighter2: '#8c8c8c',
   lightest: '#a3a3a3',
   evenLighter: '#c2c2c2',
   contrastText: '#e0e0e0',
@@ -67,45 +68,60 @@ const white = {
   focus: '#E8E8E8',
 };
 const black = {
-  light: '#212121',
-  main: '#1C1C1C',
-  focus: '#26242C',
+  darker: '#040509',
   dark: '#0B0C0E',
+  darkest: '#141414',
+  main: '#1C1C1C',
+  light: '#212121',
+  focus: '#26242C',
 };
-const greenAccent = {
-  crystalGreen: hexToRgba('#4cceac', 0.6),
-  darkCerulean: hexToRgba('#0d5d96', 0.9),
-  greyGreen: '#A5C8D2',
-  greenBlue: hexToRgba('#4e93a6', 0.8),
-  pureGreenBlue: '#4e93a6',
-  emerald: '#06d6a0ff',
-  lighterSeaGreen: '#8ec7b6',
-  lightSeaGreen: '#0cb0a9ff',
-  darkest: '#0f2922', // Assuming this is the darkest
-  darker: '#1e5245', // Next darker shade
-  dark: '#2e7c67', // Next dark shade
-  default: '#3da58a', // Default considered here as the mid-point
-  main: '#18b984',
-  focus: rgba('#18b984' || 'white', 0.15),
-  light: '#4cceac', // Light shade
-  lighter: '#70d8bd', // Lighter shade
-  lightest: '#94e2cd', // Lightest shade
-  evenLighter: '#b7ebde', // Even lighter than the lightest
-  contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
-  secondary: '#5CDB95',
+const greenPalette = {
+  50: '#b7ebde', // Even lighter than the lightest
+  100: '#94e2cd', // Lightest shade
+  200: '#70d8bd', // Lighter shade
+  300: '#4cceac', // Light shade, also 'crystalGreen' with opacity adjusted for full hex
+  400: '#3da58a', // Default, mid-light
+  500: '#18b984', // Main green used in the primary color
+  600: '#159b76', // Slightly darker and less saturated than 500
+  700: '#12875f', // Darker and more muted green
+  800: '#0f7348', // Dark, rich green
+  900: '#2e7c67', // Darkest shade, used for the deepest contrast
+  contrastText: '#dbf5ee', // Lightest contrast text
+  main: '#18b984', // Primary main color
+  focus: 'rgba(24, 185, 132, 0.15)', // Focus state with opacity
+  hoverContrastText: 'white', // Text color for hover states
 };
-// const greenPalette = {
-//   50: '#b7ebde',      // Even lighter than the lightest
-//   100: '#94e2cd',     // Lightest shade
-//   200: '#70d8bd',     // Lighter shade
-//   300: '#4cceac',     // Light shade, also 'crystalGreen' with opacity adjusted for full hex
-//   400: '#3da58a',     // Default, mid-light
-//   500: '#18b984',     // Main green used in the primary color
-//   600: '#159b76',     // Slightly darker and less saturated than 500
-//   700: '#12875f',     // Darker and more muted green
-//   800: '#0f7348',     // Dark, rich green
-//   900: '#2e7c67'      // Darkest shade, used for the deepest contrast
-// };
+const redPalette = {
+  50: '#f8dcdb', // Even lighter than the lightest
+  100: '#f1b9b7', // Lightest
+  200: '#e99592', // Lighter
+  300: '#e2726e', // Light shade
+  400: '#db4f4a', // Default, main used color
+  500: '#af3f3b', // Mid-dark, more saturation
+  600: '#832f2c', // Darker and more intense
+  700: '#58201e', // Even darker, rich depth
+  800: '#2c100f', // Darkest shade, for deep contrast
+  contrastText: '#f8dcdb', // Lightest contrast text
+  main: '#db4f4a', // Primary main color
+  focus: 'rgba(219, 79, 74, 0.15)', // Focus state with opacity
+  hoverContrastText: 'white', // Text color for hover states
+};
+const bluePalette = {
+  50: '#e1e2fe', // Even lighter than the lightest
+  100: '#c3c6fd', // Lightest
+  200: '#a4a9fc', // Lighter
+  300: '#868dfb', // Light shade
+  400: '#6870fa', // Default, main used color
+  500: '#535ac8', // Mid-dark, more saturation
+  600: '#3e4396', // Darker and more intense
+  700: '#2a2d64', // Even darker, rich depth
+  800: '#151632', // Darkest shade, for deep contrast
+  contrastText: '#e1e2fe', // Lightest contrast text
+  main: '#6870fa', // Primary main color
+  focus: 'rgba(104, 112, 250, 0.15)', // Focus state with opacity
+  hoverContrastText: 'white', // Text color for hover states
+};
+
 const redAccent = {
   darkest: '#2c100f',
   darker: '#58201e',
@@ -176,76 +192,8 @@ const secondary = {
 const chartTheme = {
   primary,
   grey,
-  greenAccent,
   redAccent,
   blueAccent,
-};
-const customDarkTheme = {
-  text: {
-    light: '#e0e0e0',
-    dark: '#141414',
-    default: '#3d3d3d',
-    contrastText: '#fff',
-    color: '#70d8bd',
-  },
-  background: {
-    grey: {
-      darkest: '#141414',
-      darker: '#292929',
-      dark: '#3d3d3d',
-      default: '#525252',
-      light: '#666666',
-      lighter: '#858585',
-      lightest: '#a3a3a3',
-      evenLighter: '#c2c2c2',
-      contrastText: '#e0e0e0',
-    },
-    primary: {
-      darkest: '#040509',
-      darker: '#040509',
-      dark: '#040509',
-      default: '#f2f0f0',
-      light: '#141b2d',
-      lighter: '#1F2A40',
-      lightest: '#727681',
-      evenLighter: '#8c8c8c',
-      contrastText: '#e0e0e0',
-    },
-    secondary: {},
-    greenAccent: {
-      darkest: '#0f2922', // Assuming this is the darkest
-      darker: '#1e5245', // Next darker shade
-      dark: '#2e7c67', // Next dark shade
-      default: '#3da58a', // Default considered here as the mid-point
-      light: '#4cceac', // Light shade
-      lighter: '#70d8bd', // Lighter shade
-      lightest: '#94e2cd', // Lightest shade
-      evenLighter: '#b7ebde', // Even lighter than the lightest
-      contrastText: '#dbf5ee', // Most contrasting or lightest, could be adjusted
-    },
-    redAccent: {
-      darkest: '#2c100f',
-      darker: '#58201e',
-      dark: '#832f2c',
-      default: '#af3f3b',
-      light: '#db4f4a',
-      lighter: '#e2726e',
-      lightest: '#e99592',
-      evenLighter: '#f1b9b7',
-      contrastText: '#f8dcdb',
-    },
-    blueAccent: {
-      darkest: '#151632',
-      darker: '#2a2d64',
-      dark: '#3e4396',
-      default: '#535ac8',
-      light: '#6870fa',
-      lighter: '#868dfb',
-      lightest: '#a4a9fc',
-      evenLighter: '#c3c6fd',
-      contrastText: '#e1e2fe',
-    },
-  },
 };
 const rarity = {
   common: '#C0C0C0', // Silver
@@ -308,143 +256,10 @@ export {
   action,
   primary,
   secondary,
-  customDarkTheme,
   grey,
-  greenAccent,
   redAccent,
   blueAccent,
   myGradients,
   white,
   black,
 };
-// const backgroundA = {
-//   darkest: '#2e7c67', // '#70d8bd',
-//   darker: '#3da58a',
-//   dark: '#4cceac',
-//   default: '#70d8bd', // '#4cceac',
-//   light: '#94e2cd',
-//   lighter: '#b7ebde',
-//   lightest: '#dbf5ee',
-//   contrastTextA: '#FBFAF2',
-//   contrastTextB: '#333',
-//   contrastTextC: '#555',
-//   contrastTextD: '#000',
-//   hover: '#4cceac',
-// };
-// main: '#4caf50',
-// dark: '#388e3c',
-// main: '#4cceac',
-// focus: '#4cceac',
-// contrastText: colorTextForDark,
-// hoverContrastText: '#111',
-// error: {
-//   main: colorsA.redAccent[500],
-//   dark: colorsA.redAccent[700],
-//   contrastText: '#fff',
-// },
-// warning: {
-//   main: colorsA.redAccent[500],
-//   dark: colorsA.redAccent[700],
-//   light: colorsA.redAccent[200],
-// },
-// success: {
-//   light: colorsA.greenAccent[100],
-//   lighter: colorsA.greenAccent[200],
-//   evenLighter: colorsA.greenAccent[300],
-//   lightish: colorsA.greenAccent[400],
-//   main: colorsA.greenAccent[500],
-//   dark: colorsA.greenAccent[200],
-//   darker: colorsA.greenAccent[600],
-//   contrastText: '#fff',
-//   hoverContrastText: '#111',
-// },
-// info: {
-//   main: colorsA.blueAccent[500],
-//   dark: colorsA.blueAccent[700],
-//   light: colorsA.blueAccent[200],
-//   contrastText: '#fff',
-// },
-// text: {
-//   primary: colorsA.grey[900],
-//   secondary: colorsA.grey[300],
-//   tertiary: colorsA.grey[100],
-// },
-// divider: 'white',
-// action: {
-//   hover: colorsA.grey[800],
-//   disabled: colorsA.grey[200],
-// },
-// const backgroundB = {
-//   darkest: '#111',
-//   darker: '#222',
-//   dark: '#333',
-//   default: '#444',
-//   light: '#555',
-//   lighter: '#666',
-//   lightest: '#777',
-//   contrastText: '#FBFAF2',
-// };
-// const backgroundG = {
-//   darkest: '#073b4cff', // --midnight-green--
-//   darker: '#0c637fff', // --cerulean--
-//   dark: '#118ab2ff', // --blue-ncs--
-//   default: '#0cb0a9ff', // --light-sea-green--
-//   light: '#06d6a0ff', // --emerald--
-//   lighter: '#91dacbff', // --tiffany-blue--
-//   lightest: '#c8ede5ff', // --mint-green--
-//   contrastText: '#fff',
-// };
-// const backgroundGSecondary = {
-//   darkest: '#7f2e2eff', // --persian-plum--
-//   darker: '#a63c3cff', // --pomegranate--
-//   dark: '#cc4a4aff', // --flamingo--
-//   default: '#e55e5eff', // --sunset-orange--
-//   light: '#f4755fff', // --bittersweet--
-//   lighter: '#f89a7dff', // --rajah--
-//   lightest: '#facbb0ff', // --navajo-white--
-//   contrastText: '#fff',
-// };
-// const backgroundC = {
-//   darkest: hexToRgba(backgroundB.darkest, 0.9),
-//   darker: hexToRgba(backgroundB.darker, 0.8),
-//   dark: hexToRgba(backgroundB.dark, 0.7),
-//   default: hexToRgba(backgroundB.default, 0.6),
-//   light: hexToRgba(backgroundB.light, 0.5),
-//   lighter: hexToRgba(backgroundB.lighter, 0.4),
-//   lightest: hexToRgba(backgroundB.lightest, 0.3),
-// };
-// const backgroundD = {
-//   darkest: hexToRgba(greenAccent.dark, 0.9),
-//   darker: hexToRgba(greenAccent.default, 0.7),
-//   dark: hexToRgba('#4cceac', 0.6),
-//   default: hexToRgba(greenAccent.lighter, 0.5),
-//   light: hexToRgba(greenAccent.lightest, 0.4),
-//   lighter: hexToRgba(backgroundA.lighter, 0.3),
-//   lightest: hexToRgba(greenAccent.contrastText, 0.2),
-// };
-// const backgroundF = {
-//   darkest: hexToRgba(backgroundE.darkest, 0.9),
-//   darker: hexToRgba(backgroundE.darker, 0.8),
-//   dark: hexToRgba(backgroundE.dark, 0.7),
-//   default: hexToRgba(backgroundE.default, 0.6),
-//   main: hexToRgba(backgroundE.main, 0.5),
-//   focus: hexToRgba(backgroundE.focus, 0.4),
-//   light: hexToRgba(backgroundE.light, 0.5),
-//   lighter: hexToRgba(backgroundE.lighter, 0.4),
-//   lightest: hexToRgba(backgroundE.lightest, 0.3),
-// };
-// const backgroundE = {
-//   darkest: '#0d5d96', // - colorname: 'dark-cerulean' - hex: '#0d5d96' - rgb: 'rgb(13, 93, 150)' - hsl: 'hsl(209, 84%, 32%)'
-//   darker: '#206d9b', // - colorname: 'dark-blue' - hex: '#206d9b
-//   dark: '#4e93a6', // - colorname: 'blue' - hex: '#4e93a6' - rgb: 'rgb(78, 147, 166)' - hsl: 'hsl(194, 35%, 47%)'
-//   default: '#7cb8b1',
-//   main: '#7cb8b1',
-//   focus: '#7cb8b1',
-//   light: '#8ec7b6',
-//   lightBlue: '#57909F',
-//   lighter: '#b7ebde',
-//   lighterBlue: '#7EACB9',
-//   lightest: '#dbf5ee',
-//   lightestBlue: '#A5C8D2',
-//   contrastText: '#FBFAF2',
-// };

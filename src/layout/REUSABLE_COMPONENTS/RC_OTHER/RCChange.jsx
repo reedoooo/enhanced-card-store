@@ -12,7 +12,7 @@ const useStyles = (theme) => ({
     width: '25%%',
     p: '20px',
     // my: '20px',
-    // background: theme.palette.chartTheme.grey.dark,
+    // background: theme.palette.grey.dark,
     borderRadius: theme.spacing(4),
   },
   flexBox: {
@@ -23,11 +23,11 @@ const useStyles = (theme) => ({
     variant: 'h4',
     fontWeight: 'bold',
     // fontFamily: 'Poppins',
-    color: theme.palette.chartTheme.grey.default,
+    color: theme.palette.grey.default,
   },
   rangeText: {
     variant: 'h3',
-    color: theme.palette.chartTheme.greenAccent.default,
+    color: theme.palette.success.dark,
     mt: '2px',
     fontWeight: 'bold',
   },

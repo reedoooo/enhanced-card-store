@@ -2,18 +2,18 @@
 import { Box, InputAdornment, Tooltip } from '@mui/material';
 import RCInput from './RCInput';
 import { Controller } from 'react-hook-form';
-import useRCFormHook from '../../../context/formHooks/useRCFormHook';
+import useRCFormHook from 'context/formHooks/useRCFormHook';
+import { useMode } from 'context';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { getFormFieldHandlers } from '../../../data/formsConfig';
+import { useFormSubmission } from 'context/formHooks/useFormSubmission';
+import React, { useEffect, useState } from 'react';
+import useBreakpoint from 'context/hooks/useBreakPoint';
+import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
 import {
   FormBox,
   FormFieldBox,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useMode } from 'context';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { getFormFieldHandlers } from '../formsConfig';
-import { useFormSubmission } from '../../../context/formHooks/useFormSubmission';
-import React, { useEffect, useState } from 'react';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
 
 const RCDynamicForm = ({
   formKey,
@@ -78,12 +78,11 @@ const RCDynamicForm = ({
                 type={fieldConfig.type}
                 label={fieldConfig.label}
                 placeholder={fieldConfig.placeholder}
-                error={!!error}
                 name={fieldConfig.name}
                 context={fieldConfig.context}
-                errorMessage={error?.message}
+                error={!!error}
                 helperText={error?.message}
-                initialValue={fieldConfig.initialValue}
+                initialValue={formData || fieldConfig.initialValue}
                 InputProps={
                   (fieldConfig.icon
                     ? {
@@ -106,6 +105,7 @@ const RCDynamicForm = ({
           <RCLoadingButton
             key={optionsForUi.submitButtonLabel}
             type="submit"
+            onClick={handleSubmit(onSubmit)}
             loading={isSubmitting}
             withContainer={false}
             fullWidth={true}
@@ -133,7 +133,7 @@ const RCDynamicForm = ({
           <RCLoadingButton
             key={optionsForUi.deleteButtonLabel}
             type="submit"
-            // onClick={handleLogout}
+            onClick={optionsForUi.deleteActions.handleDelete}
             loading={isSubmitting}
             withContainer={false}
             fullWidth={true}

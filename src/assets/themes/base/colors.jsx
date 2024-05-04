@@ -13,10 +13,8 @@ import {
   primary,
   secondary,
   grey,
-  greenAccent,
   redAccent,
   blueAccent,
-  customDarkTheme,
   white,
   black,
   myGradients,
@@ -27,10 +25,8 @@ const colors = {
     default: '#f0f2f5',
     paper: '#fff',
   },
-  greenAccent: greenAccent,
   redAccent: redAccent,
   blueAccent: blueAccent,
-  customDarkTheme: customDarkTheme,
   // COLORS FOR CARD RARITY OVERLAY
   rarity,
   // CARD RARITY OVERLAYS
@@ -61,11 +57,11 @@ const colors = {
     main: '#f0f2f5',
     focus: '#f0f2f5',
   },
-  dark: {
-    main: '#344767',
-    focus: '#2c3c58',
-    state: '#191919',
-  },
+  // dark: {
+  //   main: '#344767',
+  //   focus: '#2c3c58',
+  //   state: '#191919',
+  // },
   gradients: {
     primary: {
       main: '#EC407A',
@@ -228,6 +224,17 @@ const colors = {
   inputBorderColor: '#d2d6da',
   tabs: {
     indicator: { boxShadow: '#ddd' },
+  },
+  inputColors: {
+    borderColor: { main: '#d2d6da', focus: '#35d1f5' },
+    boxShadow: '#81e3f9',
+    error: '#fd5c70',
+    success: '#66d432',
+  },
+  dark: {
+    main: '#344767',
+    focus: '#344767',
+    state: '#191919',
   },
   // inputBorderColor: {
   //   main: '#d2d6da',

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { formFields, zodSchemas } from '../../components/forms/formsConfig';
+import { formFields, zodSchemas } from '../../data/formsConfig';
 
 const useRCFormHook = (schemaKey, initialData) => {
   // console.log('SCHEMA KEY', schemaKey);

@@ -14,11 +14,6 @@ function PageLayout({ background, backCol, children }) {
       height="100%"
       minHeight="100vh"
       maxWidth="100%"
-      // bgColor={
-      //   backCol
-      //     ? 'linear-gradient(90deg, rgba(13, 93, 150, 0.3) 0%, rgba(160, 214, 186, 0.3) 100%)'
-      //     : 'transparent'
-      // }
       sx={{ overflowX: 'hidden', m: 0, p: 0 }} // Ensure no margins or paddings
     >
       <Grid

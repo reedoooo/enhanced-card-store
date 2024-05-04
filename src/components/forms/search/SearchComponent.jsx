@@ -1,5 +1,5 @@
 // DeckSearch.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Card, Container, Grid, IconButton } from '@mui/material';
 import SearchResults from './SearchResults';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
@@ -11,15 +11,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useCardStoreHook } from 'context/state/useCardStore';
 import useConfigurator from 'context/hooks/useConfigurator';
 import RCDynamicForm from '../Factory/RCDynamicForm';
-import { formFields } from '../formsConfig';
+import { formFields } from '../../../data/formsConfig';
 import useBreakpoint from 'context/hooks/useBreakPoint';
 import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  const itemsPerPage = 12;
   const { loadingSearchResults } = useCardStoreHook();
   const { toggleConfigurator } = useConfigurator();
+  const itemsPerPage = 12;
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
   useEffect(() => {
     const handleStorageChange = () => {

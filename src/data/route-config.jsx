@@ -17,7 +17,7 @@ export const ROUTES = [
   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
 
-export const ROUTE_CONFIG = {
+const ROUTE_CONFIG = {
   defaultPath: '/',
   routes: ROUTES.map(({ path, componentName, isPrivate }) => ({
     path,
@@ -25,3 +25,5 @@ export const ROUTE_CONFIG = {
     isPrivate,
   })),
 };
+
+export default ROUTE_CONFIG;
