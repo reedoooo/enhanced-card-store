@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 import { register, unregister } from './serviceWorker';
+import { createRoot } from 'react-dom/client';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
@@ -15,7 +16,9 @@ import { ParallaxProvider } from 'react-scroll-parallax';
 import { HelmetMetaData } from 'data';
 
 const domNode = document.getElementById('root');
+if (!domNode) throw new Error('Failed to find the root element');
 
+const root = createRoot(domNode); // Create a root.
 const AppWrapper = () => {
   const { theme } = useMode();
   const errorHandler = (error, errorInfo) => {
@@ -49,7 +52,7 @@ const AppWrapper = () => {
   );
 };
 
-ReactDOM.render(<AppWrapper />, domNode);
+root.render(<AppWrapper />); // Use the root to render the AppWrapper.
 
 if (process.env.NODE_ENV === 'production') {
   register(); // Only register the service worker in production
