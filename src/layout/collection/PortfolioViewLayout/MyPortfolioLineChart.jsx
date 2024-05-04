@@ -25,7 +25,7 @@ const MyPortfolioLineChart = ({
   // tickValues,
   validMarkers,
   success,
-  redAccent,
+  error,
   grey,
   text,
 }) => {
@@ -116,7 +116,7 @@ const MyPortfolioLineChart = ({
           },
           legend: {
             text: {
-              fill: success.darkestest,
+              fill: success.darkest,
               fontSize: 12,
               outlineWidth: 0.1,
               outlineColor: grey.darkest,
@@ -140,7 +140,7 @@ const MyPortfolioLineChart = ({
         tooltip: {
           container: {
             color: grey.darkest,
-            borderColor: redAccent.darkest,
+            borderColor: error.main_darkest,
           },
         },
       }}
@@ -162,7 +162,7 @@ MyPortfolioLineChart.propTypes = {
     })
   ).isRequired,
   success: PropTypes.object.isRequired,
-  redAccent: PropTypes.object.isRequired,
+  error: PropTypes.object.isRequired,
   grey: PropTypes.object.isRequired,
   text: PropTypes.string.isRequired,
 };

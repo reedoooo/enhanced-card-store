@@ -4,26 +4,11 @@ import colors from '../../base/colors';
 import linearGradient from '../../functions/linearGradient';
 import pxToRem from '../../functions/pxToRem';
 
-const {
-  text,
-  info,
-  success,
-  error,
-  primary,
-  common,
-  white,
-  grey,
-  gradients,
-  transparent,
-  chartTheme,
-} = colors;
+const { success, grey, gradients, transparent } = colors;
 const { borderWidth } = borders;
 const { md } = boxShadows;
 
 export default {
-  defaultProps: {
-    disableRipple: false,
-  },
   styleOverrides: {
     switchBase: {
       color: success.dark,

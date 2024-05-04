@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-export const useFormManagement = (initialFormKey, formSchemas) => {
+const useFormManagement = (initialFormKey, formSchemas) => {
   const [activeForm, setActiveForm] = useState(initialFormKey);
 
   const setActiveFormSchema = useCallback(
@@ -17,3 +17,5 @@ export const useFormManagement = (initialFormKey, formSchemas) => {
     currentSchemaKey: activeForm,
   };
 };
+
+export default useFormManagement;

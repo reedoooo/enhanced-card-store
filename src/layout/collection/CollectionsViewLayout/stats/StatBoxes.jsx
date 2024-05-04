@@ -2,13 +2,13 @@ import { Box, Divider } from '@mui/material';
 import StatBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/StatBox';
 import { useMode } from 'context';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { roundToNearestTenth } from 'context/Helpers';
 
 const TotalCardsStatBox = () => {
   const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
+  const colors = theme.palette;
   const primary = colors.primary.dark;
   const grey = colors.grey.dark;
   const { collectionMetaData } = useManager();
@@ -42,7 +42,7 @@ const TotalCardsStatBox = () => {
 
 const TotalPriceStatBox = () => {
   const { theme } = useMode();
-  const colors = theme.palette.chartTheme;
+  const colors = theme.palette;
   const primary = colors.primary.dark;
   const grey = colors.grey.dark;
   const { collectionMetaData } = useManager();

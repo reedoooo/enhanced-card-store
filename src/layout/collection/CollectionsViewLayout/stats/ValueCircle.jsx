@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 
 const ValuDistributionCircle = () => {

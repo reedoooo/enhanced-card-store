@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
-import useFetchWrapper from '../hooks/useFetchWrapper';
-import useManageCookies from '../hooks/useManageCookies';
 import useUserData from './useUserData';
 import jwt_decode from 'jwt-decode';
+import { useFetchWrapper, useManageCookies } from 'context/hooks';
 
 function useAuthManager() {
   const navigate = useNavigate();
@@ -21,7 +19,7 @@ function useAuthManager() {
   const setAuthCookies = useCallback(
     (data) => {
       const { accessToken, refreshToken } = data;
-      const authData = jwtDecode(accessToken);
+      const authData = jwt_decode(accessToken);
       addCookies(
         ['accessToken', 'refreshToken', 'isLoggedIn', 'authUser', 'userId'],
         [accessToken, refreshToken, true, authData, authData.userId],
@@ -47,7 +45,7 @@ function useAuthManager() {
 
   const decodeAndSetUser = useCallback(
     (accessToken) => {
-      const decoded = jwtDecode(accessToken);
+      const decoded = jwt_decode(accessToken);
       handleSetUser(decoded); // Adjust according to your implementation
     },
     [handleSetUser]
@@ -128,7 +126,6 @@ function useAuthManager() {
       }
     } catch (error) {
       console.error('Token validation error:', error);
-      // logout();
     }
   }, [user.accessToken]);
   useEffect(() => {

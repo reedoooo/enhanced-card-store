@@ -1,9 +1,9 @@
 import React from 'react';
-import { CssBaseline, Box, Typography, Card } from '@mui/material';
+import { CssBaseline, Box, Card } from '@mui/material';
 import SplashPage2 from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SplashPage2';
-import LoginDialog from './LoginDialog'; // Import the LoginDialog component
-import useManageCookies from 'context/hooks/useManageCookies';
+import LoginDialog from '../layout/dialogs/LoginDialog'; // Import the LoginDialog component
 import { useMode } from 'context';
+import { useManageCookies } from 'context/hooks';
 
 const LoginPage = () => {
   const { theme } = useMode(); // Using the theme from MUI's theme provider

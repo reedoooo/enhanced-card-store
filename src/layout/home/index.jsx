@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from 'assets/images/placeholder.jpeg';
 import { HeroSectionSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
@@ -6,13 +6,11 @@ import { Card } from '@mui/material';
 import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';
 import HeroSwiper from './HeroSwiper';
-import useLocalStorage from 'context/hooks/useLocalStorage';
-import { useCardStoreHook } from 'context/state/useCardStore';
 import HeroChartSection from './HeroChartSection';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import { useBreakpoint, useCardStore, useLocalStorage } from 'context';
 
 const HeroSection = () => {
-  const { fetchRandomCardsAndSet } = useCardStoreHook();
+  const { fetchRandomCardsAndSet } = useCardStore();
   const [randomCards, setRandomCards] = useLocalStorage('randomCards', []);
   const { isMd } = useBreakpoint();
   const [activeCardIndex, setActiveCardIndex] = useState(0);

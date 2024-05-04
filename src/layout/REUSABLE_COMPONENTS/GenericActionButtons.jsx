@@ -7,7 +7,7 @@ import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutline
 import { useMode } from 'context';
 import useLoading from 'context/hooks/useLoading';
 import { LoadingButton } from '@mui/lab';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 
 const buttonSizeMap = {
   xs: 'extraSmall',

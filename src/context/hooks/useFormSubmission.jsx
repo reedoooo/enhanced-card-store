@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { handleValidation, zodSchemas } from '../../data/formsConfig';
 
-export const useFormSubmission = (formHandlers, formKey) => {
+const useFormSubmission = (formHandlers, formKey) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const activeSchema = zodSchemas[formKey];
   const onSubmit = useCallback(
@@ -37,3 +37,5 @@ export const useFormSubmission = (formHandlers, formKey) => {
 
   return { onSubmit, isSubmitting };
 };
+
+export default useFormSubmission;

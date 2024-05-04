@@ -5,20 +5,22 @@ import SearchResults from './SearchResults';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { useMode } from 'context';
-import useLocalStorage from 'context/hooks/useLocalStorage';
 import SearchIcon from '@mui/icons-material/Search';
-import { useCardStoreHook } from 'context/state/useCardStore';
-import useConfigurator from 'context/hooks/useConfigurator';
-import RCDynamicForm from '../Factory/RCDynamicForm';
-import { formFields } from '../../../data/formsConfig';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import RCDynamicForm from '../REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
 import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+import {
+  useBreakpoint,
+  useMode,
+  useCardStore,
+  useConfigurator,
+  useLocalStorage,
+} from 'context';
+import { formFields } from 'data';
 
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  const { loadingSearchResults } = useCardStoreHook();
+  const { loadingSearchResults } = useCardStore();
   const { toggleConfigurator } = useConfigurator();
   const itemsPerPage = 12;
   const [searchData, setSearchData] = useLocalStorage('searchData', []);

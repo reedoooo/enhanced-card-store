@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import React, { useEffect, useState } from 'react';
+
 import { Box, InputAdornment, Tooltip } from '@mui/material';
 import RCInput from './RCInput';
 import { Controller } from 'react-hook-form';
-import useRCFormHook from 'context/formHooks/useRCFormHook';
 import { useMode } from 'context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { getFormFieldHandlers } from '../../../data/formsConfig';
-import { useFormSubmission } from 'context/formHooks/useFormSubmission';
-import React, { useEffect, useState } from 'react';
-import useBreakpoint from 'context/hooks/useBreakPoint';
 import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
 import {
   FormBox,
   FormFieldBox,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useBreakpoint, useFormSubmission, useRCFormHook } from 'context/hooks';
+import { getFormFieldHandlers } from 'data';
 
 const RCDynamicForm = ({
   formKey,

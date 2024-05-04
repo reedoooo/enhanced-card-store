@@ -9,16 +9,15 @@ import {
 } from '@mui/material';
 import { useMode } from 'context';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import DashboardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
-import SearchComponent from 'components/forms/search/SearchComponent';
-import DeckDialog from 'components/dialogs/DeckDialog';
-import useDialogState from 'context/hooks/useDialogState';
+import DashBoardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
+import SearchComponent from 'layout/search/SearchComponent';
+import DeckDialog from 'layout/dialogs/DeckDialog';
 import DeckListItem from './DeckListItem';
 import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
 import useUserData from 'context/state/useUserData';
-import { useFormManagement } from 'context/formHooks/useFormManagement';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
+import { useDialogState, useFormManagement } from 'context/hooks';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -144,7 +143,7 @@ const DeckBuilder = () => {
   );
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
-      <DashboardLayout>
+      <DashBoardLayout>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <DashboardBox sx={{ p: theme.spacing(2) }}>
@@ -222,7 +221,7 @@ const DeckBuilder = () => {
             </DashboardBox>
           </Grid>
         </Grid>
-      </DashboardLayout>
+      </DashBoardLayout>
       {dialogState.isAddDeckDialogOpen && (
         <DeckDialog
           open={dialogState.isAddDeckDialogOpen}

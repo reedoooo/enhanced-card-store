@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import { useState } from 'react';
 import useLocalStorage from './useLocalStorage';
-import useManager from '../useManager';
+import useManager from '../state/useManager';
 import { nanoid } from 'nanoid';
 
 function useSelectorActions() {

@@ -17,7 +17,7 @@ function debounce(func, wait) {
   };
 }
 
-export const useCardStoreHook = () => {
+const useCardStore = () => {
   const { getCookie } = useManageCookies();
   const { userId } = getCookie(['userId']);
   const logger = useLogger('CardProvider');
@@ -114,3 +114,5 @@ export const useCardStoreHook = () => {
     },
   };
 };
+
+export default useCardStore;

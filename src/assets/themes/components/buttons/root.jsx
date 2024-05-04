@@ -20,24 +20,17 @@ export default {
   backgroundSize: '150% !important',
   backgroundPositionX: '25% !important',
   transition: 'all 150ms ease-in',
-  // borderRadius: 4,
-  // padding: '0.5rem 1rem',
-  // textTransform: 'none', // Disable uppercase text
   background: '#5CDB95',
-
-  // backgroundColor: '#4cceac',
   '&:hover': {
     backgroundColor: '#3da58a',
   },
   '@media (max-width:600px)': {
-    // Responsive styles
     fontSize: '0.875rem',
   },
   '&:disabled': {
     pointerEvent: 'none',
     opacity: 0.65,
   },
-
   '& .material-icons': {
     fontSize: pxToRem(15),
     marginTop: pxToRem(-2),

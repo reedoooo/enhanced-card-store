@@ -10,19 +10,15 @@ import {
   List,
   ListItem,
   CardContent,
-  useMediaQuery,
-  useTheme,
   Grid,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CardMediaSection from '../cards/CardMediaSection';
 import CardDetailsContainer from '../cards/CardDetailsContainer';
-import { useMode } from 'context';
+import { useMode, useBreakpoint } from 'context';
 import { useSnackbar } from 'notistack';
 import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
-import useBreakpoint from 'context/hooks/useBreakPoint';
 import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
-import useDialogState from 'context/hooks/useDialogState';
 
 const GenericCardDialog = ({
   open = false,
@@ -34,10 +30,7 @@ const GenericCardDialog = ({
   ...otherProps
 }) => {
   const { theme } = useMode();
-  const { closeDialog, dialogState } = useDialogState();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const { isMobile } = useBreakpoint();
-  console.log('GENERIC CARD DIALOG OPEN', open);
+  const { isMobile, isMd } = useBreakpoint();
   const { enqueueSnackbar } = useSnackbar(); // Assuming useOverlay has enqueueSnackbar method
   const handleAction = useCallback(
     (message, variant) => {
@@ -45,13 +38,11 @@ const GenericCardDialog = ({
     },
     [enqueueSnackbar]
   );
-
   useEffect(() => {
     if (open && card) {
       handleAction('Card details loaded successfully.', 'success');
     }
   }, [open, card, handleAction]);
-
   const handleContextSelect = useCallback(
     (newContext) => {
       handleAction(`Card added to ${newContext} successfully.`, 'success');
@@ -67,20 +58,17 @@ const GenericCardDialog = ({
         }
       }}
       TransitionComponent={transition ? Slide : Fade}
-      fullScreen={fullScreen}
+      fullScreen={isMd}
       aria-labelledby="card-detail-dialog-title"
       aria-describedby="card-detail-dialog-description"
       maxWidth="md"
       fullWidth
       sx={{
-        // position: 'relative', // Ensure the relative positioning for the close button's absolute positioning
-
         '& .MuiDialog-paper': {
           borderRadius: 2,
           p: 2,
           maxHeight: '90vh',
           alignItems: 'center',
-          // position: 'relative', // Ensure the relative positioning for the close button's absolute positioning
         },
       }}
       slotProps={{

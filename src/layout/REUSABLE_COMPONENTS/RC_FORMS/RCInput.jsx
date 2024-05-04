@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState } from 'react';
 import {
   TextField,
@@ -19,23 +20,25 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useMode } from 'context';
+import {
+  useBreakpoint,
+  useManager,
+  useMode,
+  useSelectorActions,
+} from 'context';
 import RCSwitch from './RCSwitch';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import useSelectorActions from 'context/hooks/useSelectorActions';
-import useManager from 'context/useManager';
+
 const RCInput = React.forwardRef(
   (
     {
-      type,
-      options,
-      onChange,
-      initialValue,
-      value,
-      placeholder,
-      onSelectChange,
-      error,
-      helperText,
+      type = 'text',
+      options = [],
+      onChange = () => {},
+      initialValue = '',
+      value = '',
+      placeholder = '',
+      error = false,
+      helperText = '',
       ...rest
     },
     ref
@@ -153,7 +156,7 @@ const RCInput = React.forwardRef(
                 backgroundColor: theme.palette.background.paper,
                 color: theme.palette.text.primary,
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: theme.palette.chartTheme.redAccent.default,
+                  borderColor: theme.palette.error.main_light,
                 },
                 '& .MuiSvgIcon-root': {
                   color: theme.palette.text.primary,
@@ -319,20 +322,11 @@ const RCInput = React.forwardRef(
 );
 
 RCInput.displayName = 'RCInput';
-RCInput.defaultProps = {
-  type: 'text',
-  options: [],
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onChange: () => {},
-  initialValue: '',
-  value: '',
-  placeholder: '',
-};
+
 RCInput.propTypes = {
   type: PropTypes.string.isRequired,
   options: PropTypes.array,
   onChange: PropTypes.func,
-  onSelectChange: PropTypes.func,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([

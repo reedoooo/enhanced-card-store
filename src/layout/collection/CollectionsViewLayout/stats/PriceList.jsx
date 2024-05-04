@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 import { Divider } from '@mui/joy';
 import { useMode } from 'context';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import prepareTableData from 'data/prepareTableData';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 

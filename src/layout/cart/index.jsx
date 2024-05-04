@@ -2,7 +2,7 @@
 import React from 'react';
 import { Typography, Box, Grid, CardContent, Card, Stack } from '@mui/material';
 import { useMode } from 'context';
-import useManager from 'context/useManager';
+import useManager from 'context/state/useManager';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 
 const CartContent = () => {

@@ -16,7 +16,7 @@ import {
   CardUnorderedList,
   FeatureCard,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import DetailsModal from 'components/dialogs/DetailsModal';
+import DetailsModal from 'layout/dialogs/DetailsModal';
 const AnimatedBox = animated(Box);
 
 export const AnimatedFeatureCard = ({ cardData }) => {

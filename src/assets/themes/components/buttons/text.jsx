@@ -2,7 +2,7 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { text, info, success, secondary, transparent } = colors;
+const { text, success, secondary, transparent } = colors;
 const { size } = typography;
 
 export default {

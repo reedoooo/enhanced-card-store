@@ -128,11 +128,6 @@ function ProfileInfoCard({
   );
 }
 
-// Setting default props for the ProfileInfoCard
-ProfileInfoCard.defaultProps = {
-  shadow: true,
-};
-
 // Typechecking props for the ProfileInfoCard
 ProfileInfoCard.propTypes = {
   title: PropTypes.string.isRequired,

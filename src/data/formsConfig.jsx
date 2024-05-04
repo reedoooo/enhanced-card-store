@@ -18,11 +18,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-
 import { z } from 'zod';
-import useAuthManager from 'context/state/useAuthManager';
-import { useCardStoreHook } from 'context/state/useCardStore';
-import useManager from 'context/useManager';
+import { useAuthManager, useCardStore, useManager } from 'context';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ---------------------------- FORM FIELD HANDLERS ----------------------------
@@ -30,7 +27,7 @@ import useManager from 'context/useManager';
 // -----------------------------------------------------------------------------
 const getFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
-  const { handleRequest } = useCardStoreHook();
+  const { handleRequest } = useCardStore();
   const {
     addCollection,
     updateCollection,

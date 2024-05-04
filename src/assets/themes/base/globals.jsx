@@ -2,7 +2,7 @@ import colors from './colors';
 
 const { info, dark } = colors;
 
-export default {
+const globals = {
   html: {
     scrollBehavior: 'smooth',
   },
@@ -21,3 +21,5 @@ export default {
     color: `${info.main} !important`,
   },
 };
+
+export default globals;

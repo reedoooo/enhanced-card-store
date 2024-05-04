@@ -106,7 +106,7 @@ export default styled(Box)(({ ownerstate }) => {
     boxShadowValue = colored[coloredShadow] ? colored[coloredShadow] : 'none';
   }
 
-  // Define additional styles that DashboardLayout might expect
+  // Define additional styles that DashBoardLayout might expect
   const additionalStyles = {
     // marginLeft: isSidebarOpen ? functions.pxToRem(250) : functions.pxToRem(0),
     marginLeft: functions.pxToRem(0),

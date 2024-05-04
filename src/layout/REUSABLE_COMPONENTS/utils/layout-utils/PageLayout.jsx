@@ -4,7 +4,7 @@ import MDBox from '../../MDBOX';
 import { Grid } from '@mui/material';
 import { useMode } from 'context';
 
-function PageLayout({ background, backCol, children }) {
+function PageLayout({ children }) {
   const { pathname } = useLocation();
   const { theme } = useMode();
   return (
@@ -25,12 +25,6 @@ function PageLayout({ background, backCol, children }) {
     </MDBox>
   );
 }
-
-// Setting default values for the props for PageLayout
-PageLayout.defaultProps = {
-  background: 'default',
-  backCol: true,
-};
 
 // Typechecking props for the PageLayout
 PageLayout.propTypes = {

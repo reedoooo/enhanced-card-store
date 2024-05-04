@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { animated, useSprings } from 'react-spring';
+
 import {
   Toolbar,
   IconButton,
   List,
-  Hidden,
   ListItem,
-  ListItemText,
   AppBar,
   useMediaQuery,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useMode } from 'context';
-import { useNavigate } from 'react-router-dom';
-import { animated, useSprings } from 'react-spring';
-import RCLogoSection from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCLogoSection';
 import {
   Avatar,
   Box,
@@ -25,26 +21,31 @@ import {
   Sheet,
   Typography,
 } from '@mui/joy';
-import useManageCookies from 'context/hooks/useManageCookies';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Logout } from '@mui/icons-material';
-import useAuthManager from 'context/state/useAuthManager';
-import useManager from 'context/useManager';
-import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
 import { baseMenuItems } from 'data';
+
+import {
+  useMode,
+  useManager,
+  useManageCookies,
+  useAuthManager,
+  useBreakpoint,
+} from 'context';
 import rgba from 'assets/themes/functions/rgba';
+import { RCLoadingButton, RCLogoSection } from 'layout/REUSABLE_COMPONENTS';
 
 const Navigation = () => {
   const { theme } = useMode();
   const navigate = useNavigate();
   const { cart } = useManager();
+  const { getCookie } = useManageCookies();
+  const { isMd } = useBreakpoint();
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [isOpen, setIsOpen] = useState(false); // Manage open state locally
-  const isMedView = useMediaQuery(theme.breakpoints.down('md'));
-  const { getCookie } = useManageCookies();
   const { authUser, isLoggedIn } = getCookie(['authUser', 'isLoggedIn']);
-  const username = authUser?.username;
   const { logout } = useAuthManager();
   const menuItems = baseMenuItems({ cartCardQuantity: cart?.items?.length });
   const toggleSidebar = useCallback(() => setIsOpen(!isOpen), [isOpen]);
@@ -167,7 +168,7 @@ const Navigation = () => {
             />
             <RCLogoSection />
           </Box>
-          {!isMedView && renderMenuItems('top')}
+          {!isMd && renderMenuItems('top')}
           <Card
             sx={{
               display: 'flex',
@@ -188,13 +189,11 @@ const Navigation = () => {
                 color: 'white',
               }}
             />
-            <Typography level="title-lg">{username}</Typography>
+            <Typography level="title-lg">{authUser?.username}</Typography>
           </Card>
         </Toolbar>
       </AppBar>
-      {/* <Hidden smDown implementation="css"> */}
       <Drawer
-        // size="xs"
         size="sm"
         variant="plain"
         open={isOpen}
@@ -230,7 +229,6 @@ const Navigation = () => {
           <Card
             sx={{
               display: 'flex',
-              // gap: 2,
               alignItems: 'center',
               background: 'black',
               flexDirection: 'row',
@@ -245,12 +243,9 @@ const Navigation = () => {
               <Card
                 sx={{
                   display: 'flex',
-                  // gap: 2,
                   alignItems: 'center',
                   background: 'white',
                   flexDirection: 'row',
-                  // my: theme.spacing(1),
-                  // py: theme.spacing(1),
                   cursor: 'pointer',
                 }}
                 onClick={() => navigate('/profile')}
@@ -261,11 +256,9 @@ const Navigation = () => {
                     mr: 1,
                     background: theme.palette.success.main_light,
                     color: 'white',
-                    // cursor: 'pointer',
                   }}
-                  // onClick={() => navigate('/profile')}
                 />
-                <Typography level="title-lg">{username}</Typography>
+                <Typography level="title-lg">{authUser?.username}</Typography>
               </Card>
               <RCLoadingButton
                 onClick={handleLogout}
