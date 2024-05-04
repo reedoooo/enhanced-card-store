@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
@@ -8,7 +7,7 @@ import { register, unregister } from './serviceWorker';
 
 import { ColorModeProvider, useMode } from './context';
 import { Helmet } from 'react-helmet';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from 'layout/REUSABLE_COMPONENTS/system-utils/ErrorFallback';
 import { ThemeProvider } from 'styled-components';
@@ -34,16 +33,23 @@ const HelmetMetadata = () => (
 
 const AppWrapper = () => {
   const { theme } = useMode();
-
+  const errorHandler = (error, errorInfo) => {
+    console.error('Error:', error, 'Info:', errorInfo);
+    enqueueSnackbar('An unexpected error occurred, please try again later.', {
+      variant: 'error',
+    });
+  };
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      onReset={(details) => {
-        console.log(details);
-      }}
-      onError={(error) => {
-        console.error(error);
-      }}
+      onReset={() => window.location.reload()}
+      // onError={(error, info) => console.error('Error:', error, 'Info:', info)}
+      // onError={(error) => {
+      //   console.error(error);
+      // }}
+      // onReset={() => window.location.reload()}
+      onError={errorHandler}
+      theme={theme}
     >
       <Router>
         <HelmetMetadata />

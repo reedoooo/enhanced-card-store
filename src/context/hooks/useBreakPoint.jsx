@@ -1,8 +1,9 @@
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useMode } from 'context';
 
 const useBreakpoint = () => {
-  const theme = useTheme();
+  const { theme } = useMode();
   const isIpod = useMediaQuery(theme.breakpoints.down('xs'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
@@ -29,11 +30,18 @@ const useBreakpoint = () => {
   );
 
   return {
+    // Checks for specific breakpoints
     isXs: isIpod,
     isMobile: isMobile,
     isMd: isTablet,
     isLg: isLaptop,
     isXl: isDesktop,
+
+    // Checks for ranges
+    isBetweenXsAndSm: matchesXSBetweenSM,
+    isBetweenSmAndMd: matchesSMBetweenMD,
+    isBetweenMdAndLg: matchesMDBetweenLG,
+    isBetweenLgAndXl: matchesLGBetweenXL,
   };
 };
 

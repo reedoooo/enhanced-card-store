@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonBase, Typography, Avatar } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import DeckBuilderIcon from '../icons/DeckBuilderIcon'; // Import DeckBuilderIcon
+import DeckBuilderIcon from '../../../data/DeckBuilderIcon'; // Import DeckBuilderIcon
 import { ROUTE_CONFIG } from 'data/route-config';
 
 // ==============================|| MAIN LOGO ||============================== //

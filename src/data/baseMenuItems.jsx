@@ -4,7 +4,7 @@ import {
   ShoppingCart as CartIcon,
   Assessment as CollectionIcon,
 } from '@mui/icons-material';
-import DeckBuilderIcon from '../layout/REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
+import DeckBuilderIcon from './DeckBuilderIcon';
 import { Badge } from '@mui/material';
 
 export const baseMenuItems = ({ cartCardQuantity }) => [

@@ -33,10 +33,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import SelectAllIcon from '@mui/icons-material/SelectAll';
-import MenuIcon from '@mui/icons-material/Menu';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const iconData = [
   {

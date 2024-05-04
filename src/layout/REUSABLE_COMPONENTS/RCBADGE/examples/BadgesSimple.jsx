@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import RCBadge from '..';
-import { MDBox } from '../../MDBOX/index';
+import { MDBox } from 'MDBOX/index';
 
 function BadgesSimple() {
   return (

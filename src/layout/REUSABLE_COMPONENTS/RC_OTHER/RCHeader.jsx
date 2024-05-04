@@ -1,5 +1,5 @@
 import { Typography, Box } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from '../context';
 
 const RCHeader = ({ title, subtitle }) => {
   const { theme } = useMode();

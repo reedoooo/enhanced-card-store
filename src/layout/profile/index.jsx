@@ -7,12 +7,12 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 // Images
-import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import Header from './sub-components/Header';
 import PlatformSettings from './sub-components/Settings';
 import ProfileInfoCard from './sub-components/ProfileInfoCard';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 
 function Overview() {
   const { theme } = useMode();
@@ -23,7 +23,6 @@ function Overview() {
         width: '100%',
       }}
     >
-      {/* <MDBox mb={2} mt={-2.2} /> */}
       <Header>
         <MDBox
           mt={5}

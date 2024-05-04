@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import useLogger from './useLogger';
 import useLocalStorage from './useLocalStorage';
-import { useLoading } from './useLoading';
+import useLoading from './useLoading';
 import { useSnackbar } from 'notistack';
 // Utility function to serialize errors
 function serializeError(error) {

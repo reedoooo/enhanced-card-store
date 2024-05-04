@@ -214,8 +214,6 @@ export default styled(Button)(({ ownerState }) => {
     } else if (size === 'large') {
       sizeValue = pxToRem(52);
     }
-
-    // padding value
     let paddingValue = `${pxToRem(11)} ${pxToRem(11)} ${pxToRem(10)}`;
 
     if (size === 'small') {
@@ -335,83 +333,6 @@ export default styled(Button)(({ ownerState }) => {
     };
   };
 
-  // const baseStyle = {
-  //   // position: 'relative',
-  //   // display: 'flex',
-  //   // alignItems: 'center',
-  //   // justifyContent: 'center',
-  //   // width: '100%',
-  //   // minWidth: calculateStyles(size).width,
-  //   // padding: calculateStyles(size).padding,
-  //   // minWidth: customSize === 'md' ? 100 : customSize === 'sm' ? 75 : 140,
-  //   // padding: `1.035rem ${theme.lenMd1}`,
-  //   // borderRadius: theme.borderRadius,
-  //   // fontSize: calculateStyles(size).fontSize,
-  //   // transitionProperty: 'color, background, box-shadow',
-  //   // transitionDuration: '0.35s',
-  //   // background: !color ? greenAccent.light : palette[color].main,
-  //   // color: !customTextColor ? grey.blueGrey : 'white',
-  //   // boxShadow: isDefault
-  //   //   ? `0 0 0 4px ${rgba(theme.colorDefaultBackground || 'white', 0.74)}`
-  //   //   : 'none',
-  //   // ...(isPrimary && {
-  //   //   background: theme.colorPrimary,
-  //   //   color: theme.colorPrimaryText,
-  //   //   boxShadow: `0 0 0 4px ${rgba(theme.colorPrimary || 'white', 0.4)}`,
-  //   // }),
-  //   // ...(isError && {
-  //   //   background: themeSettings.palette.error.main,
-  //   //   color: theme.colorPrimaryText,
-  //   //   boxShadow: `0 0 0 4px ${rgba(themeSettings.palette.error.main || 'white', 0.4)}`,
-  //   // }),
-  //   // ...(isAccent && {
-  //   //   background: theme.colorAccent,
-  //   //   color: theme.colorAccentText,
-  //   //   boxShadow: `0 0 0 4px ${rgba(theme.colorAccent || 'white', 0.4)}`,
-  //   // }),
-  //   // ...(isDisabled && {
-  //   //   background: theme.colorDisabledBackground,
-  //   //   color: theme.colorDisabledText,
-  //   //   cursor: 'not-allowed',
-  //   // }),
-  // };
-  // // const buttonHoverStyle = {
-  // //   position: 'absolute',
-  // //   zIndex: 1,
-  // //   top: 0,
-  // //   left: 0,
-  // //   width: '100%',
-  // //   height: '100%',
-  // //   borderRadius: theme.borderRadius,
-  // //   opacity: 0,
-  // //   pointerEvents: 'none',
-  // //   transition: 'opacity 0.35s',
-  // //   background: customColor
-  // //     ? rgba(customColor, 0.15) // Lighter shade of customColor if provided
-  // //     : 'rgba(0, 0, 0, 0.075)',
-
-  // //   ...(isPrimary && {
-  // //     background: rgba(theme.colorPrimary || 'white', 0.15),
-  // //   }),
-  // //   ...(isError && {
-  // //     background: rgba(themeSettings.palette.error.main || 'white', 0.15),
-  // //   }),
-  // //   ...(isAccent && {
-  // //     background: rgba(theme.colorAccent || 'white', 0.15),
-  // //   }),
-  // //   ...(isDisabled && {
-  // //     background: rgba(theme.colorDisabledBackground || 'white', 0.15),
-  // //   }),
-  // // };
-  // // const buttonTextStyle = {
-  // //   position: 'relative',
-  // //   zIndex: 2,
-  // // };
-  // // const getPrimaryStyle = (theme, isPrimary) => ({
-  // //   background: isPrimary ? theme.colorPrimary : undefined,
-  // //   color: isPrimary ? theme.colorPrimaryText : undefined,
-  // // });
-
   return {
     ...(variant === 'contained' && containedStyles()),
     ...(variant === 'outlined' && outlinedStyles()),
@@ -420,10 +341,5 @@ export default styled(Button)(({ ownerState }) => {
     ...(circular && circularStyles()),
     ...(iconOnly && iconOnlyStyles()),
     ...(variant === 'holo' && holoStyles()),
-    // ...(variant === 'accent' && accentStyles(theme, true)),
-    // ...(variant === 'default' && defaultStyles(theme, true)),
-    // ...(variant === 'disabled' && disabledStyles(theme, true)),
-    // ...(variant === 'error' && errorStyles(theme, true)),
-    // ...(variant === 'success' && successStyles(theme, true)),
   };
 });

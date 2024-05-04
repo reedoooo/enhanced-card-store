@@ -5,7 +5,7 @@ import pxToRem from 'assets/themes/functions/pxToRem';
 
 const { size, fontWeightRegular } = typography;
 const { borderRadius } = borders;
-const { dark, grey } = colors;
+const { dark, grey, success } = colors;
 
 export default {
   styleOverrides: {
@@ -24,13 +24,14 @@ export default {
       lineHeight: 'inherit',
       padding: pxToRem(4),
       borderRadius: borderRadius.lg,
-      color: `${grey.darkest} !important`,
+      color: success.main,
+      // color: `${grey.darkest} !important`,
       opacity: '1 !important',
 
-      'Mui-selected': {
-        color: `${grey.darkest} !important`,
-        opacity: '1 !important',
-      },
+      // 'Mui-selected': {
+      //   color: `${grey.darkest} !important`,
+      //   opacity: '1 !important',
+      // },
       '& .material-icons, .material-icons-round': {
         marginBottom: '0 !important',
         marginRight: pxToRem(6),

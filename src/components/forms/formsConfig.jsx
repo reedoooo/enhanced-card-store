@@ -20,9 +20,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
 import { z } from 'zod';
-import useAuthManager from '../../context/useAuthManager';
-import { useCardStoreHook } from '../../context/useCardStore';
-import useManager from '../../context/useManager';
+import useAuthManager from 'context/state/useAuthManager';
+import { useCardStoreHook } from 'context/state/useCardStore';
+import useManager from 'context/useManager';
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ---------------------------- FORM FIELD HANDLERS ----------------------------

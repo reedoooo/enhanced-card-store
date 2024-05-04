@@ -2,7 +2,7 @@ import { Box, Switch } from '@mui/material';
 import styled from 'styled-components';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import RCMainCard from '../REUSABLE_COMPONENTS/RC_OTHER/RCMainCard';
+import RCMainCard from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCMainCard';
 
 export const HeroBox = styled(Box)(({ theme }) => ({
   width: '100%',

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 import { Box, Tooltip, Typography, Zoom, styled } from '@mui/material';
-import rgba from '../../assets/themes/functions/rgba';
+import rgba from 'assets/themes/functions';
 const formatKey = (key) =>
   key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 const StyledAttributeSpan = ({ theme, children }) => (
@@ -48,8 +48,8 @@ const createTooltipContent = (card) => {
       theme={theme}
       sx={{
         boxShadow: theme.shadows[3],
-        borderRadius: theme.shape.borderRadius,
-        border: `1px solid ${theme.newPalette.white.main}`,
+        borderRadius: theme.borders.borderRadius.md,
+        border: `1px solid ${theme.palette.white.main}`,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -89,6 +89,9 @@ const CardToolTip = ({ card }) => {
       arrow
       title="Card"
       placement="right-end"
+      theme={theme}
+      variant="solid"
+      color="primary"
     >
       {createTooltipContent(card)}
     </Tooltip>

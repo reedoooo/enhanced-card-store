@@ -5,15 +5,15 @@ import {
   Media,
   MediaContainer,
   MediaPopover,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useDialogState from '../../context/hooks/useDialogState';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import useDialogState from 'context/hooks/useDialogState';
 import GenericCardDialog from '../dialogs/GenericCardDialog';
-import { usePopover } from '../../context/hooks/usePopover';
+import usePopover from 'context/hooks/usePopover';
 import { Avatar } from '@mui/material';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
-const CardMediaSection = forwardRef(
+const CardMediaSection = React.forwardRef(
   (
     {
       imgUrl,
@@ -29,8 +29,6 @@ const CardMediaSection = forwardRef(
   ) => {
     const { theme } = useMode();
     const [anchorEl, setAnchorEl] = useState(null);
-    const cardId = card?.id;
-    const [cardWithSameIdCount, setCardWithSameIdCount] = useState(0);
 
     useEffect(() => {
       if (isHovered && ref?.current) {

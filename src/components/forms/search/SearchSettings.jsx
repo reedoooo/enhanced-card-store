@@ -7,7 +7,7 @@ import { SearchSettingsBox } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableSty
 
 export const commonPaperStyles = (theme) => ({
   padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   background: theme.palette.greenAccent.light,
   boxShadow: theme.shadows[3],
   margin: 'auto',

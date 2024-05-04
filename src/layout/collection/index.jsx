@@ -1,22 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useMode } from '../../context';
-import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
+import { useMode } from 'context';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { Grid } from '@mui/material';
-import CollectionDialog from '../../components/dialogs/CollectionDialog';
-import SelectCollectionList from './SelectCollectionList';
-import useDialogState from '../../context/hooks/useDialogState';
-import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import StatBoard from './StatBoard';
+import CollectionDialog from 'components/dialogs/CollectionDialog';
+import useDialogState from 'context/hooks/useDialogState';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import StatBoard from './CollectionsViewLayout/StatBoard';
 import { Tab, Tabs } from '@mui/material';
-import ChartGridLayout from './ChartGridLayout';
-import CollectionPortfolioHeader from './CollectionPortfolioHeader';
-import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
-import useUserData from '../../context/useUserData';
-import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
-import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
-import LoadingOverlay from '../REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
-import useManager from '../../context/useManager';
+import CollectionPortfolioHeader from './PortfolioViewLayout/CollectionPortfolioHeader';
+import PageHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/PageHeader';
+import useUserData from 'context/state/useUserData';
+import { useFormManagement } from 'context/formHooks/useFormManagement';
+import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/system-utils/LoadingOverlay';
+import useManager from 'context/useManager';
+import CollectionsViewLayout from './CollectionsViewLayout';
+import PortfolioViewLayout from './PortfolioViewLayout';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -52,7 +51,7 @@ const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
           <StatBoard />
         </DashboardBox>
         <DashboardBox sx={{ px: theme.spacing(2), py: theme.spacing(2) }}>
-          <SelectCollectionList
+          <CollectionsViewLayout
             handleSelectAndShowCollection={handleTabAndSelect}
             openNewDialog={() => openDialog('isEditCollectionDialogOpen')}
           />
@@ -68,7 +67,7 @@ const PortfolioView = ({ handleBackToCollections }) => (
         <CollectionPortfolioHeader onBack={handleBackToCollections} />
       </Grid>
       <Grid item xs={12}>
-        <ChartGridLayout />
+        <PortfolioViewLayout />
       </Grid>
     </Grid>
   </DashboardLayout>
@@ -132,15 +131,6 @@ const CollectionPortfolio = () => {
           handleSelectCollection(updatedCollection);
         }
       }
-      // if (event.key === 'selectedDeck') {
-      //   const updatedCollection = JSON.parse(event.newValue);
-      //   handleSelectCollection(updatedCollection);
-      // }
-      // if (event.key === 'decks') {
-      //   const updatedDecks = JSON.parse(event.newValue);
-      //   setDecks(updatedDecks);
-      //   setHasUpdatedDecks(true);
-      // }
     };
 
     window.addEventListener('storage', handleStorageChange);

@@ -1,24 +1,18 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, CardActions, Typography } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
-import placeholder from '../../assets/images/placeholder.jpeg';
-import { useMode } from '../../context';
-import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import useSelectedContext from '../../context/hooks/useSelectedContext';
+import placeholder from 'assets/images/placeholder.jpeg';
+import { useMode } from 'context';
+import useSelectedContext from 'context/hooks/useSelectedContext';
 import {
   AspectRatioBox,
   StyledCardContent,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { usePopover } from '../../context/hooks/usePopover';
-import GenericActionButtons from '../../layout/REUSABLE_COMPONENTS/GenericActionButtons';
-import useDialogState from '../../context/hooks/useDialogState';
-import useManager from '../../context/useManager';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import usePopover from 'context/hooks/usePopover';
+import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import useDialogState from 'context/hooks/useDialogState';
+import useManager from 'context/useManager';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 const getQuantity = ({
   card,
   cart,
@@ -123,26 +117,26 @@ const GenericCard = React.forwardRef((props, ref) => {
   if (cardSize !== 'xs' && !isDeckCard) {
     cardContent = (
       <StyledCardContent theme={theme}>
-        <MDTypography variant="body1" gutterBottom fontWeight="medium">
+        <RCTypography variant="body1" gutterBottom fontWeight="medium">
           {name}
-        </MDTypography>
-        <MDTypography variant="body2" color="primary" gutterBottom>
+        </RCTypography>
+        <RCTypography variant="body2" color="primary" gutterBottom>
           {price}
-        </MDTypography>
+        </RCTypography>
         {cardSize !== 'sm' && (
           <>
-            <MDTypography
+            <RCTypography
               variant="body1"
               color="primary"
-            >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</MDTypography>
-            <MDTypography
+            >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</RCTypography>
+            <RCTypography
               variant="body1"
               color="primary"
-            >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</MDTypography>
-            <MDTypography
+            >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</RCTypography>
+            <RCTypography
               variant="body1"
               color="primary"
-            >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</MDTypography>
+            >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</RCTypography>
           </>
         )}
       </StyledCardContent>

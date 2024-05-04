@@ -1,10 +1,11 @@
 import { Typography, Zoom, useMediaQuery } from '@mui/material';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import { useMode } from '../../context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { useMode } from 'context';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 
 const HeroTextSection = ({ shouldShow }) => {
   const { theme } = useMode();
-  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isMobile } = useBreakpoint();
   return (
     <MDBox
       sx={{
@@ -12,11 +13,11 @@ const HeroTextSection = ({ shouldShow }) => {
         justifyContent: 'center',
         flexDirection: 'row',
         background: 'transparent',
-        alignItems: isMobileView ? 'flex-start' : 'center',
+        alignItems: isMobile ? 'flex-start' : 'center',
         padding: 1,
-        my: isMobileView ? null : 1,
-        width: isMobileView ? '100%' : '100%',
-        position: isMobileView ? 'absolute' : 'relative',
+        my: isMobile ? null : 1,
+        width: isMobile ? '100%' : '100%',
+        position: isMobile ? 'absolute' : 'relative',
       }}
     >
       <Zoom in={shouldShow}>
@@ -25,8 +26,8 @@ const HeroTextSection = ({ shouldShow }) => {
             textAlign: 'center',
             background: 'transparent',
             maxWidth: '100%',
-            height: isMobileView ? null : '100%',
-            alignItems: isMobileView ? 'center' : 'center',
+            height: isMobile ? null : '100%',
+            alignItems: isMobile ? 'center' : 'center',
             mx: 'auto',
             my: 'auto',
             borderColor: 'transparent',
@@ -34,21 +35,21 @@ const HeroTextSection = ({ shouldShow }) => {
         >
           <Typography
             component="h1"
-            variant={isMobileView ? 'h3' : 'h2'}
+            variant={isMobile ? 'h3' : 'h2'}
             sx={{
               fontWeight: 'bold',
               color: theme.palette.success.secondary,
-              my: isMobileView ? '1rem' : 'auto',
+              my: isMobile ? '1rem' : 'auto',
             }}
           >
             A New Era of Trading Card Games
           </Typography>
           <Typography
-            variant={isMobileView ? 'h6' : 'h5'}
+            variant={isMobile ? 'h6' : 'h5'}
             sx={{
               mx: 'auto',
               maxWidth: '90%',
-              my: isMobileView ? '1rem' : 'auto',
+              my: isMobile ? '1rem' : 'auto',
             }}
           >
             Discover a revolutionary way to collect, play, and compete in your

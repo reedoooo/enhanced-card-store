@@ -1,8 +1,8 @@
 import React from 'react';
-import { Grid, CardContent, useMediaQuery, Skeleton } from '@mui/material';
-import MDTypography from '../MDTYPOGRAPHY/MDTypography';
-import { useMode } from '../../../context';
+import { Grid, CardContent, Skeleton } from '@mui/material';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import useBreakpoint from 'context/hooks/useBreakPoint';
+import { useMode } from 'context';
 
 const RCInfoItem = ({
   label,
@@ -12,7 +12,6 @@ const RCInfoItem = ({
 }) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  // const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Grid item {...gridSizes}>
@@ -31,19 +30,19 @@ const RCInfoItem = ({
       >
         {label !== undefined && value !== undefined ? (
           <>
-            <MDTypography
+            <RCTypography
               variant={isMobile ? 'body2' : 'h4'}
               fontWeight="medium"
               sx={{ color: theme.palette.chartTheme.grey.darkest }}
             >
               {`${label}:`}
-            </MDTypography>
-            <MDTypography
+            </RCTypography>
+            <RCTypography
               variant={isMobile ? 'body1' : 'h6'}
               sx={{ color: theme.palette.chartTheme.grey.light }}
             >
               {value}
-            </MDTypography>
+            </RCTypography>
           </>
         ) : (
           <>

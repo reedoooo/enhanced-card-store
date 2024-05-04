@@ -1,7 +1,7 @@
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import placeHolder from '../../assets/images/placeholder.jpeg';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import placeHolder from 'assets/images/placeholder.jpeg';
 import { Card, CardContent, Zoom } from '@mui/material';
-import FlexBetween from '../REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import FlexBetween from 'layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -12,10 +12,10 @@ import {
   Line,
   Tooltip,
 } from 'recharts';
-import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import BoxHeader from '../REUSABLE_COMPONENTS/layout-utils/BoxHeader';
-import { useMode } from '../../context';
-import { useMemo } from 'react';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import BoxHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/BoxHeader';
+import { useMode } from 'context';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaShieldAlt } from 'react-icons/fa';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
 const currencyFormatter = (value, separator = '.') => {
@@ -36,6 +36,9 @@ const HeroChartSection = ({
   shouldShow,
 }) => {
   const { theme } = useMode();
+  const [isContainerReady, setIsContainerReady] = useState(false);
+  const chartContainerRef = useRef(null);
+
   const chartData = useMemo(() => {
     return randomCards[activeCardIndex]?.averagedChartData?.['30d']?.data || [];
   }, [randomCards, activeCardIndex]);
@@ -49,6 +52,25 @@ const HeroChartSection = ({
   const cardData = useMemo(() => {
     return randomCards[activeCardIndex];
   }, [randomCards, activeCardIndex]);
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      if (width > 0 && height > 0) {
+        setIsContainerReady(true);
+      }
+    });
+
+    if (chartContainerRef.current) {
+      observer.observe(chartContainerRef.current);
+    }
+
+    return () => {
+      if (chartContainerRef.current) {
+        observer.unobserve(chartContainerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <FlexBetween
       sx={{
@@ -69,6 +91,7 @@ const HeroChartSection = ({
             flexGrow: 1,
             padding: theme.spacing(1),
           }}
+          ref={chartContainerRef}
         >
           <Card
             sx={{
@@ -118,12 +141,10 @@ const HeroChartSection = ({
                     sx={{
                       width: '100%',
                       justifyContent: 'center',
-                      // borderRadius: theme.spacing(4),
                       p: theme.spacing(2),
                       background: theme.palette.transparent.main,
                       border: theme.palette.chartTheme.greenAccent.dark,
                       borderWidth: 5,
-
                       borderRadius: 'inherit',
                     }}
                   >
@@ -153,49 +174,52 @@ const HeroChartSection = ({
                       }
                     />
                   </Card>
-                  <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                    minHeight={300}
-                  >
-                    <LineChart
-                      width={500}
-                      height={400}
-                      data={chartData}
-                      margin={{
-                        top: 20,
-                        right: 0,
-                        left: -10,
-                        bottom: 10,
-                      }}
+                  {isContainerReady && (
+                    <ResponsiveContainer
+                      width="100%"
+                      height="100%"
+                      minHeight={300}
+                      minWidth={0}
                     >
-                      <CartesianGrid
-                        vertical={false}
-                        stroke={theme.palette.chartTheme.grey.default}
-                      />
-                      <XAxis dataKey="x" style={{ fontSize: '10px' }} />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        style={{ fontSize: '10px' }}
-                        domain={yDomain}
-                        tickFormatter={(item) => currencyFormatter(item)}
-                      />
-                      <Tooltip />
-                      <Legend
-                        height={20}
-                        wrapperStyle={{
-                          margin: '0 0 10px 0',
+                      <LineChart
+                        width={500}
+                        height={400}
+                        data={chartData}
+                        margin={{
+                          top: 20,
+                          right: 0,
+                          left: -10,
+                          bottom: 10,
                         }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="y"
-                        format={(value) => `$${value}`}
-                        stroke={theme.palette.success.main}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                      >
+                        <CartesianGrid
+                          vertical={false}
+                          stroke={theme.palette.chartTheme.grey.default}
+                        />
+                        <XAxis dataKey="x" style={{ fontSize: '10px' }} />
+                        <YAxis
+                          tickLine={false}
+                          axisLine={false}
+                          style={{ fontSize: '10px' }}
+                          domain={yDomain}
+                          tickFormatter={(item) => currencyFormatter(item)}
+                        />
+                        <Tooltip />
+                        <Legend
+                          height={20}
+                          wrapperStyle={{
+                            margin: '0 0 10px 0',
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="y"
+                          format={(value) => `$${value}`}
+                          stroke={theme.palette.success.main}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
                 </DashboardBox>
               </CardContent>
             </FlexBetween>

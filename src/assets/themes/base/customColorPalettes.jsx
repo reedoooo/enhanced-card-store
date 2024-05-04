@@ -25,11 +25,12 @@ const success = {
   light: '#70d8bd', // '#4cceac',
   main: '#18b984',
   secondary: '#5CDB95',
+  tertiary: '#5fe7bb',
   focus: rgba('#18b984' || 'white', 0.15),
   secondaryFocus: rgba('#5CDB95' || 'white', 0.15),
   dark: '#3da58a',
   darkest: '#2e7c67', // '#70d8bd',
-  contrastText: '#fff',
+  contrastText: '#dbf5ee',
   hoverContrastText: colorTextForDark,
 };
 const info = {
@@ -279,13 +280,15 @@ const rarityOverlay = {
   // Add more rarities as needed
 };
 const text = {
-  // main: '#212121',
+  primary: '#212121',
+  secondary: '#3d3d3d',
   main: '#3d3d3d', // '#424242',
   focus: '#212121',
   dark: '#424242',
-  primary: '#212121',
-  secondary: '#f5f5f5',
-  tertiary: '#ffffff',
+  colorText: '#343239',
+  colorPrimaryText: rgba('white', 0.96),
+  colorLabel: '#A4A3A6',
+  contrastText: '#ffffff',
 };
 const divider = 'white';
 const action = {

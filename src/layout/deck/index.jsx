@@ -13,18 +13,18 @@ import {
   Tabs,
   CircularProgress,
 } from '@mui/material';
-import { useMode } from '../../context';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import DashboardLayout from '../REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
-import SearchComponent from '../../components/forms/search/SearchComponent';
-import DeckDialog from '../../components/dialogs/DeckDialog';
-import useDialogState from '../../context/hooks/useDialogState';
+import { useMode } from 'context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import DashboardLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/DashBoardLayout';
+import SearchComponent from 'components/forms/search/SearchComponent';
+import DeckDialog from 'components/dialogs/DeckDialog';
+import useDialogState from 'context/hooks/useDialogState';
 import DeckListItem from './DeckListItem';
-import DashboardBox from '../REUSABLE_COMPONENTS/layout-utils/DashboardBox';
-import PageHeader from '../REUSABLE_COMPONENTS/layout-utils/PageHeader';
-import useUserData from '../../context/useUserData';
-import { useFormManagement } from '../../components/forms/hooks/useFormManagement';
-import useManager from '../../context/useManager';
+import DashboardBox from 'layout/REUSABLE_COMPONENTS/layout-utils/DashboardBox';
+import PageHeader from 'layout/REUSABLE_COMPONENTS/layout-utils/PageHeader';
+import useUserData from 'context/state/useUserData';
+import { useFormManagement } from 'context/formHooks/useFormManagement';
+import useManager from 'context/useManager';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -200,6 +200,7 @@ const DeckBuilder = () => {
                 aria-label="deck-tabs"
                 variant="scrollable"
                 scrollButtons="auto"
+                theme={theme}
               >
                 {deckTabs}
               </Tabs>

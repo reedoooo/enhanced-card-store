@@ -1,19 +1,13 @@
 import { Link } from 'react-router-dom';
-
-// prop-types is library for typechecking of props
 import PropTypes from 'prop-types';
-
-// @mui material components
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Icon from '@mui/material/Icon';
-
-// Material Dashboard 2 React base styles
 import colors from 'assets/themes/base/colors';
 import typography from 'assets/themes/base/typography';
-import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 
 function ProfileInfoCard({
   title = '',
@@ -49,16 +43,16 @@ function ProfileInfoCard({
   // Render the card info items
   const renderItems = labels.map((label, key) => (
     <MDBox key={label} display="flex" py={1} pr={2}>
-      <MDTypography
+      <RCTypography
         variant="button"
         fontWeight="bold"
         textTransform="capitalize"
       >
         {label}: &nbsp;
-      </MDTypography>
-      <MDTypography variant="button" fontWeight="regular" color="text">
+      </RCTypography>
+      <RCTypography variant="button" fontWeight="regular" color="text">
         &nbsp;{values[key]}
-      </MDTypography>
+      </RCTypography>
     </MDBox>
   ));
 
@@ -89,14 +83,14 @@ function ProfileInfoCard({
         pt={2}
         px={2}
       >
-        <MDTypography
+        <RCTypography
           variant="h6"
           fontWeight="medium"
           textTransform="capitalize"
         >
           {title}
-        </MDTypography>
-        <MDTypography
+        </RCTypography>
+        <RCTypography
           component={Link}
           to={action.route}
           variant="body2"
@@ -105,13 +99,13 @@ function ProfileInfoCard({
           <Tooltip title={action.tooltip} placement="top">
             <Icon>edit</Icon>
           </Tooltip>
-        </MDTypography>
+        </RCTypography>
       </MDBox>
       <MDBox p={2}>
         <MDBox mb={2} lineHeight={1}>
-          <MDTypography variant="button" color="text" fontWeight="light">
+          <RCTypography variant="button" color="text" fontWeight="light">
             {description}
-          </MDTypography>
+          </RCTypography>
         </MDBox>
         <MDBox opacity={0.3}>
           <Divider />
@@ -119,13 +113,13 @@ function ProfileInfoCard({
         <MDBox>
           {renderItems}
           <MDBox display="flex" py={1} pr={2}>
-            <MDTypography
+            <RCTypography
               variant="button"
               fontWeight="bold"
               textTransform="capitalize"
             >
               social: &nbsp;
-            </MDTypography>
+            </RCTypography>
             {renderSocial}
           </MDBox>
         </MDBox>

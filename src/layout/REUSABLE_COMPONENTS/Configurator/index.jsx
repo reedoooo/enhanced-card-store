@@ -11,16 +11,16 @@ import {
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
 import searchData from 'data/json-data/search.json';
-import { useMode } from 'context';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
-import MDTypography from '../MDTYPOGRAPHY/MDTypography';
-import MDBox from '../MDBOX';
 import { formFields } from 'components/forms/formsConfig';
 import { TextField, InputLabel } from '@mui/material';
-import { StyledFormControl } from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import RCButton from '../RCBUTTON';
-import { useConfigurator } from 'context/hooks/useConfigurator';
+import { StyledFormControl } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
+import useConfigurator from 'context/hooks/useConfigurator';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMode } from 'context';
 
 const SearchSettingsForm = ({
   searchSettings,
@@ -101,7 +101,6 @@ const Configurator = () => {
 
   const onSubmitForm = (data) => {
     console.log(data);
-    // Assuming onSubmit updates some context or state
   };
 
   const renderSwitchSection = (title) => (
@@ -111,7 +110,7 @@ const Configurator = () => {
       alignItems="center"
       mt={3}
     >
-      <MDTypography variant="h6">{title}</MDTypography>
+      <RCTypography variant="h6">{title}</RCTypography>
       <Switch />
     </MDBox>
   );
@@ -128,9 +127,8 @@ const Configurator = () => {
           alignItems="baseline"
           pt={4}
           pb={0.5}
-          // px={3}
         >
-          <MDTypography variant="h5">Search Settings</MDTypography>
+          <RCTypography variant="h5">Search Settings</RCTypography>
           <Icon
             sx={{ fontSize: '2rem', cursor: 'pointer' }}
             onClick={toggleConfigurator}

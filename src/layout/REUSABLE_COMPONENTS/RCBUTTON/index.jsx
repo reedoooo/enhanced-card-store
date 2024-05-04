@@ -1,7 +1,7 @@
-import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import RCButtonRoot from './RCButtonRoot';
 import { Box } from '@mui/material';
+import React from 'react';
 // Wrapper component for when you need a container around the button
 const ButtonContainer = ({ children, withContainer }) => (
   <Box
@@ -15,7 +15,7 @@ const ButtonContainer = ({ children, withContainer }) => (
     {children}
   </Box>
 );
-const RCButton = forwardRef(
+const RCButton = React.forwardRef(
   (
     {
       color = 'white',
@@ -25,14 +25,6 @@ const RCButton = forwardRef(
       iconOnly = false,
       children,
       withContainer = false, // Default value for withContainer prop
-      // isPrimary,
-      // isAccent,
-      // isDefault,
-      // isDisabled,
-      // isError,
-      // customColor,
-      // customTextColor,
-      // customSize,
       ...rest
     },
     ref

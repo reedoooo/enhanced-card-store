@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
-import ProgressCircle from '../system-utils/ProgressCircle';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import MDTypography from '../MDTYPOGRAPHY/MDTypography';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import MDBox from '../MDBOX';
 import { useMode } from 'context';
 
@@ -43,7 +42,7 @@ const RCChange = ({ progress, increase, change, rangeLevel }) => {
       <Box sx={styles.flexBox}>
         <Box>
           <Typography sx={styles.percentageText}>Change</Typography>
-          <MDTypography
+          <RCTypography
             variant="h6"
             fontWeight="bold"
             color={increase ? 'success' : 'error'}
@@ -56,11 +55,8 @@ const RCChange = ({ progress, increase, change, rangeLevel }) => {
           >
             {increase ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
             {`${change}%`}
-          </MDTypography>
+          </RCTypography>
         </Box>
-        {/* <Box>
-          <ProgressCircle progress={progress} />
-        </Box> */}
       </Box>
       <Box sx={styles.flexBox}>
         <Typography sx={styles.rangeText}>{`In ${rangeLevel}`}</Typography>

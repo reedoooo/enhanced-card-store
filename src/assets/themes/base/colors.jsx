@@ -64,6 +64,7 @@ const colors = {
   dark: {
     main: '#344767',
     focus: '#2c3c58',
+    state: '#191919',
   },
   gradients: {
     primary: {
@@ -228,6 +229,18 @@ const colors = {
   tabs: {
     indicator: { boxShadow: '#ddd' },
   },
+  // inputBorderColor: {
+  //   main: '#d2d6da',
+  //   hover: '#b3b9c2',
+  //   active: '#9499a2',
+  //   disabled: '#d2d6da',
+  //   error: '#f44336',
+  //   success: '#4caf4f',
+  //   warning: '#ff9900',
+  //   info: '#00bbd4',
+  //   light: '#adb5bd',
+  //   dark: '#404040',
+  // },
 };
 
 export default colors;

@@ -1,4 +1,4 @@
-import { roundToNearestTenth } from '../../context/Helpers';
+import { roundToNearestTenth } from 'context/Helpers';
 function prepareDeckData(deck, cards) {
   const genData = {
     name: deck?.name,

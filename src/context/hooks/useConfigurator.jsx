@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // Custom hook to manage configurator state
-export const useConfigurator = () => {
+const useConfigurator = () => {
   const [isConfiguratorOpen, setIsConfiguratorOpen] = useState(false);
 
   const toggleConfigurator = () => {
@@ -10,3 +10,5 @@ export const useConfigurator = () => {
 
   return { isConfiguratorOpen, toggleConfigurator };
 };
+
+export default useConfigurator;

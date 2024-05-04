@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 import { useCallback, useState } from 'react';
 
-export const useEventHandlers = () => {
+const useEventHandlers = () => {
   const [hoveredData, setHoveredData] = useState(null);
   const debouncedSetHoveredData = useCallback(
     debounce(setHoveredData, 100),
@@ -21,3 +21,5 @@ export const useEventHandlers = () => {
   );
   return { hoveredData, handleMouseMove, handleMouseLeave };
 };
+
+export default useEventHandlers;

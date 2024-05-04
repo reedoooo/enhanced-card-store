@@ -11,7 +11,7 @@ const sizes = {
 
 function LoadingCardAnimation({ selected, size = 'medium' }) {
   const mount = useRef(null);
-  const placeholderImage = '../../assets/images/placeholder.png'; // Replace with your placeholder image path
+  const placeholderImage = 'assets/images/placeholder.png'; // Replace with your placeholder image path
   const placeholderTexture = new THREE.TextureLoader().load(placeholderImage);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Icon from '@mui/material/Icon';
-import { MDBox } from '../../MDBOX/index';
+import { MDBox } from 'MDBOX/index';
 import RCButton from '..';
 
 function ButtonsIconLeft() {

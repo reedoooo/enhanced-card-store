@@ -1,11 +1,10 @@
 import React from 'react';
-import MDTypography from '../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { useSnackbar } from 'notistack';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import { roundToNearestTenth } from 'context/Helpers';
-import GenericActionButtons from '../layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
 // Note: No changes needed for these components
 const Name = ({ name, color }) => (
-  <MDTypography
+  <RCTypography
     component="a"
     href="#"
     variant="button"
@@ -13,11 +12,11 @@ const Name = ({ name, color }) => (
     fontWeight="medium"
   >
     {name}
-  </MDTypography>
+  </RCTypography>
 );
 
 const Price = ({ price, color }) => (
-  <MDTypography
+  <RCTypography
     component="a"
     href="#"
     variant="button"
@@ -25,11 +24,11 @@ const Price = ({ price, color }) => (
     fontWeight="medium"
   >
     {price}
-  </MDTypography>
+  </RCTypography>
 );
 
 const TPrice = ({ tPrice, color }) => (
-  <MDTypography
+  <RCTypography
     component="a"
     href="#"
     variant="caption"
@@ -37,11 +36,11 @@ const TPrice = ({ tPrice, color }) => (
     fontWeight="medium"
   >
     {tPrice}
-  </MDTypography>
+  </RCTypography>
 );
 
 const Quantity = ({ quantity, color }) => (
-  <MDTypography
+  <RCTypography
     component="a"
     href="#"
     variant="caption"
@@ -49,7 +48,7 @@ const Quantity = ({ quantity, color }) => (
     fontWeight="medium"
   >
     {quantity}
-  </MDTypography>
+  </RCTypography>
 );
 
 export default function prepareTableData(selectedCards, type) {

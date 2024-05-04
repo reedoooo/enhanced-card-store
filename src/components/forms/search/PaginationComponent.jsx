@@ -68,7 +68,7 @@ export default PaginationComponent;
 // import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 // import MDInput from 'layout/REUSABLE_COMPONENTS/MDINPUT';
 // import Icon from '@mui/material/Icon';
-// import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+// import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY/RCTypography';
 
 // const PaginationComponent = ({
 //   pageOptions,
@@ -97,9 +97,9 @@ export default PaginationComponent;
 //         />
 //       </MDBox>
 //     ) : (
-//       <MDTypography variant="button" fontWeight="medium">
+//       <RCTypography variant="button" fontWeight="medium">
 //         Page {pageIndex + 1} of {pageOptions?.length}
-//       </MDTypography>
+//       </RCTypography>
 //     )}
 //     {canNextPage && (
 //       <MDPagination item onClick={() => nextPage()}>
@@ -121,9 +121,9 @@ p={!showTotalEntries && data?.length === 1 ? 0 : 3}
 >
 {showTotalEntries && (
 	<MDBox mb={{ xs: 3, sm: 0 }}>
-		<MDTypography variant="button" color="white" fontWeight="regular">
+		<RCTypography variant="button" color="white" fontWeight="regular">
 			Showing {entriesStart} to {entriesEnd} of {data?.length} entries
-		</MDTypography>
+		</RCTypography>
 	</MDBox>
 )}
 {pageOptions?.length > 1 && (
@@ -150,9 +150,9 @@ p={!showTotalEntries && data?.length === 1 ? 0 : 3}
 			</MDBox>
 		) : (
 			<MDBox width="5rem" mx={1}>
-				<MDTypography variant="button" fontWeight="medium">
+				<RCTypography variant="button" fontWeight="medium">
 					{customizedPageOptions[pageIndex]}
-				</MDTypography>
+				</RCTypography>
 			</MDBox>
 		)}
 		{canNextPage && (

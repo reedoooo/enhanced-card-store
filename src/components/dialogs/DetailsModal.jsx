@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import featureCardData from '../../data/json-data/featureCardData.json'; // Path to your JSON file
+import featureCardData from 'data/json-data/featureCardData.json'; // Path to your JSON file
 
 const DetailsModal = ({ open, onClose }) => {
   const handleClose = () => {

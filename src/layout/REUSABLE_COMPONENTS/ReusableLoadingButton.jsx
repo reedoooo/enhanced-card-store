@@ -1,7 +1,7 @@
 import React from 'react';
 import { LoadingButton } from '@mui/lab';
 import AdjustSharpIcon from '@mui/icons-material/AdjustSharp';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 
 const ReusableLoadingButton = ({
   loading,

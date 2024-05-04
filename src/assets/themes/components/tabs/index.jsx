@@ -11,7 +11,7 @@ export default {
   styleOverrides: {
     root: {
       position: 'relative',
-      backgroundColor: grey.default,
+      // backgroundColor: grey.default,
       borderRadius: borderRadius.xl,
       minHeight: 'unset',
       padding: pxToRem(4),
@@ -38,10 +38,19 @@ export default {
     indicator: {
       height: '100%',
       borderRadius: borderRadius.lg,
-      backgroundColor: success.dark,
+      // backgroundColor: success.dark,
+      backgroundColor: success.main, // Ensure this is not commented out
       boxShadow: tabsBoxShadow.indicator,
       transition: 'all 500ms ease',
-      color: `${success.dark} !important`,
+      color: `${success.main} !important`,
+    },
+
+    label: {
+      color: `${success.main} !important`,
+    },
+
+    labelIcon: {
+      color: `${success.main} !important`,
     },
   },
 };

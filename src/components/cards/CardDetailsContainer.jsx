@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Card,
   CardContent,
   CardHeader,
   Chip,
   Divider,
   Grid,
-  List,
-  ListItem,
   Stack,
   Typography,
-  Container,
   Collapse,
 } from '@mui/material';
 import {
@@ -22,11 +18,10 @@ import {
   FaVenusMars,
 } from 'react-icons/fa';
 import { GiAxeSword } from 'react-icons/gi';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 import styled from 'styled-components';
-import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import { CardWrapper } from '../../layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
+import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 const IconWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -104,14 +99,14 @@ const CardDetailChip = styled(Chip)(({ theme }) => ({
   },
 }));
 const CardDetailDescription = ({ value }) => (
-  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
+  <RCTypography variant="body1" sx={{ color: 'text.secondary' }}>
     {value}
-  </MDTypography>
+  </RCTypography>
 );
 const CardDetailPrice = ({ value }) => (
-  <MDTypography variant="body1" sx={{ color: 'text.secondary' }}>
+  <RCTypography variant="body1" sx={{ color: 'text.secondary' }}>
     {value}
-  </MDTypography>
+  </RCTypography>
 );
 const CardDetailRarity = ({ values, onRarityClick }) => {
   const { theme } = useMode();
@@ -246,13 +241,7 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
     </Grid>
   );
 };
-const CardDetailsContainer = ({
-  card,
-  className,
-  isTextSection,
-  isInventorySection,
-  titles,
-}) => {
+const CardDetailsContainer = ({ card, className }) => {
   const { theme } = useMode();
   const handleAction = () => console.log('Action clicked');
   return (
@@ -262,7 +251,7 @@ const CardDetailsContainer = ({
       sx={{
         // background: theme.palette.chartTheme.greenAccent.light,
         justifyContent: 'center',
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.borders.borderRadius.md,
         maxWidth: '100%',
       }}
     >

@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, InputAdornment } from '@mui/material';
-import { useMediaQuery } from '@mui/material';
-// import { RCFieldError } from './RCFieldError';
+import { Box, InputAdornment, Tooltip } from '@mui/material';
 import RCInput from './RCInput';
 import { Controller } from 'react-hook-form';
-import useRCFormHook from '../hooks/useRCFormHook';
+import useRCFormHook from '../../../context/formHooks/useRCFormHook';
 import {
   FormBox,
   FormFieldBox,
@@ -12,11 +10,10 @@ import {
 import { useMode } from 'context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { getFormFieldHandlers } from '../formsConfig';
-import { useFormSubmission } from '../hooks/useFormSubmission';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFormSubmission } from '../../../context/formHooks/useFormSubmission';
+import React, { useEffect, useState } from 'react';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import ReusableLoadingButton from 'layout/REUSABLE_COMPONENTS/ReusableLoadingButton';
-import { Tooltip } from '@mui/joy';
+import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
 
 const RCDynamicForm = ({
   formKey,
@@ -36,7 +33,7 @@ const RCDynamicForm = ({
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, dirtyFields, isDirty, isValid },
+    formState: { isSubmitting },
     reset,
   } = methods;
   const [isMounted, setIsMounted] = useState(false);
@@ -106,11 +103,14 @@ const RCDynamicForm = ({
 
       {optionsForUi && optionsForUi.submitButton && (
         <Tooltip title={optionsForUi.submitButtonLabel} placement="top">
-          <ReusableLoadingButton
+          <RCLoadingButton
+            key={optionsForUi.submitButtonLabel}
             type="submit"
             loading={isSubmitting}
-            label={optionsForUi.submitButtonLabel}
-            startIcon={
+            withContainer={false}
+            fullWidth={true}
+            circular={true}
+            icon={
               optionsForUi.startIcon ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   {optionsForUi.startIcon}
@@ -121,23 +121,24 @@ const RCDynamicForm = ({
                 </Box>
               )
             }
-            fullWidth
-            sx={{
-              ...(isMobile && {
-                fontSize: '0.75rem', // Adjust button font size for mobile
-              }),
-            }}
+            variant="holo"
+            color="info"
+            label={optionsForUi.submitButtonLabel}
+            size="large"
           />
         </Tooltip>
       )}
       {optionsForUi && optionsForUi.deleteButton && (
         <Tooltip title={optionsForUi.deleteButtonLabel} placement="top">
-          <ReusableLoadingButton
+          <RCLoadingButton
             key={optionsForUi.deleteButtonLabel}
-            onClick={optionsForUi.deleteActions}
+            type="submit"
+            // onClick={handleLogout}
             loading={isSubmitting}
-            label={optionsForUi.deleteButtonLabel}
-            startIcon={
+            withContainer={false}
+            fullWidth={true}
+            circular={true}
+            icon={
               optionsForUi.startIcon ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   {optionsForUi.startIcon}
@@ -148,9 +149,10 @@ const RCDynamicForm = ({
                 </Box>
               )
             }
-            variant="warning"
-            fullWidth
-            sx={{ mt: 2.2, background: theme.palette.error.main }}
+            variant="holo"
+            color="error"
+            label={optionsForUi.deleteButtonLabel}
+            size="large"
           />
         </Tooltip>
       )}

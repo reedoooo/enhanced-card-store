@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
-import { useMode } from '../../context';
-import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
+import { useMode } from 'context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import MDTypography from '../../layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { formFields } from '../forms/formsConfig';
 import RCDynamicForm from '../forms/Factory/RCDynamicForm';
-import useInitialFormData from '../forms/hooks/useInitialFormData';
+import useInitialFormData from '../../context/formHooks/useInitialFormData';
 
 const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
   const { theme } = useMode();
@@ -60,9 +60,9 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
             <Avatar sx={{ m: 1, bgcolor: theme.palette.grey.lighter2 }}>
               <LockOutlinedIcon />
             </Avatar>
-            <MDTypography component="h1" variant="h4">
+            <RCTypography component="h1" variant="h4">
               {isNew ? 'Add a Collection' : 'Update a Collection'}
-            </MDTypography>
+            </RCTypography>
           </MDBox>
         </DialogTitle>
       </DialogPaper>

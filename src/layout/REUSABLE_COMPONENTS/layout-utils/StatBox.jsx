@@ -1,5 +1,4 @@
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
-import ProgressCircle from '../system-utils/ProgressCircle';
 import { useMode } from 'context';
 import MDBox from '../MDBOX';
 
@@ -17,7 +16,7 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
       sx={{
         width: '100%',
         p: '20px',
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.borders.borderRadius.md,
         border: 'none',
         maxHeight: '135px',
       }}
@@ -62,13 +61,7 @@ const StatBox = ({ title, subtitle, icon, progress, increase, wrapIcon }) => {
           >
             {title}
           </Typography>
-          {/* </CardContent> */}
         </MDBox>
-        {/* </Card> */}
-        {/* </Box> */}
-        {/* <Box>
-          <ProgressCircle progress={progress} />
-        </Box> */}
       </Box>
       <Box
         display="flex"

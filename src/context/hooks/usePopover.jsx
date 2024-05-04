@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import placeholder from '../../assets/images/placeholder.jpeg';
-export const usePopover = () => {
+import placeholder from 'assets/images/placeholder.jpeg';
+const usePopover = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const hoveredValues = {
@@ -21,3 +21,5 @@ export const usePopover = () => {
     setIsPopoverOpen,
   };
 };
+
+export default usePopover;

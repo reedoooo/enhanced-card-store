@@ -1,7 +1,5 @@
-// context/index.js
-export { useMode } from './useMode';
-// export { useConfiguratorContext } from './ConfiguratorContext';
+import useMode from './state/useMode';
 
-export { default as ErrorBoundary } from '../layout/REUSABLE_COMPONENTS/system-utils/ErrorBoundary';
+// context/index.js
+export { useMode };
 export { ColorModeProvider } from './ColorModeProvider';
-// export { ConfiguratorProvider } from './ConfiguratorContext';
