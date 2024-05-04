@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useMode } from 'context';
-import useUserData from 'context/useUserData';
+import useUserData from 'context/state/useUserData';
 const ListItemWrapper = styled('div')(({ theme }) => ({
   cursor: 'pointer',
   padding: 16,
@@ -164,7 +164,7 @@ const NotificationList = () => {
           <ListItemAvatar>
             <Avatar
               sx={{
-                color: theme.palette.grey.black,
+                color: theme.palette.black.darker,
                 backgroundColor: theme.palette.grey.blueGrey,
                 border: 'none',
                 borderColor: theme.palette.success.secondary,

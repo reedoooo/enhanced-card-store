@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import useUserData from '../../context/useUserData';
+import { useNavigate } from 'react-router-dom';
+import useUserData from 'context/state/useUserData';
+import { useEffect } from 'react';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useUserData();

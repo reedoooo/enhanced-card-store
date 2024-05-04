@@ -9,15 +9,13 @@ import Tab from '@mui/material/Tab';
 import Icon from '@mui/material/Icon';
 import burceMars from 'assets/images/bg1.jpg';
 import { useMode } from 'context';
-import MDBox from '../../REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from '../../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import { Avatar } from '@mui/material';
 import useManageCookies from 'context/hooks/useManageCookies';
 
 function Header({ children }) {
   const { theme } = useMode();
-  // const { isMobile } = useBreakpoint();
-  const { gradients } = theme.palette;
   const { getCookie } = useManageCookies();
   const { authUser } = getCookie(['authUser']);
   const [tabsOrientation, setTabsOrientation] = useState('horizontal');
@@ -75,12 +73,12 @@ function Header({ children }) {
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
-              <MDTypography variant="h5" fontWeight="medium">
+              <RCTypography variant="h5" fontWeight="medium">
                 {authUser?.username}
-              </MDTypography>
-              <MDTypography variant="button" color="text" fontWeight="regular">
+              </RCTypography>
+              <RCTypography variant="button" color="text" fontWeight="regular">
                 {authUser?.role_data?.name}
-              </MDTypography>
+              </RCTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={4} lg={4} sx={{ ml: 'auto' }}>

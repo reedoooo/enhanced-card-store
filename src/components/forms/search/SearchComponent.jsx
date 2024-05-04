@@ -1,26 +1,26 @@
 // DeckSearch.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Card, Container, Grid, IconButton } from '@mui/material';
 import SearchResults from './SearchResults';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useMode } from 'context';
 import useLocalStorage from 'context/hooks/useLocalStorage';
-import SimpleCard from 'layout/REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from 'layout/REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { useCardStoreHook } from 'context/useCardStore';
-import RCDynamicForm from '../Factory/RCDynamicForm';
-import { formFields } from '../formsConfig';
 import SearchIcon from '@mui/icons-material/Search';
+import { useCardStoreHook } from 'context/state/useCardStore';
+import useConfigurator from 'context/hooks/useConfigurator';
+import RCDynamicForm from '../Factory/RCDynamicForm';
+import { formFields } from '../../../data/formsConfig';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import { useConfigurator } from 'context/hooks/useConfigurator';
+import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  const itemsPerPage = 12;
   const { loadingSearchResults } = useCardStoreHook();
   const { toggleConfigurator } = useConfigurator();
+  const itemsPerPage = 12;
   const [searchData, setSearchData] = useLocalStorage('searchData', []);
   useEffect(() => {
     const handleStorageChange = () => {
@@ -38,10 +38,9 @@ const SearchComponent = (pageContext) => {
   return (
     <Grid container spacing={2} direction="column">
       <Grid item xs={12}>
-        <SimpleCard
-          theme={uniqueTheme}
+        <RCCard
           hasTitle={false}
-          isSearchFormHeader={true}
+          variant="search"
           sx={{
             elevation: isMobile ? 0 : 3, // Remove elevation on mobile
             p: isMobile ? 0 : theme.spacing(2), // Remove padding on mobile
@@ -63,7 +62,7 @@ const SearchComponent = (pageContext) => {
               }),
             }}
           >
-            <MDTypography
+            <RCTypography
               variant="h4"
               align="left"
               sx={{
@@ -74,7 +73,7 @@ const SearchComponent = (pageContext) => {
               }}
             >
               Search Cards
-            </MDTypography>
+            </RCTypography>
             <IconButton
               aria-label="settings"
               onClick={toggleConfigurator}
@@ -105,7 +104,7 @@ const SearchComponent = (pageContext) => {
               }}
             />
           </Container>
-        </SimpleCard>
+        </RCCard>
       </Grid>
       <Grid
         item

@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@mui/material';
-import { useMode } from 'context';
-import SimpleCard from '../unique/SimpleCard';
-import SimpleSectionHeader from '../unique/SimpleSectionHeader';
-import uniqueTheme from '../unique/uniqueTheme';
+import SimpleSectionHeader from './SimpleSectionHeader';
 import { PageHeaderSkeleton } from '../system-utils/SkeletonVariants';
 import RCButton from '../RCBUTTON';
-import useUserData from 'context/useUserData';
-import { useFormManagement } from 'components/forms/hooks/useFormManagement';
+import useUserData from 'context/state/useUserData';
+import { useFormManagement } from 'context/formHooks/useFormManagement';
 import { Tooltip } from '@mui/joy';
+import RCCard from '../RCCARD';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -42,11 +40,9 @@ const PageHeader = ({
   }
 
   return (
-    <SimpleCard
-      theme={uniqueTheme}
-      hasTitle={false}
-      isPrimary={false}
+    <RCCard
       noBottomMargin={true}
+      hasTitle={false}
       sx={{
         maxWidth: '100vw',
         justifyContent: 'center',
@@ -79,7 +75,7 @@ const PageHeader = ({
           </RCButton>
         </Tooltip>
       </FlexContainer>
-    </SimpleCard>
+    </RCCard>
   );
 };
 

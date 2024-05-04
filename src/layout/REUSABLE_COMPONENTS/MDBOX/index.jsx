@@ -1,21 +1,17 @@
-import { forwardRef } from 'react';
-
-// prop-types is a library for typechecking of props
 import PropTypes from 'prop-types';
+import MDBoxRoot from './MDBoxRoot';
+import React from 'react';
 
-// Custom styles for MDBox
-import MDBoxRoot from './MdBoxRoot';
-
-const MDBox = forwardRef(
+const MDBox = React.forwardRef(
   (
     {
-      variant,
-      bgColor,
-      color,
-      opacity,
-      borderRadius,
-      shadow,
-      coloredShadow,
+      variant = 'contained',
+      bgColor = 'default',
+      color = 'text',
+      opacity = 1,
+      borderRadius = 'md',
+      shadow = 'none',
+      coloredShadow = 'none',
       ...rest
     },
     ref
@@ -37,17 +33,6 @@ const MDBox = forwardRef(
 );
 
 MDBox.displayName = 'MDBox';
-
-// Setting default values for the props of MDBox
-MDBox.defaultProps = {
-  variant: 'contained',
-  bgColor: 'transparent',
-  color: 'dark',
-  opacity: 1,
-  borderRadius: 'none',
-  shadow: 'none',
-  coloredShadow: 'none',
-};
 
 // Typechecking props for the MDBox
 MDBox.propTypes = {

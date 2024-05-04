@@ -6,7 +6,8 @@ export const ROUTES = [
   { path: '/cart', componentName: 'CartPage', isPrivate: true },
   { path: '/collection', componentName: 'CollectionPage', isPrivate: true },
   { path: '/profile', componentName: 'ProfilePage', isPrivate: true },
-  { path: '/login', componentName: 'LoginDialog', isPrivate: false },
+  // { path: '/login', componentName: 'LoginDialog', isPrivate: false },
+  { path: '/login', componentName: 'LoginPage', isPrivate: false },
   { path: '/loginPage', componentName: 'LoginPage', isPrivate: false },
   { path: '/signup', componentName: 'SignupPage', isPrivate: false },
   { path: '/about', componentName: 'AboutPage', isPrivate: false },
@@ -16,7 +17,7 @@ export const ROUTES = [
   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
 ];
 
-export const ROUTE_CONFIG = {
+const ROUTE_CONFIG = {
   defaultPath: '/',
   routes: ROUTES.map(({ path, componentName, isPrivate }) => ({
     path,
@@ -24,3 +25,5 @@ export const ROUTE_CONFIG = {
     isPrivate,
   })),
 };
+
+export default ROUTE_CONFIG;

@@ -12,6 +12,7 @@ const BoxHeader = ({
   sx,
   useSX,
   titleVariant,
+  subtitleVariant,
   colorVariant,
   paddingVariant,
 }) => {
@@ -37,17 +38,15 @@ const BoxHeader = ({
             mb="-0.1rem"
             ml="0.5rem"
             p="0.5rem"
-            color={
-              useSX ? colorVariant : theme.palette.greenAccent.pureGreenBlue
-            }
+            color={useSX ? colorVariant : theme.palette.text.main}
           >
             {title}
           </Typography>
           {subtitle !== 'none' && (
             <Typography
-              variant="h4"
+              variant={useSX ? subtitleVariant : 'body1'}
               theme={theme}
-              sx={{ fontSize: '1.2rem', ml: '1rem' }}
+              sx={{ ml: '1rem' }}
             >
               {subtitle}
             </Typography>
@@ -59,7 +58,7 @@ const BoxHeader = ({
           theme={theme}
           variant="h5"
           fontWeight="700"
-          color={theme.palette.greenAccent.pureGreenBlue}
+          color={theme.palette.success.secondary}
           sx={useSX ? sx : {}}
         >
           {sideText}

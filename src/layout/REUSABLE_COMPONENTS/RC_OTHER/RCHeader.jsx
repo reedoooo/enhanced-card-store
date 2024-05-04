@@ -1,10 +1,10 @@
 import { Typography, Box } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
 
 const RCHeader = ({ title, subtitle }) => {
   const { theme } = useMode();
-  const grey = theme.palette.chartTheme.grey.default;
-  const greenAccent = theme.palette.chartTheme.greenAccent.default;
+  const grey = theme.palette.grey.default;
+  const greenAccent = theme.palette.success.dark;
   return (
     <Box my="auto">
       <Typography

@@ -10,16 +10,14 @@ import {
   Navigation,
   Autoplay,
 } from 'swiper/modules';
-import MDTypography from '../REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import placeHolder from '../../assets/images/placeholder.jpeg';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import placeHolder from 'assets/images/placeholder.jpeg';
+import useBreakpoint from 'context/hooks/useBreakPoint';
 
-const HeroSwiper = ({
-  cards,
-  isMobileView,
-  handleSlideChange,
-  activeCardIndex,
-}) => {
+const HeroSwiper = ({ cards, handleSlideChange, activeCardIndex }) => {
+  const { isMd } = useBreakpoint();
+
   const swiperRef = useRef(null);
   const swiperConfig = {
     effect: 'coverflow',
@@ -73,17 +71,18 @@ const HeroSwiper = ({
       sx={{
         width: '100%',
         display: 'flex',
-        justifyContent: isMobileView ? 'center' : 'flex-start',
-        alignItems: isMobileView ? 'center' : 'center',
-        position: isMobileView ? 'absolute' : 'relative',
-        height: isMobileView ? 'calc(100vh - 64px)' : null,
+        justifyContent: isMd ? 'center' : 'flex-start',
+        alignItems: isMd ? 'center' : 'center',
+        position: isMd ? 'absolute' : 'relative',
+        height: isMd ? 'calc(100vh - 64px)' : null,
         border: 'none',
       }}
+      ref={swiperRef}
     >
       <Swiper
         {...swiperConfig}
         ref={swiperRef}
-        slidesPerView={isMobileView ? 'auto' : 9}
+        slidesPerView={isMd ? 'auto' : 9}
         pagination={{
           clickable: true,
           el: '.swiper-pagination',
@@ -91,13 +90,13 @@ const HeroSwiper = ({
             `<span class="${className}">${cards[index].name}</span>`,
         }}
         style={{
-          minWidth: isMobileView ? '100vw' : '150vw',
+          minWidth: isMd ? '100vw' : '150vw',
           width: '100%',
-          alignItems: isMobileView ? 'center' : 'flex-start',
-          position: isMobileView ? 'absolute' : 'absolute',
-          height: isMobileView ? 'calc(100vh - 64px)' : null,
+          alignItems: isMd ? 'center' : 'flex-start',
+          position: isMd ? 'absolute' : 'absolute',
+          height: isMd ? 'calc(100vh - 64px)' : null,
           background: 'transparent',
-          ml: isMobileView ? '0' : '60vw',
+          ml: isMd ? '0' : '60vw',
         }}
         onSlideChange={handleSlideChange}
       >
@@ -110,15 +109,15 @@ const HeroSwiper = ({
               flexDirection: 'column',
               alignItems: 'center',
               width: '100%',
-              minWidth: isMobileView ? '300px' : '16vw',
-              height: isMobileView ? 'calc(100vh - 8%)' : '100%',
+              minWidth: isMd ? '300px' : '16vw',
+              height: isMd ? 'calc(100vh - 8%)' : '100%',
               transform: index === activeCardIndex ? 'scale(4.2)' : 'scale(1)',
               transition: 'transform 2s',
               border: 'none',
               boxShadow: 'none',
             }}
           >
-            <MDTypography
+            <RCTypography
               className="hero-section-card-title"
               variant="h4"
               sx={{
@@ -130,7 +129,7 @@ const HeroSwiper = ({
               }}
             >
               {card.name}
-            </MDTypography>
+            </RCTypography>
             <img
               src={card?.image || placeHolder}
               alt={`slide_${index}`}

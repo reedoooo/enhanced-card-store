@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import React from 'react';
 import RCWrappedIconRoot from './RCWrappedIconRoot';
 import { useMode } from 'context';
 import MDBox from '../MDBOX';
@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 // ==============================|| WRAPPED ICON ||============================== //
 
-const RCWrappedIcon = forwardRef(
+const RCWrappedIcon = React.forwardRef(
   (
     { color = 'black', size = '3rem', children, background = 'white', ...rest },
     ref

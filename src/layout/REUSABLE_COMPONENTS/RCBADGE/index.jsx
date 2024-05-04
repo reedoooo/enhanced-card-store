@@ -1,18 +1,19 @@
-import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import RCBadgeRoot from './RCBadgeRoot';
+import React from 'react';
 
-const RCBadge = forwardRef(
+const RCBadge = React.forwardRef(
   (
     {
-      color,
-      variant,
-      size,
-      circular,
-      indicator,
-      border,
-      container,
-      children,
+      color = 'info',
+      variant = 'gradient',
+      size = 'sm',
+      circular = false,
+      indicator = false,
+      border = false,
+      container = false,
+      children = false,
+
       ...rest
     },
     ref
@@ -38,16 +39,7 @@ const RCBadge = forwardRef(
 );
 
 RCBadge.displayName = 'RCBadge';
-RCBadge.defaultProps = {
-  color: 'info',
-  variant: 'gradient',
-  size: 'sm',
-  circular: false,
-  indicator: false,
-  border: false,
-  children: false,
-  container: false,
-};
+
 RCBadge.propTypes = {
   color: PropTypes.oneOf([
     'white',

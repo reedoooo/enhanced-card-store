@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useMode } from '../../context';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import PageLayout from '../REUSABLE_COMPONENTS/layout-utils/PageLayout';
-import SearchComponent from '../../components/forms/search/SearchComponent';
+import { useMode } from 'context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import PageLayout from 'layout/REUSABLE_COMPONENTS/layout-utils/PageLayout';
+import SearchComponent from 'components/forms/search/SearchComponent';
 import { PortfolioBoxA } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const StoreSearch = () => {

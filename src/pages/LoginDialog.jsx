@@ -12,7 +12,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useMode } from 'context';
 import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import MDTypography from 'layout/REUSABLE_COMPONENTS/MDTYPOGRAPHY/MDTypography';
+import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import {
   DialogPaper,
   StyledDialog,
@@ -23,19 +23,18 @@ import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import useDialogState from 'context/hooks/useDialogState';
 import useManageCookies from 'context/hooks/useManageCookies';
-import { useFormManagement } from 'components/forms/hooks/useFormManagement';
-import { formFields } from 'components/forms/formsConfig';
+import { useFormManagement } from 'context/formHooks/useFormManagement';
+import { formFields } from 'data/formsConfig';
 import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
 import styled from 'styled-components';
 const StyledInfoPanel = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[4],
   position: 'absolute',
   right: 15, // Align to the right edge of the parent dialog
   top: 15, // Align to the top of the dialog
-  // transform: 'translate(15%, 0%)', // Adjust so it slightly overlaps
   width: 280,
   zIndex: 1500, // Ensure it is above the dialog
 }));
@@ -85,7 +84,7 @@ function LoginDialog() {
   return (
     <Box
       sx={{
-        position: 'relative', // Position relative to allow absolute positioning of the info panel
+        position: 'relative',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -133,21 +132,20 @@ function LoginDialog() {
               <Avatar
                 sx={{
                   m: 1,
-                  bgcolor: theme.palette.greenAccent.emerald,
+                  bgcolor: theme.palette.success.main_emerald,
                 }}
               >
                 <LockOutlinedIcon />
               </Avatar>
-              <MDTypography component="h1" variant="h4" color="text">
+              <RCTypography component="h1" variant="h4" color="text">
                 {formTitle}
-              </MDTypography>
+              </RCTypography>
             </MDBox>
             <RCSwitch
               signupMode={signupMode}
               formTitle={formTitle}
               checked={currentSchemaKey === 'signupForm'}
               onChange={() => toggleActiveForm('loginForm', 'signupForm')}
-              // onChange={handleToggle}
               labelLeft="Login"
               labelRight="Sign Up"
               iconLeft={<LoginIcon />}

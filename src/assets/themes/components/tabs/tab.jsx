@@ -3,9 +3,9 @@ import borders from 'assets/themes/base/borders';
 import colors from 'assets/themes/base/colors';
 import pxToRem from 'assets/themes/functions/pxToRem';
 
-const { size, fontWeightRegular } = typography;
+const { size, fontWeightMedium } = typography;
 const { borderRadius } = borders;
-const { dark, grey } = colors;
+const { dark, grey, success, text } = colors;
 
 export default {
   styleOverrides: {
@@ -18,32 +18,40 @@ export default {
       maxWidth: 'unset !important',
       minWidth: 'unset !important',
       minHeight: 'unset !important',
-      fontSize: size.md,
-      fontWeight: fontWeightRegular,
+      height: 'auto',
+      fontSize: size.lg,
+      fontWeight: fontWeightMedium,
       textTransform: 'none',
       lineHeight: 'inherit',
       padding: pxToRem(4),
-      borderRadius: borderRadius.lg,
-      color: `${grey.darkest} !important`,
-      opacity: '1 !important',
+      borderRadius: borderRadius.md,
+      color: `${text.primary} !important`,
 
-      'Mui-selected': {
-        color: `${grey.darkest} !important`,
-        opacity: '1 !important',
-      },
+      // color: `${dark.main} !important`,
+      opacity: '1 !important',
       '& .material-icons, .material-icons-round': {
         marginBottom: '0 !important',
-        marginRight: pxToRem(6),
+        marginRight: pxToRem(4),
       },
-
       '& svg': {
         marginBottom: '0 !important',
         marginRight: pxToRem(6),
       },
-    },
+      '&:selected': {
+        color: `${success.main} !important`,
+      },
+      'span.MuiTab-wrapper': {
+        color: `${success.main} !important`,
+      },
+      'span.label.MuiTab-notSelected': {
+        color: `${text.main} !important`,
+        backgroundColor: `${success.main} !important`,
+        transition: 'all 500ms ease',
+      },
 
-    labelIcon: {
-      paddingTop: pxToRem(4),
+      labelIcon: {
+        paddingTop: pxToRem(4),
+      },
     },
   },
 };

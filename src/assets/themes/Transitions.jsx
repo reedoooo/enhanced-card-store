@@ -1,14 +1,10 @@
-import { forwardRef } from 'react';
-
-// types
 import PropTypes from 'prop-types';
-
-// material-ui
 import { Collapse, Fade, Box, Grow, Slide, Zoom } from '@mui/material';
+import React from 'react';
 
 // ==============================|| TRANSITIONS ||============================== //
 
-const Transitions = forwardRef(
+const Transitions = React.forwardRef(
   ({ children, position, type, direction, ...others }, ref) => {
     let positionSX = {
       transformOrigin: '0 0 0',

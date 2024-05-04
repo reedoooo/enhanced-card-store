@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useSpring, animated } from 'react-spring';
-import placeholder from '../../assets/images/placeholder.jpeg';
+import placeholder from 'assets/images/placeholder.jpeg';
 
 const SingleCardAnimation = ({ cardImage }) => {
   const containerRef = useRef(null);
@@ -54,7 +54,7 @@ export default SingleCardAnimation;
 
 // import React, { useRef } from 'react';
 // import { useSpring, animated } from 'react-spring';
-// import placeholder from '../../assets/images/placeholder.jpeg';
+// import placeholder from 'assets/images/placeholder.jpeg';
 
 // const SingleCardAnimation = ({ cardImage }) => {
 //   const containerRef = useRef(null);

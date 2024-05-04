@@ -4,10 +4,10 @@ import { useSnackbar } from 'notistack';
 import LoadingOverlay from './system-utils/LoadingOverlay';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import { useMode } from '../../context';
-import { useLoading } from '../../context/hooks/useLoading';
+import { useMode } from 'context';
+import useLoading from 'context/hooks/useLoading';
 import { LoadingButton } from '@mui/lab';
-import useManager from '../../context/useManager';
+import useManager from 'context/useManager';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -47,7 +47,7 @@ const ActionButton = ({
         height: isDataTable ? 30 : 'auto', // Ensure consistent height for datatable variant
         minWidth: isDataTable ? 20 : 'auto', // Ensure a minimal width when icon only
         flexGrow: 1,
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.borders.borderRadius.xxl,
         maxWidth: '100%',
         justifyContent: 'center',
         alignItems: 'center',

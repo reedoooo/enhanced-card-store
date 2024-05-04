@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -9,18 +9,17 @@ import {
   Collapse,
   Grow,
 } from '@mui/material';
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import DeckBuilderIcon from '../REUSABLE_COMPONENTS/icons/DeckBuilderIcon';
-import RCInfoItem from '../REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
-import { useMode } from '../../context';
-import GenericCard from '../../components/cards/GenericCard';
-import { formFields } from '../../components/forms/formsConfig';
-import RCDynamicForm from '../../components/forms/Factory/RCDynamicForm';
-import useBreakpoint from '../../context/hooks/useBreakPoint';
-import { SkeletonCard } from '../REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
-import useManager from '../../context/useManager';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import DeckBuilderIcon from '../../data/DeckBuilderIcon';
+import RCInfoItem from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
+import { useMode } from 'context';
+import GenericCard from 'components/cards/GenericCard';
+import { formFields } from 'data/formsConfig';
+import RCDynamicForm from 'components/forms/Factory/RCDynamicForm';
+import useBreakpoint from 'context/hooks/useBreakPoint';
+import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
 import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
-import { roundToNearestTenth } from '../../context/Helpers';
+import { roundToNearestTenth } from 'context/Helpers';
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
   useEffect(() => {
@@ -56,12 +55,10 @@ function prepareDeckData(deck, cards) {
       value: `$${roundToNearestTenth(deck?.totalPrice)}`,
     },
     { label: 'Cards', value: `${deck?.totalQuantity}` },
-    // { label: 'Unique Cards', value: `${cards?.length}` },
     {
       label: 'Tags',
       value: tags.join(', '),
     },
-    // { label: 'Color', value: deck?.color },
   ];
   return {
     infoItems,
@@ -176,9 +173,14 @@ const DeckListItem = ({
                 userInterfaceOptions={{
                   submitButton: true,
                   submitButtonLabel: 'Update Deck',
+                  // updateActions: {
+                  //   handleUpdate: () => handleSelectAndShowDeck(deck),
+                  // },
                   deleteButton: true,
                   deleteButtonLabel: 'Delete Deck',
-                  deleteActions: handleDelete,
+                  deleteActions: {
+                    handleDelete: () => handleDelete(deck),
+                  },
                 }}
                 initialData={{
                   name: deck?.name || '',

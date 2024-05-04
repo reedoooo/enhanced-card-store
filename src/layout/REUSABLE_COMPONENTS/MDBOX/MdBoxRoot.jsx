@@ -8,11 +8,11 @@ export default styled(Box)(({ ownerstate }) => {
     theme;
   const {
     variant,
-    bgColor = 'default', // default value
-    color = 'text', // default value
-    opacity = 1, // default value
-    borderRadius = 'sm', // default value
-    shadow = 'none', // default value
+    bgColor,
+    color,
+    opacity,
+    borderRadius,
+    shadow,
     coloredShadow,
   } = ownerstate;
   const { gradients, grey, white } = palette;

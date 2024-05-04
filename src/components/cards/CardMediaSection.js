@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useEffect, forwardRef, useState } from 'react';
 import CardToolTip from './CardToolTip';
 import PropTypes from 'prop-types';
@@ -5,32 +6,29 @@ import {
   Media,
   MediaContainer,
   MediaPopover,
-} from '../../layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useDialogState from '../../context/hooks/useDialogState';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import useDialogState from 'context/hooks/useDialogState';
 import GenericCardDialog from '../dialogs/GenericCardDialog';
-import { usePopover } from '../../context/hooks/usePopover';
+import usePopover from 'context/hooks/usePopover';
 import { Avatar } from '@mui/material';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
-const CardMediaSection = forwardRef(
+const CardMediaSection = React.forwardRef(
   (
     {
-      imgUrl,
-      card,
-      isHovered,
-      handleInteraction,
-      isRequired,
-      isModalOpen,
-      context,
-      isLast,
+      imgUrl = '',
+      card = {},
+      isHovered = false,
+      handleInteraction = () => {},
+      isRequired = false,
+      isModalOpen = false,
+      context = '',
     },
     ref
   ) => {
     const { theme } = useMode();
     const [anchorEl, setAnchorEl] = useState(null);
-    const cardId = card?.id;
-    const [cardWithSameIdCount, setCardWithSameIdCount] = useState(0);
 
     useEffect(() => {
       if (isHovered && ref?.current) {
@@ -78,7 +76,7 @@ const CardMediaSection = forwardRef(
           image={imgUrl}
           loading="lazy"
         />
-        {isLast && (
+        {/* {isLast && (
           <Avatar
             variant="rounded"
             sx={{
@@ -98,7 +96,7 @@ const CardMediaSection = forwardRef(
           >
             <MoreHorizIcon fontSize="inherit" />
           </Avatar>
-        )}
+        )} */}
         {anchorEl && isHovered && (
           <MediaPopover
             open={isHovered}
@@ -123,11 +121,6 @@ CardMediaSection.propTypes = {
   handleInteraction: PropTypes.func,
   handleClick: PropTypes.func,
   isRequired: PropTypes.bool,
-};
-
-CardMediaSection.defaultProps = {
-  isHovered: false,
-  isRequired: true,
 };
 
 export default CardMediaSection;

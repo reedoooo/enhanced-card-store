@@ -2,7 +2,7 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import pxToRem from '../../functions/pxToRem';
 
-const { transparent, light, info, secondary, greenAccent } = colors;
+const { transparent, light, info, secondary, success } = colors;
 const { size } = typography;
 
 export default {
@@ -52,11 +52,11 @@ export default {
   },
 
   secondary: {
-    backgroundColor: greenAccent.lighterSeaGreen,
+    backgroundColor: success.main_lighterSeaGreen,
     borderColor: secondary.main,
 
     '&:hover': {
-      backgroundColor: greenAccent.lighterSeaGreen,
+      backgroundColor: success.main_lighterSeaGreen,
     },
   },
 };

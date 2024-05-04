@@ -403,7 +403,7 @@ const useManager = () => {
       const localEntity = entity === 'decks' ? 'Deck' : 'Collection';
       const id = localStorage.getItem('selected' + localEntity + 'Id');
       const cleanedId = encodeURIComponent(id.replace(/"/g, ''));
-
+      console.log('UPDAtING', entity, data);
       handleEntityOperation(entity, `update/${cleanedId}`, 'update', data);
     },
     [handleEntityOperation]
@@ -536,7 +536,7 @@ const useManager = () => {
         removeCardFromEntity('collections', item),
 
       addDeck: (data) => addEntity('decks', data),
-      updateDeck: (id, data) => updateEntity('decks', id, data),
+      updateDeck: (data) => updateEntity('decks', data),
       deleteDeck: (id) => deleteEntity('decks', id),
       addItemToDeck: (item) => addCardToEntity('decks', item),
       removeItemFromDeck: (item) => removeCardFromEntity('decks', item),

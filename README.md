@@ -6,7 +6,6 @@
 
 TCG Enhanced Cardstore is a full-stack web application designed for trading card game enthusiasts. It offers an all-encompassing platform to effortlessly manage card collections, construct decks, and transact securely. Designed with responsiveness and security at its core, this platform caters to the needs of both occasional collectors and professional traders.
 
-
 ### Key Features
 
 - **Card Search & Management**: Robust search capabilities and collection management tools.
@@ -14,6 +13,36 @@ TCG Enhanced Cardstore is a full-stack web application designed for trading card
 - **Deck Building**: Intuitive interface for creating and managing custom decks.
 - **Responsive Design**: Mobile-friendly layout for on-the-go access.
 - **Real-Time Updates**: Backend cron jobs ensure the latest card data.
+
+## Gallery
+
+Here's a glimpse of what TCG Enhanced Cardstore offers:
+
+### Home Page
+
+![Home Page](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/homepage.png)
+
+### Deck Builder
+
+![Deck Builder](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/deck-home.png)
+
+### Portfolio
+
+![Portfolio Home](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/collection-home.png)
+
+### Cart
+
+![Cart](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/cart-checkout.png)
+
+### Profile
+
+![Profile](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/profile-home.png)
+
+### Store Search
+
+![Store Search](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/store-home.png)
+
+_For an interactive experience, visit the [Live Demo](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)._
 
 ## Technologies
 
@@ -100,36 +129,6 @@ The backend for the Enhanced Card Store is built using a diverse set of technolo
 
 - **cookie-parser & cors**: Handles cookie parsing and enables CORS to manage security and access controls.
 - **crypto-js**: Provides cryptographic functionality including encryption and secure encoding.
-
-## Gallery
-
-Here's a glimpse of what TCG Enhanced Cardstore offers:
-
-### Home Page
-
-![Home Page](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/homepage.png)
-
-### Deck Builder
-
-![Deck Builder](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/deck-home.png)
-
-### Portfolio
-
-![Portfolio Home](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/collection-home.png)
-
-### Cart
-
-![Cart](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/cart-checkout.png)
-
-### Profile
-
-![Profile](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/profile-home.png)
-
-### Store Search
-
-![Store Search](https://github.com/reedoooo/enhanced-card-store/blob/f114a3d36e7b81f84b6eb1bc0d071cd4395ea611/public/images/pages/store-home.png)
-
-_For an interactive experience, visit the [Live Demo](https://65624888827a3700084a3478--enhanced-cardstore.netlify.app/)._
 
 ## Installation
 

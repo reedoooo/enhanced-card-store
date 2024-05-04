@@ -12,12 +12,12 @@ import {
   Typography,
 } from '@mui/material';
 import useSkeletonLoader from './useSkeletonLoader';
-import MDBox from '../MDBOX';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from 'context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
-} from '../../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 
 const LoadingCardSkeleton = () => {
   return (
@@ -211,7 +211,7 @@ const SkeletonPieChart = ({ theme }) => (
       width: '100%',
       minHeight: '270px',
       bgcolor: theme.palette.background.default,
-      borderRadius: theme.shape.borderRadius,
+      borderRadius: theme.borders.borderRadius.md,
     }}
   >
     <Typography variant="h5" sx={{ mb: 2 }}>

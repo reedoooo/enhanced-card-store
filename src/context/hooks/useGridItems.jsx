@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
-import MDBox from '../../layout/REUSABLE_COMPONENTS/MDBOX';
-import GenericCard from '../../components/cards/GenericCard';
-import { SkeletonCard } from '../../layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
-import useMode from '../useMode';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import GenericCard from 'components/cards/GenericCard';
+import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/system-utils/SkeletonVariants';
+import useMode from '../state/useMode';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import { useCardStoreHook } from '../useCardStore';
+import { useCardStoreHook } from '../state/useCardStore';
 import useManager from '../useManager';
 const useGridItems = ({
   itemsPerPage,
@@ -63,7 +63,7 @@ const useGridItems = ({
                   cardClasses="base-card-no-quantity"
                 />
                 {type === 'deck' && (
-                  <Tooltip title="Delete">
+                  <Tooltip title="Delete" placement="top-end">
                     <IconButton
                       sx={{
                         position: 'absolute',

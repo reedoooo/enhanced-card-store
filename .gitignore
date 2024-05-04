@@ -16,6 +16,7 @@ package-lock.json
 /src/assets/cards
 # production
 /build
+/future-additions
 
 # misc
 .DS_Store

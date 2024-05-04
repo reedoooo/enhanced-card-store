@@ -27,7 +27,7 @@ export const StyledContainerBoxPrimary = styled(Box)(({ theme }) => ({
   minWidth: '100%',
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   background: theme.palette.grey.simpleGrey,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
@@ -39,8 +39,8 @@ export const StyledContainerBoxSecondary = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
-  background: theme.palette.greenAccent.lighterSeaGreen,
+  borderRadius: theme.borders.borderRadius.md,
+  background: theme.palette.success.main_lighterSeaGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -51,10 +51,9 @@ export const StyledContainerBox = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   marginTop: theme.spacing(2),
   padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   background:
     'linear-gradient(90deg, rgba(13, 93, 150, 0.3) 0%, rgba(160, 214, 186, 0.3) 100%)',
-  // background: theme.palette.greenAccent.crystalGreen,
   boxShadow: theme.shadows[10],
   marginBottom: theme.spacing(4),
   transition: 'all 0.3s ease-in-out', // smooth all transitions
@@ -62,9 +61,9 @@ export const StyledContainerBox = styled(Box)(({ theme }) => ({
 // COLOR PALETTE: #4cceac - transparent
 export const StyledPaperPrimary = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.greenAccent.contrastText,
+  backgroundColor: theme.palette.success.contrastText,
   color: theme.palette.text.primary,
   display: 'flex',
   flexDirection: 'column',
@@ -104,7 +103,7 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   // mx: 'auto',
   // my: 'auto',
   '& .MuiDialog-paper': {
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: theme.borders.borderRadius.md,
     padding: theme.spacing(8),
     display: 'flex',
     width: '100%',
@@ -142,7 +141,7 @@ export const DialogPaper = styled(Paper)(({ theme }) => ({
   maxWidth: '100%',
   maxHeight: '100%',
   width: '100%',
-  // borderRadius: theme.shape.borderRadius,
+  // borderRadius: theme.borders.borderRadius.md,
   flexGrow: 1,
   margin: '20px auto',
   overflow: 'hidden', // Hide unwanted scrollbars
@@ -156,8 +155,8 @@ export const DialogContentsBox = styled(Box)(({ theme }) => ({
   height: '100%',
   width: '100%',
   // minWidth: '500px',
-  // borderRadius: theme.shape.borderRadius,
-  background: theme.palette.greenAccent.evenLighter,
+  // borderRadius: theme.borders.borderRadius.md,
+  background: theme.palette.success.main_lighter,
   boxShadow: theme.shadows[10],
   transition: 'all 0.3s ease-in-out', // smooth all transitions
   '@media (max-width:600px)': {
@@ -171,7 +170,7 @@ export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   width: '100%',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
-  // backgroundColor: theme.palette.greenAccent.contrastText,
+  // backgroundColor: theme.palette.success.contrastText,
 }));
 export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   display: 'flex',
@@ -180,7 +179,7 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   width: '100%',
   gap: theme.spacing(2),
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.greenAccent.contrastText,
+  backgroundColor: theme.palette.success.contrastText,
 }));
 export const FormBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -207,7 +206,7 @@ export const FormPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,
   width: '100%',
   height: '100%',
-  background: theme.palette.greenAccent.evenLighter,
+  background: theme.palette.success.main_lighter,
   borderRadius: '16px',
 }));
 export const FormFieldBox = styled(Box)(({ theme }) => ({
@@ -228,18 +227,18 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
       borderColor: theme.palette.transparent.main,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      color: theme.palette.greenAccent.default,
-      borderColor: theme.palette.greenAccent.default,
+      color: theme.palette.success.dark,
+      borderColor: theme.palette.success.dark,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.greenAccent.default,
+      borderColor: theme.palette.success.dark,
       borderWidth: '2px', // or other width as you like
     },
   },
-  borderRadius: theme.shape.borderRadius,
-  color: theme.palette.greenAccent.dark,
+  borderRadius: theme.borders.borderRadius.md,
+  color: theme.palette.success.darkest,
   width: '100%',
-  backgroundColor: theme.palette.greenAccent.contrastText,
+  backgroundColor: theme.palette.success.contrastText,
   boxShadow: `0px 2px 4px -1px ${theme.palette.grey[400]}`,
   marginBottom: theme.spacing(2),
 }));
@@ -268,17 +267,17 @@ export const CardIconWrapper = styled('div')(({ theme }) => ({
   height: theme.spacing(4),
   width: theme.spacing(4),
   borderRadius: '50%',
-  backgroundColor: theme.palette.greenAccent.evenLighter,
-  color: theme.palette.grey.black,
+  backgroundColor: theme.palette.success.main_lighter,
+  color: theme.palette.black.darker,
   '& svg': {
     fontSize: theme.typography.pxToRem(20),
   },
 }));
 export const CardDetailContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: `0 4px 8px 0 ${theme.palette.shadow}`,
-  backgroundColor: theme.palette.greenAccent.contrastText,
+  backgroundColor: theme.palette.success.contrastText,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
@@ -304,7 +303,7 @@ export const StyledCardContent = styled(CardContent)(({ theme }) => ({
   textAlign: 'left',
   minHeight: '50px', // Adjust based on the size of the text
   border: `1px solid ${theme.palette.grey.lighterSimpleGrey}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   // Media queries for padding
   padding: theme.spacing(1), // default padding
   // [theme.breakpoints.down('xs')]: {
@@ -324,8 +323,8 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   maxWidth: '100%',
   maxHeight: '100%', // Adjusted for better height management
   flexGrow: 1,
-  backgroundColor: theme.palette.greenAccent.contrastText,
-  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.success.contrastText,
+  borderRadius: theme.borders.borderRadius.md,
   justifyContent: 'center',
   transition: 'transform 0.3s ease-in-out',
   '&:hover': {
@@ -350,7 +349,7 @@ export const ChartArea = styled(Container)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   // border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   background: '#e0e0e0',
 }));
 export const SquareChartContainer = styled(Box)(({ theme }) => ({
@@ -367,9 +366,9 @@ export const SquareChartContainer = styled(Box)(({ theme }) => ({
   },
 }));
 export const ChartPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[5],
-  backgroundColor: theme.palette.greenAccent.contrastText,
+  backgroundColor: theme.palette.success.contrastText,
   color: theme.palette.text.secondary,
   padding: theme.spacing(2),
   display: 'flex',
@@ -385,8 +384,8 @@ export const ChartPaper = styled(Paper)(({ theme }) => ({
 export const ResponsiveSquare = styled(Box)(({ theme }) => ({
   width: '100%',
   paddingTop: '100%',
-  backgroundColor: theme.palette.greenAccent.contrastText,
-  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.success.contrastText,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[5],
   display: 'flex',
   flexGrow: 1,
@@ -396,18 +395,18 @@ export const ResponsiveSquare = styled(Box)(({ theme }) => ({
 // ! FORMS / INPUTS
 export const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: theme.spacing(1, 0),
-  backgroundColor: theme.palette.greenAccent.contrastText, // Adjusted for a slight contrast
-  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.success.contrastText, // Adjusted for a slight contrast
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[1], // Subtle shadow for depth
 
   '& .MuiFilledInput-root': {
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: theme.borders.borderRadius.md,
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
     },
     '&.Mui-focused': {
-      backgroundColor: theme.palette.greenAccent.contrastText,
-      borderColor: theme.palette.greenAccent.light,
+      backgroundColor: theme.palette.success.contrastText,
+      borderColor: theme.palette.success.main_light,
     },
   },
 }));
@@ -431,8 +430,8 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
   flexGrow: 1,
   // width: 'auto',
   maxHeight: '14vh',
-  backgroundColor: theme.palette.greenAccent.contrastText,
-  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.success.contrastText,
+  borderRadius: theme.borders.borderRadius.md,
   boxShadow: theme.shadows[5],
   transition: 'transform 0.3s ease-in-out',
   '&:hover': {
@@ -441,7 +440,7 @@ export const StyledSkeletonCard = styled(Card)(({ theme }) => ({
 }));
 export const ListItemSkeleton = styled(ListItem)(({ theme }) => ({
   // margin: theme.spacing(1, 0),
-  // borderRadius: theme.shape.borderRadius,
+  // borderRadius: theme.borders.borderRadius.md,
   margin: theme.spacing(1),
   width: '100%',
   minWidth: 200,
@@ -477,7 +476,7 @@ export const CardListItem = styled(ListItem)(({ theme }) => ({
   fontSize: '1rem', // Adjust font size as needed
 }));
 export const FeatureCard = styled(Card)(({ theme }) => ({
-  background: theme.palette.greenAccent.lightest,
+  background: theme.palette.success.main_lightest,
   boxShadow: theme.shadows[5],
   transition: 'box-shadow 0.3s ease-in-out', // smooth transition for shadow
   '&:hover': {

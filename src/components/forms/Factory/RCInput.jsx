@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
   TextField,
   Radio,
@@ -22,17 +22,14 @@ import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyle
 import { useMode } from 'context';
 import RCSwitch from './RCSwitch';
 import useBreakpoint from 'context/hooks/useBreakPoint';
-import { nanoid } from 'nanoid';
 import useSelectorActions from 'context/hooks/useSelectorActions';
 import useManager from 'context/useManager';
-const RCInput = forwardRef(
+const RCInput = React.forwardRef(
   (
     {
       type,
       options,
       onChange,
-      onBlur,
-      onFocus,
       initialValue,
       value,
       placeholder,
@@ -65,7 +62,6 @@ const RCInput = forwardRef(
       updateEntityField('decks', 'deckId', 'tags', updatedTags); // Persist tags update
     };
     const { newPalette, functions } = theme;
-
     const {
       grey,
       transparent,
@@ -73,7 +69,6 @@ const RCInput = forwardRef(
       success: colorSuccess,
     } = newPalette;
     const { pxToRem } = functions;
-    // styles for the input with error={true}
     const errorStyles = () => ({
       backgroundImage:
         // eslint-disable-next-line max-len
@@ -92,8 +87,6 @@ const RCInput = forwardRef(
         color: colorError.main,
       },
     });
-
-    // styles for the input with success={true}
     const successStyles = () => ({
       backgroundImage:
         // eslint-disable-next-line max-len
@@ -136,7 +129,6 @@ const RCInput = forwardRef(
             }}
             fontSize={isMobile ? '1rem' : '1.25rem'}
             error={!!error}
-            // errorMessage={error?.message}
             helperText={helperText}
             {...rest}
           />
@@ -186,7 +178,10 @@ const RCInput = forwardRef(
             fullWidth
             rows={rest?.rows || 4}
             placeholder={rest?.placeholder}
-            value={value}
+            value={value || ''}
+            InputLabelProps={{
+              shrink: !initialValue ? undefined : true,
+            }}
             onChange={(e) => onChange(e.target.value)}
             {...rest}
           />

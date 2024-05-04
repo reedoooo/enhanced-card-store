@@ -35,11 +35,11 @@ export const themeSettings = (mode) => {
     boxShadows: boxShadows,
     typography: typography,
     spacing: (factor) => `${0.25 * factor}rem`,
-    shape: {
-      borderRadius: 4,
-      borderRadiusLarge: 8,
-      borderRadiusExtraLarge: 16,
-    },
+    // shape: {
+    //   borderRadius: 4,
+    //   borderRadiusLarge: 8,
+    //   borderRadiusExtraLarge: 16,
+    // },
     zIndex: {
       appBar: 1200,
       drawer: 1100,
@@ -58,39 +58,8 @@ export const themeSettings = (mode) => {
       MuiCard: components.MuiCard,
       MuiCardMedia: components.MuiCardMedia,
       MuiCardContent: components.MuiCardContent,
-    },
-    skeletonLayouts: {
-      tertiaryContent: {
-        xs: 12,
-        sm: 12,
-        md: 12,
-        gap: 3,
-        baseSkeletons: [
-          { variant: 'rectangular', height: 60 },
-          { variant: 'text', width: '80%' },
-          { variant: 'text', width: '70%' },
-          { variant: 'text', width: '60%' },
-        ],
-      },
-      secondaryContent: {
-        xs: 12,
-        sm: 6,
-        md: 6,
-        gap: 2,
-        baseSkeleton: { variant: 'rectangular', height: 200 },
-      },
-      mainContentFeatureCard: {
-        xs: 12,
-        sm: 12,
-        md: 4,
-        gap: 2,
-        baseSkeletons: [
-          { variant: 'rectangular', height: 180 },
-          { variant: 'text' },
-          { variant: 'text' },
-          { variant: 'text' },
-        ],
-      },
+      MuiTabs: components.MuiTabs,
+      MuiTab: components.MuiTab,
     },
   };
 };

@@ -1,14 +1,35 @@
-import MDBox from '../REUSABLE_COMPONENTS/MDBOX';
-import { Zoom, useMediaQuery } from '@mui/material';
-import SimpleCard from '../REUSABLE_COMPONENTS/unique/SimpleCard';
-import uniqueTheme from '../REUSABLE_COMPONENTS/unique/uniqueTheme';
-import { useMode } from '../../context';
+import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { CardContent, Icon, IconButton, Typography, Zoom } from '@mui/material';
+import { useMode } from 'context';
 import { AspectRatio } from '@mui/joy';
-import heroData from '../../data/heroData';
-import useBreakpoint from '../../context/hooks/useBreakPoint';
+import heroData from 'data/heroData';
+import useBreakpoint from 'context/hooks/useBreakPoint';
+import FlexBetween from 'layout/REUSABLE_COMPONENTS/layout-utils/FlexBetween';
+import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
+import CollectionsIcon from '@mui/icons-material/Collections';
+const iconStyles = {
+  fontSize: '8rem', // Example size, adjust as needed
+  color: '#000000', // Example color, adjust as needed
+  maxWidth: '100%',
+  maxHeight: '100%',
+};
+const String2Icon = (icon) => {
+  switch (icon) {
+    case 'AddIcon':
+      return <AddIcon style={iconStyles} />;
+    case 'SaveIcon':
+      return <SaveIcon style={iconStyles} />;
+    case 'CollectionsIcon':
+      return <CollectionsIcon style={iconStyles} />;
+    default:
+      return null;
+  }
+};
 const HeroIconSection = ({ shouldShow }) => {
-  const { isMd } = useBreakpoint();
+  const { isMd, isMobile } = useBreakpoint();
   const { theme } = useMode();
+
   return (
     <MDBox
       sx={{
@@ -54,7 +75,7 @@ const HeroIconSection = ({ shouldShow }) => {
                 maxWidth: 200, // Max width for the AspectRatio container
                 border: 'none',
                 background: 'transparent',
-                borderRadius: theme.shape.borderRadiusLarge,
+                borderRadius: theme.borders.borderRadius.lg,
                 m: isMd ? '0.5rem' : 'auto',
               }}
               ratio="1" // Maintain a 1:1 aspect ratio
@@ -65,17 +86,71 @@ const HeroIconSection = ({ shouldShow }) => {
                   border: 'none',
                   background: 'transparent',
                   borderColor: 'transparent',
-                  borderRadius: theme.shape.borderRadius,
+                  borderRadius: theme.borders.borderRadius.md,
                   overFlow: 'hidden',
                 }}
               >
-                <SimpleCard
-                  isHeroDisplay={true}
-                  heroText={card.heroText}
-                  heroIcon={card.heroIcon}
-                  theme={uniqueTheme}
-                  noBottomMargin={true}
-                />
+                <CardContent
+                  elevation={3}
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: 'transparent',
+                    borderRadius: theme.borders.borderRadius.md,
+                  }}
+                >
+                  <MDBox
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 'auto',
+                      borderRadius: theme.borders.borderRadius.md,
+                      boxShadow: '0px 3px 10px 0px rgba(0, 0, 0, 0.2)',
+                    }}
+                  >
+                    <IconButton
+                      disabled={false}
+                      variant="outlined"
+                      style={{
+                        color: theme.palette.primary.main,
+                        '& .MuiIconRoot': {
+                          fontSize: isMobile ? '3rem' : '4rem',
+                        },
+                      }}
+                    >
+                      <Icon
+                        style={{
+                          fontSize: '8rem',
+                          color: theme.palette.success.main,
+                        }}
+                      >
+                        {String2Icon(card.heroIcon)}
+                      </Icon>
+                    </IconButton>
+                  </MDBox>
+                  <FlexBetween
+                    sx={{
+                      width: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      mt: theme.spacing(2),
+                    }}
+                  >
+                    <Typography
+                      variant={isMobile ? 'subtitle1' : 'h6'}
+                      sx={{
+                        marginLeft: theme.spacing(4),
+                        fontSize: isMobile ? '2rem' : '4rem',
+                      }}
+                    >
+                      {card.heroText}
+                    </Typography>
+                  </FlexBetween>
+                </CardContent>
               </MDBox>
             </AspectRatio>
           ))}

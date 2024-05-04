@@ -1,7 +1,7 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import { useMode } from 'context';
-import { useConfigurator } from 'context/hooks/useConfigurator';
+import useConfigurator from 'context/hooks/useConfigurator';
 
 export default styled(Drawer)(({ ownerState }) => {
   const { theme } = useMode();

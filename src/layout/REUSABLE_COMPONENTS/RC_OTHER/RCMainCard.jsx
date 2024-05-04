@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -7,14 +6,15 @@ import {
   Divider,
   Typography,
 } from '@mui/material';
-import { useMode } from '../../../context';
+import { useMode } from 'context';
+import React from 'react';
 const headerSX = {
   '& .MuiCardHeader-action': { mr: 0 },
 };
 
 // ==============================|| CUSTOM MAIN CARD ||============================== //
 
-const RCMainCard = forwardRef(
+const RCMainCard = React.forwardRef(
   (
     {
       border = true,

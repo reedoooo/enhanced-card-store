@@ -4,6 +4,8 @@ const palette = {
     lighter: '#94e2cd',
     light: '#4cceac',
     main: '#18b984',
+    secondary: '#5CDB95',
+    tertiary: '#5fe7bb',
     dark: '#2e7c67',
     focus: rgba('#18b984' || 'white', 0.15),
     contrastText: '#dbf5ee',

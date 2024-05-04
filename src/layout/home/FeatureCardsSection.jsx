@@ -1,22 +1,22 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
-import { useMode } from '../../context';
+import { useMode } from 'context';
 import {
   StyledContainerBox,
   StyledPaper,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { Box, CardActions, CardContent, CardHeader } from '@mui/material';
 import { useSpring, animated as a, animated } from 'react-spring';
-import RCButton from '../REUSABLE_COMPONENTS/RCBUTTON';
-import useDialogState from '../../context/hooks/useDialogState';
-import featureCardData from '../../data/json-data/featureCardData.json'; // Adjust the path as necessary
+import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
+import useDialogState from 'context/hooks/useDialogState';
+import featureCardData from 'data/json-data/featureCardData.json'; // Adjust the path as necessary
 import {
   CardListItem,
   CardUnorderedList,
   FeatureCard,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import DetailsModal from '../../components/dialogs/DetailsModal';
+import DetailsModal from 'components/dialogs/DetailsModal';
 const AnimatedBox = animated(Box);
 
 export const AnimatedFeatureCard = ({ cardData }) => {
@@ -73,7 +73,7 @@ export const AnimatedFeatureCard = ({ cardData }) => {
           titleTypographyProps={{ align: 'center' }}
           subheaderTypographyProps={{ align: 'center' }}
           sx={{
-            backgroundColor: theme.palette.greenAccent.light,
+            backgroundColor: theme.palette.success.main_light,
             height: '20%',
           }}
         />
