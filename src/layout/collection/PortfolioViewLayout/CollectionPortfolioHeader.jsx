@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { IconButton, Grid, Grow } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+
 import { useMode } from 'context';
-import IconStatWrapper from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/IconStatWrapper';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
 import { collectionPortfolioHeaderItems } from 'data';
+
+import {
+  DashboardBox,
+  IconStatWrapper,
+  MDBox,
+} from 'layout/REUSABLE_COMPONENTS';
 
 const HeaderItem = ({ icon, label, value, delay }) => {
   return (
@@ -39,7 +43,7 @@ const CollectionPortfolioHeader = ({ onBack }) => {
   }, [selectedCollection]);
   useEffect(() => {
     const handleStorageChange = (event) => {
-      if (event.key === 'selectedCollection') {
+      if (event.key === 'selectedCollection' && event.newValue) {
         setSelectedCollection(JSON.parse(event.newValue));
         setPortfolioItems(
           collectionPortfolioHeaderItems(JSON.parse(event.newValue))

@@ -1,19 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
-import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import { useMode, useInitialFormData } from 'context';
 
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useInitialFormData from 'context/hooks/useInitialFormData';
+import { formFields } from 'data';
+import { MDBox, RCDynamicForm, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 const DeckDialog = ({ open, onClose, isNew, deckData }) => {
   const { theme } = useMode();

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import { HeroSectionSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 import { Card } from '@mui/material';
+
 import HeroTextSection from './HeroTextSection';
 import HeroIconSection from './HeroIconSection';
 import HeroSwiper from './HeroSwiper';
 import HeroChartSection from './HeroChartSection';
+
 import { useBreakpoint, useCardStore, useLocalStorage } from 'context';
+import { HeroSectionSkeleton, MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 const HeroSection = () => {
-  const { fetchRandomCardsAndSet } = useCardStore();
-  const [randomCards, setRandomCards] = useLocalStorage('randomCards', []);
   const { isMd } = useBreakpoint();
+  const { fetchRandomCardsAndSet, loadingRandomCards } = useCardStore();
+  const [randomCards, setRandomCards] = useLocalStorage('randomCards', []);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [shouldShow, setShouldShow] = useState(false);
   const defaultCards = new Array(45).fill({}).map((_, index) => ({
@@ -21,10 +22,38 @@ const HeroSection = () => {
     description: `Description for Placeholder ${index + 1}`,
     image: placeHolder,
   }));
-  const cards = [...randomCards, ...defaultCards];
-  const [cardAtActive, setCardActive] = useState(cards[activeCardIndex]);
-  useEffect(() => setShouldShow(true), []);
-  useEffect(() => fetchRandomCardsAndSet(), []);
+  const [hasFetchedCards, setHasFetchedCards] = useState(false);
+  const [cards, setCards] = useState([...randomCards, ...defaultCards]);
+  useEffect(() => {
+    setShouldShow(true);
+    const fetchData = async () => {
+      if (!randomCards.length && !loadingRandomCards && !hasFetchedCards) {
+        await fetchRandomCardsAndSet();
+        setHasFetchedCards(true);
+      }
+    };
+    fetchData();
+  }, [
+    fetchRandomCardsAndSet,
+    randomCards.length,
+    loadingRandomCards,
+    hasFetchedCards,
+  ]);
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'randomCards') {
+        const newRandomCards = JSON.parse(event.newValue);
+        if (newRandomCards) {
+          setRandomCards(newRandomCards);
+          setCards([...newRandomCards, ...defaultCards]);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [defaultCards]);
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
   if (!cards.length) {
     return <HeroSectionSkeleton />;
@@ -76,7 +105,7 @@ const HeroSection = () => {
               shouldShow={shouldShow}
               randomCards={randomCards}
               activeCardIndex={activeCardIndex}
-              card={cardAtActive}
+              card={cards[activeCardIndex]}
             />
           )}
           <HeroIconSection shouldShow={shouldShow} />
@@ -86,7 +115,7 @@ const HeroSection = () => {
         cards={cards}
         handleSlideChange={handleSlideChange}
         activeCardIndex={activeCardIndex}
-      />{' '}
+      />
     </section>
   );
 };

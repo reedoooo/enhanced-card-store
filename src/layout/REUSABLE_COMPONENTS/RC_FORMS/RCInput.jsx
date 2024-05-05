@@ -26,7 +26,7 @@ import {
   useMode,
   useSelectorActions,
 } from 'context';
-import RCSwitch from './RCSwitch';
+import { RCSwitch } from '..';
 
 const RCInput = React.forwardRef(
   (
@@ -39,6 +39,11 @@ const RCInput = React.forwardRef(
       placeholder = '',
       error = false,
       helperText = '',
+      label = '',
+      name = '',
+      context = '',
+      InputProps = {},
+      withContainer = false, // Default value for withContainer prop
       ...rest
     },
     ref
@@ -139,9 +144,7 @@ const RCInput = React.forwardRef(
       case 'select':
         return (
           <FormControl fullWidth margin="normal" x={{ width: '100%' }}>
-            <InputLabel id={`${rest?.name}-select-label`}>
-              {rest?.label}
-            </InputLabel>
+            <InputLabel id={`${rest?.name}-select-label`}>{label}</InputLabel>
             <Select
               labelId={`${rest?.name}-select-label`}
               id={`${rest?.name}-select`}
@@ -154,12 +157,15 @@ const RCInput = React.forwardRef(
               sx={{
                 width: '100%',
                 backgroundColor: theme.palette.background.paper,
-                color: theme.palette.text.primary,
+                color: theme.palette.text.colorPrimary,
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: theme.palette.error.main_light,
+                  borderColor: theme.palette.success.main_light,
                 },
                 '& .MuiSvgIcon-root': {
                   color: theme.palette.text.primary,
+                },
+                '&.Mui-focused.MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.success.main_light,
                 },
               }}
             >
@@ -177,15 +183,22 @@ const RCInput = React.forwardRef(
             theme={theme}
             type={type}
             variant="outlined"
+            margin="normal"
             multiline
             fullWidth
             rows={rest?.rows || 4}
-            placeholder={rest?.placeholder}
+            placeholder={placeholder}
+            onChange={(e) => {
+              console.log(`[VALUE]: ${e.target.value}`);
+              onChange(e.target.value); // Ensure this is connected to form methods if using form libraries
+              rest.onChange(e.target.value); // For react-hook-form
+            }}
             value={value || ''}
             InputLabelProps={{
               shrink: !initialValue ? undefined : true,
             }}
-            onChange={(e) => onChange(e.target.value)}
+            error={error}
+            helperText={helperText}
             {...rest}
           />
         );
@@ -212,9 +225,19 @@ const RCInput = React.forwardRef(
             variant="outlined"
             margin="normal"
             placeholder={placeholder}
-            label={rest?.label}
+            label={label}
             value={inputValue}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && inputValue.trim()) {
+                e.preventDefault();
+                const newTags = [...tags, inputValue]; // Add new chip
+                setTags(newTags); // Update local state
+                updateEntityField('decks', 'deckId', 'tags', newTags); // Update entity
+                // rest.onChange(newTags); // Update form state
+                setInputValue(''); // Clear input
+              }
+            }}
+            // onKeyDown={handleKeyDown}
             onChange={(e) => setInputValue(e.target.value)}
             InputProps={{
               startAdornment: tags?.map((tag) => (

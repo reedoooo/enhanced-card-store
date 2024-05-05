@@ -7,17 +7,25 @@ import {
   Tabs,
   CircularProgress,
 } from '@mui/material';
-import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import DashBoardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
+
 import SearchComponent from 'layout/search/SearchComponent';
 import DeckDialog from 'layout/dialogs/DeckDialog';
 import DeckListItem from './DeckListItem';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
-import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
-import useUserData from 'context/state/useUserData';
-import useManager from 'context/state/useManager';
-import { useDialogState, useFormManagement } from 'context/hooks';
+
+import {
+  useDialogState,
+  useFormManagement,
+  useUserData,
+  useManager,
+  useMode,
+} from 'context';
+
+import {
+  DashBoardLayout,
+  DashboardBox,
+  MDBox,
+  PageHeader,
+} from 'layout/REUSABLE_COMPONENTS';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -29,13 +37,14 @@ const DeckBuilder = () => {
     fetchDeckById,
     hasFetchedDecks,
     setHasUpdatedDecks,
+    updateDeck,
+    decks: allDecks,
   } = useManager();
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
-  const [tabsOrientation, setTabsOrientation] = useState('horizontal');
   const [loadingState, setLoadingState] = useState({});
-  const [decks, setDecks] = useState([]);
+  const [decks, setDecks] = useState(allDecks);
   useEffect(() => {
     const initFetch = async () => {
       const loadedDecks = await fetchDecks();
@@ -47,6 +56,10 @@ const DeckBuilder = () => {
       if (initialDeck) {
         setActiveTab(initialDeck ? loadedDecks?.indexOf(initialDeck) : 0);
         handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
+      } else {
+        setActiveTab(0);
+        handleSelectDeck(allDecks[0]);
+        // handleSelectDeck(null);
       }
     };
     if (!hasFetchedDecks) {
@@ -63,13 +76,38 @@ const DeckBuilder = () => {
     },
     [deleteDeck]
   );
+  const handleEdit = useCallback(
+    async (formData) => {
+      console.log('FORM DATA:', formData);
+      const selectedDeckId = localStorage.getItem('selectedDeckId');
+      const deck = decks?.find((deck) => deck._id === selectedDeckId);
+      setLoadingState((prev) => ({
+        ...prev,
+        [deck._id]: true,
+      }));
+      try {
+        const updatedDeck = await updateDeck(formData);
+        setLoadingState((prev) => ({
+          ...prev,
+          [deck._id]: false,
+        }));
+        handleSelectDeck(updatedDeck);
+      } catch (error) {
+        setLoadingState((prev) => ({
+          ...prev,
+          [deck._id]: false,
+        }));
+        console.error('Failed to update deck:', error);
+      }
+    },
+    [fetchDeckById, handleSelectDeck]
+  );
   const handleDeckLoaded = useCallback((deckId) => {
     setLoadingState((prev) => ({
       ...prev,
       [deckId]: false,
     }));
   }, []);
-
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
@@ -80,11 +118,6 @@ const DeckBuilder = () => {
           handleSelectDeck(updatedDeck);
         }
       }
-      // if (event.key === 'decks') {
-      //   const updatedDecks = JSON.parse(event.newValue);
-      //   setDecks(updatedDecks);
-      //   setHasUpdatedDecks(true);
-      // }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -92,7 +125,6 @@ const DeckBuilder = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [decks, handleSelectDeck]);
-  // }, [tabsOrientation]);
   const handleChangeTab = useCallback(
     async (event, newValue) => {
       setActiveTab(newValue);
@@ -100,7 +132,7 @@ const DeckBuilder = () => {
       if (deckValue) {
         setLoadingState((prev) => ({
           ...prev,
-          [deckValue._id]: true, // Set loading state to true immediately
+          [deckValue._id]: true,
         }));
         const selectedDeck = await fetchDeckById(deckValue?._id);
         localStorage.setItem('selectedDeckId', selectedDeck._id);
@@ -123,6 +155,7 @@ const DeckBuilder = () => {
             isEditPanelOpen={
               localStorage.getItem('selectedDeckId') === deck._id
             }
+            updateDeckDetails={handleEdit}
             activeItem={activeTab === index}
             handleSelectAndShowDeck={() => handleSelectDeck(deck)}
             handleDeckLoaded={() => handleDeckLoaded(deck?._id)}
@@ -144,7 +177,7 @@ const DeckBuilder = () => {
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
       <DashBoardLayout>
-        <Grid container spacing={3}>
+        <Grid container>
           <Grid item xs={12}>
             <DashboardBox sx={{ p: theme.spacing(2) }}>
               <PageHeader

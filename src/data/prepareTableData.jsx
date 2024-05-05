@@ -1,7 +1,6 @@
 import React from 'react';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import { roundToNearestTenth } from 'context/Helpers';
-import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import { GenericActionButtons, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 // Note: No changes needed for these components
 const Name = ({ name, color }) => (
   <RCTypography

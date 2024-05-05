@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Avatar, Card, Grid, AppBar, Tabs, Tab, Icon } from '@mui/material';
 
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import AppBar from '@mui/material/AppBar';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Icon from '@mui/material/Icon';
 import burceMars from 'assets/images/bg1.jpg';
-import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-import { Avatar } from '@mui/material';
-import useManageCookies from 'context/hooks/useManageCookies';
+import { useMode, useManageCookies } from 'context';
+import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 function Header({ children }) {
   const { theme } = useMode();
@@ -22,22 +14,13 @@ function Header({ children }) {
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
       return window.innerWidth < theme.breakpoints.values.sm
         ? setTabsOrientation('vertical')
         : setTabsOrientation('horizontal');
     }
-
-    /** 
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
-    */
     window.addEventListener('resize', handleTabsOrientation);
-
-    // Call the handleTabsOrientation function to set the state with the initial value.
     handleTabsOrientation();
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener('resize', handleTabsOrientation);
   }, [tabsOrientation]);
 
@@ -115,18 +98,12 @@ function Header({ children }) {
                         {icon.charAt(0).toUpperCase() + icon.slice(1)}
                       </span>
                     }
-                    // label={icon.charAt(0).toUpperCase() + icon.slice(1)}
                     icon={
                       <Icon
                         sx={{ color: tabValue === index ? 'black' : 'inherit' }}
                       >
                         {icon}
                       </Icon>
-                    }
-                    sx={
-                      {
-                        // color: tabValue === index ? 'black' : 'inherit', // Conditional styling for text color
-                      }
                     }
                   />
                 ))}

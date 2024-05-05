@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useUserData from './useUserData';
 import jwt_decode from 'jwt-decode';
-import { useFetchWrapper, useManageCookies } from 'context/hooks';
+import { useFetchWrapper, useManageCookies, useUserData } from 'context';
 
 function useAuthManager() {
   const navigate = useNavigate();

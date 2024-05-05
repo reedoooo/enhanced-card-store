@@ -1,27 +1,30 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
-import { Grid, useMediaQuery, Icon, Box, Typography } from '@mui/material';
+import { Grid, Icon, Box, Typography } from '@mui/material';
 import { CircularProgress } from '@mui/joy';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import { useMode } from 'context';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+
+import { styled } from 'styled-components';
+
 import { ResponsiveContainer } from 'recharts';
 import { formatDateBasedOnRange, roundToNearestTenth } from 'context/Helpers';
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import NivoContainer from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/NivoContainer';
-import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useManager from 'context/state/useManager';
-import useSelectorActions from 'context/hooks/useSelectorActions';
-import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
-import prepareTableData from 'data/prepareTableData';
-import { styled } from 'styled-components';
+
+import { useMode, useManager, useBreakpoint } from 'context';
+
 import TopCardsSwiper from './TopCardsSwiper';
 import MyPortfolioLineChart from './MyPortfolioLineChart';
-import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import {
+  BoxHeader,
+  DashboardBox,
+  LoadingOverlay,
+  MDBox,
+  NivoContainer,
+  RCCard,
+  RCDynamicForm,
+  RCWrappedIcon,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import { formFields, prepareTableData } from 'data';
+import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 const renderCardContainer = (content, isChart, isForm) => {
   return (
     <MDBox
@@ -58,33 +61,35 @@ const StyledInfoPanel = styled(Box)(({ theme }) => ({
 const PortfolioViewLayout = () => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
-  const {
-    fetchCollections,
-    hasFetchedCollections,
-    selectedCollectionId,
-    selectedCollection,
-  } = useManager();
-  // useEffect(() => {
-  //   if (!hasFetchedCollections) {
-  //     fetchCollections();
-  //   }
-  // }, []);
-  const showCollections = selectedCollectionId ? true : false;
+  const { selectedCollection } = useManager();
+  const selectedCollectionId = localStorage.getItem('selectedCollectionId');
   const percentageChange =
     roundToNearestTenth(
       selectedCollection?.collectionStatistics?.percentageChange?.value
     ) || 0;
-  const { data, columns } = useMemo(() => {
+  useEffect(() => {
+    if (!selectedCollection?.cards) {
+      return;
+    }
+    prepareTableData(selectedCollection.cards, 'portfolio');
+  }, [selectedCollection?.cards]);
+  const dataAndColumns = useMemo(() => {
     if (!selectedCollection?.cards) {
       return { data: [], columns: [] }; // Provide default empty structures
     }
     return prepareTableData(selectedCollection.cards, 'portfolio');
   }, [selectedCollection?.cards]);
+
+  const { data, columns } = dataAndColumns;
+
   if (!selectedCollection) {
     return <LoadingOverlay />;
   }
   return (
-    <MDBox mt={4.5} sx={{ width: '100%', hidden: showCollections }}>
+    <MDBox
+      mt={4.5}
+      sx={{ width: '100%', hidden: selectedCollectionId ? true : false }}
+    >
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
         <DashboardBox
           component={Grid}
@@ -217,7 +222,6 @@ FormSelectorRow.displayName = 'FormSelectorRow';
 const ChartAreaComponent = React.memo(() => {
   const { theme } = useMode();
   const { success, error, grey } = theme.palette;
-  const { selectedTimeRange, selectedStat } = useSelectorActions();
   const { selectedCollection, handleSelectCollection } = useManager();
   const [collection, setCollection] = useState(selectedCollection);
   const [timeRange, setTimeRange] = useState('24hr');
@@ -225,7 +229,6 @@ const ChartAreaComponent = React.memo(() => {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedCollection' && event.newValue) {
-        // console.log('selectedCollection changed', event.newValue);
         setCollection(JSON.parse(event.newValue));
         setTimeRange(JSON.parse(event.newValue).selectedChartDataKey);
         setMarker(
@@ -246,9 +249,7 @@ const ChartAreaComponent = React.memo(() => {
     marker,
     setMarker,
   ]);
-  if (!selectedCollection) {
-    return <LoadingOverlay />;
-  }
+
   const memoChartData = useMemo(() => {
     const { selectedChartData, averagedChartData, selectedChartDataKey } =
       collection;
@@ -256,38 +257,25 @@ const ChartAreaComponent = React.memo(() => {
       selectedChartData?.data?.length < 5
       ? averagedChartData[timeRange]
       : selectedChartData;
-  }, [
-    timeRange,
-    collection.selectedChartData,
-    collection.averagedChartData,
-    collection.selectedChartDataKey,
-  ]);
-  if (!memoChartData) {
-    return <LoadingOverlay />;
-  }
+  }, [timeRange, collection]);
+
   const memoMarker = useMemo(() => {
     const { selectedStatData, collectionStatistics, selectedStatDataKey } =
       collection;
-    console.log('MARKER SET: ', collectionStatistics[selectedStatDataKey]);
     const newMarker = !selectedStatData
       ? collectionStatistics[selectedStatDataKey]
       : selectedStatData;
-    // setMarker(newMarker);
     return newMarker;
-  }, [collection, selectedStat]);
+  }, [collection]);
 
   const tickValues = useMemo(() => {
     const { ticks } = formatDateBasedOnRange(timeRange);
     return ticks.split(' ').map((tick) => new Date(tick).getTime());
   }, [timeRange]);
-  useEffect(() => {
-    console.log('Chart data:', memoChartData);
-    console.log('TIME RANGE:', timeRange);
 
-    console.log('SELCTED RANGE:', selectedTimeRange);
-    // console.log('MARKER:', memoMarker);
-    console.log('SELECTED MARKER', selectedStat);
-  }, [memoChartData, timeRange, selectedTimeRange]);
+  if (!collection) {
+    return <LoadingOverlay />;
+  }
   return renderCardContainer(
     <Suspense fallback={<LoadingOverlay />}>
       <ResponsiveContainer width="100%" height="100%" background={'#e0e0e0'}>
@@ -343,22 +331,36 @@ const TopCardsDisplayRowComponent = React.memo(({ isXs }) => {
 TopCardsDisplayRowComponent.displayName = 'TopCardsDisplayRowComponent';
 //!--------------------- CARD LIST COMPONENT ---------------------
 const CollectionCardList = React.memo(({ data, columns, theme }) => {
-  const { selectedCollection } = useManager();
-  const formattedTime = selectedCollection?.updatedAt
-    ? new Date(selectedCollection?.updatedAt).toLocaleTimeString([], {
+  const { selectedCollection, handleSelectCollection } = useManager();
+  const [collection, setCollection] = useState(selectedCollection);
+
+  const formattedTime = collection?.updatedAt
+    ? new Date(collection?.updatedAt).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
       })
     : 'Loading...';
+
   const entriesPerPage = {
     defaultValue: 10,
     entries: [5, 10, 25, 50, 100],
   };
   const [pageSize, setPageSize] = useState(entriesPerPage.defaultValue);
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedCollection' && event.newValue) {
+        setCollection(JSON.parse(event.newValue));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [collection, setCollection, selectedCollection, handleSelectCollection]);
 
   useEffect(() => {
     setPageSize(entriesPerPage.defaultValue);
-  }, [entriesPerPage.defaultValue]);
+  }, [collection]);
+
   return (
     <DashboardBox
       component={Grid}

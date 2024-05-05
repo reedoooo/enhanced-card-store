@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Switch, FormControlLabel, FormControl } from '@mui/material';
 import { useMode } from 'context';
 

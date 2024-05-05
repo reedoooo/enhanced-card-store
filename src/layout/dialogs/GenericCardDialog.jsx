@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Dialog,
   IconButton,
@@ -13,12 +13,11 @@ import {
   Grid,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import CardMediaSection from '../cards/CardMediaSection';
-import CardDetailsContainer from '../cards/CardDetailsContainer';
 import { useMode, useBreakpoint } from 'context';
 import { useSnackbar } from 'notistack';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
-import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
+import { FlexBetween, GenericActionButtons } from 'layout/REUSABLE_COMPONENTS';
+import CardMediaSection from 'layout/cards/CardMediaSection';
+import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
 
 const GenericCardDialog = ({
   open = false,

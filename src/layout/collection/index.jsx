@@ -1,21 +1,28 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useMode } from 'context';
-import DashBoardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import { Grid } from '@mui/material';
-import CollectionDialog from 'layout/dialogs/CollectionDialog';
-import useDialogState from 'context/hooks/useDialogState';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
-import StatBoard from './CollectionsViewLayout/StatBoard';
-import { Tab, Tabs } from '@mui/material';
-import CollectionPortfolioHeader from './PortfolioViewLayout/CollectionPortfolioHeader';
-import PageHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageHeader';
-import useUserData from 'context/state/useUserData';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
-import useManager from 'context/state/useManager';
+import React, { useEffect, useState } from 'react';
+import { Grid, Tab, Tabs } from '@mui/material';
+
 import CollectionsViewLayout from './CollectionsViewLayout';
 import PortfolioViewLayout from './PortfolioViewLayout';
-import { useFormManagement } from 'context/hooks';
+import StatBoard from './CollectionsViewLayout/StatBoard';
+import CollectionPortfolioHeader from './PortfolioViewLayout/CollectionPortfolioHeader';
+import CollectionDialog from 'layout/dialogs/CollectionDialog';
+
+import {
+  DashBoardLayout,
+  DashboardBox,
+  LoadingOverlay,
+  MDBox,
+  PageHeader,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import {
+  useMode,
+  useUserData,
+  useManager,
+  useFormManagement,
+  useDialogState,
+  useLoading,
+} from 'context';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {
   const { theme } = useMode();
@@ -76,19 +83,37 @@ const PortfolioView = ({ handleBackToCollections, selectedCollection }) => (
 const CollectionPortfolio = () => {
   const { theme } = useMode();
   const {
-    collections,
     handleSelectCollection,
     hasFetchedCollections,
     fetchCollections,
+    setHasFetchedCollections,
+    status,
+    collections: allCollections,
   } = useManager();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
   const selectedCollectionId = localStorage.getItem('selectedCollectionId');
-  useEffect(() => {
-    if (!hasFetchedCollections) {
-      fetchCollections();
-    }
-  }, [hasFetchedCollections]);
+  const [collections, setCollections] = useState(allCollections);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const collectionData = await fetchCollections();
+  //       setCollections(collectionData);
+  //     } catch (error) {
+  //       console.error('Failed to fetch collections:', error);
+  //     }
+  //   }; // Adjust the delay to match your fetch timing or interaction
+  //   if (!hasFetchedCollections && status !== 'loading') {
+  //     fetchData();
+  //     setHasFetchedCollections(true);
+  //   }
+  // }, [
+  //   hasFetchedCollections,
+  //   fetchCollections,
+  //   status,
+  //   setHasFetchedCollections,
+  //   setCollections,
+  // ]);
   const tabs = [
     <Tab
       label="Collections"
@@ -105,7 +130,6 @@ const CollectionPortfolio = () => {
         ]
       : []),
   ];
-
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
     if (newValue === 0) {
@@ -127,18 +151,9 @@ const CollectionPortfolio = () => {
           (collection) => collection._id === updatedCollectionId
         );
         if (updatedCollection) {
-          // setActiveTab(collections.indexOf(updatedDeck));
           handleSelectCollection(updatedCollection);
         }
       }
-      // if (
-      //   event.key === 'selectedCollection' &&
-      //   event.newValue &&
-      //   JSON.parse(event.newValue) !== event.oldValue
-      // ) {
-      //   const updatedCollection = JSON.parse(event.newValue);
-      //   handleSelectCollection(updatedCollection);
-      // }
     };
 
     window.addEventListener('storage', handleStorageChange);

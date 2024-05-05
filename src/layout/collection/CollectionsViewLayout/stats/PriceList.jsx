@@ -1,12 +1,10 @@
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import { Box, Card } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 import { Divider } from '@mui/joy';
-import { useMode } from 'context';
-import useManager from 'context/state/useManager';
-import prepareTableData from 'data/prepareTableData';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { useMode, useManager } from 'context';
+import { prepareTableData } from 'data';
+import { BoxHeader, MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 const PricedCardList = () => {
   const { theme } = useMode();
@@ -74,7 +72,6 @@ const PricedCardList = () => {
               color: lightGrey,
               borderBottom: `1px solid ${lightGrey}`,
             },
-            // minHeight: '100%',
             minHeight: `calc(270px - ${45})`, // 1rem = 16px typically, so theme.spacing(4) is used assuming the theme's base size is 8px
             maxHeight: `calc(270px - ${45})`,
           }}

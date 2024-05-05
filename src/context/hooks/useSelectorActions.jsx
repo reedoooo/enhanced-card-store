@@ -97,9 +97,16 @@ function useSelectorActions() {
         const newTag = { id: nanoid(), label: e.target.value };
         const updatedTags = [...tags, newTag];
         console.log('NEW TAG', updatedTags);
+        const { name, description, color } = selected;
         // selectedDeck.tags = updatedTags;
         setTags(updatedTags); // Update local state
-        updateEntityField('decks', selectedDeckId, ['tags'], [updatedTags]); // Persist tags update
+        updateEntityField(
+          'decks',
+          selectedDeckId,
+          ['tags', 'name', 'description', 'color'],
+          [updatedTags, name, description, color]
+        ); // Persist tags update
+
         handleSelectDeck(selectedDeck);
 
         e.target.value = ''; // Clear the input after adding a tag

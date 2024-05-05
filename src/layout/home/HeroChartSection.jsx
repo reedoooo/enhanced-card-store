@@ -1,7 +1,5 @@
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import placeHolder from 'assets/images/placeholder.jpeg';
 import { Card, CardContent, Zoom } from '@mui/material';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -12,12 +10,17 @@ import {
   Line,
   Tooltip,
 } from 'recharts';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import { useMode } from 'context';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaShieldAlt } from 'react-icons/fa';
-import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+import propTypes from 'prop-types';
+import {
+  BoxHeader,
+  DashboardBox,
+  FlexBetween,
+  MDBox,
+  RCWrappedIcon,
+} from 'layout/REUSABLE_COMPONENTS';
 const currencyFormatter = (value, separator = '.') => {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   const formatter = new Intl.NumberFormat('en-US', {
@@ -30,10 +33,10 @@ const currencyFormatter = (value, separator = '.') => {
   return formatter.format(numericValue);
 };
 const HeroChartSection = ({
-  card,
-  randomCards,
-  activeCardIndex,
-  shouldShow,
+  card = {},
+  randomCards = [],
+  activeCardIndex = 0,
+  shouldShow = false,
 }) => {
   const { theme } = useMode();
   const [isContainerReady, setIsContainerReady] = useState(false);
@@ -197,6 +200,7 @@ const HeroChartSection = ({
                         />
                         <XAxis dataKey="x" style={{ fontSize: '10px' }} />
                         <YAxis
+                          dataKey="y"
                           tickLine={false}
                           axisLine={false}
                           style={{ fontSize: '10px' }}
@@ -227,6 +231,13 @@ const HeroChartSection = ({
       </Zoom>
     </FlexBetween>
   );
+};
+
+HeroChartSection.propTypes = {
+  card: propTypes.object,
+  randomCards: propTypes.array,
+  activeCardIndex: propTypes.number,
+  shouldShow: propTypes.bool,
 };
 
 export default HeroChartSection;

@@ -1,9 +1,12 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
+
+import { HelmetMetaData } from 'data';
+
 import HeroSection from 'layout/home';
 import FeatureCardsSection from 'layout/home/FeatureCardsSection';
-import { HelmetMetaData } from 'data';
+
+import { PageLayout } from 'layout/REUSABLE_COMPONENTS';
 
 // ==============================|| HOME PAGE ||============================== //
 

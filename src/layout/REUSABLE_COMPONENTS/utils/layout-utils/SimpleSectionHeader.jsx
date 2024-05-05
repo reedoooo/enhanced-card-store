@@ -1,11 +1,8 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import { useMode } from 'context';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { Typography, Box } from '@mui/material';
+import { useMode, useBreakpoint } from 'context';
 import styled from 'styled-components';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 const HeaderContainer = styled(Box)`
   flex: 1;

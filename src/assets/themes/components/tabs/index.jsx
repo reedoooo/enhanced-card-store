@@ -11,7 +11,8 @@ export default {
   styleOverrides: {
     root: {
       position: 'relative',
-      backgroundColor: '#f8f9fa',
+      // backgroundColor: `${success.contrastText2} !important`,
+      backgroundColor: '#f6fefc',
       borderRadius: borderRadius.lg,
       minHeight: 'unset',
       padding: pxToRem(12),

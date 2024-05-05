@@ -1,13 +1,14 @@
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { CardContent, Icon, IconButton, Typography, Zoom } from '@mui/material';
-import { useMode } from 'context';
 import { AspectRatio } from '@mui/joy';
-import heroData from 'data/heroData';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
+
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CollectionsIcon from '@mui/icons-material/Collections';
+
+import { useMode, useBreakpoint } from 'context';
+import { FlexBetween, MDBox } from 'layout/REUSABLE_COMPONENTS';
+import { heroData } from 'data';
+
 const iconStyles = {
   fontSize: '8rem', // Example size, adjust as needed
   color: '#000000', // Example color, adjust as needed

@@ -2,14 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { animated, useSprings } from 'react-spring';
 
-import {
-  Toolbar,
-  IconButton,
-  List,
-  ListItem,
-  AppBar,
-  useMediaQuery,
-} from '@mui/material';
+import { Toolbar, IconButton, List, ListItem, AppBar } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Logout } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -21,8 +16,6 @@ import {
   Sheet,
   Typography,
 } from '@mui/joy';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Logout } from '@mui/icons-material';
 import { baseMenuItems } from 'data';
 
 import {
@@ -60,7 +53,7 @@ const Navigation = () => {
     await logout();
     navigate('/login');
     setLogoutClicked(false);
-  }, [navigate]);
+  }, [logout, navigate]);
   const ContentContainer = ({ type, content, clickAction, itemIndex }) => {
     const handleClick = () => {
       if (clickAction === 'navigate' && itemIndex !== undefined) {

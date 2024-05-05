@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { Grid } from '@mui/material';
+
 import CollectionPortfolio from 'layout/collection';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
-import useManager from 'context/state/useManager';
+
+import { useManager } from 'context';
+import { PageLayout } from 'layout/REUSABLE_COMPONENTS';
 
 const CollectionPage = () => {
-  const { fetchCollections, hasFetchedCollections } = useManager();
+  // const { fetchCollections, hasFetchedCollections } = useManager();
 
-  useEffect(() => {
-    if (!hasFetchedCollections) {
-      fetchCollections();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasFetchedCollections) {
+  //     fetchCollections();
+  //   }
+  // }, []);
 
   return (
     <PageLayout backCol={true}>

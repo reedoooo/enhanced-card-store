@@ -9,21 +9,21 @@ import {
 } from '../hooks';
 
 const useManager = () => {
-  const { fetchWrapper } = useFetchWrapper();
+  const { fetchWrapper, status } = useFetchWrapper();
   const { getCookie } = useManageCookies();
   const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
   const logger = useLogger('CollectionManager');
   const [customError, setCustomError] = useState('');
   const baseUrl = `${process.env.REACT_APP_SERVER}/api/users/${userId}`;
   const { selectedContext } = useSelectedContext();
-
   const createApiUrl = (entity, action) => `${baseUrl}/${entity}/${action}`;
+
   // DECKS
   const [decks, setDecks] = useState([]);
-  const [selectedDeck, setSelectedDeck] = useLocalStorage('selectedDeck', null);
+  const [selectedDeck, setSelectedDeck] = useLocalStorage('selectedDeck', {});
   const [selectedDeckId, setSelectedDeckId] = useLocalStorage(
     'selectedDeckId',
-    ''
+    null
   );
   const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const [hasUpdatedDecks, setHasUpdatedDecks] = useState(false);
@@ -33,11 +33,11 @@ const useManager = () => {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useLocalStorage(
     'selectedCollection',
-    null
+    {}
   );
   const [selectedCollectionId, setSelectedCollectionId] = useLocalStorage(
     'selectedCollectionId',
-    ''
+    null
   );
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
 
@@ -59,6 +59,7 @@ const useManager = () => {
     selectedCollectionId: null,
     selectedDeckId: null,
   });
+
   // DATA
   const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
     'collectionMetaData',
@@ -177,14 +178,14 @@ const useManager = () => {
   // FETCHING ENTITIES
   const handleSelectEntity = useCallback(
     (entityName, entityData) => {
-      if (entityName === 'collection') {
+      if (entityName === 'collection' && entityData) {
         setSelectedCollection(entityData);
         setSelectedCollectionId(entityData?._id);
         setSelectedIds((state) => ({
           ...state,
           selectedCollectionId: entityData?._id,
         }));
-      } else if (entityName === 'deck') {
+      } else if (entityName === 'deck' && entityData) {
         setSelectedDeck(entityData);
         // setSelectedDeck((state) => ({ ...state, entityData }));
         setSelectedDeckId(entityData?._id);
@@ -198,12 +199,14 @@ const useManager = () => {
   );
   const fetchEntities = useCallback(
     async (entity) => {
+      const loadingID = `FETCH_ALL_${entity.toUpperCase()}`;
+      console.log('LOADING ID:', loadingID);
       try {
         const response = await fetchWrapper(
           createApiUrl(entity, 'all'),
           'GET',
           null,
-          `fetchAll${entity}`.toLocaleUpperCase()
+          loadingID
         );
         if (entity === 'cart') {
           setCart(response.data);
@@ -217,26 +220,6 @@ const useManager = () => {
           setHasFetchedCollections(true);
           setHasFetched((state) => ({ ...state, collections: true }));
           compileCardsWithQuantities(response.data, null, null);
-          const selectedId = localStorage.getItem('selectedCollectionId');
-          console.log('SELECTED ID', selectedId);
-          if (selectedId) {
-            // const collection = response.data.find((col) => {
-            //   console.log('ID', JSON.stringify(col._id));
-            //   return JSON.stringify(col._id) === JSON.stringify(selectedId); // Ensure both IDs are compared as strings
-            // });
-            const collection = response.data.find(
-              (col) => col._id === selectedId
-            );
-
-            console.log('SELECTED COLLECTION', collection);
-            console.log('RESPONSE DATA', response.data);
-            if (collection) {
-              setSelectedCollection(collection);
-            } else {
-              console.log('Selected collection not found');
-              // setSelectedCollection(null); // or handle the absence of the selected collection appropriately
-            }
-          }
           return response.data;
         } else {
           setDecks(response.data);
@@ -273,7 +256,7 @@ const useManager = () => {
           null,
           `fetch${entity}`.toLocaleUpperCase()
         );
-        // handleSelectEntity(entity, response.data);
+        handleSelectEntity(entity, response.data);
         return response.data;
       } catch (error) {
         logger.logError('Fetch Error:', error);
@@ -386,6 +369,7 @@ const useManager = () => {
             case 'collections':
               const selectedId = localStorage.getItem('selectedCollectionId');
               setCollections(response.data);
+
               break;
             case 'decks':
               setDecks((prev) =>
@@ -403,6 +387,7 @@ const useManager = () => {
               throw new Error(`Unhandled entity type: ${entity}`);
           }
         }
+        // return response.data;
       } catch (error) {
         console.error(`Error updating ${entity} fields:`, error);
         setCustomError(`Failed to update ${entity} fields`);
@@ -411,23 +396,22 @@ const useManager = () => {
     [isLoggedIn, fetchWrapper, logger, setCart, setCollections, setDecks, cart]
   );
   const addEntity = useCallback(
-    (entity, data) =>
-      handleEntityOperation(entity, 'create', `add${entity}`, data),
+    (entity, data) => handleEntityOperation(entity, 'create', 'add_', data),
     [handleEntityOperation]
   );
   const updateEntity = useCallback(
-    (entity, data) => {
+    async (entity, data) => {
       const localEntity = entity === 'decks' ? 'Deck' : 'Collection';
       const id = localStorage.getItem('selected' + localEntity + 'Id');
       const cleanedId = encodeURIComponent(id.replace(/"/g, ''));
       console.log('UPDAtING', entity, data);
-      handleEntityOperation(entity, `update/${cleanedId}`, 'update', data);
+      handleEntityOperation(entity, `update/${cleanedId}`, 'update_', data);
     },
     [handleEntityOperation]
   );
   const deleteEntity = useCallback(
     (entity, id) =>
-      handleEntityOperation(entity, `delete/${id}`, 'delete', {
+      handleEntityOperation(entity, `delete/${id}`, 'delete_', {
         id: id,
       }),
     [handleEntityOperation]
@@ -442,7 +426,7 @@ const useManager = () => {
         } else {
           type = 'addNew';
         }
-        return handleEntityOperation(entity, 'cards/add', 'addCardTo', {
+        return handleEntityOperation(entity, 'cards/add', 'add_cards_to_', {
           cards: [card],
           type: type,
         });
@@ -458,10 +442,15 @@ const useManager = () => {
       } else {
         type = 'addNew';
       }
-      handleEntityOperation(entity, `${selectEntVal}/cards/add`, 'addCardTo', {
-        cards: [card],
-        type: type,
-      });
+      handleEntityOperation(
+        entity,
+        `${selectEntVal}/cards/add`,
+        'add_cards_to_',
+        {
+          cards: [card],
+          type: type,
+        }
+      );
     },
     [handleEntityOperation]
   );
@@ -475,10 +464,10 @@ const useManager = () => {
 
         if (cardExists) {
           type = 'decrement';
-          action = 'removeCardFrom';
+          action = 'remove_cards_from_';
         } else {
           type = 'delete';
-          action = 'deleteCardFrom';
+          action = 'delete_cards_from_';
         }
         handleEntityOperation(
           entity,
@@ -504,10 +493,10 @@ const useManager = () => {
       const existingCard = selectedEntity?.cards?.find((c) => c.id === item.id);
       if (cardExists && existingCard.quantity > 1) {
         type = 'decrement';
-        action = 'removeCardFrom';
+        action = 'remove_cards_from_';
       } else {
         type = 'delete';
-        action = 'deleteCardFrom';
+        action = 'delete_cards_from_';
       }
       handleEntityOperation(
         entity,
@@ -566,6 +555,9 @@ const useManager = () => {
       handleSelectCollection: (data) => handleSelectEntity('collection', data),
       handleSelectDeck: (data) => handleSelectEntity('deck', data),
 
+      setHasFetchedCollections,
+      setHasFetchedDecks,
+      setHasFetchedCart,
       checkForCardInContext: isCardInContext,
       compileCardsWithQuantities,
       fetchEntities,
@@ -578,6 +570,7 @@ const useManager = () => {
       collectionMetaData,
       selectedCollection,
       selectedDeck,
+      status,
     }),
     [
       collections,
@@ -590,9 +583,13 @@ const useManager = () => {
       hasFetchedCards,
       hasUpdatedCards,
       collectionMetaData,
+      status,
 
       compileCollectionMetaData,
       setHasUpdatedCards,
+      setHasFetchedCollections,
+      setHasFetchedDecks,
+      setHasFetchedCart,
       setHasFetchedCards,
       fetchEntities,
       addEntity,

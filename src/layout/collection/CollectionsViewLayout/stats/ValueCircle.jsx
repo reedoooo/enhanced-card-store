@@ -1,7 +1,8 @@
 /* eslint-disable max-len */
 import React from 'react';
 import { Box, Card, Icon } from '@mui/material';
-import { useMode } from 'context';
+import { useMode, useManager } from 'context';
+
 import {
   PieChart,
   Pie,
@@ -10,10 +11,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import useManager from 'context/state/useManager';
-import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+
+import { BoxHeader, MDBox, RCWrappedIcon } from 'layout/REUSABLE_COMPONENTS';
 
 const ValuDistributionCircle = () => {
   const { theme } = useMode();

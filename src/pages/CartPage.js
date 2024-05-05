@@ -3,32 +3,26 @@ import {
   AppBar,
   Card,
   CssBaseline,
-  Divider,
   Grid,
   Toolbar,
   Typography,
-  Skeleton,
-  Box,
-  Container,
-  Button,
   List,
   ListItem,
   ListItemAvatar,
   Avatar,
   ListItemText,
-  CardContent,
   IconButton,
 } from '@mui/material';
-import { useMode } from 'context';
-import Checkout from 'layout/cart/cartPageContainers/Checkout';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import useUserData from 'context/state/useUserData';
-import CartContent from 'layout/cart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import useManager from 'context/state/useManager';
-import useBreakpoint from 'context/hooks/useBreakPoint';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+
+import CartContent from 'layout/cart';
+
+import { MDBox, PageLayout } from 'layout/REUSABLE_COMPONENTS';
+import Checkout from 'layout/cart/cartPageContainers/Checkout';
+
+import { useMode, useManager } from 'context';
+
 const CartPage = () => {
   const { theme } = useMode();
   const [activeStep, setActiveStep] = React.useState(0);

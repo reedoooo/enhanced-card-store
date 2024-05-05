@@ -57,7 +57,7 @@ const RCLoadingButton = React.forwardRef(
         color={color}
         variant={variant}
         size={size}
-        ownerState={{ color, variant, size, circular }}
+        ownerState={{ color, variant, size, circular, sx }}
         // label={
         //   loading ? (
         //     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -87,7 +87,8 @@ const RCLoadingButton = React.forwardRef(
   }
 );
 
-RCLoadingButton.displayName = 'RCButton';
+RCLoadingButton.displayName = 'RCLoadingButton';
+
 RCLoadingButton.propTypes = {
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   variant: PropTypes.oneOf(['contained', 'holo', 'outline']),

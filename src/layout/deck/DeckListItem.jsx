@@ -9,17 +9,22 @@ import {
   Collapse,
   Grow,
 } from '@mui/material';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import DeckBuilderIcon from '../../data/DeckBuilderIcon';
-import RCInfoItem from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
-import { useMode } from 'context';
 import GenericCard from 'layout/cards/GenericCard';
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import { SkeletonCard } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
-import RCWrappedIcon from 'layout/REUSABLE_COMPONENTS/RCWRAPPEDICON';
+
 import { roundToNearestTenth } from 'context/Helpers';
+
+import {
+  MDBox,
+  RCDynamicForm,
+  RCInfoItem,
+  RCWrappedIcon,
+  SkeletonCard,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import { DeckBuilderIcon, formFields } from 'data';
+
+import { useMode, useBreakpoint } from 'context';
+
 const AnimatedInfoItem = ({ label, value, theme, delay }) => {
   const [checked, setChecked] = useState(false);
   useEffect(() => {
@@ -71,6 +76,7 @@ const DeckListItem = ({
   isEditPanelOpen,
   handleDelete,
   isLoading,
+  updateDeckDetails,
 }) => {
   const [cards, setCards] = useState([]);
   const [infoItems, setInfoItems] = useState([]);
@@ -165,7 +171,10 @@ const DeckListItem = ({
         {!isEditPanelOpen && ( // Only render the edit panel if the current deck is selected
           <Collapse in={!isEditPanelOpen}>
             <MDBox
-              sx={{ margin: isMobile ? theme.spacing(1) : theme.spacing(3) }}
+              sx={{
+                margin: isMobile ? theme.spacing(1) : theme.spacing(3),
+                border: 'none',
+              }}
             >
               <RCDynamicForm
                 formKey={'updateDeckForm'}
@@ -173,9 +182,9 @@ const DeckListItem = ({
                 userInterfaceOptions={{
                   submitButton: true,
                   submitButtonLabel: 'Update Deck',
-                  // updateActions: {
-                  //   handleUpdate: () => handleSelectAndShowDeck(deck),
-                  // },
+                  updateActions: {
+                    handleSubmit: (data) => updateDeckDetails(data),
+                  },
                   deleteButton: true,
                   deleteButtonLabel: 'Delete Deck',
                   deleteActions: {
@@ -248,16 +257,7 @@ AnimatedInfoItem.propTypes = {
 
 DeckListItem.propTypes = {
   deck: PropTypes.object.isRequired,
-  // deckData: PropTypes.shape({
-  //   // Corrected from shapeOf to shape
-  //   name: PropTypes.string,
-  //   description: PropTypes.string,
-  //   tags: PropTypes.arrayOf(PropTypes.string),
-  //   color: PropTypes.string,
-  // }),
-  // cards: PropTypes.arrayOf(PropTypes.object).isRequired,
   isEditPanelOpen: PropTypes.bool.isRequired,
-  // handleSelectAndShowDeck: PropTypes.func.isRequired,
 };
 
 export default DeckListItem;

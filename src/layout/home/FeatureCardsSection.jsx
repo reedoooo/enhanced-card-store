@@ -1,22 +1,21 @@
 import React from 'react';
-import { Grid } from '@mui/material';
-import { useMediaQuery } from '@mui/material';
-import { useMode } from 'context';
-import {
-  StyledContainerBox,
-  StyledPaper,
-} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { Box, CardActions, CardContent, CardHeader } from '@mui/material';
-import { useSpring, animated as a, animated } from 'react-spring';
-import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
-import useDialogState from 'context/hooks/useDialogState';
+import { useSpring, animated } from 'react-spring';
+
+import { Box, CardActions, CardContent, CardHeader, Grid } from '@mui/material';
 import featureCardData from 'data/json-data/featureCardData.json'; // Adjust the path as necessary
 import {
   CardListItem,
   CardUnorderedList,
   FeatureCard,
+  StyledContainerBox,
+  StyledPaper,
 } from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+
 import DetailsModal from 'layout/dialogs/DetailsModal';
+import { useMode, useDialogState, useBreakpoint } from 'context';
+
+import { RCButton } from 'layout/REUSABLE_COMPONENTS';
+
 const AnimatedBox = animated(Box);
 
 export const AnimatedFeatureCard = ({ cardData }) => {
@@ -115,15 +114,14 @@ export const AnimatedFeatureCard = ({ cardData }) => {
 };
 const FeatureCardsSection = () => {
   const { theme } = useMode();
-  const breakpoints = theme.breakpoints;
-  const isSmUp = useMediaQuery(breakpoints.up('sm'));
+  const { isMobileUp } = useBreakpoint();
   return (
     <section className="feature-cards-section">
       <StyledContainerBox maxWidth="100%" theme={theme}>
         <StyledPaper theme={theme}>
           <Grid
             container
-            spacing={isSmUp ? 5 : 2}
+            spacing={isMobileUp ? 5 : 2}
             sx={{
               justifyContent: 'space-between',
             }}

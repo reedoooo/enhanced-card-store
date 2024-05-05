@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +11,10 @@ import {
   Box,
   Chip,
 } from '@mui/material';
+
 import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
+
 import featureCardData from 'data/json-data/featureCardData.json'; // Path to your JSON file
 
 const DetailsModal = ({ open, onClose }) => {
@@ -20,7 +22,6 @@ const DetailsModal = ({ open, onClose }) => {
     onClose('isDetailsDialogOpen');
   };
   const featureData = featureCardData[0]; // Example: Using first item for demo
-  console.log('featureData', featureData);
   return (
     <Dialog
       open={open}

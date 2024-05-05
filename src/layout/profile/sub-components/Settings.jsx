@@ -1,11 +1,8 @@
 import { useState } from 'react';
 
-// @mui material components
-import Card from '@mui/material/Card';
-import Switch from '@mui/material/Switch';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import { Switch, Card } from '@mui/material';
 import { useMode } from 'context';
+import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 function PlatformSettings() {
   const [followsMe, setFollowsMe] = useState(true);
