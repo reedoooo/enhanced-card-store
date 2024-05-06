@@ -1,10 +1,11 @@
 // hooks/useUserData.js
+import {
+  useFetchWrapper,
+  useLocalStorage,
+  useLogger,
+  useManageCookies,
+} from 'context';
 import { useCallback, useState, useEffect } from 'react';
-import useLocalStorage from '../hooks/useLocalStorage';
-import useFetchWrapper from '../hooks/useFetchWrapper';
-import useLogger from '../hooks/useLogger';
-import { useCookies } from 'react-cookie';
-import useManageCookies from '../hooks/useManageCookies';
 
 function useUserData() {
   const { getCookie } = useManageCookies();

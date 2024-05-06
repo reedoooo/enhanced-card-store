@@ -16,7 +16,7 @@ export default {
       minWidth: 0,
       wordWrap: 'break-word',
       backgroundImage: 'none',
-      backgroundColor: success.main_lighter,
+      // backgroundColor: success.main_lighter,
       backgroundClip: 'border-box',
       border: `${borderWidth[0]} solid ${rgba(black.main, 0.125)}`,
       borderRadius: borderRadius.xl,

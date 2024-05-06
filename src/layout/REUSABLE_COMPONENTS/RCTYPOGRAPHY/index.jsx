@@ -35,7 +35,7 @@ const RCTypography = React.forwardRef(
       <RCTypographyRoot
         {...rest}
         ref={ref}
-        ownerstate={{
+        ownerState={{
           color,
           textTransform,
           verticalAlign,

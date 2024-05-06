@@ -7,7 +7,6 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 
 import {
   BoxHeader,
@@ -19,6 +18,7 @@ import {
 import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
 
 import { useMode, useBreakpoint, useManager } from 'context';
+import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS';
 
 const TopCardsSwiper = () => {
   const { theme } = useMode();
@@ -97,8 +97,6 @@ const TopCardsSwiper = () => {
               >
                 <CardContent
                   sx={{
-                    // width: '100%',
-                    // mb: theme.spacing(10),
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
@@ -156,7 +154,6 @@ const TopCardsSwiper = () => {
                   <CardDetailsContainer
                     card={card}
                     className="card-details-container-swiper"
-                    titles={['Name', 'Description', 'Price']}
                   />
                 </CardContent>
               </FlexBetween>

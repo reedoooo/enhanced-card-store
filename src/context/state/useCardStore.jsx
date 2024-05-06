@@ -4,6 +4,7 @@ import useLogger from '../hooks/useLogger';
 import useLocalStorage from '../hooks/useLocalStorage'; // Ensure this is the correct path to your hook
 import useLoading from '../hooks/useLoading';
 import useManageCookies from '../hooks/useManageCookies';
+import { useFetchWrapper } from 'context';
 
 function debounce(func, wait) {
   let timeout;
@@ -19,6 +20,7 @@ function debounce(func, wait) {
 
 const useCardStore = () => {
   const { getCookie } = useManageCookies();
+  const { fetchWrapper, status } = useFetchWrapper();
   const { userId } = getCookie(['userId']);
   const logger = useLogger('CardProvider');
   const [previousSearchData, setPreviousSearchData] = useLocalStorage(
@@ -79,22 +81,28 @@ const useCardStore = () => {
     }, 100),
     []
   );
-  async function fetchRandomCardsAndSet() {
+  const fetchRandomCardsAndSet = useCallback(async () => {
     startLoading('fetchRandomCardsAndSet');
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}/api/cards/randomCardData`
+      // const response = await fetch(
+      //   `${process.env.REACT_APP_SERVER}/api/cards/randomCardData`
+      // );
+      const response = await fetchWrapper(
+        `${process.env.REACT_APP_SERVER}/api/cards/randomCardData`,
+        'GET',
+        null,
+        'FETCH_RANDOM_CARDS'
       );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const cards = await response.json();
-      setRandomCards(cards);
+      // if (!response.ok) {
+      //   throw new Error('Network response was not ok');
+      // }
+      // const cards = await response.json();
+      setRandomCards(response);
     } catch (error) {
       console.error('Failed to fetch random cards:', error);
       startLoading('fetchRandomCardsAndSet');
     }
-  }
+  }, []);
   return {
     searchData,
     searchSettings,

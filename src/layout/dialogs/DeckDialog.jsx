@@ -9,7 +9,7 @@ import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { formFields } from 'data';
 import { MDBox, RCDynamicForm, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 

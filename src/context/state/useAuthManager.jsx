@@ -12,7 +12,7 @@ function useAuthManager() {
     'accessToken',
     'refreshToken',
   ]);
-  const { handleSetUser, handleRemoveUser, user } = useUserData();
+  const { handleSetUser, handleRemoveUser, hasFetchedUser } = useUserData();
   const { fetchWrapper } = useFetchWrapper();
   const [loggingOut, setLoggingOut] = useState(false);
   const setAuthCookies = useCallback(
@@ -24,7 +24,7 @@ function useAuthManager() {
         [accessToken, refreshToken, true, authData, authData.userId],
         { path: '/' }
       );
-      handleSetUser(authData);
+      // handleSetUser(authData);
       navigate('/home');
     },
     [addCookies, handleSetUser, navigate]
@@ -38,26 +38,14 @@ function useAuthManager() {
       'isLoggedIn',
     ]);
     localStorage.clear();
-    navigate('/login');
   }, [deleteCookies, navigate]);
-  const decodeAndSetUser = useCallback(
-    (accessToken) => {
-      const decoded = jwt_decode(accessToken);
-      handleSetUser(decoded);
-    },
-    [handleSetUser]
-  );
-  // const decodeAndSetUser = useCallback(
-  //   (accessToken) => {
-  //     const decoded = jwt_decode(accessToken);
-  //     handleSetUser(decoded); // Adjust according to your implementation
-  //   },
-  //   [handleSetUser]
-  // );
 
   const executeAuthAction = useCallback(
     async (endpoint, requestData) => {
       try {
+        console.log(
+          `SERVER: ${process.env.REACT_APP_SERVER}/api/users/${endpoint}`
+        );
         const responseData = await fetchWrapper(
           `${process.env.REACT_APP_SERVER}/api/users/${endpoint}`,
           'POST',
@@ -70,8 +58,8 @@ function useAuthManager() {
         } else {
           console.log(responseData?.data);
           setAuthCookies(responseData.data);
+          handleSetUser(jwt_decode(responseData.data.accessToken));
         }
-        setAuthCookies(responseData.data);
       } catch (error) {
         console.error('Auth action error:', error);
       }
@@ -107,78 +95,39 @@ function useAuthManager() {
     clearAuthCookies();
     setLoggingOut(true);
     handleRemoveUser();
-  }, [
-    executeAuthAction,
-    clearAuthCookies,
-    handleRemoveUser,
-    authUser,
-    accessToken,
-    refreshToken,
-  ]);
+    navigate('/login');
+  }, [executeAuthAction, clearAuthCookies, handleRemoveUser, navigate]);
 
-  // const logout = useCallback(async () => {
-  //   await executeAuthAction('signout', {
-  //     userId: authUser.userId,
-  //     accessToken: accessToken,
-  //     refreshToken: refreshToken,
-  //   });
-  //   clearAuthCookies();
-  // }, []);
+  const checkTokenValidity = useCallback(async () => {
+    if (!accessToken) return;
 
-  useEffect(() => {
-    if (!isLoggedIn || !accessToken) return;
-    if (accessToken) {
-      decodeAndSetUser(accessToken);
-    }
-  }, []);
-  // const checkTokenValidity = useCallback(() => {
-  //   console.log('Checking token validity...', { accessToken });
-  //   if (!accessToken) {
-  //     navigate('/login');
-  //     return;
-  //   }
-  //   try {
-  //     const { exp } = jwt_decode(accessToken);
-  //     const isTokenExpired = Date.now() >= exp * 1000;
-  //     if (isTokenExpired) {
-  //       logout();
-  //       setLoggingOut(true);
-  //       handleRemoveUser();
-  //     }
-  //   } catch (error) {
-  //     console.error('Token validation error:', error);
-  //   }
-  // }, [user.accessToken]);
-  const checkTokenValidity = useCallback(() => {
     console.log('Checking token validity...', { accessToken });
-    if (!accessToken) {
-      navigate('/login');
-      return;
-    }
     try {
       const { exp } = jwt_decode(accessToken);
       const isTokenExpired = Date.now() >= exp * 1000;
       if (isTokenExpired) {
+        console.log('Token is expired');
         logout();
+        return;
       }
     } catch (error) {
       console.error('Token validation error:', error);
     }
-  }, [accessToken, logout, navigate]);
-  // useEffect(() => {
-  //   if (!isLoggedIn) return;
-  //   checkTokenValidity();
-  // }, [checkTokenValidity]);
+  }, [accessToken, logout]);
+
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    decodeAndSetUser(accessToken);
+    // if (accessToken) {
+    //   handleSetUser(jwt_decode(accessToken));
+    // }
     const intervalId = setInterval(() => {
       checkTokenValidity();
     }, 300000); // 300000 ms = 5 minutes
 
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  }, [isLoggedIn, accessToken, checkTokenValidity, decodeAndSetUser]);
+  }, []);
+
   return { login, logout, signup };
 }
 

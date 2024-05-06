@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Card, CardActions } from '@mui/material';
+import { Box, Card, CardActions } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from 'assets/images/placeholder.jpeg';
 import {
@@ -9,10 +9,7 @@ import {
   useDialogState,
   useSelectedContext,
 } from 'context';
-import {
-  AspectRatioBox,
-  StyledCardContent,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledCardContent } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { GenericActionButtons, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 const getQuantity = ({
   card,
@@ -146,7 +143,14 @@ const GenericCard = React.forwardRef((props, ref) => {
 
   return (
     <Card ref={cardRef} className={`base-card ${props.cardClasses}`}>
-      <AspectRatioBox ref={cardRef} theme={theme}>
+      <Box
+        ref={cardRef}
+        sx={{
+          width: '100%', // Full width of the parent container
+          position: 'relative',
+          justifyContent: 'center',
+        }}
+      >
         <CardMediaSection
           isRequired={true}
           imgUrl={imgUrl}
@@ -157,7 +161,7 @@ const GenericCard = React.forwardRef((props, ref) => {
           isModalOpen={dialogState.isCardDialogOpen}
           ref={cardRef}
         />
-      </AspectRatioBox>
+      </Box>
       {cardContent}
       <CardActions
         sx={{

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useMode } from 'context';
 import SearchComponent from 'layout/search/SearchComponent';
-import { PortfolioBoxA } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
 import { MDBox, PageLayout } from 'layout/REUSABLE_COMPONENTS';
+import { Box } from '@mui/material';
 
 const StoreSearch = () => {
   const { theme } = useMode();
@@ -16,14 +16,16 @@ const StoreSearch = () => {
           flexDirection: 'row',
         }}
       >
-        <PortfolioBoxA
+        <Box
           theme={theme}
           sx={{
             flexGrow: 1,
+            boxShadow: theme.shadows[5],
+            [theme.breakpoints.down('sm')]: {},
           }}
         >
           <SearchComponent pageContext="Cart" />
-        </PortfolioBoxA>
+        </Box>
       </MDBox>
     </PageLayout>
   );

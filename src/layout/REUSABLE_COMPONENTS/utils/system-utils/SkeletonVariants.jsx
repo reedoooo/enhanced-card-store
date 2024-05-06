@@ -12,10 +12,7 @@ import {
   Stack,
 } from '@mui/material';
 import { useMode } from 'context';
-import {
-  AspectRatioBoxSkeleton,
-  StyledSkeletonCard,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledSkeletonCard } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 const skeletonLoadingVariants = {
   title: {
@@ -303,14 +300,21 @@ const SkeletonCard = () => {
   return (
     <Box sx={{ marginBottom: '1rem', flexGrow: '1' }}>
       <StyledSkeletonCard theme={theme}>
-        <AspectRatioBoxSkeleton theme={theme}>
+        <Box
+          sx={{
+            width: '100%',
+            position: 'relative',
+            paddingTop: '56.25%', // 16:9 aspect ratio
+            flexGrow: '1',
+          }}
+        >
           <Skeleton
             variant="rectangular"
             width="100%"
             height="100%"
             animation="wave"
           />
-        </AspectRatioBoxSkeleton>
+        </Box>
         <CardContent>
           <Skeleton variant="text" animation="wave" height={20} />
           <Skeleton variant="text" animation="wave" height={20} width="80%" />

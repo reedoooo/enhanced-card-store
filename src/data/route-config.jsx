@@ -1,58 +1,119 @@
-// const ROUTES = [
-//   { path: '/', componentName: 'HomePage', isPrivate: false },
-//   { path: '/home', componentName: 'HomePage', isPrivate: false },
-//   { path: '/deckbuilder', componentName: 'DeckBuilderPage', isPrivate: false },
-//   { path: '/store', componentName: 'StorePage', isPrivate: false },
-//   { path: '/cart', componentName: 'CartPage', isPrivate: true },
-//   { path: '/collection', componentName: 'CollectionPage', isPrivate: true },
-//   { path: '/profile', componentName: 'ProfilePage', isPrivate: true },
-//   // { path: '/login', componentName: 'LoginDialog', isPrivate: false },
-//   { path: '/login', componentName: 'LoginPage', isPrivate: false },
-//   // { path: '/loginPage', componentName: 'LoginPage', isPrivate: false },
-//   { path: '/signup', componentName: 'SignupPage', isPrivate: false },
-//   // { path: '/about', componentName: 'AboutPage', isPrivate: false },
-//   // { path: '/contact', componentName: 'ContactPage', isPrivate: false },
-//   // { path: '/terms', componentName: 'TermsPage', isPrivate: false },
-//   // { path: '/privacy', componentName: 'PrivacyPage', isPrivate: false },
-//   { path: '*', componentName: 'NotFoundPage', isPrivate: false },
-// ];
-
-import { NotFoundPage } from 'layout/REUSABLE_COMPONENTS';
 import {
   CartPage,
   CollectionPage,
   DeckBuilderPage,
   HomePage,
   LoginPage,
+  NotFoundPage,
   ProfilePage,
   StorePage,
 } from 'pages';
+import {
+  Store as StoreIcon,
+  ShoppingCart as CartIcon,
+  Assessment as CollectionIcon,
+} from '@mui/icons-material';
+import { Badge } from '@mui/material';
+import DeckBuilderIcon from './DeckBuilderIcon';
 
-// const ROUTE_CONFIG = {
-//   defaultPath: '/',
-//   routes: ROUTES.map(({ path, componentName, isPrivate }) => ({
-//     path,
-//     componentName,
-//     isPrivate,
-//   })),
-// };
+function getRoutes() {
+  const cartItemQuantity = JSON.parse(localStorage.getItem('cart'))?.items
+    ?.length;
+  const ROUTES = [
+    {
+      routerPath: '/',
+      directoryPath: 'HomePage',
+      component: HomePage,
+      isPrivate: false,
 
-// export { ROUTES, ROUTE_CONFIG };
-// First, import all the necessary components
+      // navItem: true,
+    },
+    {
+      routerPath: '/home',
+      directoryPath: 'HomePage',
+      component: HomePage,
+      isPrivate: false,
+      // navItem: true,
+    },
+    {
+      routerPath: '/deckbuilder',
+      directoryPath: 'DeckBuilderPage',
+      component: DeckBuilderPage,
+      isPrivate: false,
+      name: 'Deck',
 
-// Then, refactor the ROUTES to use component references directly
-const ROUTES = [
-  { path: '/', component: HomePage, isPrivate: false },
-  { path: '/home', component: HomePage, isPrivate: false },
-  { path: '/deckbuilder', component: DeckBuilderPage, isPrivate: false },
-  { path: '/store', component: StorePage, isPrivate: false },
-  { path: '/cart', component: CartPage, isPrivate: true },
-  { path: '/collection', component: CollectionPage, isPrivate: true },
-  { path: '/profile', component: ProfilePage, isPrivate: true },
-  { path: '/login', component: LoginPage, isPrivate: false },
-  // { path: '/signup', component: SignupPage, isPrivate: false },
-  { path: '*', component: NotFoundPage, isPrivate: false },
-];
+      icon: <DeckBuilderIcon iconColor="black" />,
+      navItem: true,
+    },
+    {
+      routerPath: '/store',
+      directoryPath: 'StorePage',
+      component: StorePage,
+      isPrivate: false,
+      name: 'Store',
 
-// Export ROUTES and the refactored ROUTE_CONFIG
-export { ROUTES };
+      icon: <StoreIcon />,
+      navItem: true,
+    },
+    {
+      routerPath: '/cart',
+      directoryPath: 'CartPage',
+      component: CartPage,
+      isPrivate: true,
+      name: 'Cart',
+
+      icon: (
+        <Badge
+          badgeContent={cartItemQuantity}
+          color="primary"
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left', // Ensures badge is aligned to the left
+          }}
+          sx={{
+            '& .MuiBadge-badge': {
+              left: 0, // Positions badge on the left side
+              transform: 'scale(1) translate(-70%, -70%)', // Adjust position relative to the icon
+              marginLeft: '0', // Remove any default margin
+            },
+          }}
+        >
+          <CartIcon />
+        </Badge>
+      ),
+      navItem: true,
+    },
+    {
+      routerPath: '/collection',
+      directoryPath: 'CollectionPage',
+      component: CollectionPage,
+      isPrivate: true,
+      name: 'Collection',
+
+      icon: <CollectionIcon />,
+      navItem: true,
+    },
+    {
+      routerPath: '/profile',
+      directoryPath: 'ProfilePage',
+      component: ProfilePage,
+      isPrivate: true,
+      // navItem: true,
+    },
+    {
+      routerPath: '/login',
+      directoryPath: 'LoginPage',
+      component: LoginPage,
+      isPrivate: false,
+    },
+    {
+      routerPath: '*',
+      directoryPath: 'NotFoundPage',
+      component: NotFoundPage,
+      isPrivate: false,
+    },
+  ];
+  return ROUTES;
+}
+
+export default getRoutes;

@@ -163,10 +163,12 @@ const HeroChartSection = ({
                           }}
                         >
                           <RCWrappedIcon
-                            color="white"
-                            sx={{
-                              background: '#4e93a6',
-                            }}
+                            size="large"
+                            bgColor="success"
+                            // color="white"
+                            // sx={{
+                            //   background: '#4e93a6',
+                            // }}
                           >
                             <FaShieldAlt
                               fontSize={theme.typography.pxToRem(20)}

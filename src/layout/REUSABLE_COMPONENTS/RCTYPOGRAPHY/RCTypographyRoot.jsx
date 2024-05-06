@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import { useMode } from 'context';
 import styled from 'styled-components';
 
-export default styled(Typography)(({ ownerstate }) => {
+export default styled(Typography)(({ ownerState }) => {
   // const { palette, typography, functions } = theme;
   const { theme } = useMode();
   const {
@@ -13,7 +13,7 @@ export default styled(Typography)(({ ownerstate }) => {
     opacity,
     textGradient,
     darkMode,
-  } = ownerstate;
+  } = ownerState;
   const { palette } = theme;
   const { gradients, transparent, white } = palette;
   const {

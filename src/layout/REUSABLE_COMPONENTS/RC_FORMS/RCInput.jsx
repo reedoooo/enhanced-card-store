@@ -19,7 +19,7 @@ import {
   Chip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import {
   useBreakpoint,
   useManager,

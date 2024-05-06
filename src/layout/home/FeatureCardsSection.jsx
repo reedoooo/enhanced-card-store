@@ -1,11 +1,19 @@
 import React from 'react';
 import { useSpring, animated } from 'react-spring';
 
-import { Box, CardActions, CardContent, CardHeader, Grid } from '@mui/material';
+import {
+  Box,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Grid,
+  List,
+  ListItem,
+  AppBar,
+  Card,
+} from '@mui/material';
 import featureCardData from 'data/json-data/featureCardData.json'; // Adjust the path as necessary
 import {
-  CardListItem,
-  CardUnorderedList,
   FeatureCard,
   StyledContainerBox,
   StyledPaper,
@@ -58,14 +66,7 @@ export const AnimatedFeatureCard = ({ cardData }) => {
         width: '100%',
       }}
     >
-      <FeatureCard
-        theme={theme}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-        }}
-      >
+      <FeatureCard theme={theme}>
         <CardHeader
           title={cardData.title}
           subheader="Explore Features"
@@ -77,13 +78,27 @@ export const AnimatedFeatureCard = ({ cardData }) => {
           }}
         />
         <CardContent>
-          <CardUnorderedList>
+          <List
+            sx={{
+              listStyleType: 'disc', // or 'circle' or 'square' for different bullet styles
+              paddingLeft: theme.spacing(4), // Adjust based on theme spacing for indentation
+              margin: 0, // Remove default margins
+            }}
+          >
             {cardData?.descriptionA?.map((line, index) => (
-              <CardListItem key={index} theme={theme}>
+              <ListItem
+                key={index}
+                sx={{
+                  color: theme.palette.text.primary,
+                  paddingBottom: theme.spacing(1), // Space between list items
+                  textAlign: 'left', // Align text to the left
+                  fontSize: '1rem', // Adjust font size as needed
+                }}
+              >
                 {line}
-              </CardListItem>
+              </ListItem>
             ))}
-          </CardUnorderedList>
+          </List>
         </CardContent>
         <CardActions
           sx={{
@@ -117,7 +132,7 @@ const FeatureCardsSection = () => {
   const { isMobileUp } = useBreakpoint();
   return (
     <section className="feature-cards-section">
-      <StyledContainerBox maxWidth="100%" theme={theme}>
+      <StyledContainerBox theme={theme}>
         <StyledPaper theme={theme}>
           <Grid
             container

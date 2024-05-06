@@ -5,10 +5,7 @@ import { Box, InputAdornment, LinearProgress, Tooltip } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { Controller } from 'react-hook-form';
-import {
-  FormBox,
-  FormFieldBox,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { FormBox, FormFieldBox } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import {
   useBreakpoint,
   useFormSubmission,

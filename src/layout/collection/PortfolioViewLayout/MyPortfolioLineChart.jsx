@@ -1,19 +1,22 @@
 import { ResponsiveLine } from '@nivo/line';
-import { BasicTooltip } from '@nivo/tooltip';
+import { Tooltip } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEventHandlers } from 'context';
 const TooltipLayer = ({ points }) => {
   return (
     <>
       {points?.map((point, index) => (
-        <BasicTooltip
-          key={point.data.id}
-          id={point.data.id}
-          label={point.data.label}
-          x={point.data.xFormatted}
-          value={point.data.yFormatted}
-          color="#000000"
-          enableChip
+        <Tooltip
+          key={point.id}
+          title={`Value: ${point.data.yFormatted}`}
+          arrow
+          // key={point.data.id}
+          // id={point.data.id}
+          // label={point.data.label}
+          // x={point.data.xFormatted}
+          // value={point.data.yFormatted}
+          // color="#000000"
+          // enableChip
         />
       ))}
     </>

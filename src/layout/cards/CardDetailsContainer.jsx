@@ -10,40 +10,11 @@ import {
   Typography,
   Collapse,
 } from '@mui/material';
-import {
-  FaDragon,
-  FaLevelUpAlt,
-  FaRegLightbulb,
-  FaShieldAlt,
-  FaVenusMars,
-} from 'react-icons/fa';
-import { GiAxeSword } from 'react-icons/gi';
 import { useMode } from 'context';
 import styled from 'styled-components';
-import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-const IconWrapper = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: theme.spacing(1),
-  fontSize: '1.5rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1.2rem',
-  },
-  [theme.breakpoints.down('xs')]: {
-    fontSize: '1rem',
-  },
-  color: theme.palette.text.primary,
-}));
-const iconDetails = [
-  { icon: FaLevelUpAlt, title: 'Level' },
-  { icon: FaVenusMars, title: 'Type' },
-  { icon: FaDragon, title: 'Race' },
-  { icon: FaRegLightbulb, title: 'Attribute' },
-  { icon: GiAxeSword, title: 'ATK' },
-  { icon: FaShieldAlt, title: 'DEF' },
-];
+import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS';
+
 const textDetails = [
   { title: 'Description', key: 'desc' },
   { title: 'Price', key: 'price' },
@@ -144,7 +115,6 @@ const CardDetailSet = ({ values }) => {
     />
   ));
 };
-const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;
 const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   const { theme } = useMode();
   const [openStates, setOpenStates] = useState(details.map(() => false));
@@ -223,16 +193,6 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                     <CardDetailSet values={cardSetsArray} />
                   </Stack>
                 )}
-                {/* {detail.icon && (
-                <CardDetailIcon
-                  icon={
-                    iconDetails.forEach(
-                      (iconDetail) => iconDetail.key === detail.key
-                    )?.icon
-                  }
-                />
-              )} */}
-                {/* </MDBox> */}
               </CardContent>
             </Collapse>
           </CardWrapper>
@@ -247,15 +207,12 @@ const CardDetailsContainer = ({ card, className }) => {
   return (
     <Grid
       container
-      // spacing={2}
       sx={{
-        // background: theme.palette.success.main_light,
         justifyContent: 'center',
         borderRadius: theme.borders.borderRadius.md,
         maxWidth: '100%',
       }}
     >
-      {/* {isInventorySection && <RenderInventoryList />} */}
       {className === 'card-details-container-swiper' && (
         <RenderDetailsSection
           details={textDetails}
@@ -269,3 +226,26 @@ const CardDetailsContainer = ({ card, className }) => {
 };
 
 export default CardDetailsContainer;
+// import {
+//   FaDragon,
+//   FaLevelUpAlt,
+//   FaRegLightbulb,
+//   FaShieldAlt,
+//   FaVenusMars,
+// } from 'react-icons/fa';
+// import { GiAxeSword } from 'react-icons/gi';
+// const IconWrapper = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'center',
+//   marginRight: theme.spacing(1),
+//   fontSize: '1.5rem',
+//   [theme.breakpoints.down('sm')]: {
+//     fontSize: '1.2rem',
+//   },
+//   [theme.breakpoints.down('xs')]: {
+//     fontSize: '1rem',
+//   },
+//   color: theme.palette.text.primary,
+// }));
+// const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;

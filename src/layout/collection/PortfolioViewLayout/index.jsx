@@ -24,7 +24,8 @@ import {
 } from 'layout/REUSABLE_COMPONENTS';
 
 import { formFields, prepareTableData } from 'data';
-import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { ChartArea } from 'layout/REUSABLE_STYLED_COMPONENTS';
+import { debounce } from 'lodash';
 const renderCardContainer = (content, isChart, isForm) => {
   return (
     <MDBox
@@ -63,10 +64,10 @@ const PortfolioViewLayout = () => {
   const { isMobile } = useBreakpoint();
   const { selectedCollection } = useManager();
   const selectedCollectionId = localStorage.getItem('selectedCollectionId');
-  const percentageChange =
-    roundToNearestTenth(
-      selectedCollection?.collectionStatistics?.percentageChange?.value
-    ) || 0;
+  // const percentageChange =
+  //   roundToNearestTenth(
+  //     selectedCollection?.collectionStatistics?.percentageChange?.value
+  //   ) || 0;
   useEffect(() => {
     if (!selectedCollection?.cards) {
       return;
@@ -98,7 +99,7 @@ const PortfolioViewLayout = () => {
           lg={7}
           sx={{ display: 'flex', flexDirection: 'column' }}
         >
-          <RCCard hasTitle={false} variant="table" noBottomMargin={false}>
+          {/* <RCCard hasTitle={false} variant="table" noBottomMargin={false}>
             <BoxHeader
               title="Collection Card Chart"
               subtitle="Chart of the collection price performance"
@@ -106,10 +107,12 @@ const PortfolioViewLayout = () => {
               icon={
                 <MDBox border="none">
                   <RCWrappedIcon
-                    color="white"
-                    sx={{
-                      background: theme.palette.success.main,
-                    }}
+                    size="large"
+                    bgColor="success"
+                    // color="white"
+                    // sx={{
+                    //   background: theme.palette.success.main,
+                    // }}
                   >
                     <Icon fontSize="1.5 rem">show_chart</Icon>
                   </RCWrappedIcon>
@@ -117,9 +120,9 @@ const PortfolioViewLayout = () => {
               }
               sideText={`Change: ${percentageChange}%`}
             />
-          </RCCard>
+          </RCCard> */}
           {/* CHART ROW SECTION */}
-          {selectedCollection?.cards?.length < 5 ? (
+          {/* {selectedCollection?.cards?.length < 5 ? (
             <Grid
               container
               spacing={2}
@@ -156,9 +159,9 @@ const PortfolioViewLayout = () => {
                 </StyledInfoPanel>
               </Grid>
             </Grid>
-          ) : (
-            <ChartAreaComponent />
-          )}
+          ) : ( */}
+          <ChartAreaComponent />
+          {/* )} */}
           {/* FORM SELECTOR ROW SECTION */}
           <FormSelectorRow isXs={isMobile} />
           {/* TOP CARDS ROW SECTION */}
@@ -226,6 +229,10 @@ const ChartAreaComponent = React.memo(() => {
   const [collection, setCollection] = useState(selectedCollection);
   const [timeRange, setTimeRange] = useState('24hr');
   const [marker, setMarker] = useState(null);
+  const percentageChange =
+    roundToNearestTenth(
+      selectedCollection?.collectionStatistics?.percentageChange?.value
+    ) || 0;
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedCollection' && event.newValue) {
@@ -273,32 +280,135 @@ const ChartAreaComponent = React.memo(() => {
     return ticks.split(' ').map((tick) => new Date(tick).getTime());
   }, [timeRange]);
 
+  const debouncedUpdateChartData = debounce(() => {
+    const { selectedCollection } = useManager();
+    if (!selectedCollection) {
+      return;
+    }
+    setCollection(selectedCollection);
+    // handleSelectCollection(selectedCollection);
+  }, 300); // Adjust the debounce delay as needed
+
+  useEffect(() => {
+    const handleResize = () => {
+      debouncedUpdateChartData();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [debouncedUpdateChartData]);
+
   if (!collection) {
     return <LoadingOverlay />;
   }
-  return renderCardContainer(
-    <Suspense fallback={<LoadingOverlay />}>
-      <ResponsiveContainer width="100%" height="100%" background={'#e0e0e0'}>
-        <ChartArea theme={theme} sx={{ minHeight: '500px' }}>
-          <NivoContainer height={500}>
-            <MyPortfolioLineChart
-              key={timeRange}
-              data={[memoChartData]}
-              tickValues={tickValues}
-              validMarkers={[memoMarker]}
-              xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
-              error={error}
-              success={success}
-              grey={grey}
-              text={theme.palette.text.primary}
-            />
-          </NivoContainer>
-        </ChartArea>
-      </ResponsiveContainer>
-    </Suspense>,
-    true
+  return (
+    <MDBox sx={{ borderRadius: '10px', flexGrow: 1, overflow: 'hidden' }}>
+      <RCCard variant="chart" sx={{ height: '100%' }}>
+        <BoxHeader
+          title="Collection Card Chart"
+          subtitle="Chart of the collection price performance"
+          titleVariant="body1"
+          icon={
+            <MDBox border="none">
+              <RCWrappedIcon size="large" bgColor="success">
+                <Icon fontSize="1.5rem">show_chart</Icon>
+              </RCWrappedIcon>
+            </MDBox>
+          }
+          sideText={`Change: ${percentageChange}%`}
+        />
+        {selectedCollection?.cards?.length < 5 ? (
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Grid item xs={12} sm={6} md={6} lg={6}>
+              <StyledInfoPanel theme={theme}>
+                <CircularProgress color="success" />
+              </StyledInfoPanel>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={6}>
+              <StyledInfoPanel theme={theme}>
+                <Typography
+                  variant="h6"
+                  color="textPrimary"
+                  gutterBottom
+                  theme={theme}
+                >
+                  Chart stuck loading?
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color={theme.palette.text.secondary}
+                  theme={theme}
+                >
+                  No worries, the chart requires that users add a minimum of 5
+                  cards before chart functionality is activated to ensure the
+                  best possible chart.
+                </Typography>
+              </StyledInfoPanel>
+            </Grid>
+          </Grid>
+        ) : (
+          <Suspense fallback={<LoadingOverlay />}>
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+              background={'#e0e0e0'}
+            >
+              <ChartArea theme={theme} sx={{ minHeight: '500px' }}>
+                <NivoContainer height={500}>
+                  <MyPortfolioLineChart
+                    key={timeRange}
+                    data={[memoChartData]}
+                    tickValues={tickValues}
+                    validMarkers={[memoMarker]}
+                    xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
+                    error={error}
+                    success={success}
+                    grey={grey}
+                    text={theme.palette.text.primary}
+                  />
+                </NivoContainer>
+              </ChartArea>
+            </ResponsiveContainer>
+          </Suspense>
+        )}
+      </RCCard>
+    </MDBox>
   );
 });
+//   return renderCardContainer(
+//     <Suspense fallback={<LoadingOverlay />}>
+//       <ResponsiveContainer width="100%" height="100%" background={'#e0e0e0'}>
+//         <ChartArea theme={theme} sx={{ minHeight: '500px' }}>
+//           <NivoContainer height={500}>
+//             <MyPortfolioLineChart
+//               key={timeRange}
+//               data={[memoChartData]}
+//               tickValues={tickValues}
+//               validMarkers={[memoMarker]}
+//               xFormat={memoChartData.id === '24hr' ? '%H:%M' : '%b %d'}
+//               error={error}
+//               success={success}
+//               grey={grey}
+//               text={theme.palette.text.primary}
+//             />
+//           </NivoContainer>
+//         </ChartArea>
+//       </ResponsiveContainer>
+//     </Suspense>,
+//     true
+//   );
+// });
 ChartAreaComponent.displayName = 'ChartAreaComponent';
 //!--------------------- CARD DISPLAY COMPONENT ---------------------
 const TopCardsDisplayRowComponent = React.memo(({ isXs }) => {
@@ -388,10 +498,12 @@ const CollectionCardList = React.memo(({ data, columns, theme }) => {
           icon={
             <MDBox border="none">
               <RCWrappedIcon
-                color="white"
-                sx={{
-                  background: theme.palette.success.main,
-                }}
+                size="large"
+                bgColor="success"
+                // color="white"
+                // sx={{
+                //   background: theme.palette.success.main,
+                // }}
               >
                 <Icon fontSize="1.5 rem">list</Icon>
               </RCWrappedIcon>

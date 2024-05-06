@@ -95,10 +95,12 @@ const ValuDistributionCircle = () => {
               title="Collection Value Distribution"
               icon={
                 <RCWrappedIcon
-                  color={greyDark}
-                  sx={{
-                    background: theme.palette.success.main,
-                  }}
+                  size="large"
+                  bgColor="success"
+                  // color={greyDark}
+                  // sx={{
+                  //   background: theme.palette.success.main,
+                  // }}
                 >
                   <Icon>show_chart</Icon>
                 </RCWrappedIcon>

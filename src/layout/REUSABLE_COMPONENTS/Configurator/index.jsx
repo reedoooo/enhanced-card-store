@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
 import searchData from 'data/json-data/search.json';
-import { StyledFormControl } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledFormControl } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMode, useConfigurator } from 'context';
