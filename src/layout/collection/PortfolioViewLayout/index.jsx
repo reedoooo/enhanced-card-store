@@ -131,7 +131,7 @@ const PortfolioViewLayout = () => {
             >
               <Grid item xs={12} sm={6} md={6} lg={6}>
                 <StyledInfoPanel theme={theme}>
-                  <CircularProgress />
+                  <CircularProgress color="success" />
                 </StyledInfoPanel>
               </Grid>
               <Grid item xs={12} sm={6} md={6} lg={6}>

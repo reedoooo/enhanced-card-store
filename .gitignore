@@ -17,6 +17,7 @@ package-lock.json
 # production
 /build
 /future-additions
+/dev
 
 # misc
 .DS_Store

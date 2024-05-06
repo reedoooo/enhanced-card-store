@@ -400,6 +400,28 @@ const SkeletonPieChart = ({ theme }) => (
   </MDBox>
 );
 
+const InfoItemSkeleton = (numItems) => {
+  const items = [];
+  for (let i = 0; i < numItems; i++) {
+    items.push(
+      <Box
+        key={i}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+        }}
+      >
+        <Skeleton variant="circular" width={40} height={40} />
+        <Skeleton variant="text" width="80%" height={24} />
+        <Skeleton variant="text" width="60%" height={30} />
+      </Box>
+    );
+  }
+  return items;
+};
+
 export {
   LoadingCardSkeleton,
   HeroSectionSkeleton,
@@ -410,4 +432,5 @@ export {
   DeckListItemSkeleton,
   SkeletonCartItem,
   SkeletonPieChart,
+  InfoItemSkeleton,
 };

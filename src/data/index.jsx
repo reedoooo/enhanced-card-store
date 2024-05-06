@@ -9,7 +9,7 @@ import {
   formFields,
   zodSchemas,
   configOptions,
-  handleValidation,
+  handleSchemaValidation,
   getFormFieldHandlers,
 } from './formsConfig';
 export {
@@ -25,6 +25,6 @@ export {
   zodSchemas,
   configOptions,
   DeckBuilderIcon,
-  handleValidation,
+  handleSchemaValidation,
   getFormFieldHandlers,
 };

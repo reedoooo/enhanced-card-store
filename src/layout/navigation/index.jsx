@@ -104,6 +104,7 @@ const Navigation = () => {
             '&:hover': {
               backgroundColor: rgba(theme.palette.success.main_lighter),
             },
+            cursor: 'pointer',
           }}
         >
           <ContentContainer

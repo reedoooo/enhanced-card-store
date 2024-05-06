@@ -13,7 +13,7 @@ import {
 import { useMode } from 'context';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaShieldAlt } from 'react-icons/fa';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import {
   BoxHeader,
   DashboardBox,
@@ -234,10 +234,10 @@ const HeroChartSection = ({
 };
 
 HeroChartSection.propTypes = {
-  card: propTypes.object,
-  randomCards: propTypes.array,
-  activeCardIndex: propTypes.number,
-  shouldShow: propTypes.bool,
+  card: PropTypes.object,
+  randomCards: PropTypes.array,
+  activeCardIndex: PropTypes.number,
+  shouldShow: PropTypes.bool,
 };
 
 export default HeroChartSection;

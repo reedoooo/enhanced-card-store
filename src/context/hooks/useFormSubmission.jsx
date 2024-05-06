@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { handleValidation, zodSchemas } from 'data';
+import { handleSchemaValidation, zodSchemas } from 'data';
 
 const useFormSubmission = (formHandlers, formKey) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -9,7 +9,7 @@ const useFormSubmission = (formHandlers, formKey) => {
       setIsSubmitting(true);
       console.log('[ACTIVE FORM]', formKey);
       console.log('[FORM DATA]', formData);
-      const validationResult = handleValidation(activeSchema, formData);
+      const validationResult = handleSchemaValidation(activeSchema, formData);
       if (!validationResult.success) {
         console.error('[INVALID RESULT]', validationResult);
         setIsSubmitting(false);

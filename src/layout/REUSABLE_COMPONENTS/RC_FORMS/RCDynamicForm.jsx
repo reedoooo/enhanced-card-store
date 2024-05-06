@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useEffect, useState } from 'react';
 
-import { Box, InputAdornment, Tooltip } from '@mui/material';
+import { Box, InputAdornment, LinearProgress, Tooltip } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { Controller } from 'react-hook-form';
@@ -14,9 +14,11 @@ import {
   useFormSubmission,
   useRCFormHook,
   useMode,
+  useManager,
 } from 'context';
-import { getFormFieldHandlers } from 'data';
+import { getFormFieldHandlers, handleValidation } from 'data';
 import { RCInput, RCLoadingButton } from '..';
+import { handleFieldValidation } from 'data/formsConfig';
 
 const RCDynamicForm = ({
   formKey,
@@ -27,25 +29,35 @@ const RCDynamicForm = ({
   additonalData,
 }) => {
   const { theme } = useMode();
+  const { status } = useManager();
   const { isMobile } = useBreakpoint();
-  const methods = useRCFormHook(formKey, initialData);
+  // const dataRef = React.useRef(initialData || {});
+  const methods = useRCFormHook(formKey);
   const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
-  // State and Effects
   const [isMounted, setIsMounted] = useState(false);
-  const [formData, setFormData] = useState(initialData);
-
   useEffect(() => {
     setIsMounted(true);
+    initialData && console.log('Mounted with initialData:', initialData); // Logging to debug initialData structure
+    inputs && console.log('Mounted with inputs:', inputs); // Logging to debug inputs structure
+    methods && console.log('Methods:', methods); // Logging to debug methods structure
+    methods.getValues() && console.log('Values:', methods.getValues()); // Logging to debug formValues structure
     return () => {
       setIsMounted(false);
     };
   }, []);
-
   useEffect(() => {
-    setFormData(initialData);
-    methods.reset(initialData); // Reset form with new initial data
-  }, [initialData, methods]);
-
+    if (initialData) {
+      methods.reset(initialData);
+    }
+  }, []);
+  // useEffect(() => {
+  //   // CHECK SUBMITTING STATUS
+  //   console.log('SUBMITTING STATUS:', methods.formState.isSubmitting);
+  // }, [methods.formState.isSubmitting]);
+  useEffect(() => {
+    // CHECK VALIDATION STATUS
+    console.log('VALIDATION STATUS:', methods.formState.isValid);
+  }, [methods.formState.isValid]);
   const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
 
   if (!inputs || typeof inputs !== 'object') {
@@ -80,15 +92,21 @@ const RCDynamicForm = ({
             render={({ field, fieldState: { error } }) => (
               <RCInput
                 {...field}
+                // field={field}
                 options={fieldConfig.options || []} // Ensure options are passed for select inputs
                 type={fieldConfig.type}
                 label={fieldConfig.label}
+                loading={isSubmitting || status === 'loading'}
                 placeholder={fieldConfig.placeholder}
+                rules={fieldConfig.rules}
                 name={fieldConfig.name}
                 context={fieldConfig.context}
                 error={!!error}
                 helperText={error?.message}
-                initialValue={formData ? formData : fieldConfig.initialValue}
+                value={field.value}
+                initialValue={
+                  field.value ? field.value : fieldConfig.defaultValue
+                }
                 InputProps={
                   (fieldConfig.icon
                     ? {
@@ -100,6 +118,10 @@ const RCDynamicForm = ({
                       }
                     : null) || undefined
                 }
+                // onChange={(e) => {
+                //   handleFieldValidation(field, e.target.value);
+                //   field.onChange(e.target.value);
+                // }}
               />
             )}
           />
@@ -124,7 +146,7 @@ const RCDynamicForm = ({
               //     ? optionsForUi?.updateActions?.handleSubmit
               //     : handleSubmit(onSubmit)
               // }
-              loading={isSubmitting}
+              loading={isSubmitting || status === 'loading'}
               withContainer={false}
               fullWidth={true}
               circular={true}
@@ -151,8 +173,8 @@ const RCDynamicForm = ({
             <RCLoadingButton
               key={optionsForUi.deleteButtonLabel}
               type="submit"
-              onClick={optionsForUi.deleteActions.handleDelete}
-              loading={isSubmitting}
+              // onClick={optionsForUi.deleteActions.handleDelete}
+              loading={isSubmitting || status === 'loading'}
               withContainer={false}
               fullWidth={true}
               circular={true}
@@ -175,6 +197,12 @@ const RCDynamicForm = ({
           </Tooltip>
         )}
       </Box>
+      {/* {methods.formState.isSubmitting ||
+        (status === 'loading' && (
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress color="success" />
+          </Box>
+        ))} */}
     </FormBox>
   );
 };

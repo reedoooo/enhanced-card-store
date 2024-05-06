@@ -250,8 +250,9 @@ const useManager = () => {
   const fetchSingleEntity = useCallback(
     async (entity, id) => {
       try {
+        const cleanedId = encodeURIComponent(id.replace(/"/g, ''));
         const response = await fetchWrapper(
-          createApiUrl(entity, `get/${id}`),
+          createApiUrl(entity, `get/${cleanedId}`),
           'GET',
           null,
           `fetch${entity}`.toLocaleUpperCase()

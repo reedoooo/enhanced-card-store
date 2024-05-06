@@ -20,7 +20,7 @@ const ButtonContainer = ({ children, withContainer }) => (
 const labelContent = (loading, icon, label) =>
   loading ? (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <CircularProgress size={20} />
+      <CircularProgress size={20} color="success" />
       <Box sx={{ ml: 2 }}>{label}</Box>
     </Box>
   ) : (

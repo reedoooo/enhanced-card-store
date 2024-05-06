@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MDBoxRoot from './MDBoxRoot';
+import MDBoxRoot from './MDBoxRoot.jsx';
 import React from 'react';
 
 const MDBox = React.forwardRef(

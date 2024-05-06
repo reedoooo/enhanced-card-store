@@ -26,6 +26,7 @@ import {
   MDBox,
   PageHeader,
 } from 'layout/REUSABLE_COMPONENTS';
+import { debounce } from 'lodash';
 
 const DeckBuilder = () => {
   const { theme } = useMode();
@@ -38,85 +39,125 @@ const DeckBuilder = () => {
     hasFetchedDecks,
     setHasUpdatedDecks,
     updateDeck,
+    setHasFetchedDecks,
     decks: allDecks,
   } = useManager();
   const { setActiveFormSchema } = useFormManagement();
   const { dialogState, openDialog, closeDialog } = useDialogState();
   const [activeTab, setActiveTab] = useState(0);
-  const [loadingState, setLoadingState] = useState({});
-  const [decks, setDecks] = useState(allDecks);
+  const [decks, setDecks] = useState(allDecks || []);
+  const [loadingState, setLoadingState] = useState({
+    global: false,
+    individual: {},
+  });
+  useEffect(() => {
+    setLoadingState((prev) => ({
+      ...prev,
+      individual: decks.reduce((acc, deck) => {
+        acc[deck._id] = false;
+        return acc;
+      }, {}),
+    }));
+  }, [decks]);
+  const handleSetLoadingState = useCallback((deckId, isLoading) => {
+    setLoadingState((prev) => ({
+      ...prev,
+      individual: {
+        ...prev.individual,
+        [deckId]: isLoading,
+      },
+      global: isLoading ? isLoading : prev.global,
+    }));
+
+    if (isLoading) {
+      setTimeout(() => {
+        setLoadingState((prev) => ({
+          ...prev,
+          individual: {
+            ...prev.individual,
+            [deckId]: false,
+          },
+          global: Object.values(prev.individual).some((v) => v)
+            ? prev.global
+            : false,
+        }));
+      }, 1000); // 5 minutes
+    }
+  }, []);
+  const handleDebounceDecks = useCallback(
+    debounce((data) => {
+      console.log('NEW DECKS VALUE:', data);
+      setLoadingState((prev) => ({ ...prev, global: true }));
+      setDecks(data);
+    }, 500),
+    []
+  );
   useEffect(() => {
     const initFetch = async () => {
-      const loadedDecks = await fetchDecks();
-      setDecks(loadedDecks);
-      const storedDeckId = localStorage.getItem('selectedDeckId');
-      const initialDeck = loadedDecks?.find(
-        (deck) => deck._id === storedDeckId
-      );
-      if (initialDeck) {
-        setActiveTab(initialDeck ? loadedDecks?.indexOf(initialDeck) : 0);
-        handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
-      } else {
-        setActiveTab(0);
-        handleSelectDeck(allDecks[0]);
-        // handleSelectDeck(null);
+      setLoadingState((prev) => ({
+        global: true,
+        ...prev.individual,
+      }));
+      try {
+        const loadedDecks = await fetchDecks();
+        handleDebounceDecks(loadedDecks);
+        const storedDeckId = localStorage.getItem('selectedDeckId');
+        const initialDeck = loadedDecks?.find(
+          (deck) => deck._id === storedDeckId
+        );
+        if (initialDeck) {
+          setActiveTab(loadedDecks?.indexOf(initialDeck));
+          handleSelectDeck(initialDeck); // Ensure the deck is selected in context or state
+        } else {
+          setActiveTab(0);
+          handleSelectDeck(loadedDecks[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch decks:', error);
+        setLoadingState((prev) => ({
+          ...prev,
+          global: false,
+        }));
+      } finally {
+        setLoadingState((prev) => ({
+          ...prev,
+          global: false,
+        }));
       }
     };
     if (!hasFetchedDecks) {
       initFetch();
+      setHasFetchedDecks(true);
     }
-  }, [hasFetchedDecks]);
+  }, [hasFetchedDecks, handleDebounceDecks, fetchDecks, handleSelectDeck]);
   const handleDelete = useCallback(
     async (deck) => {
+      const id = deck?._id;
+      handleSetLoadingState(id, true);
+
       try {
         await deleteDeck(deck?._id);
       } catch (error) {
         console.error('Failed to delete deck:', error);
+      } finally {
+        handleSetLoadingState(id, false);
+        setHasUpdatedDecks(true);
       }
     },
-    [deleteDeck]
+    [deleteDeck, handleSetLoadingState, setHasUpdatedDecks]
   );
-  const handleEdit = useCallback(
-    async (formData) => {
-      console.log('FORM DATA:', formData);
-      const selectedDeckId = localStorage.getItem('selectedDeckId');
-      const deck = decks?.find((deck) => deck._id === selectedDeckId);
-      setLoadingState((prev) => ({
-        ...prev,
-        [deck._id]: true,
-      }));
-      try {
-        const updatedDeck = await updateDeck(formData);
-        setLoadingState((prev) => ({
-          ...prev,
-          [deck._id]: false,
-        }));
-        handleSelectDeck(updatedDeck);
-      } catch (error) {
-        setLoadingState((prev) => ({
-          ...prev,
-          [deck._id]: false,
-        }));
-        console.error('Failed to update deck:', error);
-      }
-    },
-    [fetchDeckById, handleSelectDeck]
-  );
-  const handleDeckLoaded = useCallback((deckId) => {
-    setLoadingState((prev) => ({
-      ...prev,
-      [deckId]: false,
-    }));
-  }, []);
+
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === 'selectedDeckId' || event.key === 'selectedDeck') {
-        const updatedDeckId = event.newValue;
+        const updatedDeckId = localStorage.getItem('selectedDeckId');
+        handleSetLoadingState(updatedDeckId, true);
         const updatedDeck = decks?.find((deck) => deck._id === updatedDeckId);
         if (updatedDeck) {
           setActiveTab(decks?.indexOf(updatedDeck));
           handleSelectDeck(updatedDeck);
         }
+        handleSetLoadingState(updatedDeckId, false);
       }
     };
 
@@ -124,25 +165,24 @@ const DeckBuilder = () => {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [decks, handleSelectDeck]);
+  }, [decks, handleSelectDeck, handleSetLoadingState]);
+
   const handleChangeTab = useCallback(
     async (event, newValue) => {
       setActiveTab(newValue);
       const deckValue = decks[newValue];
+      const id = deckValue?._id;
       if (deckValue) {
-        setLoadingState((prev) => ({
-          ...prev,
-          [deckValue._id]: true,
-        }));
+        handleSetLoadingState(id, true);
         const selectedDeck = await fetchDeckById(deckValue?._id);
-        localStorage.setItem('selectedDeckId', selectedDeck._id);
+        // localStorage.setItem('selectedDeckId', selectedDeck._id);
         handleSelectDeck(selectedDeck);
-        handleDeckLoaded(selectedDeck._id);
+        handleSetLoadingState(id, false);
       } else {
         console.error('Selected deck is undefined.');
       }
     },
-    [decks, handleSelectDeck, fetchDeckById, handleDeckLoaded]
+    [decks, handleSelectDeck, fetchDeckById, handleSetLoadingState]
   );
   const deckListItems = useMemo(
     () =>
@@ -150,30 +190,17 @@ const DeckBuilder = () => {
         <Collapse in={activeTab === index} key={`${deck?._id}-${index}`}>
           <DeckListItem
             deck={deck}
-            selectedDeckId={localStorage.getItem('selectedDeckId')}
             handleDelete={() => handleDelete(deck)}
             isEditPanelOpen={
               localStorage.getItem('selectedDeckId') === deck._id
             }
-            updateDeckDetails={handleEdit}
-            activeItem={activeTab === index}
-            handleSelectAndShowDeck={() => handleSelectDeck(deck)}
-            handleDeckLoaded={() => handleDeckLoaded(deck?._id)}
-            isLoading={loadingState[deck?._id]}
-            setLoadingState={setLoadingState}
+            isLoading={loadingState?.individual[deck?._id] ? true : false}
           />
         </Collapse>
       )),
-    [
-      decks,
-      activeTab,
-      handleDelete,
-      handleSelectDeck,
-      handleDeckLoaded,
-      loadingState,
-      setLoadingState,
-    ]
+    [decks, activeTab, handleDelete, loadingState]
   );
+
   return (
     <MDBox theme={theme} sx={{ flexGrow: 1 }}>
       <DashBoardLayout>
@@ -222,8 +249,8 @@ const DeckBuilder = () => {
                 {decks?.map((deck, index) => (
                   <Tab
                     label={
-                      loadingState[deck?._id] ? (
-                        <CircularProgress size={20} />
+                      loadingState?.individual[deck?._id] === true ? (
+                        <CircularProgress size={20} color="success" />
                       ) : (
                         <span>{deck?.name}</span>
                       )
@@ -251,6 +278,11 @@ const DeckBuilder = () => {
               }}
             >
               {deckListItems[activeTab]}
+              {/* {loadingState.global === true ? (
+                <CircularProgress size={20} color="success" />
+              ) : (
+                deckListItems[activeTab]
+              )} */}
             </DashboardBox>
           </Grid>
         </Grid>
