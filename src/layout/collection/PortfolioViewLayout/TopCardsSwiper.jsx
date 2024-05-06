@@ -27,21 +27,21 @@ const TopCardsSwiper = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { collectionMetaData } = useManager();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
-  useEffect(() => {
-    const swiperInstance = swiperRef.current?.swiper;
-    if (swiperInstance) {
-      swiperInstance.on('slideChange', () => {
-        const { activeIndex } = swiperInstance;
-        handleSlideChange(activeIndex);
-        if ((activeIndex + 1) % 4 === 0) {
-          swiperInstance.autoplay.stop();
-          setTimeout(() => {
-            swiperInstance?.autoplay?.start();
-          }, 10000);
-        }
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const swiperInstance = swiperRef.current?.swiper;
+  //   if (swiperInstance) {
+  //     swiperInstance.on('slideChange', () => {
+  //       const { activeIndex } = swiperInstance;
+  //       handleSlideChange(activeIndex);
+  //       if ((activeIndex + 1) % 4 === 0) {
+  //         swiperInstance.autoplay.stop();
+  //         setTimeout(() => {
+  //           swiperInstance?.autoplay?.start();
+  //         }, 10000);
+  //       }
+  //     });
+  //   }
+  // }, []);
   return (
     <Swiper
       className="swiper-container"
@@ -85,7 +85,7 @@ const TopCardsSwiper = () => {
               justifyContent: 'center',
               border: 'none',
             }}
-            ref={swiperRef}
+            // ref={swiperRef}
           >
             <CardWrapper border={false} content={false} theme={theme}>
               <FlexBetween

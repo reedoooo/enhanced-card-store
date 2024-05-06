@@ -151,7 +151,42 @@ const NavProfileItem = ({ username, type }) => {
     </Card>
   );
 };
-const renderBaseNavItems = ({ type, toggleSidebar, items }) => {
+// const renderBaseNavItems = ({ type, toggleSidebar, items }) => {
+//   const navigate = useNavigate();
+//   const [springs] = useSprings(items?.length, (index) => ({
+//     from: { opacity: 0, transform: 'translateY(-20px)' },
+//     to: { opacity: 1, transform: 'translateY(0)' },
+//     delay: index * 100,
+//   }));
+//   return items.map((item, index) => (
+//     <animated.div
+//       style={{
+//         ...springs[index],
+//         width: '100%',
+//       }}
+//       key={item.name}
+//     >
+//       <ListItem
+//         key={index}
+//         sx={{
+//           maxHeight: 64,
+//           maxWidth: '100%',
+//         }}
+//       >
+//         <NavItemLink
+//           type={type}
+//           icon={item.icon}
+//           actionFunction={() => navigate(item.routerPath)}
+//           // to={item.routerPath}
+//           name={item.name}
+//           action="navigate"
+//           // toggle={toggleSidebar}
+//         />
+//       </ListItem>
+//     </animated.div>
+//   ));
+// };
+const BaseNavItems = React.memo(({ type, items }) => {
   const navigate = useNavigate();
   const [springs] = useSprings(items?.length, (index) => ({
     from: { opacity: 0, transform: 'translateY(-20px)' },
@@ -176,16 +211,17 @@ const renderBaseNavItems = ({ type, toggleSidebar, items }) => {
         <NavItemLink
           type={type}
           icon={item.icon}
-          actionFunction={() => navigate(item.routerPath)}
-          // to={item.routerPath}
-          name={item.name}
           action="navigate"
-          // toggle={toggleSidebar}
+          actionFunction={() => navigate(item.routerPath)}
+          name={item.name}
         />
       </ListItem>
     </animated.div>
   ));
-};
+});
+
+BaseNavItems.displayName = 'BaseNavItems';
+
 const TopNav = (props) => {
   const { type, username, toggleSidebar } = props;
   const { theme } = useMode();
@@ -211,12 +247,7 @@ const TopNav = (props) => {
           <NavMenuItem type={type} toggleSidebar={toggleSidebar} />
           <RCLogoSection />
         </Box>
-        {!isMd &&
-          renderBaseNavItems({
-            items: baseNavItems,
-            type: type,
-            toggleSidebar,
-          })}
+        {!isMd && <BaseNavItems type={type} items={baseNavItems} />}
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           <NavProfileItem username={username} type={type} />
         </Box>
@@ -293,11 +324,12 @@ const SideNav = (props) => {
         <ModalClose />
         <Divider sx={{ mt: '1rem' }} />
         <List>
-          {renderBaseNavItems({
+          <BaseNavItems type={'side'} items={baseNavItems} />
+          {/* {renderBaseNavItems({
             items: baseNavItems, // Pass the base nav items
             type: props.type,
             toggleSidebar,
-          })}
+          })} */}
         </List>
       </Sheet>
     </Drawer>
