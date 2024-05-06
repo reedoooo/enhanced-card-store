@@ -1,9 +1,10 @@
 import heroData from './heroData';
-import ROUTE_CONFIG from './route-config';
 import collectionPortfolioHeaderItems from './collectionPortfolioHeaderItems';
 import baseMenuItems from './baseMenuItems';
 import prepareTableData from './prepareTableData';
 import HelmetMetaData from './HelmetMetaData';
+import DeckBuilderIcon from './DeckBuilderIcon';
+import { ROUTES } from './route-config.jsx';
 import {
   formFields,
   zodSchemas,
@@ -13,7 +14,8 @@ import {
 } from './formsConfig';
 export {
   heroData,
-  ROUTE_CONFIG,
+  ROUTES,
+  // ROUTE_CONFIG,
   HelmetMetaData,
   collectionPortfolioHeaderItems,
   baseMenuItems,
@@ -22,6 +24,7 @@ export {
   formFields,
   zodSchemas,
   configOptions,
+  DeckBuilderIcon,
   handleValidation,
   getFormFieldHandlers,
 };

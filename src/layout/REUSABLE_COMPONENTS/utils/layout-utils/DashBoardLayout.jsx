@@ -1,5 +1,5 @@
 import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 import PropTypes from 'prop-types';
 
 function DashBoardLayout({ children }) {

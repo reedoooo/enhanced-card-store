@@ -1,27 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CardMedia, CardContent, Icon } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import { useMode } from 'context';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
-import DashboardBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashboardBox';
-import BoxHeader from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/BoxHeader';
 import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
-import useManager from 'context/state/useManager';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+
+import {
+  BoxHeader,
+  DashboardBox,
+  FlexBetween,
+  MDBox,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
+
+import { useMode, useBreakpoint, useManager } from 'context';
 
 const TopCardsSwiper = () => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
   const swiperRef = useRef(null);
-
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { collectionMetaData } = useManager();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
@@ -83,6 +85,7 @@ const TopCardsSwiper = () => {
               justifyContent: 'center',
               border: 'none',
             }}
+            ref={swiperRef}
           >
             <CardWrapper border={false} content={false} theme={theme}>
               <FlexBetween

@@ -1,5 +1,4 @@
-import Grid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider';
+import { Divider, Grid } from '@mui/material';
 
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -7,12 +6,12 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 // Images
-import DashBoardLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/DashBoardLayout';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import Header from './sub-components/Header';
 import PlatformSettings from './sub-components/Settings';
 import ProfileInfoCard from './sub-components/ProfileInfoCard';
+
 import { useMode } from 'context';
+import { DashBoardLayout, MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 function Overview() {
   const { theme } = useMode();

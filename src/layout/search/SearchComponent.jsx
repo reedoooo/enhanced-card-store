@@ -1,13 +1,12 @@
 // DeckSearch.js
 import React, { useEffect } from 'react';
 import { Card, Container, Grid, IconButton } from '@mui/material';
-import SearchResults from './SearchResults';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+
 import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
-import RCDynamicForm from '../REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
-import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+
+import SearchResults from './SearchResults';
+
 import {
   useBreakpoint,
   useMode,
@@ -15,7 +14,14 @@ import {
   useConfigurator,
   useLocalStorage,
 } from 'context';
+
 import { formFields } from 'data';
+import {
+  MDBox,
+  RCCard,
+  RCDynamicForm,
+  RCTypography,
+} from 'layout/REUSABLE_COMPONENTS';
 
 const SearchComponent = (pageContext) => {
   const { theme } = useMode();

@@ -1,12 +1,11 @@
 import { useCallback, useState } from 'react';
-import { handleValidation, zodSchemas } from '../../data/formsConfig';
+import { handleValidation, zodSchemas } from 'data';
 
 const useFormSubmission = (formHandlers, formKey) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const activeSchema = zodSchemas[formKey];
   const onSubmit = useCallback(
     async (formData) => {
-      // handleValidation
       setIsSubmitting(true);
       console.log('[ACTIVE FORM]', formKey);
       console.log('[FORM DATA]', formData);

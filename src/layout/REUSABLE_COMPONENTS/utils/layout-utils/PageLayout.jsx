@@ -1,15 +1,11 @@
-import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import MDBox from '../../MDBOX';
 import { Grid } from '@mui/material';
-import { useMode } from 'context';
+import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 function PageLayout({ children }) {
-  const { pathname } = useLocation();
-  const { theme } = useMode();
   return (
     <MDBox
-      className="gradient-background"
+      // className="gradient-background"
       width="100vw"
       height="100%"
       minHeight="100vh"
@@ -26,11 +22,8 @@ function PageLayout({ children }) {
   );
 }
 
-// Typechecking props for the PageLayout
 PageLayout.propTypes = {
-  background: PropTypes.oneOf(['white', 'light', 'default']),
   children: PropTypes.node.isRequired,
-  backCol: PropTypes.bool,
 };
 
 export default PageLayout;

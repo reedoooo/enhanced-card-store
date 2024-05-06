@@ -1,10 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { formFields, zodSchemas } from '../../data/formsConfig';
+import { formFields, zodSchemas } from 'data';
 
 const useRCFormHook = (schemaKey, initialData) => {
-  // console.log('SCHEMA KEY', schemaKey);
   const schema = zodSchemas[schemaKey];
   const defaultValues = Object.keys(schema.shape).reduce((acc, key) => {
     const fieldDefinition = schema.shape[key];
@@ -23,10 +22,13 @@ const useRCFormHook = (schemaKey, initialData) => {
     defaultValues: !initialData ? defaultValues : null,
   });
 
-  useEffect(() => {
-    console.log('[1] FORMSTATE: ', methods.getValues());
-    console.log(`[2] ${schemaKey} SCHEMA REGISTERED: `, schema);
-  }, [methods, schemaKey, schema]);
+  // useEffect(() => {
+  //   console.log(
+  //     // `[1] ${schemaKey} SCHEMA REGISTERED: ${schema}`,
+  //     // `[2] FORMSTATE REGISTERED: ${JSON.stringify(methods.formState)}`,
+  //     `[3] VALUES: ${JSON.stringify(methods.getValues())}`
+  //   );
+  // }, [methods.formState]);
 
   return methods;
 };

@@ -1,3 +1,4 @@
+import RCTypography from './RCTYPOGRAPHY';
 import MDBox from './MDBOX';
 import RCCard from './RCCARD';
 import RCWrappedIcon from './RCWRAPPEDICON';
@@ -12,27 +13,9 @@ import RCSwitch from './RC_FORMS/RCSwitch';
 import GenericActionButtons from './GenericActionButtons';
 import Configurator from './Configurator';
 import RCLogoSection from './RC_OTHER/RCLogoSection';
-import RCTypography from './RCTYPOGRAPHY';
-// export { default as MDBox } from './MDBox/index';
-// export { default as RCWrappedIcon } from './RCWrappedIcon';
-// export { default as RCTypography } from './RCTYPOGRAPHY';
-// export { default as RCLoadingButton } from './RCLOADINGBUTTON';
-// export { default as RCBadge } from './RCBADGE';
-// export { default as RCButton } from './RCBUTTON';
-// export { default as RCCard } from './RCCard';
-// export { default as RCInput } from './RC_FORMS/RCInput';
+import RCInfoItem from './RC_OTHER/RCInfoItem';
+import RCButton from './RCBUTTON';
 
-// export { default as Configurator } from './Configurator';
-// export { default as GenericActionButtons } from './GenericActionButtons';
-// export { default as RCLogoSection } from './RC_OTHER/RCLogoSection';
-// export { default as RCChange } from './RC_OTHER/RCChange';
-// export { default as RCHeader } from './RC_OTHER/RCHeader';
-// export { default as RCInfoItem } from './RC_OTHER/RCInfoItem';
-// export { default as RCMainCard } from './RC_OTHER/RCMainCard';
-// export { default as RCToolTip } from './RC_OTHER/RCToolTip';
-// export { default as RCDynamicForm } from './RC_FORMS/RCDynamicForm';
-// export { default as RCSwitch } from './RC_FORMS/RCSwitch';
-// export { default as IconStatWrapper } from './utils/layout-utils/IconStatWrapper';
 import {
   Copyright,
   ErrorFallback,
@@ -66,9 +49,9 @@ import {
 } from './utils/layout-utils';
 
 export {
+  RCTypography,
   MDBox,
   RCWrappedIcon,
-  RCTypography,
   RCLoadingButton,
   RCBadge,
   RCChange,
@@ -81,6 +64,8 @@ export {
   FlexBetween,
   IconStatWrapper,
   RCCard,
+  RCButton,
+  RCInfoItem,
   RCLogoSection,
   Configurator,
   RCSwitch,

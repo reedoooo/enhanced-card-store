@@ -195,6 +195,7 @@ export default styled(Button)(({ ownerState }) => {
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+      my: pxToRem(10),
       borderRadius: theme.borderRadius,
       transitionProperty: 'color, background, box-shadow',
       transitionDuration: '0.35s',

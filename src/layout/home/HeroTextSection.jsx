@@ -1,7 +1,6 @@
-import { Typography, Zoom, useMediaQuery } from '@mui/material';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import { useMode } from 'context';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import { Typography, Zoom } from '@mui/material';
+import { useMode, useBreakpoint } from 'context';
+import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 const HeroTextSection = ({ shouldShow }) => {
   const { theme } = useMode();

@@ -1,10 +1,12 @@
 import { Box, Divider } from '@mui/material';
-import StatBox from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/StatBox';
-import { useMode } from 'context';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
-import useManager from 'context/state/useManager';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+
+import { useMode, useManager } from 'context';
+
 import { roundToNearestTenth } from 'context/Helpers';
+
+import { StatBox } from 'layout/REUSABLE_COMPONENTS';
 
 const TotalCardsStatBox = () => {
   const { theme } = useMode();

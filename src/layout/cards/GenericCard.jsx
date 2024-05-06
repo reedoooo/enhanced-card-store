@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Card, CardActions, Typography } from '@mui/material';
+import { Card, CardActions } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from 'assets/images/placeholder.jpeg';
-import { useMode } from 'context';
-import useSelectedContext from 'context/hooks/useSelectedContext';
+import {
+  useMode,
+  usePopover,
+  useManager,
+  useDialogState,
+  useSelectedContext,
+} from 'context';
 import {
   AspectRatioBox,
   StyledCardContent,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import usePopover from 'context/hooks/usePopover';
-import GenericActionButtons from 'layout/REUSABLE_COMPONENTS/GenericActionButtons';
-import useDialogState from 'context/hooks/useDialogState';
-import useManager from 'context/state/useManager';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import { GenericActionButtons, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 const getQuantity = ({
   card,
   cart,

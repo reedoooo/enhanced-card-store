@@ -4,7 +4,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  makeStyles,
   Skeleton,
   Grid,
   Collapse,
@@ -12,12 +11,12 @@ import {
   Typography,
   Stack,
 } from '@mui/material';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
 import { useMode } from 'context';
 import {
   AspectRatioBoxSkeleton,
   StyledSkeletonCard,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 const skeletonLoadingVariants = {
   title: {
     variant: 'text',

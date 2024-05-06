@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useMode } from 'context';
-import useBreakpoint from 'context/hooks/useBreakPoint';
 import { Box, CircularProgress } from '@mui/material';
+import { useBreakpoint } from 'context';
 
 const LoadingOverlay = () => {
   const { isMobile } = useBreakpoint();

@@ -6,8 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Icon from '@mui/material/Icon';
 import colors from 'assets/themes/base/colors';
 import typography from 'assets/themes/base/typography';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
+import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 function ProfileInfoCard({
   title = '',

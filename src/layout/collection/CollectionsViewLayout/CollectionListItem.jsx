@@ -3,30 +3,25 @@ import { Card, CardActionArea, CardContent, Grid } from '@mui/material';
 import { Divider, Tooltip } from '@mui/joy';
 
 import PropTypes from 'prop-types';
-import useDialogState from 'context/hooks/useDialogState';
-import { useMode } from 'context';
-import CollectionDialog from 'layout/dialogs/CollectionDialog';
-import RCChange from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCChange';
-import RCInfoItem from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCInfoItem';
+
 import { roundToNearestTenth } from 'context/Helpers';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
-import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import {
+  LoadingOverlay,
+  MDBox,
+  RCButton,
+  RCChange,
+  RCInfoItem,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import CollectionDialog from 'layout/dialogs/CollectionDialog';
+
+import { useBreakpoint, useDialogState, useMode } from 'context';
 
 const CollectionListItem = memo(
   ({ collection, handleSelectAndShowCollection, handleDelete }) => {
     const { theme } = useMode();
     const { isMobile } = useBreakpoint();
     const { dialogState, openDialog, closeDialog } = useDialogState();
-    if (!collection) {
-      return <LoadingOverlay />;
-    }
-    const percentageChange =
-      roundToNearestTenth(
-        collection?.collectionStatistics?.percentageChange?.value
-      ) || 0;
-
     const handleEdit = useCallback(
       (event) => {
         event.stopPropagation();
@@ -34,6 +29,13 @@ const CollectionListItem = memo(
       },
       [openDialog]
     );
+    if (!collection) {
+      return <LoadingOverlay />;
+    }
+    const percentageChange =
+      roundToNearestTenth(
+        collection?.collectionStatistics?.percentageChange?.value
+      ) || 0;
 
     return (
       <Card

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Divider,
   Switch,
@@ -8,19 +8,17 @@ import {
   OutlinedInput,
   Select,
   Slide,
+  TextField,
+  InputLabel,
 } from '@mui/material';
 import ConfiguratorRoot from './ConfiguratorRoot';
 import searchData from 'data/json-data/search.json';
-import { formFields } from 'data/formsConfig';
-import { TextField, InputLabel } from '@mui/material';
 import { StyledFormControl } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
-import useConfigurator from 'context/hooks/useConfigurator';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMode } from 'context';
+import { useMode, useConfigurator } from 'context';
+import { formFields } from 'data';
+import { MDBox, RCButton, RCTypography } from '..';
 
 const SearchSettingsForm = ({
   searchSettings,

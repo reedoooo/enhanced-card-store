@@ -9,6 +9,10 @@ const useBreakpoint = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const isLaptop = useMediaQuery(theme.breakpoints.down('lg'));
   const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
+
+  // Checks for specific breakpoints
+  const isMobileUp = useMediaQuery(theme.breakpoints.up('sm'));
+
   const matchesXS = useMediaQuery(theme.breakpoints.only('xs'));
   const matchesSM = useMediaQuery(theme.breakpoints.only('sm'));
   const matchesMD = useMediaQuery(theme.breakpoints.only('md'));
@@ -36,6 +40,9 @@ const useBreakpoint = () => {
     isMd: isTablet,
     isLg: isLaptop,
     isXl: isDesktop,
+
+    // Checks for points above
+    isMobileUp: isMobileUp,
 
     // Checks for ranges
     isBetweenXsAndSm: matchesXSBetweenSM,

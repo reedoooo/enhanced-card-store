@@ -1,6 +1,6 @@
 import React from 'react';
 import DeckBuilder from 'layout/deck';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
+import { PageLayout } from 'layout/REUSABLE_COMPONENTS';
 
 // ==============================|| DECK BUILDER PAGE ||============================== //
 

@@ -1,19 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 import {
   EffectCoverflow,
   Pagination,
   Navigation,
   Autoplay,
 } from 'swiper/modules';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import useBreakpoint from 'context/hooks/useBreakPoint';
+import { useBreakpoint } from 'context';
+import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 
 const HeroSwiper = ({ cards, handleSlideChange, activeCardIndex }) => {
   const { isMd } = useBreakpoint();

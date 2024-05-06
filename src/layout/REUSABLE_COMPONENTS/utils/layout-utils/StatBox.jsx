@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { useMode } from 'context';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+import { MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 const StatBox = ({ title, subtitle, icon, increase }) => {
   const { theme } = useMode();

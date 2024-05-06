@@ -1,8 +1,7 @@
 import React from 'react';
 import { Grid, CardContent, Skeleton } from '@mui/material';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import { useMode } from 'context';
+import { useMode, useBreakpoint } from 'context';
+import { RCTypography } from '..';
 
 const RCInfoItem = ({
   label,

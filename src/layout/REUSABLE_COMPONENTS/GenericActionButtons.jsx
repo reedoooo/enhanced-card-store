@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box } from '@mui/material';
-import { useSnackbar } from 'notistack';
-import LoadingOverlay from './utils/system-utils/LoadingOverlay';
 import AddCircleOutlineOutlined from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlined from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import { useMode } from 'context';
-import useLoading from 'context/hooks/useLoading';
+import { useSnackbar } from 'notistack';
+import { useMode, useManager, useLoading } from 'context';
 import { LoadingButton } from '@mui/lab';
-import useManager from 'context/state/useManager';
+import { LoadingOverlay } from '.';
 
 const buttonSizeMap = {
   xs: 'extraSmall',
@@ -88,57 +86,62 @@ const GenericActionButtons = ({
   const { theme } = useMode();
   const { enqueueSnackbar } = useSnackbar(); // Add this line to use Notistack
   const manager = useManager();
-  if (!manager) {
-    return <LoadingOverlay />;
-  }
-  const {
-    addItemToCart,
-    removeItemFromCart,
-    addItemToCollection,
-    removeItemFromCollection,
-    addItemToDeck,
-    removeItemFromDeck,
-    setHasUpdatedCards,
-    selectedCollectionId,
-    selectedDeckId,
-    selectedCartId,
-  } = manager;
 
+  // if (!manager) {
+  //   return <LoadingOverlay />;
+  // }
+
+  // const {
+  //   addItemToCart,
+  //   removeItemFromCart,
+  //   addItemToCollection,
+  //   removeItemFromCollection,
+  //   addItemToDeck,
+  //   removeItemFromDeck,
+  //   setHasUpdatedCards,
+  // } = manager;
+
+  const [buttonSize, setButtonSize] = useState(
+    buttonSizeMap[cardSize] || 'medium'
+  );
+
+  useEffect(() => {
+    setButtonSize(buttonSizeMap[cardSize] || 'medium');
+  }, [cardSize]);
+  // if (!manager) {
+  //   return <LoadingOverlay />;
+  // }
   const handleAction = useCallback(
     (actionType) => {
       try {
         switch (context) {
           case 'Collection':
             if (actionType === 'add') {
-              addItemToCollection(card);
+              manager.addItemToCollection(card);
             } else {
-              removeItemFromCollection(card);
+              manager.removeItemFromCollection(card);
             }
-            setHasUpdatedCards(true);
-
             break;
           case 'Deck':
             if (actionType === 'add') {
               console.log(card);
-              addItemToDeck(card);
+              manager.addItemToDeck(card);
             } else {
-              removeItemFromDeck(card);
+              manager.removeItemFromDeck(card);
             }
-            setHasUpdatedCards(true);
-
             break;
           case 'Cart':
             if (actionType === 'add') {
-              addItemToCart(card);
+              manager.addItemToCart(card);
             } else {
-              removeItemFromCart(card);
+              manager.removeItemFromCart(card);
             }
-            setHasUpdatedCards(true);
-
             break;
           default:
             throw new Error('Invalid context');
         }
+        manager.setHasUpdatedCards(true);
+
         enqueueSnackbar(`Card ${actionType}ed in ${context}`, {
           variant: 'success',
         });
@@ -149,33 +152,17 @@ const GenericActionButtons = ({
         });
       }
     },
-    [
-      enqueueSnackbar,
-      context,
-      card,
-      addItemToCollection,
-      removeItemFromCollection,
-      addItemToDeck,
-      removeItemFromDeck,
-      addItemToCart,
-      removeItemFromCart,
-      selectedCollectionId,
-      selectedDeckId,
-      selectedCartId,
-      addItemToCart,
-      removeItemFromCart,
-      addItemToCollection,
-      removeItemFromCollection,
-      addItemToDeck,
-      removeItemFromDeck,
-    ]
+    [enqueueSnackbar, context, card, manager]
   );
-  const [buttonSize, setButtonSize] = useState(
-    buttonSizeMap[cardSize] || 'medium'
-  );
-  useEffect(() => {
-    setButtonSize(buttonSizeMap[cardSize] || 'medium');
-  }, [cardSize]);
+  if (!manager) {
+    return <LoadingOverlay />;
+  }
+  // const [buttonSize, setButtonSize] = useState(
+  //   buttonSizeMap[cardSize] || 'medium'
+  // );
+  // useEffect(() => {
+  //   setButtonSize(buttonSizeMap[cardSize] || 'medium');
+  // }, [cardSize]);
   return (
     <Box
       sx={{

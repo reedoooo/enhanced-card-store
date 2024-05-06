@@ -1,14 +1,18 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { List, Collapse, Grid } from '@mui/material';
+import { List, Collapse } from '@mui/material';
 import PropTypes from 'prop-types';
+
 import { TransitionGroup } from 'react-transition-group';
+
 import CollectionListItem from './CollectionListItem';
-import useBreakpoint from 'context/hooks/useBreakPoint';
-import LoadingOverlay from 'layout/REUSABLE_COMPONENTS/utils/system-utils/LoadingOverlay';
-import { useMode } from 'context';
-import { CollectionListItemSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
-import useManager from 'context/state/useManager';
-import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+
+import {
+  CollectionListItemSkeleton,
+  LoadingOverlay,
+  RCCard,
+} from 'layout/REUSABLE_COMPONENTS';
+
+import { useMode, useBreakpoint, useManager } from 'context';
 
 const CollectionsViewLayout = ({ handleSelectAndShowCollection }) => {
   const { isMobile } = useBreakpoint();
@@ -18,28 +22,44 @@ const CollectionsViewLayout = ({ handleSelectAndShowCollection }) => {
     deleteCollection,
     collections: allCollections,
     hasFetchedCollections,
+    setHasFetchedCollections,
+    status,
+    handleSelectCollection,
   } = useManager();
-  useEffect(() => {
-    if (!hasFetchedCollections) {
-      fetchCollections();
-    }
-  }, []);
   const [collectionList, setCollectionList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const collectionData = await fetchCollections();
+        console.log('ALL COLLECTIONS:', collectionData);
+        setCollectionList(collectionData);
+        const storedCollectionId = localStorage.getItem('selectedCollectionId');
+        const initialCollection = collectionData?.find(
+          (collection) => collection._id === storedCollectionId
+        );
+        if (initialCollection) {
+          console.log('INITIAL COLLECTION:', initialCollection);
+          // setActiveTab(initialDeck ? loadedDecks?.indexOf(initialDeck) : 0);
+          handleSelectCollection(initialCollection); // Ensure the deck is selected in context or state
+        }
+      } catch (error) {
+        console.error('Failed to fetch collections:', error);
+      }
+    }; // Adjust the delay to match your fetch timing or interaction
+    if (!hasFetchedCollections && status !== 'loading') {
+      fetchData();
+      setHasFetchedCollections(true);
+    }
+  }, [
+    hasFetchedCollections,
+    fetchCollections,
+    status,
+    setHasFetchedCollections,
+    setCollectionList,
+  ]);
+
   const [showSkeletons, setShowSkeletons] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSkeletons(false), 200); // Adjust the delay to match your fetch timing or interaction
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    console.log('ALL COLLECTIONS:', allCollections);
-    setCollectionList(allCollections);
-  }, [allCollections]);
-
-  if (!allCollections) {
-    return <LoadingOverlay />;
-  }
-
   const handleDelete = useCallback(
     async (collectionId) => {
       try {
@@ -68,6 +88,20 @@ const CollectionsViewLayout = ({ handleSelectAndShowCollection }) => {
     ),
     [handleSelectAndShowCollection, handleDelete]
   );
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSkeletons(false), 200); // Adjust the delay to match your fetch timing or interaction
+    return () => clearTimeout(timer);
+  }, []);
+
+  // useEffect(() => {
+  //   console.log('ALL COLLECTIONS:', allCollections);
+  //   setCollectionList(allCollections);
+  // }, [allCollections]);
+
+  if (!allCollections) {
+    return <LoadingOverlay />;
+  }
+
   const skeletonCount = 5 - collectionList.length;
 
   return (

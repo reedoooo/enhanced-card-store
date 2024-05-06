@@ -2,17 +2,21 @@
 import React, { useEffect, useState } from 'react';
 
 import { Box, InputAdornment, Tooltip } from '@mui/material';
-import RCInput from './RCInput';
-import { Controller } from 'react-hook-form';
-import { useMode } from 'context';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RCLoadingButton from 'layout/REUSABLE_COMPONENTS/RCLOADINGBUTTON';
+
+import { Controller } from 'react-hook-form';
 import {
   FormBox,
   FormFieldBox,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import { useBreakpoint, useFormSubmission, useRCFormHook } from 'context/hooks';
+import {
+  useBreakpoint,
+  useFormSubmission,
+  useRCFormHook,
+  useMode,
+} from 'context';
 import { getFormFieldHandlers } from 'data';
+import { RCInput, RCLoadingButton } from '..';
 
 const RCDynamicForm = ({
   formKey,
@@ -22,34 +26,38 @@ const RCDynamicForm = ({
   updatedData,
   additonalData,
 }) => {
+  const { theme } = useMode();
+  const { isMobile } = useBreakpoint();
+  const methods = useRCFormHook(formKey, initialData);
+  const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
+  // State and Effects
+  const [isMounted, setIsMounted] = useState(false);
+  const [formData, setFormData] = useState(initialData);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    setFormData(initialData);
+    methods.reset(initialData); // Reset form with new initial data
+  }, [initialData, methods]);
+
+  const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
+
   if (!inputs || typeof inputs !== 'object') {
     console.error('Invalid inputs provided to RCDynamicForm:', inputs);
     return null; // Or some fallback UI
   }
-  const { theme } = useMode();
-  const { isMobile } = useBreakpoint();
-  const methods = useRCFormHook(formKey);
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
     reset,
   } = methods;
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    console.log('MOUNTED', isMounted);
-    setIsMounted(true);
-    return () => {
-      setIsMounted(false);
-    };
-  }, []);
-  const [formData, setFormData] = useState(initialData);
-  useEffect(() => {
-    setFormData(updatedData || initialData);
-    reset(updatedData || initialData); // Reset form with new initial data
-  }, [updatedData, initialData, reset]);
-  const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
-  const optionsForUi = userInterfaceOptions ? userInterfaceOptions : {};
   return (
     <FormBox
       component="form"
@@ -69,7 +77,6 @@ const RCDynamicForm = ({
             name={fieldName}
             control={control}
             rules={fieldConfig.rules}
-            type={fieldConfig.type}
             render={({ field, fieldState: { error } }) => (
               <RCInput
                 {...field}
@@ -81,7 +88,7 @@ const RCDynamicForm = ({
                 context={fieldConfig.context}
                 error={!!error}
                 helperText={error?.message}
-                initialValue={formData || fieldConfig.initialValue}
+                initialValue={formData ? formData : fieldConfig.initialValue}
                 InputProps={
                   (fieldConfig.icon
                     ? {
@@ -98,63 +105,76 @@ const RCDynamicForm = ({
           />
         </FormFieldBox>
       ))}
-
-      {optionsForUi && optionsForUi.submitButton && (
-        <Tooltip title={optionsForUi.submitButtonLabel} placement="top">
-          <RCLoadingButton
-            key={optionsForUi.submitButtonLabel}
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            withContainer={false}
-            fullWidth={true}
-            circular={true}
-            icon={
-              optionsForUi.startIcon ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  {optionsForUi.startIcon}
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  {<AddCircleOutlineIcon />}
-                </Box>
-              )
-            }
-            variant="holo"
-            color="info"
-            label={optionsForUi.submitButtonLabel}
-            size="large"
-          />
-        </Tooltip>
-      )}
-      {optionsForUi && optionsForUi.deleteButton && (
-        <Tooltip title={optionsForUi.deleteButtonLabel} placement="top">
-          <RCLoadingButton
-            key={optionsForUi.deleteButtonLabel}
-            type="submit"
-            onClick={optionsForUi.deleteActions.handleDelete}
-            loading={isSubmitting}
-            withContainer={false}
-            fullWidth={true}
-            circular={true}
-            icon={
-              optionsForUi.startIcon ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  {optionsForUi.startIcon}
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  {<AddCircleOutlineIcon />}
-                </Box>
-              )
-            }
-            variant="holo"
-            color="error"
-            label={optionsForUi.deleteButtonLabel}
-            size="large"
-          />
-        </Tooltip>
-      )}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: '1rem',
+          justifyContent: 'center',
+          width: '100%',
+          flexDirection: 'column',
+        }}
+      >
+        {optionsForUi && optionsForUi.submitButton && (
+          <Tooltip title={optionsForUi.submitButtonLabel} placement="top">
+            <RCLoadingButton
+              key={optionsForUi.submitButtonLabel}
+              type="submit"
+              // onClick={
+              //   optionsForUi?.updateActions?.handleSubmit
+              //     ? optionsForUi?.updateActions?.handleSubmit
+              //     : handleSubmit(onSubmit)
+              // }
+              loading={isSubmitting}
+              withContainer={false}
+              fullWidth={true}
+              circular={true}
+              icon={
+                optionsForUi.startIcon ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {optionsForUi.startIcon}
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {<AddCircleOutlineIcon />}
+                  </Box>
+                )
+              }
+              variant="holo"
+              color="info"
+              label={optionsForUi.submitButtonLabel}
+              size="large"
+            />
+          </Tooltip>
+        )}
+        {optionsForUi && optionsForUi.deleteButton && (
+          <Tooltip title={optionsForUi.deleteButtonLabel} placement="top">
+            <RCLoadingButton
+              key={optionsForUi.deleteButtonLabel}
+              type="submit"
+              onClick={optionsForUi.deleteActions.handleDelete}
+              loading={isSubmitting}
+              withContainer={false}
+              fullWidth={true}
+              circular={true}
+              icon={
+                optionsForUi.startIcon ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {optionsForUi.startIcon}
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {<AddCircleOutlineIcon />}
+                  </Box>
+                )
+              }
+              variant="holo"
+              color="error"
+              label={optionsForUi.deleteButtonLabel}
+              size="large"
+            />
+          </Tooltip>
+        )}
+      </Box>
     </FormBox>
   );
 };

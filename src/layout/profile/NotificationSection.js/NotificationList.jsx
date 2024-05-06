@@ -1,5 +1,4 @@
 // material-ui
-import { useTheme, styled } from '@mui/material/styles';
 import {
   Avatar,
   Button,
@@ -16,8 +15,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useMode } from 'context';
-import useUserData from 'context/state/useUserData';
+import { useMode, useUserData } from 'context';
+import styled from 'styled-components';
+
 const ListItemWrapper = styled('div')(({ theme }) => ({
   cursor: 'pointer',
   padding: 16,

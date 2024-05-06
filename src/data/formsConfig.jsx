@@ -323,10 +323,11 @@ const statRangeFormFields = {
   statRange: {
     context: 'Collection',
     name: 'statRange',
-    label: 'Statistics Range',
+    label: 'Stat Range',
     type: 'select',
     placeholder: 'Select statistics range', // Optional for a select, used if you have a default empty option
     defaultValue: 'highPoint',
+    defaultLabel: 'High Point',
     selected: 'highPoint',
     rules: {
       required: 'Statistics range is required', // Assuming you want to enforce a selection

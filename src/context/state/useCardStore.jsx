@@ -109,6 +109,7 @@ const useCardStore = () => {
     setIsDataValid,
     clearSearchData,
     loadingSearchResults: isLoading('isSearchLoading'),
+    loadingRandomCards: isLoading('fetchRandomCardsAndSet'),
     setLoadingSearchResults: () => {
       startLoading('isSearchLoading');
     },

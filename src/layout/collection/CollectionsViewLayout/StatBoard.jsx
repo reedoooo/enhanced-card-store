@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-key */
 import { Grid } from '@mui/material';
 
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import FlexBetween from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/FlexBetween';
-import useBreakpoint from 'context/hooks/useBreakPoint';
 import StatBoxes from './stats/StatBoxes';
 import ValueCircle from './stats/ValueCircle';
 import PriceList from './stats/PriceList';
-import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
+
+import { FlexBetween, MDBox, RCCard } from 'layout/REUSABLE_COMPONENTS';
+
+import { useBreakpoint } from 'context';
 
 const StatBoard = () => {
   const { isMobile } = useBreakpoint();

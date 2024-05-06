@@ -1,18 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { useEffect, forwardRef, useState } from 'react';
-import CardToolTip from './CardToolTip';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Media,
   MediaContainer,
   MediaPopover,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useDialogState from 'context/hooks/useDialogState';
 import GenericCardDialog from '../dialogs/GenericCardDialog';
-import usePopover from 'context/hooks/usePopover';
-import { Avatar } from '@mui/material';
-import { useMode } from 'context';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useMode, usePopover, useDialogState } from 'context';
+import CardToolTip from './CardToolTip';
 
 const CardMediaSection = React.forwardRef(
   (

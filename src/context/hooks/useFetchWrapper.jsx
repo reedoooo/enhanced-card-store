@@ -30,14 +30,14 @@ const FETCH_STATUSES = {
 const useFetchWrapper = () => {
   const [status, setStatus] = useState(FETCH_STATUSES.IDLE);
   const [data, setData] = useState(null);
+  const [activeLoadingIDs, setActiveLoadingIDs] = useState(new Set());
+
   const [responseCache, setResponseCache] = useLocalStorage('apiResponses', {});
   const [errorResponse, setErrorResponse] = useLocalStorage('apiErrors', {});
-  // const { logEvent } = useLogger('useFetchWrapper');
   const { startLoading, stopLoading, isLoading } = useLoading();
   const { enqueueSnackbar } = useSnackbar();
   const showNotification = useCallback(
     (message, variant) => {
-      // const showNotification = useCallback(message, variant) => {
       enqueueSnackbar(message, {
         variant: variant,
         anchorOrigin: {
@@ -49,19 +49,18 @@ const useFetchWrapper = () => {
     [enqueueSnackbar]
   );
 
-  // useEffect to log status changes
-  // useEffect(() => {
-  //   console.log('Status Change', { status });
-  // }, [status]);
   const fetchWrapper = useCallback(
     async (url, method = 'GET', body = null, loadingID) => {
-      // setStatus('loading');
-      // startLoading(loadingID);
-      // showNotification(`Loading ${loadingID}...`, 'info');
+      if (activeLoadingIDs.has(loadingID)) {
+        console.log(`Fetch already in progress for: ${loadingID}`);
+        return;
+      }
+      setActiveLoadingIDs((prev) => new Set(prev).add(loadingID));
+      setStatus(FETCH_STATUSES.LOADING);
+      startLoading(loadingID);
+      showNotification(`[LOADING][${loadingID}]`, 'info');
+
       try {
-        setStatus(FETCH_STATUSES.LOADING);
-        startLoading(loadingID);
-        showNotification(`[LOADING][${loadingID}]`, 'info');
         const headers = { 'Content-Type': 'application/json' };
         const options = {
           method,
@@ -78,8 +77,10 @@ const useFetchWrapper = () => {
           responseData = await response.json();
         }
         if (!response.ok) {
-          const errorInfo = `Error: ${response.statusText} (status: ${response.status})`;
-          console.error('[ERROR B]', responseData); // Log the detailed error message
+          // const error = new Error(response.statusText || 'Unknown error');
+          // error.status = response.status;
+          // error.responseData = responseData;
+          // throw error;
           const parsed = JSON.parse(responseData);
           const errorDetails = {
             message: parsed.message || 'Unknown error',
@@ -92,6 +93,7 @@ const useFetchWrapper = () => {
             ...prevErrors,
             [loadingID]: errorDetails,
           }));
+          setStatus(FETCH_STATUSES.ERROR);
           throw new Error(responseData);
         }
 
@@ -107,31 +109,22 @@ const useFetchWrapper = () => {
         );
         return responseData;
       } catch (error) {
-        // const errorDetails = {
-        //   message: error.message || 'Unknown error',
-        //   name: error.name || 'Error',
-        //   status: error.status || 'No status',
-        //   detail: error.stack || 'No additional details',
-        // };
-        // setErrorResponse((prevErrors) => ({
-        //   ...prevErrors,
-        //   [loadingID]: errorDetails,
-        // }));
-        // setErrorResponse((prevErrors) => ({
-        //   ...prevErrors,
-        //   [loadingID]: {
-        //     message: error.message || 'Unknown error',
-        //     status: error.status || 'No status',
-        //     detail: error.responseData || 'No additional details',
-        //     name: error.name || 'No name',
-        //   },
-        // }));
         setStatus(FETCH_STATUSES.ERROR);
+        setErrorResponse((prev) => ({
+          ...prev,
+          [loadingID]: serializeError(error),
+        }));
+
         showNotification(`[Error][${loadingID}] ${error.message}`, 'error');
         throw error;
         // return Promise.reject(err);
       } finally {
         stopLoading(loadingID);
+        setActiveLoadingIDs((prev) => {
+          const newIDs = new Set(prev);
+          newIDs.delete(loadingID);
+          return newIDs;
+        });
       }
     },
     [
@@ -142,6 +135,7 @@ const useFetchWrapper = () => {
       showNotification,
       startLoading,
       stopLoading,
+      activeLoadingIDs,
     ]
   );
 

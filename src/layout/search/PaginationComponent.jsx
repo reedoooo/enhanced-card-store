@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, TextField } from '@mui/material';
+
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 const PaginationComponent = ({ pageOptions }) => {

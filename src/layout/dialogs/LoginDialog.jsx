@@ -9,9 +9,11 @@ import {
   FormControlLabel,
   Typography,
 } from '@mui/material';
+
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+
 import {
   DialogPaper,
   StyledDialog,
@@ -82,7 +84,6 @@ function LoginDialog() {
   const { getCookie } = useManageCookies();
   const { closeDialog } = useDialogState(); // Adjusted to useDialog
   const { toggleActiveForm, currentSchemaKey } = useFormManagement('loginForm');
-  // const ref = React.useRef();
   const { isLoggedIn } = getCookie(['isLoggedIn']);
   const formTitle = currentSchemaKey === 'loginForm' ? 'Login' : 'Sign Up';
   const signupMode = currentSchemaKey === 'signupForm';

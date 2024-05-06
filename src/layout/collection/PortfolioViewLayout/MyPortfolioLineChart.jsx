@@ -1,7 +1,7 @@
 import { ResponsiveLine } from '@nivo/line';
 import { BasicTooltip } from '@nivo/tooltip';
 import PropTypes from 'prop-types';
-import useEventHandlers from 'context/hooks/useEventHandlers';
+import { useEventHandlers } from 'context';
 const TooltipLayer = ({ points }) => {
   return (
     <>
@@ -21,13 +21,13 @@ const TooltipLayer = ({ points }) => {
 };
 
 const MyPortfolioLineChart = ({
-  data,
+  data = [],
   // tickValues,
-  validMarkers,
-  success,
-  error,
-  grey,
-  text,
+  validMarkers = [],
+  success = {},
+  error = {},
+  grey = {},
+  text = '#000000',
 }) => {
   const { handleMouseMove, handleMouseLeave } = useEventHandlers();
   // console.log(tickValues);

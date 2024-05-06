@@ -36,6 +36,7 @@ const success = {
   dark: '#3da58a',
   darkest: '#2e7c67', // '#70d8bd',
   contrastText: '#dbf5ee',
+  contrastText2: '#ecfdf9',
   hoverContrastText: colorTextForDark,
 };
 const info = {

@@ -1,9 +1,10 @@
 import React from 'react';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
-import PageLayout from 'layout/REUSABLE_COMPONENTS/utils/layout-utils/PageLayout';
-import StoreSearch from 'layout/store';
 import { Grid, Typography, Box } from '@mui/material';
+
+import StoreSearch from 'layout/store';
+
 import { useMode } from 'context';
+import { MDBox, PageLayout } from 'layout/REUSABLE_COMPONENTS';
 
 const StorePage = () => {
   const { theme } = useMode();

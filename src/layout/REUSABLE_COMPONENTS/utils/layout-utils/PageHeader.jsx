@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import { Box } from '@mui/material';
 import { Tooltip } from '@mui/joy';
 import { useFormManagement, useUserData } from 'context';
-import { PageHeaderSkeleton } from '../system-utils';
 import SimpleSectionHeader from './SimpleSectionHeader';
-import RCCard from 'layout/REUSABLE_COMPONENTS/RCCARD';
-import RCButton from 'layout/REUSABLE_COMPONENTS/RCBUTTON';
+import {
+  PageHeaderSkeleton,
+  RCButton,
+  RCCard,
+} from 'layout/REUSABLE_COMPONENTS';
 
 const FlexContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

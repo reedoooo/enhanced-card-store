@@ -1,20 +1,25 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, CssBaseline, DialogTitle, Divider } from '@mui/material';
-import MDBox from 'layout/REUSABLE_COMPONENTS/MDBOX';
+
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
 import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
 } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
-import useInitialFormData from 'context/hooks/useInitialFormData';
-import { useMode } from 'context';
-import { formFields } from 'data/formsConfig';
-import RCDynamicForm from 'layout/REUSABLE_COMPONENTS/RC_FORMS/RCDynamicForm';
 
-const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
+import { useInitialFormData, useMode } from 'context';
+import { formFields } from 'data';
+import { MDBox, RCDynamicForm, RCTypography } from 'layout/REUSABLE_COMPONENTS';
+
+const CollectionDialog = ({
+  open = false,
+  onClose = () => {},
+  isNew = true,
+  collectionData = {},
+}) => {
   const { theme } = useMode();
   const formKey = isNew ? 'addCollectionForm' : 'updateCollectionForm';
   const initialFormData = useInitialFormData(
@@ -79,12 +84,7 @@ const CollectionDialog = ({ open, onClose, isNew, collectionData }) => {
             deleteButton: false,
             startIcon: <LockOutlinedIcon />,
           }}
-          // Conditionally pass initial data if it's an update operation
         />
-        {/* <CollectionForm
-          collectionData={!isNew ? collectionData : undefined}
-          actionType={actionType}
-        /> */}
       </StyledDialogContent>
     </StyledDialog>
   );
