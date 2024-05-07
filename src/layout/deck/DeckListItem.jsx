@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable max-len */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -23,31 +24,10 @@ import {
 
 import { DeckBuilderIcon, formFields } from 'data';
 
-import { useMode, useBreakpoint } from 'context';
+import { useMode, useBreakpoint, useManager } from 'context';
+import { debounce } from 'lodash';
+import { InfoItemSkeleton } from 'layout/REUSABLE_COMPONENTS/utils/system-utils/SkeletonVariants';
 
-const AnimatedInfoItem = ({ label, value, theme, delay }) => {
-  const [checked, setChecked] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setChecked(true);
-    }, delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  return (
-    <Collapse
-      in={checked}
-      timeout={1000} // Adjust timeout as needed for the animation duration
-    >
-      <RCInfoItem
-        label={label}
-        value={value}
-        theme={theme}
-        gridSizes={{ xs: 4, sm: 3, md: 3 }}
-      />
-    </Collapse>
-  );
-};
 function prepareDeckData(deck, cards) {
   let tags = [];
   deck?.tags?.forEach((tag) => {
@@ -71,33 +51,62 @@ function prepareDeckData(deck, cards) {
 }
 
 const DeckListItem = ({
-  deck,
-  handleSelectAndShowDeck,
-  isEditPanelOpen,
-  handleDelete,
-  isLoading,
-  updateDeckDetails,
+  deck = {},
+  isEditPanelOpen = false,
+  handleDelete = () => {},
+  isLoading = false,
 }) => {
-  const [cards, setCards] = useState([]);
-  const [infoItems, setInfoItems] = useState([]);
-  const [cardLoading, setCardLoading] = useState(false);
-  useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (event.key === 'selectedDeck' && event.newValue) {
-        setCards(JSON.parse(event.newValue)?.cards);
-        setInfoItems(
-          prepareDeckData(deck, JSON.parse(event.newValue)?.cards)?.infoItems
-        );
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [deck, setCards, setInfoItems]);
-  const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations
+  const { handleSelectDeck } = useManager();
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
+  const [infoItems, setInfoItems] = useState(
+    prepareDeckData(deck, deck?.cards).infoItems
+  );
+  const [cards, setCards] = useState(deck?.cards);
+
+  const [infoItemsLoading, setInfoItemsLoading] = useState(false);
+  const [cardLoading, setCardLoading] = useState(false);
+
+  const handleDebounceInfoItems = debounce((data) => {
+    console.log('NEW INFO ITEMS ARRAY:', data);
+
+    setInfoItemsLoading(true);
+    setInfoItems(data);
+  }, 300);
+  const handleDebounceCards = debounce((data) => {
+    console.log('NEW CARDS VALUE:', data);
+    setCardLoading(true);
+    setCards(data);
+  }, 1000);
+  // useEffect(() => {
+  //   setCardLoading(isLoading);
+  //   setInfoItemsLoading(isLoading);
+  // }, [isLoading]);
+  useEffect(() => {
+    const handleStorageChange = debounce((event) => {
+      if (event.key === 'selectedDeck' && event.newValue) {
+        // setCardLoading(isLoading);
+        // setInfoItemsLoading(isLoading);
+        const newDeckValue = JSON.parse(localStorage.getItem('selectedDeck'));
+        const newCardsArray = [...newDeckValue.cards];
+        const newInfoItemsArray = prepareDeckData(
+          newDeckValue,
+          newCardsArray
+        ).infoItems;
+        handleDebounceInfoItems(newInfoItemsArray);
+        setInfoItemsLoading(false);
+        handleDebounceCards(newCardsArray);
+        setCardLoading(false);
+      }
+      // setCardLoading(false);
+    }, 300);
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [deck, handleDebounceInfoItems, handleDebounceCards]);
+  const calculateTimeout = (index) => index * 400; // Adjust this value for faster or slower animations
   return (
-    <Collapse in={true} timeout={1000}>
+    <Collapse in={!isLoading} timeout={1500}>
       <Card>
         <MDBox
           sx={{
@@ -108,7 +117,7 @@ const DeckListItem = ({
           }}
         >
           <CardActionArea
-            onClick={() => handleSelectAndShowDeck(deck)}
+            onClick={() => handleSelectDeck(deck)}
             sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -136,9 +145,11 @@ const DeckListItem = ({
                 <Grid item xs={12} sm={12} md={2}>
                   <MDBox border="none">
                     <RCWrappedIcon
-                      sx={{
-                        background: theme.palette.success.main,
-                      }}
+                      size="large"
+                      bgColor="success"
+                      // sx={{
+                      //   background: theme.palette.success.main,
+                      // }}
                     >
                       <DeckBuilderIcon iconColor={'white'} />
                     </RCWrappedIcon>
@@ -153,15 +164,23 @@ const DeckListItem = ({
                     flexGrow={1}
                     spacing={2}
                   >
-                    {infoItems?.map((item, index) => (
-                      <AnimatedInfoItem
-                        key={item.label + item.value}
-                        label={item.label || ''}
-                        value={item.value || ''}
-                        theme={theme}
-                        delay={index * 200} // Adjust delay as needed
-                      />
-                    ))}
+                    {infoItemsLoading
+                      ? InfoItemSkeleton(4)
+                      : infoItems?.map((item, index) => (
+                          <Collapse
+                            key={item.label + item.value}
+                            in={true}
+                            timeout={index * 500} // Adjust timeout as needed for the animation duration
+                          >
+                            <RCInfoItem
+                              label={item.label || ''}
+                              value={item.value || ''}
+                              theme={theme}
+                              gridSizes={{ xs: 4, sm: 3, md: 3 }}
+                              isLoading={false}
+                            />
+                          </Collapse>
+                        ))}
                   </Grid>
                 </Grid>
               </Grid>
@@ -182,9 +201,6 @@ const DeckListItem = ({
                 userInterfaceOptions={{
                   submitButton: true,
                   submitButtonLabel: 'Update Deck',
-                  updateActions: {
-                    handleSubmit: (data) => updateDeckDetails(data),
-                  },
                   deleteButton: true,
                   deleteButtonLabel: 'Delete Deck',
                   deleteActions: {
@@ -217,7 +233,7 @@ const DeckListItem = ({
                           className="card-deck-grid-item"
                         >
                           <Grow
-                            in={true}
+                            in={!infoItemsLoading}
                             style={{ transformOrigin: '0 0 0' }}
                             timeout={calculateTimeout(index)}
                           >
@@ -248,16 +264,11 @@ const DeckListItem = ({
   );
 };
 
-AnimatedInfoItem.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  theme: PropTypes.object.isRequired,
-  delay: PropTypes.number.isRequired,
-};
-
 DeckListItem.propTypes = {
   deck: PropTypes.object.isRequired,
   isEditPanelOpen: PropTypes.bool.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool,
 };
 
 export default DeckListItem;

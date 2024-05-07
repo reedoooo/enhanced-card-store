@@ -23,6 +23,8 @@ const HeroSection = () => {
     image: placeHolder,
   }));
   const [hasFetchedCards, setHasFetchedCards] = useState(false);
+  // const [cards, setCards] = useState([...defaultCards]);
+
   const [cards, setCards] = useState([...randomCards, ...defaultCards]);
   useEffect(() => {
     setShouldShow(true);
@@ -35,9 +37,9 @@ const HeroSection = () => {
     fetchData();
   }, [
     fetchRandomCardsAndSet,
-    randomCards.length,
-    loadingRandomCards,
     hasFetchedCards,
+    loadingRandomCards,
+    randomCards,
   ]);
 
   useEffect(() => {

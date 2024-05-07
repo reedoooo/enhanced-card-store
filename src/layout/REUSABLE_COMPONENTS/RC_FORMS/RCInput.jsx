@@ -19,7 +19,7 @@ import {
   Chip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { StyledTextField } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import {
   useBreakpoint,
   useManager,
@@ -27,22 +27,28 @@ import {
   useSelectorActions,
 } from 'context';
 import { RCSwitch } from '..';
+import { zodSchemas } from 'data';
+import { handleFieldValidation } from 'data/formsConfig';
 
 const RCInput = React.forwardRef(
   (
     {
       type = 'text',
       options = [],
-      onChange = () => {},
+      onChange,
       initialValue = '',
       value = '',
+      rules = {},
       placeholder = '',
+      loading = false,
       error = false,
       helperText = '',
       label = '',
       name = '',
       context = '',
-      InputProps = {},
+      InputProps = {
+        formKey: '',
+      },
       withContainer = false, // Default value for withContainer prop
       ...rest
     },
@@ -53,21 +59,38 @@ const RCInput = React.forwardRef(
     const { handleSelectChange, setTags, tags } = useSelectorActions();
     const { updateEntityField } = useManager();
     const [inputValue, setInputValue] = useState('');
+    // const activeSchema = zodSchemas[formKey];
+
     const handleKeyDown = (event) => {
       if (event.key === 'Enter' && inputValue.trim()) {
         event.preventDefault();
         console.log(`[INPUT]: ${inputValue}`);
         console.log(`[EVENT]: ${event.target.value}`);
         console.log(`[EVENT]: ${event}`);
-        handleSelectChange({ target: { value: inputValue } }, 'tags', 'decks');
+        handleSelectChange(
+          {
+            type: 'add', // Define event type as 'add'
+            target: { value: inputValue },
+          },
+          'tags',
+          'Deck'
+        );
         setInputValue('');
       }
     };
 
     const handleDeleteTag = (tagToDelete) => () => {
-      const updatedTags = tags.filter((tag) => tag.id !== tagToDelete.id);
-      setTags(updatedTags); // Update local state
-      updateEntityField('decks', 'deckId', 'tags', updatedTags); // Persist tags update
+      console.log(`[TAG TO DELETE]: ${tagToDelete}`);
+      handleSelectChange(
+        {
+          type: 'delete', // Define event type as 'delete'
+          target: {
+            value: tagToDelete,
+          },
+        },
+        'tags',
+        'Deck'
+      );
     };
     const { newPalette, functions } = theme;
     const {
@@ -131,10 +154,17 @@ const RCInput = React.forwardRef(
             fullWidth
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
-            value={value || ''}
+            // onChange={(e) => {
+            //   e.preventDefault();
+            //   console.log(`[FIELD]: ${rules}`);
+            //   // handleFieldValidation(rules, e.target.value);
+            //   handleInputChange(e);
+            // }}
+            value={value}
             InputLabelProps={{
               shrink: !initialValue ? undefined : true,
             }}
+            autoComplete="off"
             fontSize={isMobile ? '1rem' : '1.25rem'}
             error={!!error}
             helperText={helperText}
@@ -144,15 +174,18 @@ const RCInput = React.forwardRef(
       case 'select':
         return (
           <FormControl fullWidth margin="normal" x={{ width: '100%' }}>
-            <InputLabel id={`${rest?.name}-select-label`}>{label}</InputLabel>
+            <InputLabel htmlFor={name} id={`${name}-select-label`}>
+              {label}
+            </InputLabel>
             <Select
-              labelId={`${rest?.name}-select-label`}
-              id={`${rest?.name}-select`}
-              value={value || ''}
-              onChange={(e) => {
-                onChange(e.target.value);
-                handleSelectChange(e, rest.name, rest.context);
-              }}
+              labelId={`${name}-select-label`}
+              id={`${name}-select`}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              // onChange={(e) => {
+              //   onChange(e.target.value);
+              //   handleSelectChange(e, name, context);
+              // }}
               input={<OutlinedInput label={rest?.label} />}
               sx={{
                 width: '100%',
@@ -188,12 +221,13 @@ const RCInput = React.forwardRef(
             fullWidth
             rows={rest?.rows || 4}
             placeholder={placeholder}
-            onChange={(e) => {
-              console.log(`[VALUE]: ${e.target.value}`);
-              onChange(e.target.value); // Ensure this is connected to form methods if using form libraries
-              rest.onChange(e.target.value); // For react-hook-form
-            }}
-            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            // onChange={(e) => {
+            //   console.log(`[VALUE]: ${e.target.value}`);
+            //   onChange(e.target.value); // Ensure this is connected to form methods if using form libraries
+            //   // rest.onChange(e.target.value); // For react-hook-form
+            // }}
+            value={value}
             InputLabelProps={{
               shrink: !initialValue ? undefined : true,
             }}
@@ -230,15 +264,24 @@ const RCInput = React.forwardRef(
             onKeyDown={(e) => {
               if (e.key === 'Enter' && inputValue.trim()) {
                 e.preventDefault();
-                const newTags = [...tags, inputValue]; // Add new chip
-                setTags(newTags); // Update local state
-                updateEntityField('decks', 'deckId', 'tags', newTags); // Update entity
-                // rest.onChange(newTags); // Update form state
-                setInputValue(''); // Clear input
+                console.log(`[INPUT]: ${inputValue}`);
+                console.log(`[EVENT]: ${e.target.value}`);
+                console.log(`[EVENT]: ${e}`);
+                handleSelectChange(
+                  {
+                    type: 'add', // Define event type as 'add'
+                    target: { value: inputValue },
+                  },
+                  'tags',
+                  'Deck'
+                );
+                setInputValue('');
               }
             }}
-            // onKeyDown={handleKeyDown}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              onChange(e.target.value);
+            }}
             InputProps={{
               startAdornment: tags?.map((tag) => (
                 <Chip

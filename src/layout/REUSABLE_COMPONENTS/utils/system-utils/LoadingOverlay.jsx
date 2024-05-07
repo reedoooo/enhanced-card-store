@@ -29,10 +29,11 @@ const LoadingOverlay = () => {
       <CircularProgress
         thickness={5}
         size={isMobile ? 75 : 100}
+        color="success"
         disableShrink
-        style={{
-          color: '#1976d2', // Material UI blue color
-        }}
+        // style={{
+        //   color: '#1976d2', // Material UI blue color
+        // }}
       />
     </Box>
   );

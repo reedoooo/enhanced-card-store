@@ -1,4 +1,3 @@
-// hooks/useDialogState.js
 import { useState, useCallback } from 'react';
 
 const useDialogState = () => {

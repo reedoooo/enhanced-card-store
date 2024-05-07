@@ -1,4 +1,3 @@
-import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useMode } from 'context';
 

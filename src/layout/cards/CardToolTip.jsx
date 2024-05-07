@@ -30,7 +30,7 @@ export const StyledDescriptionSpan = styled('span')(({ theme }) => ({
   marginTop: theme.spacing(1),
   flexGrow: 1,
 }));
-const createTooltipContent = (card) => {
+const useCreateTooltipContent = (card) => {
   const { theme } = useMode();
   const attributes = {
     ...card.attributes,
@@ -90,7 +90,7 @@ const CardToolTip = ({ card }) => {
       variant="solid"
       color="primary"
     >
-      {createTooltipContent(card)}
+      {useCreateTooltipContent(card)}
     </Tooltip>
   );
 };

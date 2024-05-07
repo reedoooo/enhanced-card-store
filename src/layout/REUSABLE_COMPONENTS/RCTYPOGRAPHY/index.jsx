@@ -2,6 +2,21 @@ import PropTypes from 'prop-types';
 import RCTypographyRoot from './RCTypographyRoot';
 import React from 'react';
 
+/**
+ * A reusable typography component.
+ *
+ * @component
+ * @param {string} color - Options: primary, secondary, tertiary, error, warning, info, success, light, dark, text, white, inherit.
+ * @param {boolean} fontWeight - Options: false, regular, medium, bold.
+ * @param {string} textTransform - Options: none, capitalize, uppercase, lowercase.
+ * @param {string} verticalAlign - Options: unset, baseline, sub, super, text-top, text-bottom, middle, top, bottom.
+ * @param {boolean} textGradient - Whether to apply a text gradient to the typography.
+ * @param {number} opacity - Options: 0 - 1.
+ * @param {ReactNode} children - The content of the typography.
+ * @param {object} rest - Additional props to be spread on the root element.
+ * @param {React.Ref} ref - The ref to be forwarded to the root element.
+ * @returns {JSX.Element} The rendered typography component.
+ */
 const RCTypography = React.forwardRef(
   (
     {
@@ -20,7 +35,7 @@ const RCTypography = React.forwardRef(
       <RCTypographyRoot
         {...rest}
         ref={ref}
-        ownerstate={{
+        ownerState={{
           color,
           textTransform,
           verticalAlign,

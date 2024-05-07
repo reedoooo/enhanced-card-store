@@ -6,20 +6,41 @@ import PropTypes from 'prop-types';
 
 // ==============================|| WRAPPED ICON ||============================== //
 
+/**
+ * A reusable component that wraps an icon.
+ *
+ * @component
+ * @param {string} color - Options:
+ * @param {string} size - Options:
+ * @param {string} background - Options:
+ * @param {React.Ref} ref - The ref object for the component.
+ * @returns {React.Element} The rendered RCWrappedIcon component.
+ */
 const RCWrappedIcon = React.forwardRef(
   (
-    { color = 'black', size = '3rem', children, background = 'white', ...rest },
+    {
+      // iconColor = 'white',
+      size = 'medium',
+      bgColor = 'success',
+      children,
+      ...rest
+    },
     ref
   ) => {
-    const { theme } = useMode();
-
     return (
       <MDBox
         sx={{
           border: 'none',
         }}
       >
-        <RCWrappedIconRoot {...rest} ref={ref} color={color}>
+        <RCWrappedIconRoot
+          ref={ref}
+          ownerstate={{
+            size,
+            bgColor,
+          }}
+          {...rest}
+        >
           {children}
         </RCWrappedIconRoot>
       </MDBox>
@@ -30,10 +51,21 @@ const RCWrappedIcon = React.forwardRef(
 RCWrappedIcon.displayName = 'RCWrappedIcon';
 
 RCWrappedIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.string,
+  size: PropTypes.oneOf(['small', 'medium', 'large']),
   children: PropTypes.node.isRequired,
-  background: PropTypes.string,
+  bgColor: PropTypes.oneOf([
+    'inherit',
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'light',
+    'dark',
+    'text',
+    'white',
+  ]),
 };
 
 export default RCWrappedIcon;

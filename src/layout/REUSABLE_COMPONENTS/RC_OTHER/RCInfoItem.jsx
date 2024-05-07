@@ -2,12 +2,15 @@ import React from 'react';
 import { Grid, CardContent, Skeleton } from '@mui/material';
 import { useMode, useBreakpoint } from 'context';
 import { RCTypography } from '..';
+import PropTypes from 'prop-types';
+import { InfoItemSkeleton } from '../utils/system-utils/SkeletonVariants';
 
 const RCInfoItem = ({
-  label,
-  value,
+  label = '',
+  value = '',
   gridSizes = { xs: 12, sm: 6, md: 3 },
   externalTheme = null,
+  isLoading = false,
 }) => {
   const { theme } = useMode();
   const { isMobile } = useBreakpoint();
@@ -27,7 +30,7 @@ const RCInfoItem = ({
           },
         }}
       >
-        {label !== undefined && value !== undefined ? (
+        {label !== undefined && value !== undefined && !isLoading ? (
           <>
             <RCTypography
               variant={isMobile ? 'body2' : 'h4'}
@@ -44,14 +47,19 @@ const RCInfoItem = ({
             </RCTypography>
           </>
         ) : (
-          <>
-            <Skeleton variant="text" width="80%" height={24} />
-            <Skeleton variant="text" width="60%" height={30} />
-          </>
+          InfoItemSkeleton(4)
         )}
       </CardContent>
     </Grid>
   );
+};
+
+RCInfoItem.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  gridSizes: PropTypes.object,
+  externalTheme: PropTypes.object,
+  isLoading: PropTypes.bool,
 };
 
 export default RCInfoItem;

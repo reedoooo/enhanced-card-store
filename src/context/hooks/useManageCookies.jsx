@@ -35,15 +35,10 @@ function useManageCookies() {
         return acc;
       }, {});
     } else {
-      // Handling a single cookie name
-      // return {
-      //   [nameOrNames]: parseCookieValue(cookies[nameOrNames]),
-      // };
       return parseCookieValue(cookies[nameOrNames]);
     }
   };
 
-  // Function to remove a cookie
   const deleteCookie = (name) => {
     removeCookie(name);
   };

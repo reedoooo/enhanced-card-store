@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CardMedia, CardContent, Icon } from '@mui/material';
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper';
+// import 'swiper/swiper.scss'; // core Swiper
+// import 'swiper/modules/navigation/navigation.scss'; // Navigation module
+// import 'swiper/modules/pagination/pagination.scss'; // Pagination module
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
@@ -7,18 +13,19 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import placeHolder from 'assets/images/placeholder.jpeg';
-import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 
 import {
   BoxHeader,
   DashboardBox,
   FlexBetween,
   MDBox,
+  RCMainCard,
 } from 'layout/REUSABLE_COMPONENTS';
 
 import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
 
 import { useMode, useBreakpoint, useManager } from 'context';
+// import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS';
 
 const TopCardsSwiper = () => {
   const { theme } = useMode();
@@ -27,21 +34,21 @@ const TopCardsSwiper = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const { collectionMetaData } = useManager();
   const handleSlideChange = (swiper) => setActiveCardIndex(swiper.realIndex);
-  useEffect(() => {
-    const swiperInstance = swiperRef.current?.swiper;
-    if (swiperInstance) {
-      swiperInstance.on('slideChange', () => {
-        const { activeIndex } = swiperInstance;
-        handleSlideChange(activeIndex);
-        if ((activeIndex + 1) % 4 === 0) {
-          swiperInstance.autoplay.stop();
-          setTimeout(() => {
-            swiperInstance?.autoplay?.start();
-          }, 10000);
-        }
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const swiperInstance = swiperRef.current?.swiper;
+  //   if (swiperInstance) {
+  //     swiperInstance.on('slideChange', () => {
+  //       const { activeIndex } = swiperInstance;
+  //       handleSlideChange(activeIndex);
+  //       if ((activeIndex + 1) % 4 === 0) {
+  //         swiperInstance.autoplay.stop();
+  //         setTimeout(() => {
+  //           swiperInstance?.autoplay?.start();
+  //         }, 10000);
+  //       }
+  //     });
+  //   }
+  // }, []);
   return (
     <Swiper
       className="swiper-container"
@@ -85,9 +92,43 @@ const TopCardsSwiper = () => {
               justifyContent: 'center',
               border: 'none',
             }}
-            ref={swiperRef}
+            // ref={swiperRef}
           >
-            <CardWrapper border={false} content={false} theme={theme}>
+            <RCMainCard
+              border={false}
+              content={false}
+              theme={theme}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                backgroundColor: theme.palette.success.darkest,
+                color: theme.palette.primary.light,
+                overflow: 'hidden',
+                position: 'relative',
+                '&:before': {
+                  content: '""',
+                  position: 'absolute',
+                  // eslint-disable-next-line max-len
+                  background: `linear-gradient(140.9deg, ${theme.palette.primary[200]} -14.02%, rgba(144, 202, 249, 0) 77.58%)`,
+                  borderRadius: '50%',
+                  width: 210,
+                  height: 210,
+                  top: -160,
+                  right: -130,
+                },
+                '&:after': {
+                  content: '""',
+                  position: 'absolute',
+                  borderRadius: '50%',
+                  width: 210,
+                  height: 210,
+                  top: -30,
+                  right: -180,
+                },
+              }}
+            >
+              {/* <CardWrapper border={false} content={false} theme={theme}> */}
               <FlexBetween
                 sx={{
                   justifyContent: isMobile ? 'center' : 'space-around', // Adjust direction based on screen size
@@ -97,8 +138,6 @@ const TopCardsSwiper = () => {
               >
                 <CardContent
                   sx={{
-                    // width: '100%',
-                    // mb: theme.spacing(10),
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
@@ -156,11 +195,10 @@ const TopCardsSwiper = () => {
                   <CardDetailsContainer
                     card={card}
                     className="card-details-container-swiper"
-                    titles={['Name', 'Description', 'Price']}
                   />
                 </CardContent>
               </FlexBetween>
-            </CardWrapper>
+            </RCMainCard>
           </MDBox>
         </SwiperSlide>
       ))}

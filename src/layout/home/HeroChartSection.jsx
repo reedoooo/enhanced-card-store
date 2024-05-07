@@ -1,4 +1,3 @@
-import placeHolder from 'assets/images/placeholder.jpeg';
 import { Card, CardContent, Zoom } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -13,7 +12,7 @@ import {
 import { useMode } from 'context';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaShieldAlt } from 'react-icons/fa';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import {
   BoxHeader,
   DashboardBox,
@@ -163,10 +162,12 @@ const HeroChartSection = ({
                           }}
                         >
                           <RCWrappedIcon
-                            color="white"
-                            sx={{
-                              background: '#4e93a6',
-                            }}
+                            size="large"
+                            bgColor="success"
+                            // color="white"
+                            // sx={{
+                            //   background: '#4e93a6',
+                            // }}
                           >
                             <FaShieldAlt
                               fontSize={theme.typography.pxToRem(20)}
@@ -234,10 +235,10 @@ const HeroChartSection = ({
 };
 
 HeroChartSection.propTypes = {
-  card: propTypes.object,
-  randomCards: propTypes.array,
-  activeCardIndex: propTypes.number,
-  shouldShow: propTypes.bool,
+  card: PropTypes.object,
+  randomCards: PropTypes.array,
+  activeCardIndex: PropTypes.number,
+  shouldShow: PropTypes.bool,
 };
 
 export default HeroChartSection;

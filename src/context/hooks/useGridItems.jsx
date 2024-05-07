@@ -1,9 +1,12 @@
 import React, { useMemo } from 'react';
 import { Grid, Grow, IconButton, Tooltip } from '@mui/material';
-import GenericCard from 'layout/cards/GenericCard';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import { useCardStore, useManager, useMode } from 'context';
+
 import { MDBox, SkeletonCard } from 'layout/REUSABLE_COMPONENTS';
+import GenericCard from 'layout/cards/GenericCard';
+
+import { useCardStore, useManager, useMode } from 'context';
+
 const useGridItems = ({
   itemsPerPage,
   cards,

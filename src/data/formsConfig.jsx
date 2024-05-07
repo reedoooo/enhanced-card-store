@@ -25,7 +25,7 @@ import { useAuthManager, useCardStore, useManager } from 'context';
 // ---------------------------- FORM FIELD HANDLERS ----------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-const getFormFieldHandlers = () => {
+const useGetFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
   const { handleRequest } = useCardStore();
   const {
@@ -33,8 +33,7 @@ const getFormFieldHandlers = () => {
     updateCollection,
     deleteDeck,
     addDeck,
-    updateDeck: updateDeckDetails,
-    // selectedCollection,
+    updateEntityField,
   } = useManager();
 
   const formHandlers = {
@@ -59,7 +58,7 @@ const getFormFieldHandlers = () => {
     },
     updateDeckForm: (formData) => {
       console.log('Update Deck Form Data:', formData);
-      updateDeckDetails(formData);
+      // updateEntityField('', formData);
     },
     addDeckForm: (formData, additionalData) => {
       console.log('Add Deck Form Data:', formData, additionalData);
@@ -112,7 +111,7 @@ const loginFormFields = {
     label: 'Username',
     name: 'username',
     type: 'text',
-    placeHolder: 'Username',
+    placeholder: 'Username',
     helperText: 'Enter your username',
     defaultValue: '',
     rules: {
@@ -128,7 +127,7 @@ const loginFormFields = {
     name: 'password',
     type: 'password',
     helperText: 'Enter your password',
-    placeHolder: 'Password',
+    placeholder: 'Password',
     defaultValue: '',
     rules: {
       required: true,
@@ -145,7 +144,7 @@ const signupFormFields = {
     label: 'First Name',
     name: 'firstName',
     type: 'text',
-    placeHolder: 'first name',
+    placeholder: 'first name',
     defaultValue: '',
     rules: {
       required: true,
@@ -157,7 +156,7 @@ const signupFormFields = {
     label: 'Last Name',
     name: 'lastName',
     type: 'text',
-    placeHolder: 'last name',
+    placeholder: 'last name',
     defaultValue: '',
     rules: {
       required: true,
@@ -169,7 +168,7 @@ const signupFormFields = {
     label: 'Email',
     name: 'email',
     type: 'email',
-    placeHolder: 'email',
+    placeholder: 'email',
     defaultValue: '',
     rules: {
       required: true,
@@ -186,7 +185,7 @@ const addDeckFormFields = {
     name: 'name',
     label: 'Name',
     type: 'text',
-    placeHolder: 'Enter deck name',
+    placeholder: 'Enter deck name',
     defaultValue: '',
     rules: {
       required: true,
@@ -200,7 +199,7 @@ const addDeckFormFields = {
     name: 'description',
     label: 'Description',
     type: 'multiline',
-    placeHolder: 'Enter deck description',
+    placeholder: 'Enter deck description',
     defaultValue: '',
     rules: {
       required: true,
@@ -237,6 +236,7 @@ const updateDeckFormFields = {
     label: 'Color',
     name: 'color',
     type: 'select',
+    placeholder: 'Select a color',
     defaultValue: 'blue',
     rules: {
       required: false,
@@ -263,7 +263,7 @@ const collectionFormFields = {
     name: 'name',
     label: 'Name',
     type: 'text',
-    placeHolder: 'Enter collection name',
+    placeholder: 'Enter collection name',
     defaultValue: '',
     rules: {
       required: true,
@@ -276,7 +276,7 @@ const collectionFormFields = {
     name: 'description',
     label: 'Description',
     type: 'multiline',
-    placeHolder: 'Enter collection description',
+    placeholder: 'Enter collection description',
     defaultValue: '',
     rules: {
       required: true,
@@ -394,7 +394,7 @@ const authSwitchFormFields = {
   authSwitch: {
     label: 'Auth Switch',
     type: 'switch',
-    placeHolder: 'Auth Switch',
+    placeholder: 'Auth Switch',
     name: 'authSwitch',
     defaultValue: false,
     rules: {
@@ -540,15 +540,45 @@ const zodSchemas = {
 // -------------------------- ZOD VALIDATION FUNCTIONS -------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-const handleValidation = (schema, formData) => {
+const handleSchemaValidation = (schema, formData) => {
   const result = schema.safeParse(formData);
   if (result.success) {
     console.log('Validation successful', formData);
     return { success: true, data: formData };
-  } else {
-    console.error('Validation errors', result.error.errors);
-    return { success: false, errors: result.error.errors };
   }
+  if (result.error) {
+    console.log('Validation failed', result.error.errors);
+    return {
+      success: false,
+      errors: result.error.errors,
+      message: 'Validation failed',
+    };
+  }
+};
+const handleFieldValidation = (fieldRules, value) => {
+  const rules = fieldRules;
+  const [error, setError] = [];
+  if (rules.required && !value) {
+    setError('This field is required');
+    return 'This field is required';
+  }
+  if (rules.minLength && value.length < rules.minLength) {
+    setError(`This field must be at least ${rules.minLength} characters`);
+    return `This field must be at least ${rules.minLength} characters`;
+  }
+  if (rules.maxLength && value.length > rules.maxLength) {
+    setError(`This field must not be more than ${rules.maxLength} characters`);
+    return `This field must be less than ${rules.maxLength} characters`;
+  }
+  if (rules.password) {
+    // const passwordRegex = new RegExp(
+    //   '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])'
+    // );
+    // if (!passwordRegex.test(value)) {
+    //   return 'Password must contain at least one uppercase, lowercase, number, and special character';
+    // }
+  }
+  // return console.log('Validation passed');
 };
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -609,6 +639,7 @@ export {
   formFields,
   zodSchemas,
   configOptions,
-  handleValidation,
-  getFormFieldHandlers,
+  handleSchemaValidation,
+  handleFieldValidation,
+  useGetFormFieldHandlers,
 };

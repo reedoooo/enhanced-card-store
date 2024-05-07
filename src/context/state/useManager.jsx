@@ -1,53 +1,46 @@
 /* eslint-disable no-case-declarations */
 import { useCallback, useMemo, useState } from 'react';
-import {
-  useFetchWrapper,
-  useLocalStorage,
-  useLogger,
-  useManageCookies,
-  useSelectedContext,
-} from '../hooks';
-
+import { useFetchWrapper, useLocalStorage, useManageCookies } from 'context';
+// const useCleanId = (id) => encodeURIComponent(id.replace(/"/g, ''));
 const useManager = () => {
   const { fetchWrapper, status } = useFetchWrapper();
   const { getCookie } = useManageCookies();
   const { isLoggedIn, userId } = getCookie(['isLoggedIn', 'userId']);
-  const logger = useLogger('CollectionManager');
   const [customError, setCustomError] = useState('');
   const baseUrl = `${process.env.REACT_APP_SERVER}/api/users/${userId}`;
-  const { selectedContext } = useSelectedContext();
   const createApiUrl = (entity, action) => `${baseUrl}/${entity}/${action}`;
+  const cleanId = (id) => encodeURIComponent(id.replace(/"/g, ''));
 
-  // DECKS
+  // State management for all entities using useState
   const [decks, setDecks] = useState([]);
-  const [selectedDeck, setSelectedDeck] = useLocalStorage('selectedDeck', {});
-  const [selectedDeckId, setSelectedDeckId] = useLocalStorage(
-    'selectedDeckId',
-    null
-  );
-  const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
-  const [hasUpdatedDecks, setHasUpdatedDecks] = useState(false);
-  const [hasUpdatedSelectedDeck, setHasUpdatedSelectedDeck] = useState(false);
-
-  // COLLECTIONS
   const [collections, setCollections] = useState([]);
+  const [cart, setCart] = useState([]);
+
+  // State management for selected entities using useLocalStorage
+  const [selectedDeck, setSelectedDeck] = useLocalStorage('selectedDeck', {});
   const [selectedCollection, setSelectedCollection] = useLocalStorage(
     'selectedCollection',
     {}
+  );
+  const [selectedDeckId, setSelectedDeckId] = useLocalStorage(
+    'selectedDeckId',
+    null
   );
   const [selectedCollectionId, setSelectedCollectionId] = useLocalStorage(
     'selectedCollectionId',
     null
   );
+  // State management for operational flags
+  const [hasFetchedDecks, setHasFetchedDecks] = useState(false);
   const [hasFetchedCollections, setHasFetchedCollections] = useState(false);
-
-  // CART
-  const [cart, setCart] = useLocalStorage('cart', null);
   const [hasFetchedCart, setHasFetchedCart] = useState(false);
-
-  // CARDS
   const [hasFetchedCards, setHasFetchedCards] = useState(false);
+
+  const [hasUpdatedDecks, setHasUpdatedDecks] = useState(false);
+  const [hasUpdatedCollections, setHasUpdatedCollections] = useState(false);
+  const [hasUpdatedSelectedDeck, setHasUpdatedSelectedDeck] = useState(false);
   const [hasUpdatedCards, setHasUpdatedCards] = useState(false);
+
   const [hasFetched, setHasFetched] = useLocalStorage('hasFetched', {
     initFetch: false,
     cards: false,
@@ -64,10 +57,6 @@ const useManager = () => {
   const [collectionMetaData, setCollectionMetaData] = useLocalStorage(
     'collectionMetaData',
     []
-  );
-  const [cardsWithQuantities, setCardsWithQuantities] = useLocalStorage(
-    'cardsWithQuantities',
-    {}
   );
   const compileCollectionMetaData = useCallback(
     (allCollections) => {
@@ -115,66 +104,6 @@ const useManager = () => {
     },
     [collections, setCollectionMetaData]
   );
-  const compileCardsWithQuantities = useCallback(
-    (col, dec, car) => {
-      if (!col && !dec && !car) return [];
-      const cards = [];
-      if (!dec !== null) {
-        dec?.forEach((d) => {
-          if (!d?.cards) return;
-          cards.push(...(d?.cards || []));
-        });
-      }
-      if (col !== null) {
-        col?.forEach((c) => {
-          if (!c?.cards) return;
-          cards.push(...(c?.cards || []));
-        });
-      }
-      if (car !== null) {
-        if (!car?.items) return;
-        cards.push(...(car?.items || []));
-      }
-      // MAP CARDS BY ID AND SET VALUE AS STRING --> '[card.variant.modelName][card.name]: card quantity'
-      const cardsWithQuantities = cards?.reduce((acc, card) => {
-        if (!card.id) return acc;
-        if (!acc[card.id]) {
-          acc[card.id] = {
-            CardInCart: '',
-            CardInCollection: '',
-            CardInDeck: '',
-          };
-        }
-        const modelKey = card?.variant?.cardModel;
-        if (modelKey && !acc[card.id][modelKey]) {
-          acc[card.id][modelKey] = `${card.name}: ${card.quantity}`;
-        } else {
-          // Handle updating quantities if card already exists in the accumulator
-          const currentQty = parseInt(
-            acc[card.id][modelKey].split(': ')[1],
-            10
-          );
-          acc[card.id][modelKey] =
-            `${card.name}: ${currentQty + card.quantity}`;
-        }
-        return acc;
-      }, {});
-      setCardsWithQuantities((state) => ({ ...state, ...cardsWithQuantities }));
-      return cards;
-    },
-    [setCardsWithQuantities]
-  );
-  const isCardInContext = useCallback(
-    (card) => {
-      const cardsList = {
-        Collection: selectedCollection?.cards,
-        Deck: selectedDeck?.cards,
-        Cart: cart?.items,
-      };
-      return !!cardsList[selectedContext]?.find((c) => c?.id === card?.id);
-    },
-    [selectedContext, selectedCollection, selectedDeck, cart]
-  );
   // FETCHING ENTITIES
   const handleSelectEntity = useCallback(
     (entityName, entityData) => {
@@ -200,34 +129,30 @@ const useManager = () => {
   const fetchEntities = useCallback(
     async (entity) => {
       const loadingID = `FETCH_ALL_${entity.toUpperCase()}`;
-      console.log('LOADING ID:', loadingID);
+      const url = createApiUrl(entity, 'all');
       try {
-        const response = await fetchWrapper(
-          createApiUrl(entity, 'all'),
-          'GET',
-          null,
-          loadingID
-        );
-        if (entity === 'cart') {
-          setCart(response.data);
-          setHasFetchedCart(true);
-          setHasFetched((state) => ({ ...state, cart: true }));
-          compileCardsWithQuantities(null, null, response.data);
-          return response.data;
-        } else if (entity === 'collections') {
-          setCollections(response.data);
-          compileCollectionMetaData(response.data);
-          setHasFetchedCollections(true);
-          setHasFetched((state) => ({ ...state, collections: true }));
-          compileCardsWithQuantities(response.data, null, null);
-          return response.data;
-        } else {
-          setDecks(response.data);
-          setHasFetchedDecks(true);
-          setHasFetched((state) => ({ ...state, decks: true }));
-          compileCardsWithQuantities(null, response.data, null);
-          return response.data;
+        const response = await fetchWrapper(url, 'GET', null, loadingID);
+        switch (entity) {
+          case 'decks':
+            setDecks(response.data);
+            setHasFetched((state) => ({ ...state, decks: true }));
+            setHasFetchedDecks(true);
+            break;
+          case 'collections':
+            setCollections(response.data);
+            compileCollectionMetaData(response.data);
+            setHasFetched((state) => ({ ...state, collections: true }));
+            setHasFetchedCollections(true);
+            break;
+          case 'cart':
+            setCart(response.data);
+            setHasFetched((state) => ({ ...state, cart: true }));
+            setHasFetchedCart(true);
+            break;
+          default:
+            console.error(`Unhandled entity type: ${entity}`);
         }
+        return response.data;
       } catch (error) {
         console.error('ERROR FETCHING ENTITIES', error);
         setCustomError('Failed to fetch data');
@@ -235,7 +160,6 @@ const useManager = () => {
     },
     [
       fetchWrapper,
-      logger,
       setCollections,
       setDecks,
       setHasFetchedCollections,
@@ -244,43 +168,30 @@ const useManager = () => {
       setHasFetched,
       setCart,
       compileCollectionMetaData,
-      compileCardsWithQuantities,
     ]
   );
   const fetchSingleEntity = useCallback(
     async (entity, id) => {
-      try {
-        const response = await fetchWrapper(
-          createApiUrl(entity, `get/${id}`),
-          'GET',
-          null,
-          `fetch${entity}`.toLocaleUpperCase()
-        );
-        handleSelectEntity(entity, response.data);
-        return response.data;
-      } catch (error) {
-        logger.logError('Fetch Error:', error);
-        setCustomError('Failed to fetch data');
-      }
+      const response = await fetchWrapper(
+        createApiUrl(entity, `get/${cleanId(id)}`),
+        'GET',
+        null,
+        `fetch${entity}`.toLocaleUpperCase()
+      );
+      handleSelectEntity(entity, response.data);
+      return response.data;
     },
-    [fetchWrapper, logger]
+    [fetchWrapper, handleSelectEntity]
   );
   // UPDATING ENTITIES
   const handleEntityOperation = useCallback(
-    async (entity, endpoint, action, data) => {
+    async (entity, endpoint, action, data, method, idValue) => {
       if (!isLoggedIn) {
         setCustomError('User is not logged in');
         return;
       }
       const loadingID = `${action}${entity}`.toUpperCase();
-      console.log(loadingID);
       const url = createApiUrl(entity, endpoint);
-      const method = endpoint.includes('delete')
-        ? 'DELETE'
-        : endpoint.includes('create') || endpoint.includes('add')
-          ? 'POST'
-          : 'PUT';
-
       try {
         const response = await fetchWrapper(url, method, data, loadingID);
         if (response && response.data) {
@@ -293,14 +204,19 @@ const useManager = () => {
               );
               break;
             case 'decks':
-              const prevDecks = [...decks];
-              const updatedDecks = prevDecks.map((deck) =>
-                deck._id === response?.data?.data?._id
-                  ? response?.data?.data
-                  : deck
+              // const prevDecks = [...decks];
+              // const updatedDecks = prevDecks.map((deck) =>
+              //   deck._id === response?.data?.data?._id
+              //     ? response?.data?.data
+              //     : deck
+              // );
+              setDecks((prev) =>
+                prev.map((deck) =>
+                  deck._id === idValue ? { ...deck, ...response.data } : deck
+                )
               );
-              setDecks(updatedDecks);
-              handleSelectEntity('deck', response.data.data);
+              // setDecks(updatedDecks);
+              handleSelectEntity('deck', response.data);
               setHasUpdatedCards(true);
               setHasUpdatedDecks(true);
               break;
@@ -313,91 +229,49 @@ const useManager = () => {
         }
         fetchEntities(entity);
       } catch (error) {
-        logger.logError(`Error performing ${endpoint} on ${entity}:`, error);
+        console.log(`Error performing ${endpoint} on ${entity}:`, error);
         setCustomError(`Failed to ${endpoint} ${entity}`);
       }
     },
     [
       isLoggedIn,
       fetchWrapper,
-      logger,
       setCart,
       setCollections,
       setDecks,
       setHasUpdatedCards,
     ]
   );
-  /**
-   * Updates the fields of an entity with the specified values.
-   *
-   * @param {string} entity - The type of entity to update.
-   * @param {string} id - The ID of the entity to update.
-   * @param {string|string[]} fields - The field(s) to update.
-   * @param {any|any[]} values - The value(s) to set for the field(s).
-   * @returns {Promise<void>} - A promise that resolves when the update is complete.
-   * @example updateEntityFields('collections', '6158888888888', ['name', 'description'], ['New Collection Name', 'New Collection Description']);
-   */
   const updateEntityField = useCallback(
     async (entity, id, fields, values) => {
       if (!isLoggedIn) {
         setCustomError('User is not logged in');
         return;
       }
-      const cleanedId = encodeURIComponent(id.replace(/"/g, ''));
-      const url = createApiUrl(entity, `update/${cleanedId}`);
-      let data;
-      // Handle updating multiple fields
-      if (Array.isArray(fields)) {
-        data = fields.reduce((acc, field, index) => {
-          acc[field] = values[index];
-          return acc;
-        }, {});
+      // Prepare data object from fields and values
+      let data = {};
+      if (Array.isArray(fields) && Array.isArray(values)) {
+        fields.forEach((field, index) => {
+          data[field] = values[index];
+        });
       } else {
-        // If fields is not an array, treat it as a single field with a single value
-        data = { [fields]: values };
+        data[fields] = values;
       }
-      try {
-        const response = await fetchWrapper(
-          url,
-          'PUT',
-          data,
-          `update${entity}`
-        );
-        if (response && response.data) {
-          // Assuming the server returns the updated entity
-          switch (entity) {
-            case 'collections':
-              const selectedId = localStorage.getItem('selectedCollectionId');
-              setCollections(response.data);
 
-              break;
-            case 'decks':
-              setDecks((prev) =>
-                prev.map((deck) =>
-                  deck._id === id ? { ...deck, ...response.data } : deck
-                )
-              );
-              break;
-            case 'cart':
-              if (id === cart._id) {
-                setCart({ ...cart, ...response.data });
-              }
-              break;
-            default:
-              throw new Error(`Unhandled entity type: ${entity}`);
-          }
-        }
-        // return response.data;
-      } catch (error) {
-        console.error(`Error updating ${entity} fields:`, error);
-        setCustomError(`Failed to update ${entity} fields`);
-      }
+      // Construct endpoint and action
+      const endpoint = `update/${cleanId(id)}`;
+      const action = `update_${entity}`;
+
+      // Use handleEntityOperation to perform the update
+      handleEntityOperation(entity, endpoint, action, data, 'PUT', id);
     },
-    [isLoggedIn, fetchWrapper, logger, setCart, setCollections, setDecks, cart]
+    [handleEntityOperation, isLoggedIn, setCustomError]
   );
   const addEntity = useCallback(
-    (entity, data) => handleEntityOperation(entity, 'create', 'add_', data),
-    [handleEntityOperation]
+    (entity, data) =>
+      handleEntityOperation(entity, 'create', 'add_', data, 'POST')[
+        handleEntityOperation
+      ]
   );
   const updateEntity = useCallback(
     async (entity, data) => {
@@ -405,15 +279,27 @@ const useManager = () => {
       const id = localStorage.getItem('selected' + localEntity + 'Id');
       const cleanedId = encodeURIComponent(id.replace(/"/g, ''));
       console.log('UPDAtING', entity, data);
-      handleEntityOperation(entity, `update/${cleanedId}`, 'update_', data);
+      handleEntityOperation(
+        entity,
+        `update/${cleanedId}`,
+        'update_',
+        data,
+        'PUT'
+      );
     },
     [handleEntityOperation]
   );
   const deleteEntity = useCallback(
-    (entity, id) =>
-      handleEntityOperation(entity, `delete/${id}`, 'delete_', {
-        id: id,
-      }),
+    async (entity, id) =>
+      handleEntityOperation(
+        entity,
+        `delete/${id}`,
+        'delete_',
+        {
+          id: id,
+        },
+        'DELETE'
+      ),
     [handleEntityOperation]
   );
   const addCardToEntity = useCallback(
@@ -426,10 +312,16 @@ const useManager = () => {
         } else {
           type = 'addNew';
         }
-        return handleEntityOperation(entity, 'cards/add', 'add_cards_to_', {
-          cards: [card],
-          type: type,
-        });
+        return handleEntityOperation(
+          entity,
+          'cards/add',
+          'add_cards_to_',
+          {
+            cards: [card],
+            type: type,
+          },
+          'POST'
+        );
       }
       const selectEntVal =
         entity === 'collections' ? selectedCollection?._id : selectedDeck?._id;
@@ -449,7 +341,8 @@ const useManager = () => {
         {
           cards: [card],
           type: type,
-        }
+        },
+        'POST'
       );
     },
     [handleEntityOperation]
@@ -476,7 +369,8 @@ const useManager = () => {
           {
             cards: [item.id],
             type: type,
-          }
+          },
+          'DELETE'
         );
       }
       const selectEntVal =
@@ -505,13 +399,13 @@ const useManager = () => {
         {
           cards: [existingCard?.id],
           type: type,
-        }
+        },
+        'DELETE'
       );
     },
     [handleEntityOperation]
   );
 
-  // Memoized return values to prevent unnecessary re-renders
   return useMemo(
     () => ({
       customError,
@@ -542,7 +436,6 @@ const useManager = () => {
         removeCardFromEntity('collections', item),
 
       addDeck: (data) => addEntity('decks', data),
-      updateDeck: (data) => updateEntity('decks', data),
       deleteDeck: (id) => deleteEntity('decks', id),
       addItemToDeck: (item) => addCardToEntity('decks', item),
       removeItemFromDeck: (item) => removeCardFromEntity('decks', item),
@@ -558,8 +451,6 @@ const useManager = () => {
       setHasFetchedCollections,
       setHasFetchedDecks,
       setHasFetchedCart,
-      checkForCardInContext: isCardInContext,
-      compileCardsWithQuantities,
       fetchEntities,
       updateEntityField,
       setHasUpdatedCards,
@@ -598,8 +489,6 @@ const useManager = () => {
       addCardToEntity,
       removeCardFromEntity,
       handleSelectEntity,
-      isCardInContext,
-      compileCardsWithQuantities,
     ]
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useMemo, createContext, useEffect } from 'react';
 import { createTheme } from '@mui/material';
 import { themeSettings } from 'assets/themeSettings';
-import { useManageCookies } from './hooks';
+import { useManageCookies } from 'context';
 
 export const ColorModeContext = createContext({
   mode: 'dark',

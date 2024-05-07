@@ -3,7 +3,6 @@ import ErrorFallback from './ErrorFallback';
 import ErrorIndicator from './ErrorIndicator';
 import LoadingIndicator from './LoadingIndicator';
 import LoadingOverlay from './LoadingOverlay';
-import NotFoundPage from './NotFoundPage';
 import {
   LoadingCardSkeleton,
   HeroSectionSkeleton,
@@ -23,7 +22,6 @@ export {
   ErrorIndicator,
   LoadingIndicator,
   LoadingOverlay,
-  NotFoundPage,
   LoadingCardSkeleton,
   HeroSectionSkeleton,
   PageHeaderSkeleton,

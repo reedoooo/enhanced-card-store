@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Avatar, Card, Grid, AppBar, Tabs, Tab, Icon } from '@mui/material';
-
 import burceMars from 'assets/images/bg1.jpg';
 import { useMode, useManageCookies } from 'context';
 import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
+import PropTypes from 'prop-types';
 
 function Header({ children }) {
   const { theme } = useMode();

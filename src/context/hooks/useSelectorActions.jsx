@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
 import { useState } from 'react';
-import useLocalStorage from './useLocalStorage';
-import useManager from '../state/useManager';
 import { nanoid } from 'nanoid';
+import useLocalStorage from './useLocalStorage';
+import { useManager } from 'context';
 
 function useSelectorActions() {
   const {
@@ -11,6 +11,7 @@ function useSelectorActions() {
     handleSelectCollection,
     selectedDeck,
     handleSelectDeck,
+    fetchDeckById,
   } = useManager();
   const [time, setTime] = useState('24hr');
   const [stat, setStat] = useState('highpoint');
@@ -25,21 +26,18 @@ function useSelectorActions() {
     light: 'light',
     dark: 'dark',
   };
-  const handleSelectChange = (e, selectorName, context) => {
-    console.log(
-      'SELECTOR VALUES CHANGED',
-      e.target.value,
-      selectorName,
-      context
-    );
+  const handleSelectChange = async (e, selectorName, context) => {
+    console.log('SELECTOR VALUES CHANGED', e, selectorName, context);
     const selectedCollectionId = localStorage.getItem('selectedCollectionId');
     const selectedDeckId = localStorage.getItem('selectedDeckId');
     const selected = localStorage.getItem('selected' + context);
     const selectedCollection = JSON.parse(selected);
+    const selectedDeck = JSON.parse(selected);
+    // setTags(selectedDeck.tags);
     switch (selectorName) {
       case 'timeRange':
         setTime(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedChartDataKey', 'selectedChartData'],
@@ -57,7 +55,7 @@ function useSelectorActions() {
         break;
       case 'statRange':
         setStat(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedStatDataKey', 'selectedStatData'],
@@ -78,7 +76,7 @@ function useSelectorActions() {
         break;
       case 'themeRange':
         setTheme(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedThemeDataKey', 'selectedThemeData'],
@@ -94,22 +92,30 @@ function useSelectorActions() {
         handleSelectCollection(selectedCollection);
         break;
       case 'tags':
-        const newTag = { id: nanoid(), label: e.target.value };
-        const updatedTags = [...tags, newTag];
-        console.log('NEW TAG', updatedTags);
-        const { name, description, color } = selected;
-        // selectedDeck.tags = updatedTags;
-        setTags(updatedTags); // Update local state
-        updateEntityField(
+        let updatedTags = [...selectedDeck.tags]; // Copy current tags to manipulate
+        const { name, description, color } = selectedDeck;
+
+        if (e.type === 'add') {
+          const newTag = { id: nanoid(), label: e.target.value };
+          if (!updatedTags.some((tag) => tag.label === newTag.label)) {
+            updatedTags.push(newTag); // Add new tag if not present
+          }
+        } else if (e.type === 'delete') {
+          updatedTags = updatedTags.filter(
+            (tag) => tag.id !== e.target.value.id
+          );
+        }
+        setTags(updatedTags);
+        await updateEntityField(
           'decks',
           selectedDeckId,
           ['tags', 'name', 'description', 'color'],
           [updatedTags, name, description, color]
-        ); // Persist tags update
+        );
 
-        handleSelectDeck(selectedDeck);
-
-        e.target.value = ''; // Clear the input after adding a tag
+        const updatedDeck = await fetchDeckById(selectedDeckId);
+        console.log('UPDATED DECK', updatedDeck);
+        handleSelectDeck(updatedDeck);
         break;
       case 'deck':
       default:

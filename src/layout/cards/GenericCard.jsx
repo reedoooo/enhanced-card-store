@@ -1,67 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Card, CardActions } from '@mui/material';
+import { Box, Card, CardActions } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from 'assets/images/placeholder.jpeg';
-import {
-  useMode,
-  usePopover,
-  useManager,
-  useDialogState,
-  useSelectedContext,
-} from 'context';
-import {
-  AspectRatioBox,
-  StyledCardContent,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+import { useMode, usePopover, useDialogState } from 'context';
+import { StyledCardContent } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { GenericActionButtons, RCTypography } from 'layout/REUSABLE_COMPONENTS';
-const getQuantity = ({
-  card,
-  cart,
-  selectedCollection,
-  allCollections,
-  selectedDeck,
-  allDecks,
-}) => {
-  const findCardQuantity = (collectionsOrDecks, cardId) =>
-    collectionsOrDecks?.reduce(
-      (acc, item) =>
-        acc + (item?.cards?.find((c) => c.id === cardId)?.quantity ?? 0),
-      0
-    ) ?? 0;
-
-  const cartQuantity =
-    cart?.items?.find((c) => c.id === card.id)?.quantity ?? 0;
-  const collectionQuantity = selectedCollection
-    ? selectedCollection?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-    : findCardQuantity(allCollections, card.id);
-  const deckQuantity = selectedDeck
-    ? selectedDeck?.cards?.find((c) => c.id === card.id)?.quantity ?? 0
-    : findCardQuantity(allDecks, card.id);
-
-  return {
-    cartQuantity,
-    collectionQuantity,
-    deckQuantity,
-  };
-};
 
 const GenericCard = React.forwardRef((props, ref) => {
-  const {
-    collections: allCollections,
-    decks: allDecks,
-    selectedDeck,
-    selectedCollection,
-    cart,
-    checkForCardInContext,
-  } = useManager();
-  const { setContext, setIsContextSelected } = useSelectedContext();
   const { dialogState, openDialog } = useDialogState();
   const { setHoveredCard, setIsPopoverOpen, hoveredCard } = usePopover();
+  const { theme } = useMode();
   const { card, context, page, isDeckCard } = props;
-
   const effectiveContext =
     typeof context === 'object' ? context.pageContext : context;
-  const { theme } = useMode();
   const cardRef = useRef(null);
   const [cardSize, setCardSize] = useState('md');
   useEffect(() => {
@@ -87,69 +38,36 @@ const GenericCard = React.forwardRef((props, ref) => {
     },
     [setHoveredCard, setIsPopoverOpen, card]
   );
-  const handleContextSelect = useCallback(
-    (newContext) => {
-      setContext(newContext);
-      setIsContextSelected(true);
-    },
-    [setContext, setIsContextSelected]
-  );
   useEffect(() => {
     setIsPopoverOpen(hoveredCard === card);
   }, [hoveredCard, card, setIsPopoverOpen]);
-  const isInContext = checkForCardInContext(card);
-  const name = card?.name;
-  const imgUrl = card?.card_images?.[0]?.image_url || placeholder;
-  const price = `Price: ${
-    card?.price ||
-    card?.latestPrice?.num ||
-    card?.card_prices?.[0]?.tcgplayer_price ||
-    'N/A'
-  }`;
-  const { cartQuantity, collectionQuantity, deckQuantity } = getQuantity({
-    card: card,
-    cart: cart,
-    selectedCollection: selectedCollection,
-    allCollections: allCollections,
-    selectedDeck: selectedDeck,
-    allDecks: allDecks,
-  });
   let cardContent = null;
   if (cardSize !== 'xs' && !isDeckCard) {
     cardContent = (
       <StyledCardContent theme={theme}>
         <RCTypography variant="body1" gutterBottom fontWeight="medium">
-          {name}
+          {`${card?.name || 'N/A'}`}
         </RCTypography>
         <RCTypography variant="body2" color="primary" gutterBottom>
-          {price}
+          {`Price: ${card?.price || 'N/A'}`}
         </RCTypography>
-        {cardSize !== 'sm' && (
-          <>
-            <RCTypography
-              variant="body1"
-              color="primary"
-            >{`Cart: ${isInContext ? cartQuantity : 'N/A'}`}</RCTypography>
-            <RCTypography
-              variant="body1"
-              color="primary"
-            >{`Collection: ${isInContext ? collectionQuantity : 'N/A'}`}</RCTypography>
-            <RCTypography
-              variant="body1"
-              color="primary"
-            >{`Deck: ${isInContext ? deckQuantity : 'N/A'}`}</RCTypography>
-          </>
-        )}
       </StyledCardContent>
     );
   }
 
   return (
     <Card ref={cardRef} className={`base-card ${props.cardClasses}`}>
-      <AspectRatioBox ref={cardRef} theme={theme}>
+      <Box
+        ref={cardRef}
+        sx={{
+          width: '100%', // Full width of the parent container
+          position: 'relative',
+          justifyContent: 'center',
+        }}
+      >
         <CardMediaSection
           isRequired={true}
-          imgUrl={imgUrl}
+          imgUrl={card?.image || placeholder}
           card={card}
           context={effectiveContext}
           isHovered={hoveredCard === card}
@@ -157,7 +75,7 @@ const GenericCard = React.forwardRef((props, ref) => {
           isModalOpen={dialogState.isCardDialogOpen}
           ref={cardRef}
         />
-      </AspectRatioBox>
+      </Box>
       {cardContent}
       <CardActions
         sx={{

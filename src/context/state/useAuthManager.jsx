@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode as jwt_decode } from 'jwt-decode';
 import { useFetchWrapper, useManageCookies, useUserData } from 'context';
 
 function useAuthManager() {
@@ -12,7 +12,7 @@ function useAuthManager() {
     'accessToken',
     'refreshToken',
   ]);
-  const { handleSetUser, handleRemoveUser, user } = useUserData();
+  const { handleSetUser, handleRemoveUser, hasFetchedUser } = useUserData();
   const { fetchWrapper } = useFetchWrapper();
   const [loggingOut, setLoggingOut] = useState(false);
   const setAuthCookies = useCallback(
@@ -24,12 +24,11 @@ function useAuthManager() {
         [accessToken, refreshToken, true, authData, authData.userId],
         { path: '/' }
       );
-      handleSetUser(authData); // Adjust according to your implementation
+      // handleSetUser(authData);
       navigate('/home');
     },
-    [handleSetUser, navigate]
+    [addCookies, handleSetUser, navigate]
   );
-
   const clearAuthCookies = useCallback(() => {
     deleteCookies([
       'accessToken',
@@ -38,21 +37,15 @@ function useAuthManager() {
       'authUser',
       'isLoggedIn',
     ]);
-    localStorage.clear(); // Clear all local storage data
-    navigate('/login');
-  }, [navigate, deleteCookies]);
-
-  const decodeAndSetUser = useCallback(
-    (accessToken) => {
-      const decoded = jwt_decode(accessToken);
-      handleSetUser(decoded); // Adjust according to your implementation
-    },
-    [handleSetUser]
-  );
+    localStorage.clear();
+  }, [deleteCookies, navigate]);
 
   const executeAuthAction = useCallback(
     async (endpoint, requestData) => {
       try {
+        console.log(
+          `SERVER: ${process.env.REACT_APP_SERVER}/api/users/${endpoint}`
+        );
         const responseData = await fetchWrapper(
           `${process.env.REACT_APP_SERVER}/api/users/${endpoint}`,
           'POST',
@@ -65,8 +58,8 @@ function useAuthManager() {
         } else {
           console.log(responseData?.data);
           setAuthCookies(responseData.data);
+          handleSetUser(jwt_decode(responseData.data.accessToken));
         }
-        setAuthCookies(responseData.data);
       } catch (error) {
         console.error('Auth action error:', error);
       }
@@ -93,7 +86,6 @@ function useAuthManager() {
     },
     [executeAuthAction]
   );
-
   const logout = useCallback(async () => {
     await executeAuthAction('signout', {
       userId: authUser.userId,
@@ -101,36 +93,40 @@ function useAuthManager() {
       refreshToken: refreshToken,
     });
     clearAuthCookies();
-  }, []);
+    setLoggingOut(true);
+    handleRemoveUser();
+    navigate('/login');
+  }, [executeAuthAction, clearAuthCookies, handleRemoveUser, navigate]);
 
-  useEffect(() => {
-    if (!isLoggedIn || !accessToken) return;
-    if (accessToken) {
-      decodeAndSetUser(accessToken);
-    }
-  }, []);
-  const checkTokenValidity = useCallback(() => {
+  const checkTokenValidity = useCallback(async () => {
+    if (!accessToken) return;
+
     console.log('Checking token validity...', { accessToken });
-    if (!accessToken) {
-      navigate('/login');
-      return;
-    }
     try {
       const { exp } = jwt_decode(accessToken);
       const isTokenExpired = Date.now() >= exp * 1000;
       if (isTokenExpired) {
+        console.log('Token is expired');
         logout();
-        setLoggingOut(true);
-        handleRemoveUser();
+        return;
       }
     } catch (error) {
       console.error('Token validation error:', error);
     }
-  }, [user.accessToken]);
+  }, [accessToken, logout]);
+
   useEffect(() => {
     if (!isLoggedIn) return;
-    checkTokenValidity();
-  }, [checkTokenValidity]);
+
+    // if (accessToken) {
+    //   handleSetUser(jwt_decode(accessToken));
+    // }
+    const intervalId = setInterval(() => {
+      checkTokenValidity();
+    }, 300000); // 300000 ms = 5 minutes
+
+    return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  }, []);
 
   return { login, logout, signup };
 }

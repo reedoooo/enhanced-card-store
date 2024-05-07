@@ -10,40 +10,11 @@ import {
   Typography,
   Collapse,
 } from '@mui/material';
-import {
-  FaDragon,
-  FaLevelUpAlt,
-  FaRegLightbulb,
-  FaShieldAlt,
-  FaVenusMars,
-} from 'react-icons/fa';
-import { GiAxeSword } from 'react-icons/gi';
 import { useMode } from 'context';
 import styled from 'styled-components';
-import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS/SpecificStyledComponents';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-const IconWrapper = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: theme.spacing(1),
-  fontSize: '1.5rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1.2rem',
-  },
-  [theme.breakpoints.down('xs')]: {
-    fontSize: '1rem',
-  },
-  color: theme.palette.text.primary,
-}));
-const iconDetails = [
-  { icon: FaLevelUpAlt, title: 'Level' },
-  { icon: FaVenusMars, title: 'Type' },
-  { icon: FaDragon, title: 'Race' },
-  { icon: FaRegLightbulb, title: 'Attribute' },
-  { icon: GiAxeSword, title: 'ATK' },
-  { icon: FaShieldAlt, title: 'DEF' },
-];
+import { RCMainCard } from 'layout/REUSABLE_COMPONENTS';
+
 const textDetails = [
   { title: 'Description', key: 'desc' },
   { title: 'Price', key: 'price' },
@@ -144,7 +115,6 @@ const CardDetailSet = ({ values }) => {
     />
   ));
 };
-const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;
 const RenderDetailsSection = ({ details, card, className, handleAction }) => {
   const { theme } = useMode();
   const [openStates, setOpenStates] = useState(details.map(() => false));
@@ -171,7 +141,7 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
     <Grid container spacing={2} sx={{ maxWidth: '100%' }}>
       {details?.map((detail, index) => (
         <Grid item xs={12} sm={12} md={4} lg={6} key={index}>
-          <CardWrapper
+          <RCMainCard
             border={false}
             content={false}
             theme={theme}
@@ -179,6 +149,30 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
+              backgroundColor: theme.palette.success.darkest,
+              color: theme.palette.primary.light,
+              overflow: 'hidden',
+              position: 'relative',
+              '&:before': {
+                content: '""',
+                position: 'absolute',
+                // eslint-disable-next-line max-len
+                background: `linear-gradient(140.9deg, ${theme.palette.primary[200]} -14.02%, rgba(144, 202, 249, 0) 77.58%)`,
+                borderRadius: '50%',
+                width: 210,
+                height: 210,
+                top: -160,
+                right: -130,
+              },
+              '&:after': {
+                content: '""',
+                position: 'absolute',
+                borderRadius: '50%',
+                width: 210,
+                height: 210,
+                top: -30,
+                right: -180,
+              },
             }}
           >
             <CardHeader
@@ -223,19 +217,9 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                     <CardDetailSet values={cardSetsArray} />
                   </Stack>
                 )}
-                {/* {detail.icon && (
-                <CardDetailIcon
-                  icon={
-                    iconDetails.forEach(
-                      (iconDetail) => iconDetail.key === detail.key
-                    )?.icon
-                  }
-                />
-              )} */}
-                {/* </MDBox> */}
               </CardContent>
             </Collapse>
-          </CardWrapper>
+          </RCMainCard>
         </Grid>
       ))}
     </Grid>
@@ -247,15 +231,12 @@ const CardDetailsContainer = ({ card, className }) => {
   return (
     <Grid
       container
-      // spacing={2}
       sx={{
-        // background: theme.palette.success.main_light,
         justifyContent: 'center',
         borderRadius: theme.borders.borderRadius.md,
         maxWidth: '100%',
       }}
     >
-      {/* {isInventorySection && <RenderInventoryList />} */}
       {className === 'card-details-container-swiper' && (
         <RenderDetailsSection
           details={textDetails}
@@ -269,3 +250,26 @@ const CardDetailsContainer = ({ card, className }) => {
 };
 
 export default CardDetailsContainer;
+// import {
+//   FaDragon,
+//   FaLevelUpAlt,
+//   FaRegLightbulb,
+//   FaShieldAlt,
+//   FaVenusMars,
+// } from 'react-icons/fa';
+// import { GiAxeSword } from 'react-icons/gi';
+// const IconWrapper = styled(Box)(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'center',
+//   marginRight: theme.spacing(1),
+//   fontSize: '1.5rem',
+//   [theme.breakpoints.down('sm')]: {
+//     fontSize: '1.2rem',
+//   },
+//   [theme.breakpoints.down('xs')]: {
+//     fontSize: '1rem',
+//   },
+//   color: theme.palette.text.primary,
+// }));
+// const CardDetailIcon = ({ icon }) => <IconWrapper>{icon}</IconWrapper>;

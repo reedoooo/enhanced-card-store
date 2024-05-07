@@ -18,7 +18,7 @@ import {
   DialogPaper,
   StyledDialog,
   StyledDialogContent,
-} from 'layout/REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from 'layout/REUSABLE_STYLED_COMPONENTS';
 import styled from 'styled-components';
 import { formFields } from 'data';
 import {
