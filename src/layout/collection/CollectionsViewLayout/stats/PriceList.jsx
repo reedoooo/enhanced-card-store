@@ -8,17 +8,24 @@ import { BoxHeader, MDBox } from 'layout/REUSABLE_COMPONENTS';
 
 const PricedCardList = () => {
   const { theme } = useMode();
+  const { collectionMetaData } = useManager();
   const colors = theme.palette;
   const grey = colors.grey.darkest;
   const lightGrey = colors.grey.lightest;
   const primary = colors.primary.dark;
   const greenAccent = colors.success.main_light;
-  const { collectionMetaData } = useManager();
-  const { data, columns } = useMemo(
-    () => prepareTableData(collectionMetaData?.topFiveCards, 'topCards'),
-    [collectionMetaData?.topFiveCards]
-  );
+  // const { data, columns } = useMemo(
+  //   () => prepareTableData(collectionMetaData?.topFiveCards, 'topCards'),
+  //   [collectionMetaData?.topFiveCards]
+  // );
+  const dataAndColumns = useMemo(() => {
+    if (!collectionMetaData?.topFiveCards) {
+      return { data: [], columns: [] }; // Provide default empty structures
+    }
+    return prepareTableData(collectionMetaData?.topFiveCards, 'topCards');
+  }, [collectionMetaData?.topFiveCards]);
 
+  const { data, columns } = dataAndColumns;
   return (
     <MDBox
       sx={{
@@ -56,10 +63,10 @@ const PricedCardList = () => {
               useSX={true}
               titleVariant="h5"
               paddingVariant={theme.spacing(2)}
-              sx={{
-                color: greenAccent,
-                borderRadius: theme.borders.borderRadius.md,
-              }}
+              // sx={{
+              //   color: greenAccent,
+              //   borderRadius: theme.borders.borderRadius.md,
+              // }}
             />
           </Card>
           <Divider color={greenAccent} size="2rem" />

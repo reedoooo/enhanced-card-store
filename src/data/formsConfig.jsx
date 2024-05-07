@@ -25,7 +25,7 @@ import { useAuthManager, useCardStore, useManager } from 'context';
 // ---------------------------- FORM FIELD HANDLERS ----------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-const getFormFieldHandlers = () => {
+const useGetFormFieldHandlers = () => {
   const { signup, login } = useAuthManager();
   const { handleRequest } = useCardStore();
   const {
@@ -33,8 +33,7 @@ const getFormFieldHandlers = () => {
     updateCollection,
     deleteDeck,
     addDeck,
-    updateDeck: updateDeckDetails,
-    // selectedCollection,
+    updateEntityField,
   } = useManager();
 
   const formHandlers = {
@@ -59,7 +58,7 @@ const getFormFieldHandlers = () => {
     },
     updateDeckForm: (formData) => {
       console.log('Update Deck Form Data:', formData);
-      updateDeckDetails(formData);
+      // updateEntityField('', formData);
     },
     addDeckForm: (formData, additionalData) => {
       console.log('Add Deck Form Data:', formData, additionalData);
@@ -642,5 +641,5 @@ export {
   configOptions,
   handleSchemaValidation,
   handleFieldValidation,
-  getFormFieldHandlers,
+  useGetFormFieldHandlers,
 };

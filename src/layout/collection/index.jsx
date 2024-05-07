@@ -21,7 +21,6 @@ import {
   useManager,
   useFormManagement,
   useDialogState,
-  useLoading,
 } from 'context';
 
 const CollectionsView = ({ openDialog, handleTabAndSelect }) => {

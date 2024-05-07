@@ -1,4 +1,4 @@
-import { RCMainCard } from 'layout/REUSABLE_COMPONENTS';
+import { RCMainCard } from 'layout/REUSABLE_COMPONENTS/RC_OTHER/RCMainCard';
 import styled from 'styled-components';
 
 const CardWrapper = styled(RCMainCard)(({ theme }) => ({

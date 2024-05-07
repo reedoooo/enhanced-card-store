@@ -353,7 +353,7 @@ const CollectionCardList = React.memo(({ data, columns, theme }) => {
 
   useEffect(() => {
     setPageSize(entriesPerPage.defaultValue);
-  }, [collection]);
+  }, []);
 
   return (
     <DashboardBox

@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
         run: npm install netlify-cli -g
 
       - name: Deploy to Netlify
-        run: npx netlify deploy --dir=build --prod
+        run: npx netlify deploy --dir=src --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

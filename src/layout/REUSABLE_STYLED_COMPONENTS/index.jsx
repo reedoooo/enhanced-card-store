@@ -13,7 +13,7 @@ import {
   StyledCardContent,
   DialogPaper,
 } from './ReusableStyledComponents';
-import { CardWrapper } from './SpecificStyledComponents';
+// import { CardWrapper } from './SpecificStyledComponents';
 
 export {
   StyledContainerBox,
@@ -29,5 +29,5 @@ export {
   FeatureCard,
   StyledCardContent,
   DialogPaper,
-  CardWrapper,
+  // CardWrapper,
 };

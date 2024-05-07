@@ -38,7 +38,6 @@ const DeckBuilder = () => {
     fetchDeckById,
     hasFetchedDecks,
     setHasUpdatedDecks,
-    updateDeck,
     setHasFetchedDecks,
     decks: allDecks,
   } = useManager();
@@ -278,11 +277,6 @@ const DeckBuilder = () => {
               }}
             >
               {deckListItems[activeTab]}
-              {/* {loadingState.global === true ? (
-                <CircularProgress size={20} color="success" />
-              ) : (
-                deckListItems[activeTab]
-              )} */}
             </DashboardBox>
           </Grid>
         </Grid>

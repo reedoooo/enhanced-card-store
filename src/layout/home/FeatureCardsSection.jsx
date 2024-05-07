@@ -9,41 +9,27 @@ import {
   Grid,
   List,
   ListItem,
-  AppBar,
-  Card,
 } from '@mui/material';
 import featureCardData from 'data/json-data/featureCardData.json'; // Adjust the path as necessary
 import {
   FeatureCard,
   StyledContainerBox,
   StyledPaper,
-} from '../REUSABLE_STYLED_COMPONENTS/ReusableStyledComponents';
+} from 'layout/REUSABLE_STYLED_COMPONENTS';
+import { RCButton } from 'layout/REUSABLE_COMPONENTS';
 
 import DetailsModal from 'layout/dialogs/DetailsModal';
-import { useMode, useDialogState, useBreakpoint } from 'context';
 
-import { RCButton } from 'layout/REUSABLE_COMPONENTS';
+import { useMode, useDialogState, useBreakpoint } from 'context';
 
 const AnimatedBox = animated(Box);
 
 export const AnimatedFeatureCard = ({ cardData }) => {
   const { theme } = useMode();
   const { dialogState, openDialog, closeDialog } = useDialogState();
-  const handleOpenModal = (itemTitle) => {
-    const selectedItem = featureCardData.find(
-      (item) => item.title === itemTitle
-    );
-    if (selectedItem) {
-      openDialog('isDetailsDialogOpen');
-    }
-  };
-  const handleCloseDialog = () => {
-    closeDialog('isDetailsDialogOpen');
-  };
   const [tiltAnimation, api] = useSpring(() => ({
     transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)',
   }));
-
   const handleMouseEnter = () =>
     api.start({
       transform: 'perspective(600px) rotateX(5deg) rotateY(5deg) scale(1.05)',
@@ -112,14 +98,21 @@ export const AnimatedFeatureCard = ({ cardData }) => {
             size="large"
             variant="holo"
             withContainer={false}
-            onClick={() => handleOpenModal(cardData.title)}
+            onClick={() => {
+              const selectedItem = featureCardData.find(
+                (item) => item.title === cardData.title
+              );
+              if (selectedItem) {
+                openDialog('isDetailsDialogOpen');
+              }
+            }}
           >
             {cardData.title}
           </RCButton>
           {dialogState.isDetailsDialogOpen && (
             <DetailsModal
               open={dialogState.isDetailsDialogOpen}
-              onClose={handleCloseDialog}
+              onClose={() => closeDialog('isDetailsDialogOpen')}
             />
           )}
         </CardActions>

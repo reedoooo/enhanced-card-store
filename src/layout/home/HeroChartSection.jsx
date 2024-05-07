@@ -1,4 +1,3 @@
-import placeHolder from 'assets/images/placeholder.jpeg';
 import { Card, CardContent, Zoom } from '@mui/material';
 import {
   ResponsiveContainer,

@@ -1,5 +1,5 @@
 // App.js
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import LoginDialog from 'layout/dialogs/LoginDialog';
@@ -11,7 +11,6 @@ import {
   PageLayout,
 } from 'layout/REUSABLE_COMPONENTS';
 import {
-  useUserData,
   useConfigurator,
   useManageCookies,
   useMode,

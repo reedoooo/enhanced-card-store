@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
 import { useState } from 'react';
-import useLocalStorage from './useLocalStorage';
-import useManager from '../state/useManager';
 import { nanoid } from 'nanoid';
+import useLocalStorage from './useLocalStorage';
+import { useManager } from 'context';
 
 function useSelectorActions() {
   const {
@@ -37,7 +37,7 @@ function useSelectorActions() {
     switch (selectorName) {
       case 'timeRange':
         setTime(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedChartDataKey', 'selectedChartData'],
@@ -55,7 +55,7 @@ function useSelectorActions() {
         break;
       case 'statRange':
         setStat(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedStatDataKey', 'selectedStatData'],
@@ -76,7 +76,7 @@ function useSelectorActions() {
         break;
       case 'themeRange':
         setTheme(e.target.value);
-        updateEntityField(
+        await updateEntityField(
           'collections',
           selectedCollectionId,
           ['selectedThemeDataKey', 'selectedThemeData'],
@@ -98,28 +98,24 @@ function useSelectorActions() {
         if (e.type === 'add') {
           const newTag = { id: nanoid(), label: e.target.value };
           if (!updatedTags.some((tag) => tag.label === newTag.label)) {
-            // Check if tag already exists by label
             updatedTags.push(newTag); // Add new tag if not present
           }
         } else if (e.type === 'delete') {
           updatedTags = updatedTags.filter(
             (tag) => tag.id !== e.target.value.id
-          ); // Remove tag by id
+          );
         }
-
-        // Update tags in state and backend
-        setTags(updatedTags); // Update local state
+        setTags(updatedTags);
         await updateEntityField(
           'decks',
           selectedDeckId,
           ['tags', 'name', 'description', 'color'],
           [updatedTags, name, description, color]
-        ); // Persist tags update
+        );
 
         const updatedDeck = await fetchDeckById(selectedDeckId);
         console.log('UPDATED DECK', updatedDeck);
         handleSelectDeck(updatedDeck);
-        // e.target.value = ''; // Clear the input after adding a tag
         break;
       case 'deck':
       default:

@@ -21,7 +21,6 @@ const StoreSearch = () => {
           sx={{
             flexGrow: 1,
             boxShadow: theme.shadows[5],
-            [theme.breakpoints.down('sm')]: {},
           }}
         >
           <SearchComponent pageContext="Cart" />

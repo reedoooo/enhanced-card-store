@@ -2,27 +2,62 @@ import { ResponsiveLine } from '@nivo/line';
 import { Tooltip } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEventHandlers } from 'context';
-const TooltipLayer = ({ points }) => {
+// const TooltipLayer = ({ points }) => {
+//   return (
+//     <>
+//       {points?.map((point, index) => (
+//         <Tooltip
+//           key={point.id}
+//           title={`Value: ${point.data.yFormatted}`}
+//           arrow
+//           // key={point.data.id}
+//           // id={point.data.id}
+//           // label={point.data.label}
+//           // x={point.data.xFormatted}
+//           // value={point.data.yFormatted}
+//           // color="#000000"
+//           // enableChip
+//         />
+//       ))}
+//     </>
+//   );
+// };
+/**
+ * Tooltip component to display details for points in the line chart.
+ * @param {object} point - The data point for which the tooltip is shown.
+ */
+const CustomTooltip = ({ point }) => {
+  const { data } = point;
+  const date = new Date(data.xFormatted);
+  const valueFormatted = data.yFormatted; // Assuming yFormatted is already formatted as currency
+
   return (
-    <>
-      {points?.map((point, index) => (
-        <Tooltip
-          key={point.id}
-          title={`Value: ${point.data.yFormatted}`}
-          arrow
-          // key={point.data.id}
-          // id={point.data.id}
-          // label={point.data.label}
-          // x={point.data.xFormatted}
-          // value={point.data.yFormatted}
-          // color="#000000"
-          // enableChip
-        />
-      ))}
-    </>
+    <div
+      style={{
+        padding: '10px',
+        background: '#fff',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      }}
+    >
+      <strong>Date:</strong>{' '}
+      {`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`}
+      <br />
+      <strong>Value:</strong> {valueFormatted}
+    </div>
   );
 };
 
+/**
+ * A layer component for rendering tooltips in the line chart.
+ * This will be used as a custom layer in the Nivo line chart's `layers` prop.
+ */
+const TooltipLayer = ({ points, xScale, yScale, margin }) => {
+  return points.map((point, index) => (
+    <CustomTooltip key={index} point={point} />
+  ));
+};
 const MyPortfolioLineChart = ({
   data = [],
   // tickValues,

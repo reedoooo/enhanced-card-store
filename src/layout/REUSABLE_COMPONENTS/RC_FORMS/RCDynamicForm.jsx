@@ -13,9 +13,8 @@ import {
   useMode,
   useManager,
 } from 'context';
-import { getFormFieldHandlers, handleValidation } from 'data';
+import { useGetFormFieldHandlers } from 'data';
 import { RCInput, RCLoadingButton } from '..';
-import { handleFieldValidation } from 'data/formsConfig';
 
 const RCDynamicForm = ({
   formKey,
@@ -28,9 +27,8 @@ const RCDynamicForm = ({
   const { theme } = useMode();
   const { status } = useManager();
   const { isMobile } = useBreakpoint();
-  // const dataRef = React.useRef(initialData || {});
   const methods = useRCFormHook(formKey);
-  const { onSubmit } = useFormSubmission(getFormFieldHandlers(), formKey);
+  const { onSubmit } = useFormSubmission(useGetFormFieldHandlers(), formKey);
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);

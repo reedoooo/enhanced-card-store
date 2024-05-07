@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react';
-import { Typography, Box, Grid, CardContent, Card, Stack } from '@mui/material';
+import { Typography, Box, Grid, CardContent, Card } from '@mui/material';
 
 import { useMode, useManager } from 'context';
 
@@ -86,9 +86,6 @@ const CartContent = () => {
                     alt={card.name}
                   />
                 </MDBox>
-                {/* <Typography variant="h6" noWrap theme={theme}>
-                  {`$${card.price}`}
-                </Typography> */}
               </Box>
               <CardContent
                 sx={{

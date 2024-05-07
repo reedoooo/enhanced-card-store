@@ -72,10 +72,6 @@ function useLocalStorage(key, initialValue) {
         url: window.location.href,
       });
       window.dispatchEvent(storageEvent);
-      // Optionally, for cross-tab communication, you might want to trigger a storage event manually
-      // window.dispatchEvent(
-      //   new Event('storage', { key, newValue: JSON.stringify(valueToStore) })
-      // );
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
     }

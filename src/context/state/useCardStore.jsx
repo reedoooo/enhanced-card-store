@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import useLogger from '../hooks/useLogger';
-import useLocalStorage from '../hooks/useLocalStorage'; // Ensure this is the correct path to your hook
-import useLoading from '../hooks/useLoading';
-import useManageCookies from '../hooks/useManageCookies';
-import { useFetchWrapper } from 'context';
+import {
+  useFetchWrapper,
+  useLoading,
+  useLocalStorage,
+  useManageCookies,
+} from 'context';
 
 function debounce(func, wait) {
   let timeout;
@@ -22,7 +22,6 @@ const useCardStore = () => {
   const { getCookie } = useManageCookies();
   const { fetchWrapper, status } = useFetchWrapper();
   const { userId } = getCookie(['userId']);
-  const logger = useLogger('CardProvider');
   const [previousSearchData, setPreviousSearchData] = useLocalStorage(
     'previousSearchData',
     []
@@ -46,34 +45,37 @@ const useCardStore = () => {
   const clearSearchData = () => {
     setSearchData([]);
     setIsDataValid(false);
-    logger.logEvent('Search Data Cleared');
+    console.log('Search Data Cleared');
   };
   const handleRequest = useCallback(
     debounce(async (searchParams) => {
       startLoading('isSearchLoading');
       try {
-        logger.logEvent('handleRequest start', { searchParams, userId });
+        console.log('handleRequest start', { searchParams, userId });
         const requestBody = {
           searchParams,
           user: userId,
           searchTerm: searchParams,
         };
-        const response = await axios.post(
+        const response = await fetchWrapper(
           `${process.env.REACT_APP_SERVER}/api/cards/ygopro`,
-          requestBody
+          'POST',
+          requestBody,
+          'FETCH_SEARCH_DATA'
         );
-        if (response?.data?.data?.length > 0) {
-          logger.logEvent('Data Fetched Successfully', {
-            dataLength: response?.data.data.length,
+        console.log('handleRequest response', response);
+        if (response?.data?.length > 0) {
+          console.log('Data Fetched Successfully', {
+            dataLength: response?.data.length,
           });
-          const limitedData = response?.data.data.slice(0, 30); // Limit to 30 cards
+          const limitedData = response?.data.slice(0, 30); // Limit to 30 cards
           setIsDataValid(true);
           setSearchData(limitedData); // Directly set the new searchData
         } else {
           clearSearchData();
         }
       } catch (err) {
-        logger.logEvent('Error fetching card data', err);
+        console.log('Error fetching card data', err);
         clearSearchData();
       } finally {
         stopLoading('isSearchLoading'); // Set loading to false once the request is complete

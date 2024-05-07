@@ -13,7 +13,7 @@ import {
 import { useMode } from 'context';
 import styled from 'styled-components';
 import RCTypography from 'layout/REUSABLE_COMPONENTS/RCTYPOGRAPHY';
-import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS';
+import { RCMainCard } from 'layout/REUSABLE_COMPONENTS';
 
 const textDetails = [
   { title: 'Description', key: 'desc' },
@@ -141,7 +141,7 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
     <Grid container spacing={2} sx={{ maxWidth: '100%' }}>
       {details?.map((detail, index) => (
         <Grid item xs={12} sm={12} md={4} lg={6} key={index}>
-          <CardWrapper
+          <RCMainCard
             border={false}
             content={false}
             theme={theme}
@@ -149,6 +149,30 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
+              backgroundColor: theme.palette.success.darkest,
+              color: theme.palette.primary.light,
+              overflow: 'hidden',
+              position: 'relative',
+              '&:before': {
+                content: '""',
+                position: 'absolute',
+                // eslint-disable-next-line max-len
+                background: `linear-gradient(140.9deg, ${theme.palette.primary[200]} -14.02%, rgba(144, 202, 249, 0) 77.58%)`,
+                borderRadius: '50%',
+                width: 210,
+                height: 210,
+                top: -160,
+                right: -130,
+              },
+              '&:after': {
+                content: '""',
+                position: 'absolute',
+                borderRadius: '50%',
+                width: 210,
+                height: 210,
+                top: -30,
+                right: -180,
+              },
             }}
           >
             <CardHeader
@@ -195,7 +219,7 @@ const RenderDetailsSection = ({ details, card, className, handleAction }) => {
                 )}
               </CardContent>
             </Collapse>
-          </CardWrapper>
+          </RCMainCard>
         </Grid>
       ))}
     </Grid>
