@@ -13,6 +13,7 @@ import {
   DeckListItemSkeleton,
   SkeletonCartItem,
   SkeletonPieChart,
+  InfoItemSkeleton,
 } from './SkeletonVariants';
 import SplashPage2 from './SplashPage2';
 
@@ -32,4 +33,5 @@ export {
   SkeletonCartItem,
   SkeletonPieChart,
   SplashPage2,
+  InfoItemSkeleton,
 };

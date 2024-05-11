@@ -145,8 +145,8 @@ const DeckListItem = ({
                 <Grid item xs={12} sm={12} md={2}>
                   <MDBox border="none">
                     <RCWrappedIcon
-                      size="large"
                       bgColor="success"
+                      size="large"
                       // sx={{
                       //   background: theme.palette.success.main,
                       // }}

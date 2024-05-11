@@ -40,9 +40,7 @@
   align-items: stretch;
   gap: 10px;
 }
-/* ROW: 6 cards */
 @media screen and (max-width: 1400px) {
-  /* EXPLANATION: 100% / 3 - 10px = 33.33% - 10px */
   .card-deck-grid-item {
     flex-basis: calc(50% - 10px);
     max-width: calc(50% - 10px);
@@ -66,7 +64,6 @@
 }
 /* ROW: 3 cards */
 @media screen and (max-width: 768px) {
-  /* EXPLANATION: 100% / 6 - 10px = 16.66% - 10px */
   .card-deck-grid-item {
     flex-basis: calc(50% - 25px);
     max-width: calc(50% - 25px);
@@ -74,7 +71,6 @@
 }
 /* ROW: 3 cards */
 @media screen and (max-width: 576px) {
-  /* EXPLANATION: 100% / 8 - 10px = 12.5% - 10px */
   .card-deck-grid-item {
     flex-basis: calc(100% - 20px);
     max-width: calc(100% - 20px);

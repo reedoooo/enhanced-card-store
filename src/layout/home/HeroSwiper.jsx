@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import placeHolder from 'assets/images/placeholder.jpeg';
+import placeholder from 'assets/images/placeholder.jpeg';
 import { useBreakpoint } from 'context';
 import { MDBox, RCTypography } from 'layout/REUSABLE_COMPONENTS';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -129,7 +129,7 @@ const HeroSwiper = ({ cards, handleSlideChange, activeCardIndex }) => {
               {card.name}
             </RCTypography>
             <img
-              src={card?.image || placeHolder}
+              src={card?.image || placeholder}
               alt={`slide_${index}`}
               style={{
                 maxWidth: '100%',

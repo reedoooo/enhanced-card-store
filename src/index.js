@@ -1,8 +1,8 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import './assets/css/index.css';
-import './assets/css/card.css';
-import './assets/css/page.css';
+import 'assets/css/index.css';
+import 'assets/css/card.css';
+import 'assets/css/page.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ParallaxProvider } from 'react-scroll-parallax';
 // import reportWebVitals from './reportWebVitals';

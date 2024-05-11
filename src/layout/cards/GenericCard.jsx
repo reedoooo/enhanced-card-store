@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Card, CardActions } from '@mui/material';
 import CardMediaSection from './CardMediaSection';
 import placeholder from 'assets/images/placeholder.jpeg';
+
 import { useMode, usePopover, useDialogState } from 'context';
 import { StyledCardContent } from 'layout/REUSABLE_STYLED_COMPONENTS';
 import { GenericActionButtons, RCTypography } from 'layout/REUSABLE_COMPONENTS';

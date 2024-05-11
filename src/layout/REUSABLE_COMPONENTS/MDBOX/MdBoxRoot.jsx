@@ -15,21 +15,33 @@ export default styled(Box)(({ ownerstate }) => {
     shadow,
     coloredShadow,
   } = ownerstate;
-  const { gradients, grey, white } = palette;
+  const { gradients, white } = palette;
   const { linearGradient } = functions;
   const { borderRadius: radius } = borders;
   const { colored } = boxShadows;
-  const greyColors = {
-    'grey-100': grey[100],
-    'grey-200': grey[200],
-    'grey-300': grey[300],
-    'grey-400': grey[400],
-    'grey-500': grey[500],
-    'grey-600': grey[600],
-    'grey-700': grey[700],
-    'grey-800': grey[800],
-    'grey-900': grey[900],
+  const grey = {
+    50: '#f8fafc',
+    100: '#eef2f6',
+    200: '#e3e8ef',
+    300: '#cdd5df',
+    400: '#8993a5', // Assuming you might need a grey400, placed logically in sequence
+    500: '#697586',
+    600: '#4b5565',
+    700: '#364152',
+    800: '#232a3b', // Assuming grey800, filled logically between grey700 and grey900
+    900: '#121926',
   };
+  // const greyColors = {
+  //   'grey-100':
+  //   'grey-200': grey[200],
+  //   'grey-300': grey[300],
+  //   'grey-400': grey[400],
+  //   'grey-500': grey[500],
+  //   'grey-600': grey[600],
+  //   'grey-700': grey[700],
+  //   'grey-800': grey[800],
+  //   'grey-900': grey[900],
+  // };
 
   const validGradients = [
     'primary',
@@ -55,15 +67,6 @@ export default styled(Box)(({ ownerstate }) => {
     'light',
     'dark',
     'text',
-    'grey-100',
-    'grey-200',
-    'grey-300',
-    'grey-400',
-    'grey-500',
-    'grey-600',
-    'grey-700',
-    'grey-800',
-    'grey-900',
   ];
 
   const validBorderRadius = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'section'];
@@ -76,9 +79,7 @@ export default styled(Box)(({ ownerstate }) => {
       ? linearGradient(gradients[bgColor].main, gradients[bgColor].state)
       : white.main;
   } else if (validColors.find((el) => el === bgColor)) {
-    backgroundValue = palette[bgColor]
-      ? palette[bgColor].main
-      : greyColors[bgColor];
+    backgroundValue = palette[bgColor] ? palette[bgColor].main : grey[bgColor];
   } else {
     backgroundValue = bgColor;
   }
@@ -87,7 +88,7 @@ export default styled(Box)(({ ownerstate }) => {
   let colorValue = color;
 
   if (validColors.find((el) => el === color)) {
-    colorValue = palette[color] ? palette[color].main : greyColors[color];
+    colorValue = palette[color] ? palette[color].main : grey[color];
   }
 
   // borderRadius value

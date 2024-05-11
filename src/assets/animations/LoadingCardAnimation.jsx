@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+const placeholder = 'assets/images/placeholder.jpeg'; // Replace with your placeholder image path
 
 const sizes = {
   extraSmall: { width: 0.3, height: 0.4 },
@@ -11,8 +12,7 @@ const sizes = {
 
 function LoadingCardAnimation({ selected, size = 'medium' }) {
   const mount = useRef(null);
-  const placeholderImage = 'assets/images/placeholder.png'; // Replace with your placeholder image path
-  const placeholderTexture = new THREE.TextureLoader().load(placeholderImage);
+  const placeholderTexture = new THREE.TextureLoader().load(placeholder);
 
   useEffect(() => {
     if (!selected) return;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import placeHolder from 'assets/images/placeholder.jpeg';
+import placeholder from 'assets/images/placeholder.jpeg';
 import { Card } from '@mui/material';
 
 import HeroTextSection from './HeroTextSection';
@@ -20,7 +20,7 @@ const HeroSection = () => {
     id: `default-${index}`,
     name: `Placeholder ${index + 1}`,
     description: `Description for Placeholder ${index + 1}`,
-    image: placeHolder,
+    image: placeholder,
   }));
   const [hasFetchedCards, setHasFetchedCards] = useState(false);
   // const [cards, setCards] = useState([...defaultCards]);

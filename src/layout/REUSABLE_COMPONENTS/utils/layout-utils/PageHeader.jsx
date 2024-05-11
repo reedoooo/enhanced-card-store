@@ -34,7 +34,6 @@ const PageHeader = ({
   type = 'Portfolio', // Default type
   action,
 }) => {
-  const { setActiveFormSchema } = useFormManagement(formName);
   const { user } = useUserData();
   if (!user) {
     return <PageHeaderSkeleton />;

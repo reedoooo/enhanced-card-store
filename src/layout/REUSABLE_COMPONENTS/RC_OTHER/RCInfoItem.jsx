@@ -1,9 +1,8 @@
 import React from 'react';
-import { Grid, CardContent, Skeleton } from '@mui/material';
+import { Grid, CardContent } from '@mui/material';
 import { useMode, useBreakpoint } from 'context';
-import { RCTypography } from '..';
+import { InfoItemSkeleton, RCTypography } from '..';
 import PropTypes from 'prop-types';
-import { InfoItemSkeleton } from '../utils/system-utils/SkeletonVariants';
 
 const RCInfoItem = ({
   label = '',

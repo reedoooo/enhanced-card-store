@@ -1,6 +1,5 @@
 import React from 'react';
 import RCWrappedIconRoot from './RCWrappedIconRoot';
-import { useMode } from 'context';
 import MDBox from '../MDBOX';
 import PropTypes from 'prop-types';
 
@@ -10,9 +9,8 @@ import PropTypes from 'prop-types';
  * A reusable component that wraps an icon.
  *
  * @component
- * @param {string} color - Options:
  * @param {string} size - Options:
- * @param {string} background - Options:
+ * @param {string} bgColor - Options:
  * @param {React.Ref} ref - The ref object for the component.
  * @returns {React.Element} The rendered RCWrappedIcon component.
  */

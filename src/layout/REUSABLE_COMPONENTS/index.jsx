@@ -32,6 +32,7 @@ import {
   SkeletonCartItem,
   SkeletonPieChart,
   SplashPage2,
+  InfoItemSkeleton,
 } from './utils/system-utils';
 
 import {
@@ -65,6 +66,7 @@ export {
   RCCard,
   RCButton,
   RCInfoItem,
+  InfoItemSkeleton,
   RCLogoSection,
   Configurator,
   RCSwitch,

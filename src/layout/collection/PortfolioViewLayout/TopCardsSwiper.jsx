@@ -1,10 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { CardMedia, CardContent, Icon } from '@mui/material';
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import { Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper';
-// import 'swiper/swiper.scss'; // core Swiper
-// import 'swiper/modules/navigation/navigation.scss'; // Navigation module
-// import 'swiper/modules/pagination/pagination.scss'; // Pagination module
+
+import placeholder from 'assets/images/placeholder.jpeg';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
@@ -12,7 +9,6 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import placeHolder from 'assets/images/placeholder.jpeg';
 
 import {
   BoxHeader,
@@ -25,7 +21,6 @@ import {
 import CardDetailsContainer from 'layout/cards/CardDetailsContainer';
 
 import { useMode, useBreakpoint, useManager } from 'context';
-// import { CardWrapper } from 'layout/REUSABLE_STYLED_COMPONENTS';
 
 const TopCardsSwiper = () => {
   const { theme } = useMode();
@@ -173,7 +168,7 @@ const TopCardsSwiper = () => {
                     <CardMedia
                       component="img"
                       alt={`Image for ${card.name || 'the card'}`}
-                      image={card?.image || placeHolder} // || placeHolder
+                      image={card?.image || placeholder} // || placeHolder
                       loading="lazy"
                       style={{
                         borderRadius: 0,

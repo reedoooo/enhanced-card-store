@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import GenericCardDialog from '../dialogs/GenericCardDialog';
 import { useMode, usePopover, useDialogState } from 'context';
 import CardToolTip from './CardToolTip';
 import { CardMedia, Popper } from '@mui/material';
+import GenericCardDialog from 'layout/dialogs/GenericCardDialog';
 
 const CardMediaSection = React.forwardRef(
   (

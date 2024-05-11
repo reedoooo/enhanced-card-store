@@ -1,7 +1,7 @@
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CollectionsIcon from '@mui/icons-material/Collections';
-import placeHolder from '../assets/images/placeholder.jpeg';
+import placeholder from 'assets/images/placeholder.jpeg';
 const heroData = [
   {
     id: 'herodata-1-store-add',
@@ -10,7 +10,7 @@ const heroData = [
     heroText: 'ADD',
     icon: <AddIcon />,
     heroIcon: 'AddIcon',
-    image: placeHolder,
+    image: placeholder,
   },
   {
     id: 'herodata-2-deck-build',
@@ -19,7 +19,7 @@ const heroData = [
     heroText: 'BUILD',
     icon: <SaveIcon />,
     heroIcon: 'SaveIcon',
-    image: placeHolder,
+    image: placeholder,
   },
   {
     id: 'herodata-3-collection-view',
@@ -29,7 +29,7 @@ const heroData = [
     heroText: 'TRACK',
     icon: <CollectionsIcon />,
     heroIcon: 'CollectionsIcon',
-    image: placeHolder,
+    image: placeholder,
   },
 ];
 
